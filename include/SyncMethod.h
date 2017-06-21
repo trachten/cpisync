@@ -1,0 +1,145 @@
+/*
+ * This code is part of the CPISync project developed at Boston University:
+ *      {@link http://nislab.bu.edu}
+ * 
+ * The code, explanation, references, API, and a demo can be found on this
+ * web page.  The main theoretical basis for the approach can be found at
+ * {@link http://ipsit.bu.edu/documents/ieee-it3-web.pdf}
+ *   Y. Minsky, A. Trachtenberg, and R. Zippel,
+ *   "Set Reconciliation with Nearly Optimal Communication Complexity",
+ *   IEEE Transactions on Information Theory, 49:9.
+ * 
+ * Elements of the CPISync project code have been worked on, at various points, by:
+ * @author Ari Trachtenberg
+ * @author Sachin Agarwal 
+ * @author Paul Varghese
+ * @author Jiaxi Jin
+ * @author Jie Meng
+ * @author Alexander Smirnov
+
+ */
+
+#ifndef SYNC_METHODS_H
+#define SYNC_METHODS_H
+
+#include "Communicant.h"
+
+// namespaces
+using std::vector;
+
+/**
+ * SyncMethod.h -- abstract class for sync methods
+ * This is the base class for all synchronization methods.
+ */
+
+class SyncMethod {
+
+public:
+    // CONSTRUCTOR/DESTRUCTOR
+
+    // constructor
+    SyncMethod();
+    // destructor
+    virtual ~SyncMethod();
+
+    // SYNC
+
+    /**
+     * Connect as a client to a specific communicant and computes differences between the two (without actually updating them).
+     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
+     * %R:  Sync_Server must have been called at that communicant.
+     * 
+     * @param commSync The communicant to whom to connect.
+     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
+     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
+     * @return true iff the connection and subsequent synchronization appear to be successful.
+     */
+    virtual bool SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+        commSync->resetCommCounters();
+        return true;
+    }
+
+    /**
+     * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
+     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
+     *      * 
+     * @param commSync The communicant to whom to connect.
+     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
+     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
+     * @return true iff the connection and subsequent synchronization appear to be successful.
+     */
+    virtual bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+        commSync->resetCommCounters();
+          return true;
+    }
+
+    // MANIPULATE DATA
+    /**
+     * Add an element to the data structure that will be performing the synchronization.
+     * @param datum The element to add.  Note:  a pointer to this item is added to the
+     * hash, so it is advisable not to change the datum dereference hereafter.
+     * @return true iff the addition was successful
+     */
+    virtual bool addElem(DataObject* datum) { elements.push_back(datum); return true; };
+
+    /**
+     * Delete an element from the data structure that will be performing the synchronization.
+     * @param datum The element to delete.
+     * @return true iff the addition was successful
+     */
+    virtual bool delElem(DataObject* datum) { vector<DataObject*>::iterator ii=elements.begin();
+        for(;ii!=elements.end(); ii++)
+            if (*ii==datum)
+                elements.erase(ii);
+        return true; };
+
+    // INFORMATIONAL
+    /**
+     * @return A human-readable name for the synchronization method.
+     */
+    virtual string getName() = 0;
+
+    /** Accessor methods */
+    long getNumElem() const {
+        return elements.size();
+    }
+
+    /**
+     * @return An iterator pointing to the first element in the data structure
+     */
+    vector<DataObject*>::const_iterator beginElements() { return elements.begin();}
+    
+    /**
+     * @return An iterator pointing just past the last element in the data structure
+     */
+    vector<DataObject*>::const_iterator endElements() { return elements.end();}
+    
+protected:
+    
+    /**
+     * Encode and transmit synchronization parameters (e.g. synchronization scheme, probability of error ...)
+     * to another communicant for the purposes of ensuring that both are using the same scheme.  If the
+     * other communicant responds that parameters are the same, returns true.
+     * @param commSync The communicant to whom to send the parameters.
+     * @param oneWay If set to true, no response is expected from the other communicant (the sync is one-way).
+     * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
+     */
+    virtual void SendSyncParam(Communicant* commSync, bool oneWay = false);
+    
+    /**
+     * Receive synchronization parameters from another communicant and compare to the current object.
+     * Return true iff they are the same (or the other communicant does not care).
+     * @param commSync The communicant to whom to send the parameters.
+     * @param oneWay If set to true, no response is expected from the other communicant (the sync is one-way).
+     * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
+     */
+    virtual void RecvSyncParam(Communicant* commSync, bool oneWay = false);
+    
+    byte SyncID; /** A number that uniquely identifies a given synchronization protocol. */
+    
+private:
+    vector<DataObject *> elements; /** Pointers to the elements stored in the data structure. */
+};
+
+
+#endif

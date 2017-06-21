@@ -1,0 +1,31 @@
+
+This is the source code for set reconciliation from the CPISync project (http://nislab.bu.edu).
+
+ The code, explanation, references, API, and a demo can be found on this
+ web page.  The main theoretical basis for the approach can be found at
+   {@link http://ipsit.bu.edu/documents/ieee-it3-web.pdf}
+    Y. Minsky, A. Trachtenberg, and R. Zippel,
+    "Set Reconciliation with Nearly Optimal Communication Complexity",
+    IEEE Transactions on Information Theory, 49:9.
+  
+  Elements of the CPISync project code have been worked on, at various points, by:
+  @ Ari Trachtenberg
+  @ Sachin Agarwal 
+  @ Paul Varghese
+  @ Jiaxi Jin
+  @ Jie Meng
+  @ Alexander Smirnov
+
+------------------------------
+COMPILATION:
+
+This project is configured for a Mac running NetBeans and with dependent
+libraries installed through mac ports.
+
+This project has the following dependencies:
+   * NTL - A library for doing Number Theory - http://www.shoup.net/ntl/
+   * cppunit - For testing
+
+------------------------------
+
+Ari Trachtenberg, trachten@bu.edu, Boston University

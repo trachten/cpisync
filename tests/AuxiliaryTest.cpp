@@ -1,0 +1,154 @@
+/** This code is part of the CPISync project developed at Boston University:
+ *      {@link http://nislab.bu.edu}
+ * 
+ * The code, explanation, references, API, and a demo can be found on this
+ * web page.  The main theoretical basis for the approach can be found at
+ * {@link http://ipsit.bu.edu/documents/ieee-it3-web.pdf}
+ *   Y. Minsky, A. Trachtenberg, and R. Zippel,
+ *   "Set Reconciliation with Nearly Optimal Communication Complexity",
+ *   IEEE Transactions on Information Theory, 49:9.
+ * 
+ * Elements of the CPISync project code have been worked on, at various points, by:
+ * @author Ari Trachtenberg
+ * @author Sachin Agarwal 
+ * @author Paul Varghese
+ * @author Jiaxi Jin
+ * @author Jie Meng
+ * @author Alexander Smirnov
+
+ */
+/*
+ * File:   AuxiliaryTest.cpp
+ * Author: trachten
+ *
+ * Created on Jun 21, 2017, 4:17:10 PM
+ */
+
+#include "AuxiliaryTest.h"
+#include "Auxiliary.h"
+
+
+CPPUNIT_TEST_SUITE_REGISTRATION(AuxiliaryTest);
+
+AuxiliaryTest::AuxiliaryTest() {
+}
+
+AuxiliaryTest::~AuxiliaryTest() {
+}
+
+void AuxiliaryTest::setUp() {
+}
+
+void AuxiliaryTest::tearDown() {
+}
+
+void AuxiliaryTest::testStrToVecToStr() {
+    const string data="This is a test!  Itis ONLY a test.";
+    const string data2=VecToStr(StrToVec(data));
+        CPPUNIT_ASSERT(data==data2);
+}
+
+void AuxiliaryTest::testStrTo() {
+    string str;
+    //T result = strTo(str);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testToStr() {
+    //T item;
+    //string result = toStr(item);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testWriteInts() {
+    //T* data;
+    //int len;
+    //string result = writeInts(data, len);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testMultisetPrint() {
+    //multiset<string> container;
+    //string result = multisetPrint(container);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testMultisetIntersect() {
+    //const multiset<class> first;
+    //const multiset<class> second;
+    //multiset<T> result = multisetIntersect(first, second);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testMultisetDiff() {
+    //const multiset<class> first;
+    //const multiset<class> second;
+    //multiset<T> result = multisetDiff(first, second);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testMultisetUnion() {
+    //const multiset<class> first;
+    //const multiset<class> second;
+    //multiset<T> result = multisetUnion(first, second);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testMultisetSubset() {
+    //const multiset<class> first;
+    //const int size;
+    //multiset<T> result = multisetSubset(first, size);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testBase64_encode() {
+    //const char* bytes_to_encode;
+    //unsigned int in_len;
+    //string result = base64_encode(bytes_to_encode, in_len);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testBase64_decode() {
+    //const std::string& encoded_string;
+    //string result = base64_decode(encoded_string);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testBase64_encode2() {
+    //const string bytes;
+    //unsigned int in_len;
+    //string result = base64_encode(bytes, in_len);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+
+void AuxiliaryTest::testMin() {
+    //const ZZ& aa;
+    //const ZZ& bb;
+    //ZZ result = min(aa, bb);
+    if (true /*check result*/) {
+        CPPUNIT_ASSERT(false);
+    }
+}
+

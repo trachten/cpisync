@@ -1,23 +1,4 @@
-/*
- * This code is part of the CPISync project developed at Boston University:
- *      {@link http://nislab.bu.edu}
- * 
- * The code, explanation, references, API, and a demo can be found on this
- * web page.  The main theoretical basis for the approach can be found at
- * {@link http://ipsit.bu.edu/documents/ieee-it3-web.pdf}
- *   Y. Minsky, A. Trachtenberg, and R. Zippel,
- *   "Set Reconciliation with Nearly Optimal Communication Complexity",
- *   IEEE Transactions on Information Theory, 49:9.
- * 
- * Elements of the CPISync project code have been worked on, at various points, by:
- * @author Ari Trachtenberg
- * @author Sachin Agarwal 
- * @author Paul Varghese
- * @author Jiaxi Jin
- * @author Jie Meng
- * @author Alexander Smirnov
-
- */
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 // GenSync.h -- The general synchronization framework
 #ifndef GEN_SYNC_H
@@ -56,14 +37,10 @@ using std::runtime_error;
  * This is a generic container that is subclassed by different types of
  * synchronization options.
  * 
- * Elements of the CPISync project code have been worked on, at various points, by:
- * @author Ari Trachtenberg
- * @author Jie Meng
- * @author Jiaxi Jin
- * @author Alexander Smirnov
- * @author Sachin Agarwal
- * @version 2.00, 7/19/2011
-
+ * A Generic Synchronization object contains:
+ * 0.  One or more communicants, which govern(s) the targets of data synchronization with this object (and includes a means of communicating with them).
+ * 1.  One or more synchronization methods, which govern(s) the protocol through which synchronization is carried out.
+ * 2.  Data that is associated with the local object.
  */
 class GenSync {
 public:

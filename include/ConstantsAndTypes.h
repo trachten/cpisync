@@ -1,13 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   types.h
- * Author: trachten
- *
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references.
  * Created on June 20, 2017, 5:04 PM
  */
 

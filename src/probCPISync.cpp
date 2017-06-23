@@ -9,7 +9,7 @@
 #include "CPISync.h"
 #include "Logger.h"
 #include "Exceptions.h"
-#include "probCPISync.h"
+#include "ProbCPISync.h"
 
 ProbCPISync::ProbCPISync(long m_bar, long bits, int epsilon) :
 CPISync(m_bar, bits, epsilon + ceil(log(bits) / log(2))) // adding lg(b) gives an equivalent probability of error for CPISync

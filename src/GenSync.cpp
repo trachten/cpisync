@@ -10,6 +10,10 @@
 #include "SyncMethod.h"
 #include "Logger.h"
 #include "Auxiliary.h"
+#include "CPISync.h"
+#include "CommSocket.h"
+#include "CommString.h"
+#include "ProbCPISync.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
@@ -20,7 +24,7 @@ GenSync::GenSync() {
 /**
  * Construct a specific GenSync object
  */
-GenSync::GenSync(const vector<Communicant*> cVec, const vector<SyncMethod*> mVec, const list<DataObject*> data) {
+GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, const list<DataObject*> &data) {
     myCommVec = cVec;
     mySyncVec = mVec;
     outFile = NULL; // no output file is being used
@@ -31,11 +35,11 @@ GenSync::GenSync(const vector<Communicant*> cVec, const vector<SyncMethod*> mVec
         addElem(*itData);
 }
 
-GenSync::GenSync(const vector<Communicant*> cVec, const vector<SyncMethod*> mVec, string fileName) {
+GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, string fileName) {
     myCommVec = cVec;
     mySyncVec = mVec;
     outFile = NULL; // add elements without writing to the file at first
-    Logger::gLog(Logger::METHOD,"Entering GenSync::GenSync");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::GenSync");
     // read data from a file
     Logger::gLog(Logger::METHOD, "Utilizing file: " + fileName);
     ifstream inFile(fileName.c_str());
@@ -57,16 +61,16 @@ GenSync::~GenSync() {
     // clear out memory
     myData.clear();
 
-    vector<SyncMethod*>::iterator itAgt = mySyncVec.begin();
-    for (; itAgt != mySyncVec.end(); itAgt++) {
-        delete *itAgt;
-    }
+    //    vector<SyncMethod*>::iterator itAgt = mySyncVec.begin();
+    //    for (; itAgt != mySyncVec.end(); itAgt++) {
+    //        delete *itAgt;
+    //    }
     mySyncVec.clear();
 
-    vector<Communicant*>::iterator itComm = myCommVec.begin();
-    for (; itComm != myCommVec.end(); itComm++) {
-        delete *itComm;
-    }
+    //    vector<Communicant*>::iterator itComm = myCommVec.begin();
+    //    for (; itComm != myCommVec.end(); itComm++) {
+    //        delete *itComm;
+    //    }
     myCommVec.clear();
 
     // close and free the output file
@@ -81,7 +85,7 @@ GenSync::~GenSync() {
 // listen, receive data and conduct synchronization
 
 bool GenSync::listenSync(int method_num) {
-    Logger::gLog(Logger::METHOD,"Entering GenSync::listenSync");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::listenSync");
     // find the right syncAgent	
     vector<SyncMethod*>::iterator syncAgent = mySyncVec.begin();
     advance(syncAgent, method_num);
@@ -115,7 +119,7 @@ bool GenSync::listenSync(int method_num) {
 // request connection, send data and get the result
 
 bool GenSync::startSync(int method_num) {
-    Logger::gLog(Logger::METHOD,"Entering GenSync::startSync");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::startSync");
     SyncMethod* tmpSync;
     // find the right syncAgent	
     vector<SyncMethod*>::iterator syncAgent = mySyncVec.begin();
@@ -132,7 +136,7 @@ bool GenSync::startSync(int method_num) {
         // do the sync
         try {
             if (!(*syncAgent)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
-                Logger::gLog(Logger::METHOD,"Sync to " + (*itComm)->getName() + " failed!");
+                Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
                 syncSuccess = false;
             }
         } catch (SyncFailureException s) {
@@ -154,7 +158,7 @@ bool GenSync::startSync(int method_num) {
 // add element
 
 void GenSync::addElem(DataObject* newDatum) {
-    Logger::gLog(Logger::METHOD,"Entering GenSync::addElem");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
     // store locally
     myData.push_back(newDatum);
 
@@ -172,7 +176,7 @@ void GenSync::addElem(DataObject* newDatum) {
 
 template <typename T>
 void GenSync::addElem(T* newDatum) {
-    Logger::gLog(Logger::METHOD,"Entering GenSync::addElem");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
     DataObject *newDO = new DataObject(*newDatum);
     addElem(newDO);
     delete newDO;
@@ -189,7 +193,7 @@ void GenSync::delElem(DataObject* newDatum) {
 // insert a communicant in the vector at the index position
 
 void GenSync::addComm(Communicant* newComm, int index) {
-    Logger::gLog(Logger::METHOD,"Entering GenSync::addComm");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addComm");
     vector<Communicant*>::iterator itComm;
 
     itComm = myCommVec.begin();
@@ -201,7 +205,6 @@ void GenSync::addComm(Communicant* newComm, int index) {
     }
 
 }
-
 
 /**
  *  delete a communicant from the vector at the index position
@@ -226,7 +229,7 @@ int GenSync::numComm() {
 // insert a syncmethod in the vector at the index position
 
 void GenSync::addSyncAgt(SyncMethod* newAgt, int index) {
-    Logger::gLog(Logger::METHOD,"Entering GenSync::addSyncAgt");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addSyncAgt");
     // create and populate the new agent
     list<DataObject*>::iterator itData;
     for (itData = myData.begin(); itData != myData.end(); itData++)
@@ -246,10 +249,10 @@ void GenSync::delSyncAgt(int index) {
 
 vector<SyncMethod*>::iterator GenSync::getSyncAgt(int index) {
     vector<SyncMethod*>::iterator itAgt;
-    
+
     itAgt = mySyncVec.begin();
     advance(itAgt, index);
-    
+
     return itAgt;
 }
 
@@ -266,18 +269,52 @@ const long GenSync::getRecvBytes(int commIndex) const {
 }
 
 const double GenSync::getSyncTime(int commIndex) const {
-    return (clock() - myCommVec[commIndex]->getResetTime())/CLOCKS_PER_SEC;
+    return (clock() - myCommVec[commIndex]->getResetTime()) / CLOCKS_PER_SEC;
 }
 
 // Builder methods
 
 GenSync GenSync::Builder::build() {
-    switch (proto) {
-        case SyncProtocol::UNDEFINED:
-            throw invalid_argument("Synchronization protocol not defined");
+    // variables of possible use
+    vector<Communicant *> theComms;
+    vector<SyncMethod*> theMeths;
+
+    // check pre-conditions
+    if (proto == SyncProtocol::UNDEFINED)
+        throw invalid_argument("The synchronization protocol has not been defined.");
+    if (role == SyncRole::UNDEFINED)
+        throw invalid_argument("No synchronization role (client, server, etc.) defined.");
+
+    // setup
+    switch (comm) {
+        case SyncComm::socket:
+            myComm = new CommSocket(port, host);
+            Logger::gLog(Logger::METHOD, "Connecting to host " + host + " on port " + toStr(port));
             break;
-        case SyncProtocol::CPISync:
-            
+        case SyncComm::string:
+            myComm = new CommString(ioStr, base64);
+            Logger::gLog(Logger::METHOD, "Connecting to " + toStr(base64 ? "base64" : "") + " string " + ioStr);
+            break;
+        default:
+            throw invalid_argument("I don't know how to set up communication through the provided requested mode.");
     }
-    
+    theComms.push_back(myComm);
+
+    switch (proto) {
+        case SyncProtocol::CPISync:
+            if (mbar == Builder::UNDEFINED)
+                throw invalid_argument("Must define <mbar> explicitly for this sync.");
+            myMeth = new ProbCPISync(mbar, bits, errorProb);
+        default:
+            throw invalid_argument("I don't know how to synchronize with this protocol.");
+    }
+    theMeths.push_back(myMeth);
+
+    return GenSync(theComms, theMeths);
 }
+
+// static consts
+
+const string GenSync::Builder::DFT_HOST = "localhost";
+const string GenSync::Builder::DFT_IO = "";
+const double GenSync::Builder::DFT_ERROR = 1E-8;

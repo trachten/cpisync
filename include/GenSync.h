@@ -52,10 +52,11 @@ public:
      *                      should be prepared to use.  The order of these methods
      *                      is significant.
      * @param data       The initial data with which to populate the data structure.  The data is added element by element
-     *                      so that synchronization method metadata can be properly maintained.
+     *                      so that synchronization method metadata can be properly maintained.  Initilizes to the empty list
+     *                      if not specified.
      * 
      */
-    GenSync(const vector<Communicant*> cVec, const vector<SyncMethod*> mVec, const list<DataObject*> data);
+    GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, const list<DataObject*> &data = list<DataObject*>());
 
     /**
      * Specific GenSync constructor
@@ -68,7 +69,7 @@ public:
      *                   this data structure.  As elements are added to this data structure, they
      *                   are also stored in the file.
      */
-    GenSync(const vector<Communicant*> cVec, const vector<SyncMethod*> mVec, string fileName = "");
+    GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, string fileName);
 
 
     // DATA MANIPULATION
@@ -79,7 +80,7 @@ public:
      * %M:  If a file is associated with this object, then updates are stored in that file.
      */
     void addElem(DataObject* newDatum);
-    
+
     /**
      * Adds a new datum into the existing GenSync data structure
      * @param newDatum The datum to be added ... must be of a type compatible with
@@ -152,13 +153,13 @@ public:
      *                  By default, new agents are added to the back of the sync vector
      */
     void addSyncAgt(SyncMethod* newAgt, int index = 0);
-    
+
     /**
      * Delete the agent at the given index in the agent vector.
      * @param index  Index of the agent to delete.
      */
     void delSyncAgt(int index);
-    
+
     /**
      * 
      * @param index The index of the agent to return
@@ -194,146 +195,236 @@ public:
 
 
     // INFORMATIONAL
-    
+
     /**
      * @param commIndex The index of the Communicant to query (in the order that they were added)
      * @return The number of bytes transmitted by the Communicant and index #commIndex.
      */
     const long getXmitBytes(int commIndex) const;
-    
+
     /**
      * @param commIndex The index of the Communicant to query (in the order that they were added)
      * @return The number of bytes received by the Communicant and index #commIndex.
      */
     const long getRecvBytes(int commIndex) const;
- 
-   /**
+
+    /**
      * @param commIndex The index of the Communicant to query (in the order that they were added)
      * @return The amount of CPU time (in seconds) since the last sync request by the Communicant and index #commIndex.
      *          if there was no sync request, the creation time is used.
      */
     const double getSyncTime(int commIndex) const;
-    
+
     /**
      * @return the port on which the server is listening for communicant comm_index.
      * If no server is listening for this communicant, the port returned is -1
      * @param comm_index       The index of the communicant that interests us.
      * */
     int getPort(int comm_index);
-    
+
     /**
      * Displays some internal information about this method
      */
     string info() {
         return "I am a GenSync object";
     }
-    
+
     /**
-     * Destructor
+     * Destructor - clears out all memory
      */
     ~GenSync();
-    
+
     /**
      * Structures
      */
-    
-    /* 
- * Builder design for creating GenSync objects
- *
- * Created on June 22, 2017, 2:34 PM
- */
-    class Builder;
-    
-/**
- * Possible roles for a data synchronization agent.
- */
-enum class SyncRole {
-    UNDEFINED, // not yet defined
-    Client,  // a client connecting to a server
-    Server,  // a server listening for a client connection
-};
 
-/**
- * Protocols that are implemented for use in data synchronization
- */
-enum class SyncProtocol {
-    UNDEFINED, // not yet defined
-    // CPISync and variants
-    CPISync,
-    InteractiveCPISync,
-    OneWayCPISync
-};
-    
-    
+    /* 
+     * Builder design for creating GenSync objects
+     */
+    class Builder;
+
+    /**
+     * Possible roles for a data synchronization agent.
+     */
+    enum class SyncRole {
+        UNDEFINED, // not yet defined
+        Client, // a client connecting to a server
+        Server, // a server listening for a client connection
+    };
+
+    /**
+     * Protocols that are implemented for use in data synchronization
+     */
+    enum class SyncProtocol {
+        UNDEFINED, // not yet defined
+        // CPISync and variants
+        CPISync,
+        InteractiveCPISync,
+        OneWayCPISync
+    };
+
+    enum class SyncComm {
+        UNDEFINED, // not yet defined
+        socket, // socket-based communication
+        string // communication recorded in a string
+    };
+
 private:
     // METHODS
     /**
      * No argument constructor ... should not be used
      */
     GenSync();
-    
-    
+
+
     // FIELDS
     /** A container for the data stored by this GenSync object. */
     list<DataObject*> myData;
-    
+
     /** A vector of communicants registered to be able to sync with this GenSync object. */
     vector<Communicant*> myCommVec;
-    
+
     /** A vector of synchronization methods that can be used to sync with this GenSync object. */
     vector<SyncMethod*> mySyncVec;
-    
+
     /** The file to which to output any additions to the data structure. */
     ofstream *outFile;
 };
 
-
 class GenSync::Builder {
 public:
+
     /** Constructor - makes all fields undefined. */
-    Builder() { role=DFT_ROLE; proto=DFT_PROTO, host=DFT_HOST port=DFT_PRT, io=DFT_IO; }
-    
+    Builder() :
+    role(DFT_ROLE),
+    proto(DFT_PROTO),
+    host(DFT_HOST),
+    port(DFT_PRT),
+    ioStr(DFT_IO),
+    errorProb(DFT_ERROR),
+    base64(DFT_BASE64),
+    mbar(DFT_MBAR),
+    bits(DFT_BITS) {
+        myComm = NULL;
+        myMeth = NULL;
+    }
+
     /**
      * Builds a GenSync object.
      * @return a GenSync object from the build parts that have been set.
      */
     GenSync build();
-    
+
     /**
      * Sets the synchronization role of the object.
      */
-    Builder& setRole(SyncRole theRole) { this->role=theRole; return *this; }
-    
+    Builder& setRole(SyncRole theRole) {
+        this->role = theRole;
+        return *this;
+    }
+
     /**
      * Sets the protocol to be used for synchronization.
      */
-    Builder& setProtocol(SyncProtocol theProto) { this->proto=theProto; return *this; }
-    
+    Builder& setProtocol(SyncProtocol theProto) {
+        this->proto = theProto;
+        return *this;
+    }
+
     /**
      * Sets the host to which to connect for synchronization in a socket-based sync.
      */
-    Builder& setHost(string theHost) {this->host=theHost; return *this; }
-    
+    Builder& setHost(string theHost) {
+        this->host = theHost;
+        return *this;
+    }
+
     /**
      * Sets the communication port for a socket-based sync object
      */
-    Builder& setPort(int thePort) {this->port=thePort; return *this; }
-    
+    Builder& setPort(int thePort) {
+        this->port = thePort;
+        return *this;
+    }
+
+    /**
+     * Sets the communication mode for the synchronization.
+     */
+    Builder& setComm(SyncComm theComm) {
+        this->comm = theComm;
+        return *this;
+    }
+
+    /**
+     * Sets an upper bound on the desired error probability for the synchronization.
+     */
+    Builder& setErr(double theErrorProb) {
+        this->errorProb = theErrorProb;
+        return *this;
+    }
+
+    /**
+     * Sets the string with which to synchronize for string-based communication.
+     */
+    Builder& setIoStr(string theIoStr) {
+        this->ioStr = theIoStr;
+        return *this;
+    }
+
+    /**
+     * Sets the maximum number of differences that the synchronization protocol is expected to synchronize.
+     */
+    Builder& setMbar(long theMbar) {
+        this->mbar = theMbar;
+        return *this;
+    }
+
+    /**
+     * Sets the number of bits to be used to represent one datum.
+     */
+    Builder& setBits(long theBits) {
+        this->bits = theBits;
+        return *this;
+    }
+
+    /**
+     * Destructor - clear up any possibly allocated internal variables
+     */
+    ~Builder() {
+        if (myComm != NULL)
+            delete myComm;
+        if (myMeth != NULL)
+            delete myMeth;
+    }
+
 private:
     SyncRole role; /** the role of the sync object */
     SyncProtocol proto; /** the sync protocol to implement */
+    SyncComm comm; /** communication means for the synchronization */
     string host; /** the host with which to connect for a socket-based sync */
     int port; /** connection port for a socket-based sync */
-    string io; /** the string with which to communicate input/output for string-based sync. */
-    double errorProb; /** probability of error. */
-    
+    double errorProb; /** an upper bound on the probability of error tolerance of the sync */
+    const bool base64; /** whether or not ioStr represents a base64 string */
+    string ioStr; /** the string with which to communicate input/output for string-based sync. */
+    long mbar; /** an upper estimate on the number of differences between synchronizing data multisets. */
+    long bits; /** the number of bits per element of data */
+
+    // ... bookkeeping variables
+    Communicant *myComm;
+    SyncMethod *myMeth;
+
     // DEFAULT constants
-    const SyncRole DFT_ROLE=SyncRole::UNDEFINED;
-    const SyncProtocol DFT_PROTO=SyncProtocol::UNDEFINED;
-    const string DFT_HOST="";
-    const string DFT_IO="";
-    const int DFT_PRT=-1;
-    
+    static const long UNDEFINED = -1;
+    static const SyncRole DFT_ROLE = SyncRole::UNDEFINED;
+    static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;
+    static const int DFT_PRT = 8001;
+    static const bool DFT_BASE64 = true;
+    static const long DFT_MBAR = UNDEFINED; // this parameter *must* be specified for sync to work
+    static const long DFT_BITS = 32;
+    // ... initialized in .cpp file due to C++ quirks
+    static const string DFT_HOST;
+    static const string DFT_IO;
+    static const double DFT_ERROR;
 };
 
 #endif

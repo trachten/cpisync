@@ -233,6 +233,38 @@ public:
      */
     ~GenSync();
     
+    /**
+     * Structures
+     */
+    
+    /* 
+ * Builder design for creating GenSync objects
+ *
+ * Created on June 22, 2017, 2:34 PM
+ */
+    class Builder;
+    
+/**
+ * Possible roles for a data synchronization agent.
+ */
+enum class SyncRole {
+    UNDEFINED, // not yet defined
+    Client,  // a client connecting to a server
+    Server,  // a server listening for a client connection
+};
+
+/**
+ * Protocols that are implemented for use in data synchronization
+ */
+enum class SyncProtocol {
+    UNDEFINED, // not yet defined
+    // CPISync and variants
+    CPISync,
+    InteractiveCPISync,
+    OneWayCPISync
+};
+    
+    
 private:
     // METHODS
     /**
@@ -253,6 +285,55 @@ private:
     
     /** The file to which to output any additions to the data structure. */
     ofstream *outFile;
+};
+
+
+class GenSync::Builder {
+public:
+    /** Constructor - makes all fields undefined. */
+    Builder() { role=DFT_ROLE; proto=DFT_PROTO, host=DFT_HOST port=DFT_PRT, io=DFT_IO; }
+    
+    /**
+     * Builds a GenSync object.
+     * @return a GenSync object from the build parts that have been set.
+     */
+    GenSync build();
+    
+    /**
+     * Sets the synchronization role of the object.
+     */
+    Builder& setRole(SyncRole theRole) { this->role=theRole; return *this; }
+    
+    /**
+     * Sets the protocol to be used for synchronization.
+     */
+    Builder& setProtocol(SyncProtocol theProto) { this->proto=theProto; return *this; }
+    
+    /**
+     * Sets the host to which to connect for synchronization in a socket-based sync.
+     */
+    Builder& setHost(string theHost) {this->host=theHost; return *this; }
+    
+    /**
+     * Sets the communication port for a socket-based sync object
+     */
+    Builder& setPort(int thePort) {this->port=thePort; return *this; }
+    
+private:
+    SyncRole role; /** the role of the sync object */
+    SyncProtocol proto; /** the sync protocol to implement */
+    string host; /** the host with which to connect for a socket-based sync */
+    int port; /** connection port for a socket-based sync */
+    string io; /** the string with which to communicate input/output for string-based sync. */
+    double errorProb; /** probability of error. */
+    
+    // DEFAULT constants
+    const SyncRole DFT_ROLE=SyncRole::UNDEFINED;
+    const SyncProtocol DFT_PROTO=SyncProtocol::UNDEFINED;
+    const string DFT_HOST="";
+    const string DFT_IO="";
+    const int DFT_PRT=-1;
+    
 };
 
 #endif

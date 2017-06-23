@@ -268,3 +268,16 @@ const long GenSync::getRecvBytes(int commIndex) const {
 const double GenSync::getSyncTime(int commIndex) const {
     return (clock() - myCommVec[commIndex]->getResetTime())/CLOCKS_PER_SEC;
 }
+
+// Builder methods
+
+GenSync GenSync::Builder::build() {
+    switch (proto) {
+        case SyncProtocol::UNDEFINED:
+            throw invalid_argument("Synchronization protocol not defined");
+            break;
+        case SyncProtocol::CPISync:
+            
+    }
+    
+}

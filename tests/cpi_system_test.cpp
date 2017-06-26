@@ -31,26 +31,45 @@
 
 bool SocketSync() {
     cout << "cpi_system_test test 1" << endl;
-    
-    // required data structures
-    vector<Communicant*> clist;
-    vector<SyncMethod*> mlist;
-    list<DataObject*> data;
-    GenSync *theSync;
-    string test="test";
-    
-    // populate data structures
-    clist.push_back(new CommSocket(9999,"localhost"));
-    mlist.push_back(new CPISync(5,20,3));
-    data.push_back(new DataObject(test));
-    theSync = new GenSync(clist, mlist, data);
-    
-    long bytes=0;
-    double CPUtime, totalTime;
-    forkHandleReport result = forkHandle(theSync,theSync);
-    
+
+    //    // required data structures
+    //    vector<Communicant*> clist;
+    //    vector<SyncMethod*> mlist;
+    //    list<DataObject*> data;
+    //    GenSync *theSync;
+    //    string test="test";
+    //
+    //    // populate data structures
+    //    clist.push_back(new CommSocket(9999,"localhost"));
+    //    mlist.push_back(new CPISync(5,20,3));
+    //    data.push_back(new DataObject(test));
+    //    theSync = new GenSync(clist, mlist, data);
+    //
+    //    long bytes=0;
+    //    double CPUtime, totalTime;
+    //    forkHandleReport result = forkHandle(theSync,theSync);
+    //
+    //    cout << "Bytes transmitted: " << result.bytes << "; CPU time: " << result.CPUtime << "; total time: " << result.totalTime << endl;
+    //    return result.success;
+
+
+    GenSync GenSyncServer = GenSync::Builder().
+            setMbar(5).
+            setBits(20).
+            setProtocol(GenSync::SyncProtocol::CPISync).
+            setComm(GenSync::SyncComm::socket).
+            build();
+    GenSync GenSyncClient = GenSync::Builder().
+            setMbar(5).
+            setBits(20).
+            setProtocol(GenSync::SyncProtocol::CPISync).
+            setComm(GenSync::SyncComm::socket).
+            build();
+    forkHandleReport result = forkHandle(&GenSyncServer, &GenSyncClient);
+
     cout << "Bytes transmitted: " << result.bytes << "; CPU time: " << result.CPUtime << "; total time: " << result.totalTime << endl;
     return result.success;
+
 }
 
 void test2() {

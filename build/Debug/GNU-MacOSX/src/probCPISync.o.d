@@ -14,7 +14,7 @@ build/Debug/GNU-MacOSX/src/probCPISync.o: src/probCPISync.cpp \
   /opt/local/include/NTL/FFT.h /opt/local/include/NTL/vec_long.h \
   /opt/local/include/NTL/ZZ_pXFactoring.h \
   /opt/local/include/NTL/pair_ZZ_pX_long.h /opt/local/include/NTL/pair.h \
-  include/Logger.h include/Exceptions.h include/probCPISync.h
+  include/Logger.h include/Exceptions.h include/ProbCPISync.h
 
 /opt/local/include/NTL/RR.h:
 
@@ -84,4 +84,4 @@ include/Logger.h:
 
 include/Exceptions.h:
 
-include/probCPISync.h:
+include/ProbCPISync.h:

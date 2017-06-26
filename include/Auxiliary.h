@@ -62,9 +62,11 @@ struct forkHandleReport {
 
 /**
  * Runs client1 (child process) and client2 (parent process), returning statistics for client2.
- * @return Synchronization statistics as reported by client2
+ * @param server The GenSync object that plays the role of server in the sync.
+ * @param client The GenSync object that plays the role of client in the sync.
+ * @return Synchronization statistics as reported by the server.
  */
-inline forkHandleReport forkHandle(GenSync* client1, GenSync* client2) {
+inline forkHandleReport forkHandle(GenSync* server, GenSync* client) {   
     int err = 1;
     int chld_state;
     int my_opt = 0;
@@ -76,7 +78,7 @@ inline forkHandleReport forkHandle(GenSync* client1, GenSync* client2) {
         if (pID == 0) {
             signal(SIGCHLD, SIG_IGN);
             //cout << "create a child process" << endl;
-            client1->listenSync(method_num);
+            client->listenSync(method_num);
             exit(0);
         } else if (pID < 0) {
             //handle_error("error to fork a child process");
@@ -84,10 +86,10 @@ inline forkHandleReport forkHandle(GenSync* client1, GenSync* client2) {
             throw err;
         } else {
             cout << "create a parent process" << endl;
-            client2->startSync(method_num);
+            server->startSync(method_num);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
-            result.CPUtime = client2->getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
-            result.bytes = client2->getXmitBytes(method_num) + client2->getRecvBytes(method_num);
+            result.CPUtime = server->getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            result.bytes = server->getXmitBytes(method_num) + server->getRecvBytes(method_num);
             waitpid(pID, &chld_state, my_opt);
             result.success=true;
         }

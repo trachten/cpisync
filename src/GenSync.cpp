@@ -282,8 +282,8 @@ GenSync GenSync::Builder::build() {
     // check pre-conditions
     if (proto == SyncProtocol::UNDEFINED)
         throw invalid_argument("The synchronization protocol has not been defined.");
-    if (role == SyncRole::UNDEFINED)
-        throw invalid_argument("No synchronization role (client, server, etc.) defined.");
+    if (comm == SyncComm::UNDEFINED)
+        throw invalid_argument("No communication protocol defined.");
 
     // setup
     switch (comm) {

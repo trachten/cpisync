@@ -225,7 +225,7 @@ public:
     /**
      * Displays some internal information about this method
      */
-    string info() {
+    virtual string getName() {
         return "I am a GenSync object";
     }
 
@@ -242,15 +242,6 @@ public:
      * Builder design for creating GenSync objects
      */
     class Builder;
-
-    /**
-     * Possible roles for a data synchronization agent.
-     */
-    enum class SyncRole {
-        UNDEFINED, // not yet defined
-        Client, // a client connecting to a server
-        Server, // a server listening for a client connection
-    };
 
     /**
      * Protocols that are implemented for use in data synchronization
@@ -291,12 +282,15 @@ private:
     ofstream *outFile;
 };
 
+
+/**
+ * A class for building GenSync objects in a more user-friendly manner.
+ */
 class GenSync::Builder {
 public:
 
     /** Constructor - makes all fields undefined. */
     Builder() :
-    role(DFT_ROLE),
     proto(DFT_PROTO),
     host(DFT_HOST),
     port(DFT_PRT),
@@ -314,14 +308,6 @@ public:
      * @return a GenSync object from the build parts that have been set.
      */
     GenSync build();
-
-    /**
-     * Sets the synchronization role of the object.
-     */
-    Builder& setRole(SyncRole theRole) {
-        this->role = theRole;
-        return *this;
-    }
 
     /**
      * Sets the protocol to be used for synchronization.
@@ -398,7 +384,6 @@ public:
     }
 
 private:
-    SyncRole role; /** the role of the sync object */
     SyncProtocol proto; /** the sync protocol to implement */
     SyncComm comm; /** communication means for the synchronization */
     string host; /** the host with which to connect for a socket-based sync */
@@ -415,7 +400,6 @@ private:
 
     // DEFAULT constants
     static const long UNDEFINED = -1;
-    static const SyncRole DFT_ROLE = SyncRole::UNDEFINED;
     static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;
     static const int DFT_PRT = 8001;
     static const bool DFT_BASE64 = true;

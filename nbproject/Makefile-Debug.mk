@@ -65,8 +65,8 @@ TESTOBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-std=c++11
-CXXFLAGS=-std=c++11
+CCFLAGS=
+CXXFLAGS=
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -171,7 +171,7 @@ ${TESTDIR}/tests/AuxiliaryTestRunner.o: tests/AuxiliaryTestRunner.cpp
 ${TESTDIR}/tests/cpi_system_test.o: tests/cpi_system_test.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -I. -I/opt/local/include -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/cpi_system_test.o tests/cpi_system_test.cpp
+	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -I. -I/opt/local/include -g -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/cpi_system_test.o tests/cpi_system_test.cpp
 
 
 ${OBJECTDIR}/src/CPISync_nomain.o: ${OBJECTDIR}/src/CPISync.o src/CPISync.cpp 

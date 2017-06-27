@@ -89,7 +89,6 @@
             <pElem>include</pElem>
             <pElem>/opt/local/include</pElem>
           </incDir>
-          <commandLine>-std=c++11</commandLine>
         </ccTool>
         <linkerTool>
           <linkerAddLib>
@@ -116,9 +115,11 @@
             <pElem>.</pElem>
             <pElem>/opt/local/include</pElem>
           </incDir>
+          <commandLine>-g</commandLine>
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f1</output>
+          <linkerKpic>false</linkerKpic>
         </linkerTool>
       </folder>
       <folder path="TestFiles/f2">

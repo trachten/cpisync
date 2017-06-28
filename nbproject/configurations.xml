@@ -104,6 +104,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <folder path="TestFiles">
+        <ccTool>
+          <commandLine>-std=c++11</commandLine>
+        </ccTool>
+      </folder>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>

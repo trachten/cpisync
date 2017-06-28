@@ -256,8 +256,10 @@ public:
 
     enum class SyncComm {
         UNDEFINED, // not yet defined
+        BEGIN,  // beginning of iterable options
         socket, // socket-based communication
-        string // communication recorded in a string
+        string, // communication recorded in a string
+        END     // end of iterable options
     };
 
 private:
@@ -377,10 +379,10 @@ public:
      * Destructor - clear up any possibly allocated internal variables
      */
     ~Builder() {
-        if (myComm != NULL)
-            delete myComm;
-        if (myMeth != NULL)
-            delete myMeth;
+        //if (myComm != NULL)
+        //    delete myComm;
+        //if (myMeth != NULL)
+        //    delete myMeth;
     }
 
 private:

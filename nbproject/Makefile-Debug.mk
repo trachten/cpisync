@@ -159,19 +159,19 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/cpi_system_test.o ${OBJECTFILES:%.o=%_
 ${TESTDIR}/tests/AuxiliaryTest.o: tests/AuxiliaryTest.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -std=c++11 `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/AuxiliaryTest.o tests/AuxiliaryTest.cpp
+	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -std=c++11 -std=c++11 `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/AuxiliaryTest.o tests/AuxiliaryTest.cpp
 
 
 ${TESTDIR}/tests/AuxiliaryTestRunner.o: tests/AuxiliaryTestRunner.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -std=c++11 `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/AuxiliaryTestRunner.o tests/AuxiliaryTestRunner.cpp
+	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -std=c++11 -std=c++11 `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/AuxiliaryTestRunner.o tests/AuxiliaryTestRunner.cpp
 
 
 ${TESTDIR}/tests/cpi_system_test.o: tests/cpi_system_test.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -I. -I/opt/local/include -g -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/cpi_system_test.o tests/cpi_system_test.cpp
+	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -I. -I/opt/local/include -std=c++11 -g -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/cpi_system_test.o tests/cpi_system_test.cpp
 
 
 ${OBJECTDIR}/src/CPISync_nomain.o: ${OBJECTDIR}/src/CPISync.o src/CPISync.cpp 

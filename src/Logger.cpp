@@ -4,8 +4,6 @@
 #include "Auxiliary.h"
 #include "Logger.h"
 
-bool Logger::enabled = false; // logging is disabled by default
-
 void Logger::error(string msg) {
     perror(msg.c_str());
 }

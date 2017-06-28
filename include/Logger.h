@@ -12,7 +12,7 @@
 #ifndef LOGLEVEL
 // default log level ... should be otherwise specified as a preprocessor directive.
 // Logger::enabled in Logger.cpp controls whether logger is enabled
-#define LOGLEVEL COMM_DETAILS
+#define LOGLEVEL METHOD
 #endif
 
 #include <string>
@@ -34,8 +34,7 @@ public:
     static const int COMM_DETAILS = 4; /** More detailed information related to communication logs. */
 
     // Variables
-    static const int logLevel = LOGLEVEL; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/
-    static bool enabled;    
+    static const int logLevel = LOGLEVEL; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/ 
     
     /**
      * Default constructor
@@ -48,7 +47,7 @@ public:
      * @param text The text to be logged.
      */
     inline static void gLog(int level, string text) {
-    if (level <= logLevel && enabled)
+    if (level <= logLevel)
         clog << string(level+1,' ') << "(level=" << level << ")  " << text << endl;
 }
 
@@ -64,8 +63,8 @@ public:
      */
     static void error_and_quit(string msg);
  
-    static void stopLogging() { enabled=false;}
-    static void startLogging() { enabled=true;}
+    static void stopLogging() { logLevel=NONE;}
+    static void startLogging(int newLogLevel) { logLevel=newLogLevel;}
     
  };
 #endif	/* LOGGER_H */

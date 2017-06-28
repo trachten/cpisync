@@ -28,48 +28,46 @@
  * Simple C++ Test Suite
  */
 
+// some helpers
 
+/**
+ * An awkward helper for iterating enums.
+ * @param curr The current enum value
+ * @return the next enum value
+ */
+GenSync::SyncComm operator++(GenSync::SyncComm curr) {
+    return (GenSync::SyncComm)(((int) (curr) + 1));
+}
+
+/**
+ * Tests whether synchronization through a socket (no data) works
+ */
 bool SocketSync() {
-    cout << "cpi_system_test test 1" << endl;
+    DataObject *test = new DataObject(string("test"));
 
-    //    // required data structures
-    //    vector<Communicant*> clist;
-    //    vector<SyncMethod*> mlist;
-    //    list<DataObject*> data;
-    //    GenSync *theSync;
-    //    string test="test";
-    //
-    //    // populate data structures
-    //    clist.push_back(new CommSocket(9999,"localhost"));
-    //    mlist.push_back(new CPISync(5,20,3));
-    //    data.push_back(new DataObject(test));
-    //    theSync = new GenSync(clist, mlist, data);
-    //
-    //    long bytes=0;
-    //    double CPUtime, totalTime;
-    //    forkHandleReport result = forkHandle(theSync,theSync);
-    //
-    //    cout << "Bytes transmitted: " << result.bytes << "; CPU time: " << result.CPUtime << "; total time: " << result.totalTime << endl;
-    //    return result.success;
-
+    for (auto theComm = ++GenSync::SyncComm::BEGIN;
+            theComm != GenSync::SyncComm::END;
+            ++theComm) {
+        cout << "... synchronizing with comm# " << (int) (theComm) << endl;
 
     GenSync GenSyncServer = GenSync::Builder().
             setMbar(5).
             setBits(20).
             setProtocol(GenSync::SyncProtocol::CPISync).
-            setComm(GenSync::SyncComm::socket).
+        setComm(theComm).
             build();
     GenSync GenSyncClient = GenSync::Builder().
             setMbar(5).
             setBits(20).
             setProtocol(GenSync::SyncProtocol::CPISync).
-            setComm(GenSync::SyncComm::socket).
+            setComm(theComm).
             build();
-    forkHandleReport result = forkHandle(&GenSyncServer, &GenSyncClient);
+        forkHandleReport result = forkHandle(GenSyncServer, GenSyncClient);
+        if (!result.success)
+            return false;
+    }
 
-    cout << "Bytes transmitted: " << result.bytes << "; CPU time: " << result.CPUtime << "; total time: " << result.totalTime << endl;
-    return result.success;
-
+    return true;
 }
 
 void test2() {
@@ -78,7 +76,7 @@ void test2() {
 }
 
 int main(int argc, char** argv) {
-    cout << "%SUITE_STARTING% cpi_system_test" << endl;
+    cout << "%SUITE_STARTING% cpi_system_tests - no data syncs" << endl;
     cout << "%SUITE_STARTED%" << endl;
 
     cout << "%TEST_STARTED% test1 (cpi_system_test)" << endl;

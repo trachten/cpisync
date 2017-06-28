@@ -117,17 +117,16 @@ bool GenSync::listenSync(int method_num) {
 }
 
 // request connection, send data and get the result
-
 bool GenSync::startSync(int method_num) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::startSync");
-    SyncMethod* tmpSync;
     // find the right syncAgent	
-    vector<SyncMethod*>::iterator syncAgent = mySyncVec.begin();
-    advance(syncAgent, method_num);
+    vector<SyncMethod*>::iterator syncAgentIt = mySyncVec.begin();
+    advance(syncAgentIt, method_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
     vector<Communicant*>::iterator itComm;
     list<DataObject*> selfMinusOther, otherMinusSelf;
+
     for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
         // initialize variables
         selfMinusOther.clear();
@@ -135,7 +134,7 @@ bool GenSync::startSync(int method_num) {
 
         // do the sync
         try {
-            if (!(*syncAgent)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
+            if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
                 Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
                 syncSuccess = false;
             }
@@ -276,7 +275,7 @@ const double GenSync::getSyncTime(int commIndex) const {
 
 GenSync GenSync::Builder::build() {
     // variables of possible use
-    vector<Communicant *> theComms;
+    vector<Communicant*> theComms;
     vector<SyncMethod*> theMeths;
 
     // check pre-conditions

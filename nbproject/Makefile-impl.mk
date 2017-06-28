@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=CPISyncLib
+PROJECTNAME=cpisynclib
 
 # Active Configuration
 DEFAULTCONF=Debug

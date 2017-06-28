@@ -305,6 +305,7 @@ GenSync GenSync::Builder::build() {
             if (mbar == Builder::UNDEFINED)
                 throw invalid_argument("Must define <mbar> explicitly for this sync.");
             myMeth = new ProbCPISync(mbar, bits, errorProb);
+            break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }

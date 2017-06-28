@@ -26,9 +26,9 @@ void AuxiliaryTest::tearDown() {
 }
 
 void AuxiliaryTest::testStrToVecToStr() {
-    const string data="This is a test!  Itis ONLY a test.";
+    const string data="This is a test!  It is ONLY a test.";
     const string data2=VecToStr(StrToVec(data));
-        CPPUNIT_ASSERT(data==data2);
+    CPPUNIT_ASSERT(data==data2);
 }
 
 //void AuxiliaryTest::testStrTo() {

@@ -35,8 +35,10 @@
  * @param curr The current enum value
  * @return the next enum value
  */
-GenSync::SyncComm operator++(GenSync::SyncComm curr) {
-    return (GenSync::SyncComm)(((int) (curr) + 1));
+template <typename T>
+T &operator++(T& curr) {
+    curr = (T)(((int) (curr) + 1));
+    return curr;
 }
 
 /**
@@ -45,22 +47,22 @@ GenSync::SyncComm operator++(GenSync::SyncComm curr) {
 bool SocketSync() {
     DataObject *test = new DataObject(string("test"));
 
-    for (auto theComm = ++GenSync::SyncComm::BEGIN;
-            theComm != GenSync::SyncComm::END;
-            ++theComm) {
-        cout << "... synchronizing with comm# " << (int) (theComm) << endl;
+    for (auto theProto = GenSync::SyncProtocol::BEGIN;
+            theProto != GenSync::SyncProtocol::END;
+            ++theProto) {
+        cout << "... synchronizing with sync protocol " << (int) (theProto) << endl;
 
     GenSync GenSyncServer = GenSync::Builder().
             setMbar(5).
             setBits(20).
-            setProtocol(GenSync::SyncProtocol::CPISync).
-        setComm(theComm).
+            setProtocol(theProto).
+        setComm(GenSync::SyncComm::socket).
             build();
     GenSync GenSyncClient = GenSync::Builder().
             setMbar(5).
             setBits(20).
-            setProtocol(GenSync::SyncProtocol::CPISync).
-            setComm(theComm).
+            setProtocol(theProto).
+            setComm(GenSync::SyncComm::socket).
             build();
         forkHandleReport result = forkHandle(GenSyncServer, GenSyncClient);
         if (!result.success)

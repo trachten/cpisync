@@ -248,18 +248,20 @@ public:
      */
     enum class SyncProtocol {
         UNDEFINED, // not yet defined
+        BEGIN, // beginning of iterable option
         // CPISync and variants
-        CPISync,
+        CPISync= BEGIN,
         InteractiveCPISync,
-        OneWayCPISync
+        OneWayCPISync,
+        END     // one after the end of iterable options
     };
 
     enum class SyncComm {
         UNDEFINED, // not yet defined
-        BEGIN,  // beginning of iterable options
-        socket, // socket-based communication
+        BEGIN, // beginning of iterable option
+        socket=BEGIN, //socket-based communication
         string, // communication recorded in a string
-        END     // end of iterable options
+        END     // one after the end of iterable options
     };
 
 private:

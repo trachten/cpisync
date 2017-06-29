@@ -9,10 +9,10 @@
 #ifndef LOGGER_H
 #define	LOGGER_H
 
-#ifndef LOGLEVEL
+#ifndef DEFAULT_LOGLEVEL
 // default log level ... should be otherwise specified as a preprocessor directive.
 // Logger::enabled in Logger.cpp controls whether logger is enabled
-#define LOGLEVEL METHOD
+#define DEFAULT_LOGLEVEL METHOD
 #endif
 
 #include <string>
@@ -27,19 +27,21 @@ class Logger {
 public:
         // Constants
     // ... logging levels
-    static const int NONE = 0;    /** No logging (the default). */
-    static const int METHOD = 1; /** Logging information within method calls. */
-    static const int METHOD_DETAILS = 2; /** More detailed information related to method calls. */
-    static const int COMM = 3; /** Low-level communications logs. */
-    static const int COMM_DETAILS = 4; /** More detailed information related to communication logs. */
-
+    enum LOG_TYPES {
+    NONE = 0,    /** No logging (the default). */
+    METHOD = 1, /** Logging information within method calls. */
+    METHOD_DETAILS = 2, /** More detailed information related to method calls. */
+    COMM = 3, /** Low-level communications logs. */
+    COMM_DETAILS = 4 /** More detailed information related to communication logs. */
+    };
+    
     // Variables
-    static const int logLevel = LOGLEVEL; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/ 
+    static const LOG_TYPES logLevel = DEFAULT_LOGLEVEL; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/ 
     
     /**
      * Default constructor
      */
-    Logger();
+    Logger() {} /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/ 
     
     /**
      * Outputs a text string to the log with a given logging level.
@@ -62,9 +64,5 @@ public:
      * @param msg The error message.
      */
     static void error_and_quit(string msg);
- 
-    static void stopLogging() { logLevel=NONE;}
-    static void startLogging(int newLogLevel) { logLevel=newLogLevel;}
-    
  };
 #endif	/* LOGGER_H */

@@ -12,12 +12,13 @@
 #ifndef DEFAULT_LOGLEVEL
 // default log level ... should be otherwise specified as a preprocessor directive.
 // Logger::enabled in Logger.cpp controls whether logger is enabled
-#define DEFAULT_LOGLEVEL METHOD
+#define DEFAULT_LOGLEVEL NONE
 #endif
 
 #include <string>
 #include <cstdio>
 #include <iostream>
+#include <unistd.h>
 
 /**
  * A simplified logging class.
@@ -49,8 +50,9 @@ public:
      * @param text The text to be logged.
      */
     inline static void gLog(int level, string text) {
-    if (level <= logLevel)
-        clog << string(level+1,' ') << "(level=" << level << ")  " << text << endl;
+    if (level <= logLevel) {
+        clog << (::getpid()%2==1?">":"") << string(level+1,' ') << "(level=" << level << ")  " << text << endl;
+    }
 }
 
     /**

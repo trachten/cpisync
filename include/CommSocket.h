@@ -92,5 +92,6 @@ private:
 
     // CONSTANTS
     const static int MAX_CONNECTS = 100; /** Maximum number of connection attempts before giving up. */
+    const static int DFT_SOCKET_WAIT_MS = 100; /** Default amount of milliseconds to wait before retrying a socket connection. */
 };
 #endif

@@ -176,7 +176,7 @@ void InterCPISync::SendSyncParam(Communicant* commSync, bool oneWay /* = false *
 }
 
 bool InterCPISync::SyncClient(Communicant* commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
-    Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncCLient");
+    Logger::gLog(Logger::METHOD, "Entering InterCPISync::SyncClient");
   // 0. Set up communicants
     if(!useExisting)
   commSync->commConnect();

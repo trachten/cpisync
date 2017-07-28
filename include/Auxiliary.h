@@ -24,6 +24,7 @@
 #include "GenSync.h"
 #include "SyncMethod.h"
 #include "ConstantsAndTypes.h"
+#include "Logger.h"
 
 // some standard names
 using namespace NTL;
@@ -77,7 +78,7 @@ inline forkHandleReport forkHandle(GenSync server, GenSync client) {
         int method_num = 0;
         if (pID == 0) {
             signal(SIGCHLD, SIG_IGN);
-            cout << "create a child process" << endl;
+            Logger::gLog(Logger::COMM,"created a server process");
             client.listenSync(method_num);
             exit(0);
         } else if (pID < 0) {
@@ -85,7 +86,7 @@ inline forkHandleReport forkHandle(GenSync server, GenSync client) {
             cout << "throw out err = " << err << endl;
             throw err;
         } else {
-            cout << "create a parent process" << endl;
+            Logger::gLog(Logger::COMM,"created a client process");
             server.startSync(method_num);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
             result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent

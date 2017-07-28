@@ -14,6 +14,8 @@
 #include "CommSocket.h"
 #include "CommString.h"
 #include "ProbCPISync.h"
+#include "InterCPISync.h"
+#include "CPISync_HalfRound.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
@@ -299,11 +301,22 @@ GenSync GenSync::Builder::build() {
     }
     theComms.push_back(myComm);
 
+    invalid_argument noMbar("Must define <mbar> explicitly for this sync.");
     switch (proto) {
         case SyncProtocol::CPISync:
             if (mbar == Builder::UNDEFINED)
-                throw invalid_argument("Must define <mbar> explicitly for this sync.");
+                throw noMbar;
             myMeth = new ProbCPISync(mbar, bits, errorProb);
+            break;
+        case SyncProtocol::InteractiveCPISync:
+            if (mbar == Builder::UNDEFINED)
+                throw noMbar;
+            myMeth = new InterCPISync(mbar, bits, errorProb, numParts);
+            break;
+        case SyncProtocol::OneWayCPISync:
+            if (mbar == Builder::UNDEFINED)
+                throw noMbar;
+            myMeth = new CPISync_HalfRound(mbar, bits, errorProb);
             break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");

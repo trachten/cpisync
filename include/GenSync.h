@@ -302,7 +302,8 @@ public:
     errorProb(DFT_ERROR),
     base64(DFT_BASE64),
     mbar(DFT_MBAR),
-    bits(DFT_BITS) {
+    bits(DFT_BITS),
+    numParts(DFT_PARTS) {
         myComm = NULL;
         myMeth = NULL;
     }
@@ -378,6 +379,14 @@ public:
     }
 
     /**
+     * Sets the number of partitions to use in recursive calls for interactive protocols like InteractiveCPISync
+     */
+    Builder& setNumPartitions(int theNumParts) {
+        this->numParts = theNumParts;
+        return *this;
+    }
+    
+    /**
      * Destructor - clear up any possibly allocated internal variables
      */
     ~Builder() {
@@ -397,6 +406,7 @@ private:
     string ioStr; /** the string with which to communicate input/output for string-based sync. */
     long mbar; /** an upper estimate on the number of differences between synchronizing data multisets. */
     long bits; /** the number of bits per element of data */
+    int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
 
     // ... bookkeeping variables
     Communicant *myComm;
@@ -409,6 +419,7 @@ private:
     static const bool DFT_BASE64 = true;
     static const long DFT_MBAR = UNDEFINED; // this parameter *must* be specified for sync to work
     static const long DFT_BITS = 32;
+    static const int DFT_PARTS = 2;
     // ... initialized in .cpp file due to C++ quirks
     static const string DFT_HOST;
     static const string DFT_IO;

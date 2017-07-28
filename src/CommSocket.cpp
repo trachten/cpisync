@@ -4,6 +4,7 @@
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <thread>
 
 #include "Auxiliary.h"
 #include "CommSocket.h"
@@ -124,6 +125,7 @@ void CommSocket::commConnect() {
     int connerror, count = 0;
     while ((connerror = connect(my_fd, (struct sockaddr *) &otherAddr, sizeof (struct sockaddr)))
             == -1) { // keep trying to connect until the connection is made
+        Logger::gLog(Logger::COMM, "Connecting to server " + toStr(count));
         count++; // keep track of the number of connection attempts
         if (count > MAX_CONNECTS)
             Logger::error_and_quit("Could not establish a connection to " + remoteHost + ":" + toStr(remotePort));
@@ -142,7 +144,8 @@ void CommSocket::commConnect() {
         my_fd = sockDesc;
 
         // wait a little before retrying to connect
-        sleep(100);
+        int reconnectMS = DFT_SOCKET_WAIT_MS;
+        std::this_thread::sleep_for(std::chrono::milliseconds(reconnectMS));
     }
 
     // Initialization data

@@ -24,6 +24,7 @@
       <itemPath>include/GenSync.h</itemPath>
       <itemPath>include/InterCPISync.h</itemPath>
       <itemPath>include/Logger.h</itemPath>
+      <itemPath>include/PrioCPISync.h</itemPath>
       <itemPath>include/SyncMethod.h</itemPath>
       <itemPath>include/UID.h</itemPath>
       <itemPath>include/probCPISync.h</itemPath>
@@ -184,6 +185,8 @@
       </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/PrioCPISync.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/SyncMethod.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/UID.h" ex="false" tool="3" flavor2="0">
@@ -329,6 +332,8 @@
       <item path="include/InterCPISync.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrioCPISync.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SyncMethod.h" ex="false" tool="3" flavor2="0">
       </item>

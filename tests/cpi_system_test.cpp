@@ -50,7 +50,7 @@ bool SocketSync() {
     for (auto theProto = GenSync::SyncProtocol::BEGIN;
             theProto != GenSync::SyncProtocol::END;
             ++theProto) {
-        cout << "... synchronizing with sync protocol " << (int) (theProto) << endl;
+        Logger::gLog(Logger::METHOD, "... synchronizing with sync protocol " + toStr((int) theProto));
 
     GenSync GenSyncServer = GenSync::Builder().
             setMbar(5).

@@ -22,8 +22,10 @@
       <itemPath>include/Exceptions.h</itemPath>
       <itemPath>include/GenLog.h</itemPath>
       <itemPath>include/GenSync.h</itemPath>
+      <itemPath>include/IBLT.h</itemPath>
       <itemPath>include/InterCPISync.h</itemPath>
       <itemPath>include/Logger.h</itemPath>
+      <itemPath>include/PrioCPISync.h</itemPath>
       <itemPath>include/SyncMethod.h</itemPath>
       <itemPath>include/UID.h</itemPath>
       <itemPath>include/probCPISync.h</itemPath>
@@ -41,6 +43,7 @@
       <itemPath>src/Communicant.cpp</itemPath>
       <itemPath>src/DataObject.cpp</itemPath>
       <itemPath>src/GenSync.cpp</itemPath>
+      <itemPath>src/IBLT.cpp</itemPath>
       <itemPath>src/InterCPISync.cpp</itemPath>
       <itemPath>src/Logger.cpp</itemPath>
       <itemPath>src/SyncMethod.cpp</itemPath>
@@ -180,9 +183,13 @@
       </item>
       <item path="include/GenSync.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/IBLT.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/InterCPISync.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrioCPISync.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SyncMethod.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -201,6 +208,8 @@
       <item path="src/DataObject.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/GenSync.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/IBLT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/InterCPISync.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -326,9 +335,13 @@
       </item>
       <item path="include/GenSync.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/IBLT.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/InterCPISync.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/PrioCPISync.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SyncMethod.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -347,6 +360,8 @@
       <item path="src/DataObject.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/GenSync.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/IBLT.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/InterCPISync.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-MacOSX
-CND_DLIB_EXT=dylib
+CND_PLATFORM=GNU-Linux
+CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -41,6 +41,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/Communicant.o \
 	${OBJECTDIR}/src/DataObject.o \
 	${OBJECTDIR}/src/GenSync.o \
+	${OBJECTDIR}/src/IBLT.o \
 	${OBJECTDIR}/src/InterCPISync.o \
 	${OBJECTDIR}/src/Logger.o \
 	${OBJECTDIR}/src/SyncMethod.o \
@@ -79,11 +80,11 @@ LDLIBSOPTIONS=-L/opt/local/lib
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisynclib.${CND_DLIB_EXT}
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisync.${CND_DLIB_EXT}
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisynclib.${CND_DLIB_EXT}: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisync.${CND_DLIB_EXT}: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisynclib.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -dynamiclib -install_name libcpisynclib.${CND_DLIB_EXT} -fPIC
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisync.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -shared -fPIC
 
 ${OBJECTDIR}/src/CPISync.o: src/CPISync.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -114,6 +115,11 @@ ${OBJECTDIR}/src/GenSync.o: src/GenSync.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -I/opt/local/include -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/GenSync.o src/GenSync.cpp
+
+${OBJECTDIR}/src/IBLT.o: src/IBLT.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -I/opt/local/include -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/IBLT.o src/IBLT.cpp
 
 ${OBJECTDIR}/src/InterCPISync.o: src/InterCPISync.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -250,6 +256,19 @@ ${OBJECTDIR}/src/GenSync_nomain.o: ${OBJECTDIR}/src/GenSync.o src/GenSync.cpp
 	    $(COMPILE.cc) -O2 -I/opt/local/include -fPIC  -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/GenSync_nomain.o src/GenSync.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/src/GenSync.o ${OBJECTDIR}/src/GenSync_nomain.o;\
+	fi
+
+${OBJECTDIR}/src/IBLT_nomain.o: ${OBJECTDIR}/src/IBLT.o src/IBLT.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/IBLT.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -I/opt/local/include -fPIC  -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/IBLT_nomain.o src/IBLT.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/src/IBLT.o ${OBJECTDIR}/src/IBLT_nomain.o;\
 	fi
 
 ${OBJECTDIR}/src/InterCPISync_nomain.o: ${OBJECTDIR}/src/InterCPISync.o src/InterCPISync.cpp 

@@ -12,7 +12,7 @@
 #ifndef DEFAULT_LOGLEVEL
 // default log level ... should be otherwise specified as a preprocessor directive.
 // Logger::enabled in Logger.cpp controls whether logger is enabled
-#define DEFAULT_LOGLEVEL NONE
+#define DEFAULT_LOGLEVEL COMM
 #endif
 
 #include <string>

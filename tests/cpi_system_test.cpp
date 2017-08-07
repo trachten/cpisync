@@ -45,7 +45,11 @@ T &operator++(T& curr) {
  * Tests whether synchronization through a socket (no data) works
  */
 bool SocketSync() {
-    DataObject *test = new DataObject(string("test"));
+    DataObject *test1 = new DataObject(string("test1"));
+    DataObject *test2 = new DataObject(string("test2"));
+    list<DataObject*> dataList1, dataList2;
+    dataList1.push_back(test1);
+    dataList2.push_back(test2);
 
     for (auto theProto = GenSync::SyncProtocol::BEGIN;
             theProto != GenSync::SyncProtocol::END;
@@ -56,13 +60,15 @@ bool SocketSync() {
             setMbar(5).
             setBits(20).
             setProtocol(theProto).
-        setComm(GenSync::SyncComm::socket).
+                setComm(GenSync::SyncComm::socket).
+                setData(dataList1).
             build();
     GenSync GenSyncClient = GenSync::Builder().
             setMbar(5).
             setBits(20).
             setProtocol(theProto).
-            setComm(GenSync::SyncComm::socket).
+                setComm(GenSync::SyncComm::socket).
+                setData(dataList2).
             build();
         forkHandleReport result = forkHandle(GenSyncServer, GenSyncClient);
         if (!result.success)

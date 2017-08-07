@@ -306,6 +306,7 @@ public:
     numParts(DFT_PARTS) {
         myComm = NULL;
         myMeth = NULL;
+        myData = NULL;
     }
 
     /**
@@ -386,6 +387,11 @@ public:
         return *this;
     }
     
+    Builder& setData(list<DataObject*> &theData) {
+        this->myData = &theData;
+        return *this;
+    }
+    
     /**
      * Destructor - clear up any possibly allocated internal variables
      */
@@ -411,6 +417,7 @@ private:
     // ... bookkeeping variables
     Communicant *myComm;
     SyncMethod *myMeth;
+    list<DataObject*> *myData;
 
     // DEFAULT constants
     static const long UNDEFINED = -1;

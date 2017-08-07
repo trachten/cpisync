@@ -662,7 +662,7 @@ ZZ_p CPISync::hash(const DataObject * datum) const {
             + " whose encoding (" + toStr(num) + ") is larger than  (" + toStr(DATA_MAX) + " - max field element) "
             + " when using nohash synchronization.  Please increase modulus to at least " + toStr(ceil(log(DATA_MAX + redundant_k) / log(2))) + " bit elements.");
 
-    return to_ZZ_p(num % (DATA_MAX)); // reduce to bit_num bits and make into a ZZ_p
+    return to_ZZ_p((num % fieldSize) % (DATA_MAX)); // reduce to bitNum bits and make into a ZZ_p
 }
 
 ZZ_p CPISync::hash2(const long num) const {
@@ -685,6 +685,7 @@ bool CPISync::addElem(DataObject * datum) {
     do {
         if (hashQ) {
             hashID = makeData(hash(datum) + hash2(count++)); // a double hash to allow repeated elements
+            Logger::gLog(Logger::METHOD_DETAILS, "... hash elements " + toStr(hash(datum)) + " and = " + toStr(hash2(count - 1)));
             hashNum = rep(hashID);
         } else { // noHash is enabled
             hashID = hash(datum); // a simpler, reversable hash

@@ -323,7 +323,10 @@ GenSync GenSync::Builder::build() {
     }
     theMeths.push_back(myMeth);
 
-    return GenSync(theComms, theMeths);
+    if (myData == NULL)
+        throw invalid_argument("Must provide data explicitly.");
+
+    return GenSync(theComms, theMeths, *myData);
 }
 
 // static consts

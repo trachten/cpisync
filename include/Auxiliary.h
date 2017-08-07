@@ -75,7 +75,7 @@ inline forkHandleReport forkHandle(GenSync server, GenSync client) {
     clock_t start = clock();
     try {
         pid_t pID = fork();
-        int method_num = 0;
+        const int method_num = 0; // For now, only one method_num is being used - id 0
         if (pID == 0) {
             signal(SIGCHLD, SIG_IGN);
             Logger::gLog(Logger::COMM,"created a server process");

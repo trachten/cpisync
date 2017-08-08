@@ -40,56 +40,64 @@ T &operator++(T& curr) {
     curr = (T)(((int) (curr) + 1));
     return curr;
 }
-
 /**
- * Tests whether synchronization through a socket (no data) works
+ *  Tests whether synchronization through a socket (no data) works
+ * @param theProto The sync protocol to test
+ * @param mBar The assumed maximum number of differences between the syncing hosts.
+ * @param Bits The number of bits per datum.
+ * @param dataList1 A list of data on the first syncing host.
+ * @param dataList2 A list of data on the second syncing host.
+ * @return true iff the synchornization was successful *and* produced the correct result.
  */
-bool SocketSync() {
-    DataObject *test1 = new DataObject(string("test1"));
-    DataObject *test2 = new DataObject(string("test2"));
+bool SocketSync(GenSync::SyncProtocol theProto, int mBar, int Bits, list<DataObject*> dataList1, list<DataObject*> dataList2) {
+    Logger::gLog(Logger::METHOD, "... synchronizing with sync protocol " + toStr((int) theProto));
+
+    GenSync GenSyncServer = GenSync::Builder().
+            setMbar(mBar).
+            setBits(Bits).
+            setProtocol(theProto).
+            setComm(GenSync::SyncComm::socket).
+            setData(dataList1).
+            build();
+    GenSync GenSyncClient = GenSync::Builder().
+            setMbar(mBar).
+            setBits(Bits).
+            setProtocol(theProto).
+            setComm(GenSync::SyncComm::socket).
+            setData(dataList2).
+            build();
+    forkHandleReport result = forkHandle(GenSyncServer, GenSyncClient);
+    if (!result.success)
+        return false;
+    return true;
+}
+
+void testBasicProtocols() {
+    cout << "cpi_system_test testBasicProtocols" << endl;
+
+    // setup
+    DataObject *test1 = new DataObject(string("t1"));
+    DataObject *test2 = new DataObject(string("t2"));
     list<DataObject*> dataList1, dataList2;
     dataList1.push_back(test1);
     dataList2.push_back(test2);
 
     for (auto theProto = GenSync::SyncProtocol::BEGIN;
             theProto != GenSync::SyncProtocol::END;
-            ++theProto) {
-        Logger::gLog(Logger::METHOD, "... synchronizing with sync protocol " + toStr((int) theProto));
-
-    GenSync GenSyncServer = GenSync::Builder().
-            setMbar(5).
-            setBits(20).
-            setProtocol(theProto).
-                setComm(GenSync::SyncComm::socket).
-                setData(dataList1).
-            build();
-    GenSync GenSyncClient = GenSync::Builder().
-            setMbar(5).
-            setBits(20).
-            setProtocol(theProto).
-                setComm(GenSync::SyncComm::socket).
-                setData(dataList2).
-            build();
-        forkHandleReport result = forkHandle(GenSyncServer, GenSyncClient);
-        if (!result.success)
-            return false;
-    }
-
-    return true;
-}
-
-void test2() {
-    cout << "cpi_system_test test 2" << endl;
-    cout << "%TEST_FAILED% time=0 testname=test2 (cpi_system_test) message=error message sample" << endl;
+            ++theProto)
+        if (!SocketSync(theProto, 5, 25, dataList1, dataList2)) {
+            cout << "%TEST_FAILED% time=0 testname=testBasicProtocols (cpi_system_test) message=Synchronization Failed" << endl;
+            return;
+        }
 }
 
 int main(int argc, char** argv) {
     cout << "%SUITE_STARTING% cpi_system_tests - no data syncs" << endl;
     cout << "%SUITE_STARTED%" << endl;
 
-    cout << "%TEST_STARTED% test1 (cpi_system_test)" << endl;
-    assert(SocketSync()==true);
-    cout << "%TEST_FINISHED% time=0 test1 (cpi_system_test)" << endl;
+    cout << "%TEST_STARTED% testBasicProtocols (cpi_system_test)" << endl;
+    testBasicProtocols();
+    cout << "%TEST_FINISHED% time=0 testBasicProtocols (cpi_system_test)" << endl;
 
 //    cout << "%TEST_STARTED% test2 (cpi_system_test)\n" << endl;
 //    test2();

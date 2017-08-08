@@ -387,7 +387,7 @@ public:
         return *this;
     }
     
-    Builder& setData(list<DataObject*> &theData) {
+    Builder& setData(list<DataObject*> theData) {
         this->myData = &theData;
         return *this;
     }

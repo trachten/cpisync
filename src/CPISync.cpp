@@ -660,7 +660,7 @@ ZZ_p CPISync::hash(const DataObject * datum) const {
     if (!hashQ && (num >= DATA_MAX))
         Logger::error_and_quit("Cannot add element (" + datum->to_string() + ") "
             + " whose encoding (" + toStr(num) + ") is larger than  (" + toStr(DATA_MAX) + " - max field element) "
-            + " when using nohash synchronization.  Please increase modulus to at least " + toStr(ceil(log(DATA_MAX + redundant_k) / log(2))) + " bit elements.");
+            + " when using nohash synchronization.  Please increase modulus to at least " + toStr(ceil(log(num) / log(2))) + " bit elements.");
 
     return to_ZZ_p((num % fieldSize) % (DATA_MAX)); // reduce to bitNum bits and make into a ZZ_p
 }

@@ -672,7 +672,7 @@ ZZ_p CPISync::hash2(const long num) const {
 // update metadata when add an element
 
 bool CPISync::addElem(DataObject * datum) {
-    Logger::gLog(Logger::METHOD,"Entering CPISync::addElem");
+    Logger::gLog(Logger::METHOD, "Entering CPISync::addElem with " + toStr(*datum));
     int ii;
     
     // call the parent class to take care of bookkeeping

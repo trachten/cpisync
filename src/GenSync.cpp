@@ -159,7 +159,7 @@ bool GenSync::startSync(int method_num) {
 // add element
 
 void GenSync::addElem(DataObject* newDatum) {
-    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem(DataObject*)");
     // store locally
     myData.push_back(newDatum);
 
@@ -177,7 +177,7 @@ void GenSync::addElem(DataObject* newDatum) {
 
 template <typename T>
 void GenSync::addElem(T* newDatum) {
-    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem with " + toStr(newDatum));
     DataObject *newDO = new DataObject(*newDatum);
     addElem(newDO);
     delete newDO;

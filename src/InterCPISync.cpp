@@ -194,8 +194,8 @@ bool InterCPISync::SyncClient(Communicant* commSync, list<DataObject*>& selfMinu
           && SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode,ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges 
   if (result) { // Sync succeeded
     Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
-            + "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
-            + "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
+                + "   self - other =  " + printList(selfMinusOther) + "\n"
+                + "   other - self =  " + printList(otherMinusSelf) + "\n"
             + "\n");
   } else
     Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
@@ -301,8 +301,8 @@ bool InterCPISync::SyncServer(Communicant* commSync, list<DataObject*>& selfMinu
           && SyncServer(commSync, selfMinusOther, otherMinusSelf, parentNode,ZZ_ZERO, DATA_MAX);
   if (result) { // Sync succeeded
     Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
-            + "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
-            + "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
+                + "   self - other =  " + printList(selfMinusOther) + "\n"
+                + "   other - self =  " + printList(otherMinusSelf) + "\n"
             + "\n");
   } else
     Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");

@@ -21,6 +21,7 @@
 #include <set>
 #include <signal.h>
 #include <sys/wait.h>
+#include <type_traits>
 #include "GenSync.h"
 #include "SyncMethod.h"
 #include "ConstantsAndTypes.h"
@@ -58,6 +59,8 @@ struct forkHandleReport {
     long bytes;       // the number of bytes communicated
     double CPUtime;   // the amount of CPU time used
     double totalTime; // total time used
+    list<DataObject *> serverElements; // the resulting elements in the server's data structure
+    list<DataObject *> clientElements; // the resulting elements in the server's data structure
     bool success;     // true iff the sync completed successfully
 };
 
@@ -89,8 +92,10 @@ inline forkHandleReport forkHandle(GenSync server, GenSync client) {
             Logger::gLog(Logger::COMM,"created a client process");
             server.startSync(method_num);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
-            result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            result.CPUtime = server.getSyncTime(method_num); /// assuming <method_num>'th communicator corresponds to <method_num>'th syncagent
             result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
+            result.serverElements = server.dumpElements();
+            result.clientElements = client.dumpElements();
             waitpid(pID, &chld_state, my_opt);
             result.success=true;
         }
@@ -164,6 +169,13 @@ inline string toStr(T item) {
     return tmp.str();
 }
 
+template <class T>
+inline string toStr(T* item) {
+    ostringstream tmp;
+    tmp << "&" << (*item);
+    return tmp.str();
+}
+
 /**
  * Reinterprets a ustring into a string
  */
@@ -172,17 +184,18 @@ inline string ustrToStr(ustring ustr) {
 }
 
 /**
- * Provides a string representing a human-readable version of a list of pointers
+ * Provides a string representing a human-readable version of a list
  */
 template <class T>
-string printListOfPtrs(list<T *> theList) {
+string printList(list<T> theList) {
     string result = "[";
-    typename list<T *>::const_iterator iter;
+    typename list<T>::const_iterator iter;
     for (iter = theList.begin(); iter != theList.end(); iter++)
-        result += toStr(**iter) + " ";
+        result += toStr(*iter) + " ";
     result += "]";
     return result;
 }
+
 
 /**
  * Writes the elements of an array as ints to a return string
@@ -211,17 +224,18 @@ inline string printMap(map<S, T> theMap) {
 // MULTI-SET OPERATIONS
 
 /**
- * Prints the contents of a multiset of strings into a string in a human-readable fashion
+ * Prints the contents of a multiset of printables into a string in a human-readable fashion
  * @param container The multiset whose contents should be shown in the string
  * @return a string representing the contents of the container
  */
-inline string multisetPrint(multiset<string> container) {
+template <class T>
+inline string multisetPrint(multiset<T> container) {
     string result = "";
-    multiset<string>::const_iterator ii;
+    typename multiset<T>::const_iterator ii;
     for (ii = container.begin();
             ii != container.end();
             ii++)
-        result += "[" + *ii + "] ";
+        result += "[" + toStr(*ii) + "] ";
     //result += "["+ writeInts(ii->data(),ii->length()) + "] ";
     return result;
 }
@@ -290,6 +304,35 @@ multiset<T> multisetSubset(const multiset<T> first, const int size) {
         result.insert(*it);
     return result;
 }
+
+/**
+ * @return iff every item in {@param first} is also in {@param second}
+ */
+template <class T>
+bool multisetSubsetQ(const multiset<T> first, const multiset<T> second) {
+    typename multiset<T>::iterator it; // need typename for dependent scope
+    
+    for (it = first.begin(); it!=first.end(); it++)
+        if (second.find(*it) == second.end())
+            return false;
+    return true;
+}
+
+// LIST OPERATIONS
+
+/**
+ * 
+ * @return true iff every item in {@param first} is also in {@param second}
+ */
+template <class T>
+bool listSubsetQ(const list<T> first, const list<T> second) {
+    // convert to multisets and return subset query
+    // should be Theta(n log n) running time for n total data items
+    multiset<T> firstMS(first.begin(),first.end());
+    multiset<T> secondMS(second.begin(),second.end());
+    return multisetSubsetQ(firstMS,secondMS);
+}
+
 
 /**
  A generic p-ary tree of type T

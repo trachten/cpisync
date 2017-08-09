@@ -40,6 +40,17 @@ T &operator++(T& curr) {
     curr = (T)(((int) (curr) + 1));
     return curr;
 }
+
+template <typename T>
+list<T> deref(list<T*> in) {
+    list<T> result;
+    result.resize(in.size());
+    transform(in.begin(), in.end(), result.begin(), [](T * datum) {
+        return *datum; });
+
+    return result;
+}
+
 /**
  *  Tests whether synchronization through a socket (no data) works
  * @param theProto The sync protocol to test
@@ -47,7 +58,7 @@ T &operator++(T& curr) {
  * @param Bits The number of bits per datum.
  * @param dataList1 A list of data on the first syncing host.
  * @param dataList2 A list of data on the second syncing host.
- * @return true iff the synchornization was successful *and* produced the correct result.
+ * @return true iff the synchronization was successful *and* resulting client data is a subset of the server data (one-way sync check).
  */
 bool SocketSync(GenSync::SyncProtocol theProto, int mBar, int Bits, list<DataObject*> dataList1, list<DataObject*> dataList2) {
     Logger::gLog(Logger::METHOD, "... synchronizing with sync protocol " + toStr((int) theProto));
@@ -67,7 +78,12 @@ bool SocketSync(GenSync::SyncProtocol theProto, int mBar, int Bits, list<DataObj
             setData(dataList2).
             build();
     forkHandleReport result = forkHandle(GenSyncServer, GenSyncClient);
-    if (!result.success)
+    Logger::gLog(Logger::METHOD, printList(result.clientElements));
+    Logger::gLog(Logger::METHOD, printList(result.serverElements));
+
+    if (!result.success || !listSubsetQ(
+            deref(result.clientElements),
+            deref(result.serverElements)))
         return false;
     return true;
 }

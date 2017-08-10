@@ -83,7 +83,7 @@ LDLIBSOPTIONS=-L/opt/local/lib -lntl
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisynclib.${CND_DLIB_EXT}: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisynclib.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -dynamiclib -install_name libcpisynclib.${CND_DLIB_EXT} -fPIC
+	g++ -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisynclib.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -dynamiclib -install_name libcpisynclib.${CND_DLIB_EXT} -fPIC
 
 ${OBJECTDIR}/src/CPISync.o: src/CPISync.cpp
 	${MKDIR} -p ${OBJECTDIR}/src

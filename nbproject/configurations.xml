@@ -77,24 +77,30 @@
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="2">
+    <conf name="Debug" type="2" platformSpecific="true">
       <toolsSet>
         <compilerSet>GNU|GNU</compilerSet>
+        <platform>4</platform>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <ccTool>
           <standard>8</standard>
+          <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>include</pElem>
             <pElem>/opt/local/include</pElem>
           </incDir>
         </ccTool>
+        <asmTool>
+          <commandlineTool>as</commandlineTool>
+        </asmTool>
         <linkerTool>
           <linkerAddLib>
             <pElem>/opt/local/lib</pElem>
           </linkerAddLib>
+          <commandlineTool>g++</commandlineTool>
           <linkerLibItems>
             <linkerLibLibItem>ntl</linkerLibLibItem>
           </linkerLibItems>

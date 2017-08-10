@@ -4,6 +4,8 @@
 #define SYNC_METHODS_H
 
 #include "Communicant.h"
+#include "Logger.h"
+#include "Auxiliary.h"
 
 // namespaces
 using std::vector;
@@ -61,7 +63,11 @@ public:
      * hash, so it is advisable not to change the datum dereference hereafter.
      * @return true iff the addition was successful
      */
-    virtual bool addElem(DataObject* datum) { elements.push_back(datum); return true; };
+    virtual bool addElem(DataObject* datum) { 
+        Logger::gLog(Logger::METHOD,"Wax on"+printList(elements));
+        elements.push_back(datum);
+         Logger::gLog(Logger::METHOD,"Wax off"+printList(elements));return true; };
+         
 
     /**
      * Delete an element from the data structure that will be performing the synchronization.

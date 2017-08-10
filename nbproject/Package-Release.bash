@@ -6,7 +6,7 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=GNU-MacOSX
+CND_PLATFORM=brew_gcc-MacOSX
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build

@@ -98,9 +98,10 @@ void testBasicProtocols() {
     dataList1.push_back(test1);
     dataList2.push_back(test2);
 
-    for (auto theProto = GenSync::SyncProtocol::BEGIN;
-            theProto != GenSync::SyncProtocol::END;
-            ++theProto)
+    //    for (auto theProto = GenSync::SyncProtocol::BEGIN;
+    //            theProto != GenSync::SyncProtocol::END;
+    //            ++theProto)
+    GenSync::SyncProtocol theProto = GenSync::SyncProtocol::OneWayCPISync;
         if (!SocketSync(theProto, 5, 25, dataList1, dataList2)) {
             cout << "%TEST_FAILED% time=0 testname=testBasicProtocols (cpi_system_test) message=Synchronization Failed" << endl;
             return;

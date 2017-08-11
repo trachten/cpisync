@@ -18,6 +18,7 @@
 #include <cassert>
 
 #include "Auxiliary.h"
+#include "AuxiliaryDependent.h"
 #include "GenSync.h"
 #include "Communicant.h"
 #include "CommSocket.h"

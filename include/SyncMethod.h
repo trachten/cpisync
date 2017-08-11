@@ -3,9 +3,9 @@
 #ifndef SYNC_METHODS_H
 #define SYNC_METHODS_H
 
+#include "Auxiliary.h"
 #include "Communicant.h"
 #include "Logger.h"
-#include "Auxiliary.h"
 
 // namespaces
 using std::vector;
@@ -64,9 +64,10 @@ public:
      * @return true iff the addition was successful
      */
     virtual bool addElem(DataObject* datum) { 
-        Logger::gLog(Logger::METHOD,"Wax on"+printList(elements));
+        Logger::gLog(Logger::METHOD,"Wax on"+printVector(elements));
         elements.push_back(datum);
-         Logger::gLog(Logger::METHOD,"Wax off"+printList(elements));return true; };
+        Logger::gLog(Logger::METHOD,"Wax off"+printVector(elements));
+        return true; };
          
 
     /**

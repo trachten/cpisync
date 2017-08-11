@@ -2,7 +2,8 @@
 
 /* 
  * File:   Auxiliary.h
- * Auxiliary items shared throughout the program.  These include constants, types, and functions.
+ * Auxiliary classes, types, and objects that are utilized by Sync objects throughout the code, but that explicitly do
+ * not depend on any project source code other than ConsstantsAndTypes.h.
  *
  * Created on August 20, 2011, 10:07 PM
  */
@@ -19,13 +20,11 @@
 #include <vector>
 #include <iterator>
 #include <set>
+#include <list>
 #include <signal.h>
 #include <sys/wait.h>
 #include <type_traits>
-#include "GenSync.h"
-#include "SyncMethod.h"
 #include "ConstantsAndTypes.h"
-#include "Logger.h"
 
 // some standard names
 using namespace NTL;
@@ -39,75 +38,12 @@ using std::istringstream;
 using std::ostringstream;
 using std::ostream;
 using std::map;
+using std::list;
 using std::multiset;
 using std::invalid_argument;
 using std::runtime_error;
 
 // FUNCTIONS
-/**
- * Runs a synchronization between client1 and client2 in a separate process, recording some statistics in the process.
- * @param client1 The first client to sync.
- * @param client2 The second client to sync.
- * @return Exit status for child/parent processes.
- */
-
-/**
- * Report structure for a forkHandle run
-  */
-struct forkHandleReport {
-    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
-    long bytes;       // the number of bytes communicated
-    double CPUtime;   // the amount of CPU time used
-    double totalTime; // total time used
-    list<DataObject *> serverElements; // the resulting elements in the server's data structure
-    list<DataObject *> clientElements; // the resulting elements in the server's data structure
-    bool success;     // true iff the sync completed successfully
-};
-
-/**
- * Runs client1 (child process) and client2 (parent process), returning statistics for client2.
- * @param server The GenSync object that plays the role of server in the sync.
- * @param client The GenSync object that plays the role of client in the sync.
- * @return Synchronization statistics as reported by the server.
- */
-inline forkHandleReport forkHandle(GenSync server, GenSync client) {   
-    int err = 1;
-    int chld_state;
-    int my_opt = 0;
-    forkHandleReport result;
-    clock_t start = clock();
-    try {
-        pid_t pID = fork();
-        const int method_num = 0; // For now, only one method_num is being used - id 0
-        if (pID == 0) {
-            signal(SIGCHLD, SIG_IGN);
-            Logger::gLog(Logger::COMM,"created a server process");
-            client.listenSync(method_num);
-            exit(0);
-        } else if (pID < 0) {
-            //handle_error("error to fork a child process");
-            cout << "throw out err = " << err << endl;
-            throw err;
-        } else {
-            Logger::gLog(Logger::COMM,"created a client process");
-            server.startSync(method_num);
-            result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
-            result.CPUtime = server.getSyncTime(method_num); /// assuming <method_num>'th communicator corresponds to <method_num>'th syncagent
-            result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
-            result.serverElements = server.dumpElements();
-            result.clientElements = client.dumpElements();
-            waitpid(pID, &chld_state, my_opt);
-            result.success=true;
-        }
-
-    } catch (int& err) {
-        sleep(1); // why?
-        cout << "handle_error caught" << endl;
-        result.success=false;
-    }
-    
-    return result;
-}
 
 /**
  * Converts a string into a vector of bytes
@@ -187,7 +123,7 @@ inline string ustrToStr(ustring ustr) {
  * Provides a string representing a human-readable version of a list
  */
 template <class T>
-string printList(list<T> theList) {
+string printList(const list<T> theList) {
     string result = "[";
     typename list<T>::const_iterator iter;
     for (iter = theList.begin(); iter != theList.end(); iter++)
@@ -196,6 +132,18 @@ string printList(list<T> theList) {
     return result;
 }
 
+/**
+ * Provides a string representing a human-readable version of a vector
+ */
+template <class T>
+string printVector(const vector<T> theVect) {
+    string result = "[";
+    typename vector<T>::const_iterator iter;
+    for (iter = theVect.begin(); iter != theVect.end(); iter++)
+        result += toStr(*iter) + " ";
+    result += "]";
+    return result;
+}
 
 /**
  * Writes the elements of an array as ints to a return string

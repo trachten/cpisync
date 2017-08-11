@@ -2,6 +2,8 @@
  * Created on June 20, 2017, 5:04 PM
  */
 
+/** Constants and types used by the code, but that do not depend on any project source code. */
+
 #ifndef CONSTS_AND_TYPES
 #define CONSTS_AND_TYPES
 

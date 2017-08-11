@@ -5,6 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>include/Auxiliary.h</itemPath>
+      <itemPath>AuxiliaryDependent.h</itemPath>
       <itemPath>include/CPISync.h</itemPath>
       <itemPath>include/CPISync_ExistingConnection.h</itemPath>
       <itemPath>include/CPISync_HalfRound.h</itemPath>
@@ -110,6 +111,8 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="AuxiliaryDependent.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles">
         <ccTool>
@@ -266,6 +269,8 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="AuxiliaryDependent.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>

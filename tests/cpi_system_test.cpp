@@ -16,6 +16,7 @@
 #include <list>
 #include <thread>
 #include <cassert>
+#include <algorithm>
 
 #include "Auxiliary.h"
 #include "AuxiliaryDependent.h"
@@ -46,7 +47,7 @@ template <typename T>
 list<T> deref(list<T*> in) {
     list<T> result;
     result.resize(in.size());
-    transform(in.begin(), in.end(), result.begin(), [](T * datum) {
+    std::transform(in.begin(), in.end(), result.begin(), [](T * datum) {
         return *datum; });
 
     return result;

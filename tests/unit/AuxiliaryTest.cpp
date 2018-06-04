@@ -9,6 +9,7 @@
 
 #include "Auxiliary.h"
 #include "AuxiliaryTest.h"
+#include <string>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(AuxiliaryTest);
 
@@ -23,44 +24,58 @@ void AuxiliaryTest::setUp() {
 void AuxiliaryTest::tearDown() {
 }
 
-void AuxiliaryTest::testStrToVecToStr() {
-    const string data="This is a test!  It is ONLY a test.";
-    const string data2=VecToStr(StrToVec(data));
-    CPPUNIT_ASSERT(data==data2);
+void AuxiliaryTest::testStrTo() {
+    int expectedInt = 12;
+    int resultInt = strTo<int>("12");
+    CPPUNIT_ASSERT(resultInt == expectedInt);
+
+    double expectedDouble = 12.57;
+    double resultDouble = strTo<double>("12.57");
+    CPPUNIT_ASSERT(resultDouble == expectedDouble);
+
+    ZZ_p expectedZZp = static_cast<ZZ_p>(12);
+    ZZ_p resultZZp = strTo<ZZ_p>("12");
+    CPPUNIT_ASSERT(resultZZp == expectedZZp);
 }
 
-//void AuxiliaryTest::testStrTo() {
-//    string str;
-//    //T result = strTo(str);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testToStr() {
-//    //T item;
-//    //string result = toStr(item);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testWriteInts() {
-//    //T* data;
-//    //int len;
-//    //string result = writeInts(data, len);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testMultisetPrint() {
-//    //multiset<string> container;
-//    //string result = multisetPrint(container);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
+void AuxiliaryTest::testToStr() {
+    std::string expectedIntStr = "12";
+    std::string resultIntStr = toStr(12);
+    CPPUNIT_ASSERT(resultIntStr.compare(expectedIntStr) == 0);
+
+    std::string expectedDoubleStr = "12.57";
+    std::string resultDoubleStr = toStr(12.57);
+    CPPUNIT_ASSERT(resultDoubleStr.compare(expectedDoubleStr) == 0);
+
+    std::string expectedZZpStr = "12";
+    std::string resultZZpStr = toStr(static_cast<ZZ_p>(12));
+    CPPUNIT_ASSERT(resultZZpStr.compare(expectedZZpStr) == 0);
+}
+
+void AuxiliaryTest::testBase64_encode() {
+    std::string expectedEncode = "YXNkZg==";
+  
+    std::string testStlStr = "asdf";
+    resultEncode = base64_encode(testStlStr, testStlStr.size());
+    CPPUNIT_ASSERT(resultEncode.compare(expectedEncode) == 0);
+
+    char * testCStr = testStlStr.c_str();
+    std::string resultEncode = base64_encode(testCStr, strlen(testCStr));
+    CPPUNIT_ASSERT(resultEncode.compare(expectedEncode) == 0);
+}
+
+void AuxiliaryTest::testBase64_decode() {
+    std::string expectedDecode = "asdf";
+    std::string resultDecode = base64_decode("YXNkZg==");
+    CPPUNIT_ASSERT(resultDecode.compare(expectedDecode) == 0);
+}
+
+void AuxiliaryTest::testStrToVecToStr() {
+    const string expectedStr = "This is a test!  It is ONLY a test.";
+    string resultStr = VecToStr(StrToVec(expectedStr));
+    CPPUNIT_ASSERT(resultStr.compare(expectedStr) == 0);
+}
+
 //
 //void AuxiliaryTest::testMultisetIntersect() {
 //    //const multiset<class> first;
@@ -89,7 +104,7 @@ void AuxiliaryTest::testStrToVecToStr() {
 //    }
 //}
 //
-//void AuxiliaryTest::testMultisetSubset() {
+//void AuxiliaryTest::testMultisetSubset() { 
 //    //const multiset<class> first;
 //    //const int size;
 //    //multiset<T> result = multisetSubset(first, size);
@@ -98,38 +113,4 @@ void AuxiliaryTest::testStrToVecToStr() {
 //    }
 //}
 //
-//void AuxiliaryTest::testBase64_encode() {
-//    //const char* bytes_to_encode;
-//    //unsigned int in_len;
-//    //string result = base64_encode(bytes_to_encode, in_len);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testBase64_decode() {
-//    //const std::string& encoded_string;
-//    //string result = base64_decode(encoded_string);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testBase64_encode2() {
-//    //const string bytes;
-//    //unsigned int in_len;
-//    //string result = base64_encode(bytes, in_len);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testMin() {
-//    //const ZZ& aa;
-//    //const ZZ& bb;
-//    //ZZ result = min(aa, bb);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
 

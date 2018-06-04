@@ -19,10 +19,10 @@ class AuxiliaryTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testBase64_encode);
     CPPUNIT_TEST(testBase64_decode);
     CPPUNIT_TEST(testStrToVecToStr);
-    // CPPUNIT_TEST(testMultisetIntersect);
-    // CPPUNIT_TEST(testMultisetDiff);
-    // CPPUNIT_TEST(testMultisetUnion);
-    // CPPUNIT_TEST(testMultisetSubset); 
+    CPPUNIT_TEST(testMultisetIntersect);
+    CPPUNIT_TEST(testMultisetDiff);
+    CPPUNIT_TEST(testMultisetUnion);
+    CPPUNIT_TEST(testMultisetSubset); 
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -39,10 +39,10 @@ private:
     void testBase64_encode();
     void testBase64_decode();
     void testStrToVecToStr();
-    // void testMultisetIntersect();
-    // void testMultisetDiff();
-    // void testMultisetUnion();
-    // void testMultisetSubset();
+    void testMultisetIntersect();
+    void testMultisetDiff();
+    void testMultisetUnion();
+    void testMultisetSubset();
 };
 
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( AuxiliaryTest, AuxiliaryTest );

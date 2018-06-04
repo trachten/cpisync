@@ -56,11 +56,11 @@ void AuxiliaryTest::testBase64_encode() {
     std::string expectedEncode = "YXNkZg==";
   
     std::string testStlStr = "asdf";
-    resultEncode = base64_encode(testStlStr, testStlStr.size());
+    std::string resultEncode = base64_encode(testStlStr, testStlStr.size());
     CPPUNIT_ASSERT(resultEncode.compare(expectedEncode) == 0);
 
-    char * testCStr = testStlStr.c_str();
-    std::string resultEncode = base64_encode(testCStr, strlen(testCStr));
+    const char * testCStr = testStlStr.c_str();
+    resultEncode = base64_encode(testCStr, strlen(testCStr));
     CPPUNIT_ASSERT(resultEncode.compare(expectedEncode) == 0);
 }
 
@@ -76,41 +76,104 @@ void AuxiliaryTest::testStrToVecToStr() {
     CPPUNIT_ASSERT(resultStr.compare(expectedStr) == 0);
 }
 
-//
-//void AuxiliaryTest::testMultisetIntersect() {
-//    //const multiset<class> first;
-//    //const multiset<class> second;
-//    //multiset<T> result = multisetIntersect(first, second);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testMultisetDiff() {
-//    //const multiset<class> first;
-//    //const multiset<class> second;
-//    //multiset<T> result = multisetDiff(first, second);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testMultisetUnion() {
-//    //const multiset<class> first;
-//    //const multiset<class> second;
-//    //multiset<T> result = multisetUnion(first, second);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
-//void AuxiliaryTest::testMultisetSubset() { 
-//    //const multiset<class> first;
-//    //const int size;
-//    //multiset<T> result = multisetSubset(first, size);
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
-//}
-//
+void AuxiliaryTest::testMultisetIntersect() {
+    // make test sets and known intersection
+    std::vector<int> expectedIntersection = {2, 4};
 
+    multiset<int> set1;
+    set1.insert(1);
+    set1.insert(2);
+    set1.insert(3);
+
+    multiset<int> set2;
+    set2.insert(2);
+    set2.insert(4);    
+    set2.insert(5);
+    set2.insert(6);
+    
+    multiset<int> intersectionSet = multisetIntersect(set1, set2);
+
+    // size of the set and all its elements should match the expected values
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(intersectionSet.size()), static_cast<int>(expectedIntersection.size()));
+
+    for (int i : expectedIntersection)
+        CPPUNIT_ASSERT(intersectionSet.find(i) != intersectionSet.end());
+}
+
+
+void AuxiliaryTest::testMultisetDiff() {
+    std::vector<int> expectedDiff = {1, 3, 5, 6};
+
+    multiset<int> set1;
+    set1.insert(1);
+    set1.insert(2);
+    set1.insert(3);
+
+    multiset<int> set2;
+    set2.insert(2);
+    set2.insert(4);    
+    set2.insert(5);
+    set2.insert(6);
+
+    multiset<int> diff = multisetDiff(set1, set2);
+    
+    // size of the set and all its elements should match the expected values
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(diff.size()), static_cast<int>(expectedDiff.size()));
+
+    for (const int i : expectedDiff)
+        CPPUNIT_ASSERT(diff.find(i) != diff.end());
+
+    // test with empty set
+    multiset<int> set3;
+    multiset<int> diff2 = multisetUnion(set1, set3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(diff2.size()), 0);
+}
+
+void AuxiliaryTest::testMultisetUnion() {
+    std::vector<int> expectedUnion = {1, 2, 3, 4, 5, 6};
+
+    multiset<int> set1;
+    set1.insert(1);
+    set1.insert(2);
+    set1.insert(3);
+
+    multiset<int> set2;
+    set2.insert(2);
+    set2.insert(4);    
+    set2.insert(5);
+    set2.insert(6);
+
+    multiset<int> unionSet = multisetUnion(set1, set2);
+    // size of the set and all its elements should match the expected values
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(unionSet.size()), static_cast<int>(expectedUnion.size()));
+
+    for (const int i : expectedUnion)
+        CPPUNIT_ASSERT(unionSet.find(i) != unionSet.end());
+
+    // test with empty set
+    multiset<int> set3;
+    multiset<int> unionSet2 = multisetUnion(set1, set3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(unionSet2.size()), static_cast<int>(set1.size()));
+    for (const int i : set1)
+        CPPUNIT_ASSERT(unionSet2.find(i) != unionSet2.end());
+}
+
+void AuxiliaryTest::testMultisetSubset() {
+    const std::vector<int> nums = {1, 2, 3, 4, 5, 6};
+    multiset<int> set1;
+
+    for (const int i : nums)
+        set1.insert(i);
+
+    multiset<int> subset = multisetSubset(set1, 2);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(subset.size()), 2);
+
+    multiset<int> subset2 = multisetSubset(set1, 0);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(subset.size()), 0);
+
+    multiset<int> subset3 = multisetSubset(set1, -3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(subset.size()), 0);
+
+    multiset<int> subset4 = multisetSubset(set1, 1000);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(subset.size()), static_cast<int>(nums.size()));
+}

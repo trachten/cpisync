@@ -181,7 +181,7 @@ inline string multisetPrint(multiset<string> container) {
 template <class T>
 multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
@@ -197,7 +197,7 @@ multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second)
 template <class T>
 multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
@@ -213,7 +213,7 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
 template <class T>
 multiset<T> multisetUnion(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_union(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_union(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;

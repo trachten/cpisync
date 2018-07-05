@@ -75,6 +75,7 @@
     </logicalFolder>
     <itemPath>/Users/trachten/Documents/Programming projects/NetBeansProjects/CPISyncLib/README</itemPath>
   </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="2">

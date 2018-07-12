@@ -51,26 +51,9 @@ using std::runtime_error;
  * @return Exit status for child/parent processes.
  */
 
-/**
- * Report structure for a forkHandle run
-  */
-struct forkHandleReport {
-    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
-    long bytes;       // the number of bytes communicated
-    double CPUtime;   // the amount of CPU time used
-    double totalTime; // total time used
-    bool success;     // true iff the sync completed successfully
-};
 
 class GenSync; // forward declaration
 
-/**
- * Runs client1 (child process) and client2 (parent process), returning statistics for client2.
- * @param server The GenSync object that plays the role of server in the sync.
- * @param client The GenSync object that plays the role of client in the sync.
- * @return Synchronization statistics as reported by the server.
- */
-inline forkHandleReport forkHandle(GenSync server, GenSync client);
 
 /**
  * Converts a string into a vector of bytes
@@ -311,7 +294,7 @@ const int signed_shift = 128; // shift to get from unsigned to signed
  * Encodes a given ASCII c-style string into a (base64) string using only characters from '>' to '~'
  * @param bytes_to_encode The bytes to encode base 64
  * @param len The length of the bytes array
- * @return An ascii-armored string.
+ * @return An ASCII-armored string.
  */
 inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
     string ret = "";

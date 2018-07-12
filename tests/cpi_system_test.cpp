@@ -23,6 +23,7 @@
 #include "CommSocket.h"
 #include "CPISync.h"
 #include "DataObject.h"
+#include "ForkHandle.h"
 
 /*
  * Simple C++ Test Suite

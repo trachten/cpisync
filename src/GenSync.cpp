@@ -16,6 +16,7 @@
 #include "ProbCPISync.h"
 #include "InterCPISync.h"
 #include "CPISync_HalfRound.h"
+#include "FullSync.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
@@ -113,6 +114,7 @@ bool GenSync::listenSync(int method_num) {
         list<DataObject*>::iterator itDO;
         for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
             addElem(*itDO);
+
     }
 
     return syncSuccess;
@@ -317,6 +319,9 @@ GenSync GenSync::Builder::build() {
             if (mbar == Builder::UNDEFINED)
                 throw noMbar;
             myMeth = new CPISync_HalfRound(mbar, bits, errorProb);
+            break;
+        case SyncProtocol::FullSync:
+            myMeth = new FullSync();
             break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");

@@ -184,11 +184,12 @@ public:
     bool listenSync(int sync_num = 0);
 
     /**
-     * Sequentially sends a specific synchronization request to each communicant.
+     * Sequentially sends a specific synchronization request to each communicant.  If sync is successful,
+     * then the server ends up with data that is synchronized to the client.
      * @param sync_num  This is an index into the vector of synchronization methods supplied upon construction.
      *          Thus, if the first synchronization method supplied in the constructor is
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
-     * @return           true iff all synchronizations were completed successfully
+     * @return  true iff all synchronizations were completed successfully
      */
     bool startSync(int sync_num);
 
@@ -253,6 +254,7 @@ public:
         CPISync= BEGIN,
         InteractiveCPISync,
         OneWayCPISync,
+        FullSync,
         END     // one after the end of iterable options
     };
 

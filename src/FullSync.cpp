@@ -42,11 +42,11 @@ bool FullSync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOth
         
         // first send the amount of DataObjects...
         commSync->commSend(SyncMethod::getNumElem());
-        
+
         // then send each DataObject.
-        vector<DataObject *>::const_iterator iter = SyncMethod::beginElements();
-        for(; iter != SyncMethod::endElements(); iter++)
+        for (auto iter = beginElements(); iter != endElements(); iter++) {
             commSync->commSend(**iter);
+        }
 
         // receive response from server with differences
         selfMinusOther = commSync->commRecv_DoList();
@@ -79,11 +79,13 @@ bool FullSync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOth
         
         // first, receive how many DataObjects have been sent...
         const long SIZE = commSync->commRecv_long();
-        
+
+
         // then receive each DataObject and store to a multiset
         multiset<DataObject*> other;
-        for(int ii = 0; ii < SIZE; ii++)
+        for (int ii = 0; ii < SIZE; ii++) {
             other.insert(commSync->commRecv_DataObject());
+        }
             
         // Calculate differences between two lists and splice onto respective lists
         rangeDiff(SyncMethod::beginElements(), SyncMethod::endElements(), other.begin(), other.end(), back_inserter(selfMinusOther));

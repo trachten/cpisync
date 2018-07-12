@@ -20,11 +20,14 @@
       <itemPath>include/DataObject.h</itemPath>
       <itemPath>include/DataPriorityObject.h</itemPath>
       <itemPath>include/Exceptions.h</itemPath>
+      <itemPath>include/ForkHandle.h</itemPath>
+      <itemPath>include/FullSync.h</itemPath>
       <itemPath>include/GenLog.h</itemPath>
       <itemPath>include/GenSync.h</itemPath>
       <itemPath>include/InterCPISync.h</itemPath>
       <itemPath>include/Logger.h</itemPath>
       <itemPath>include/PrioCPISync.h</itemPath>
+      <itemPath>include/ProbCPISync.h</itemPath>
       <itemPath>include/SyncMethod.h</itemPath>
       <itemPath>include/UID.h</itemPath>
       <itemPath>include/probCPISync.h</itemPath>
@@ -41,6 +44,7 @@
       <itemPath>src/CommString.cpp</itemPath>
       <itemPath>src/Communicant.cpp</itemPath>
       <itemPath>src/DataObject.cpp</itemPath>
+      <itemPath>src/FullSync.cpp</itemPath>
       <itemPath>src/GenSync.cpp</itemPath>
       <itemPath>src/InterCPISync.cpp</itemPath>
       <itemPath>src/Logger.cpp</itemPath>
@@ -66,6 +70,14 @@
                      kind="TEST">
         <itemPath>tests/cpi_system_test.cpp</itemPath>
       </logicalFolder>
+      <logicalFolder name="f3"
+                     displayName="FullSyncTest"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/FullSyncTest.cpp</itemPath>
+        <itemPath>tests/FullSyncTest.h</itemPath>
+        <itemPath>tests/FullSyncTestRunner.cpp</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -73,8 +85,11 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>/Users/trachten/Documents/Programming projects/NetBeansProjects/CPISyncLib/README</itemPath>
+    <itemPath>README</itemPath>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>include</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="2">
@@ -100,10 +115,7 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="/Users/trachten/Documents/Programming projects/NetBeansProjects/CPISyncLib/README"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="README" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles">
         <ccTool>
@@ -137,6 +149,32 @@
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f2</output>
+          <linkerAddLib>
+            <pElem>/opt/local/lib</pElem>
+          </linkerAddLib>
+          <linkerKpic>false</linkerKpic>
+          <linkerLibItems>
+            <linkerLibLibItem>cppunit</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
+          <linkerAddLib>
+            <pElem>/opt/local/lib</pElem>
+          </linkerAddLib>
+          <linkerKpic>false</linkerKpic>
           <linkerLibItems>
             <linkerLibLibItem>cppunit</linkerLibLibItem>
           </linkerLibItems>
@@ -177,6 +215,10 @@
       </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/ForkHandle.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/FullSync.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/GenLog.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/GenSync.h" ex="false" tool="3" flavor2="0">
@@ -186,6 +228,8 @@
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrioCPISync.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ProbCPISync.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SyncMethod.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -202,6 +246,8 @@
       <item path="src/Communicant.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/DataObject.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/FullSync.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/GenSync.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -220,6 +266,12 @@
       <item path="tests/AuxiliaryTest.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/AuxiliaryTestRunner.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/FullSyncTest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/FullSyncTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/FullSyncTestRunner.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/cpi_system_test.cpp" ex="false" tool="1" flavor2="9">
         <ccTool>
@@ -256,10 +308,7 @@
           </linkerAddLib>
         </linkerTool>
       </compileType>
-      <item path="/Users/trachten/Documents/Programming projects/NetBeansProjects/CPISyncLib/README"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="README" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>
@@ -288,6 +337,21 @@
           <linkerLibItems>
             <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
           </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
         </linkerTool>
       </folder>
       <item path="include/Auxiliary.h" ex="false" tool="3" flavor2="0">
@@ -325,6 +389,10 @@
       </item>
       <item path="include/Exceptions.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/ForkHandle.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/FullSync.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/GenLog.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/GenSync.h" ex="false" tool="3" flavor2="0">
@@ -334,6 +402,8 @@
       <item path="include/Logger.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/PrioCPISync.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/ProbCPISync.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/SyncMethod.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -350,6 +420,8 @@
       <item path="src/Communicant.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/DataObject.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/FullSync.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/GenSync.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -368,6 +440,12 @@
       <item path="tests/AuxiliaryTest.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/AuxiliaryTestRunner.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/FullSyncTest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/FullSyncTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/FullSyncTestRunner.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="tests/cpi_system_test.cpp" ex="false" tool="1" flavor2="0">
       </item>

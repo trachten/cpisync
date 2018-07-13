@@ -42,12 +42,13 @@ struct forkHandleReport {
 };
 
 /**
- * Runs client1 (child process) and client2 (parent process), returning statistics for client2.
+ * Runs client (child process) and server (parent process), returning statistics for server.
+ * server is modified to reflect reconciliation, whereas client is not.
  * @param server The GenSync object that plays the role of server in the sync.
  * @param client The GenSync object that plays the role of client in the sync.
  * @return Synchronization statistics as reported by the server.
  */
-inline forkHandleReport forkHandle(GenSync server, GenSync client) {   
+inline forkHandleReport forkHandle(GenSync& server, GenSync client) {
     int err = 1;
     int chld_state;
     int my_opt = 0;

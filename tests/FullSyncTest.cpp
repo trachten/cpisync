@@ -59,14 +59,18 @@ void FullSyncTest::basicTest() {
         GenSyncClient.addElem(objPtr);
     }
 
-    forkHandleReport result = forkHandle(GenSyncServer, GenSyncClient);
-
+    forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
+    forkHandleReport resultClient = forkHandle(GenSyncClient, GenSyncServer);
     // check that the result is correct
     // ... statistics are reasonable
-    CPPUNIT_ASSERT(result.bytes > 0);
-    //CPPUNIT_ASSERT(result.CPUtime > 0); // CPUtime could be 0 if this test is fast enough
-    //CPPUNIT_ASSERT(result.totalTime > 0);
-    CPPUNIT_ASSERT(result.success); // i.e. successful synchronization
+    CPPUNIT_ASSERT(resultServer.bytes > 0);
+    CPPUNIT_ASSERT(resultClient.bytes > 0);
+    //CPPUNIT_ASSERT(resultServer.CPUtime > 0); // CPUtime could be 0 if this test is fast enough
+    //CPPUNIT_ASSERT(resultClient.CPUtime > 0);
+    //CPPUNIT_ASSERT(resultServer.totalTime > 0);
+    //CPPUNIT_ASSERT(resultClient.totalTime > 0);
+    CPPUNIT_ASSERT(resultServer.success); // i.e. successful synchronization
+    CPPUNIT_ASSERT(resultClient.success);
 
     // ... that server and client have all the data
     auto serverElems = GenSyncServer.dumpElements();
@@ -87,4 +91,3 @@ void FullSyncTest::basicTest() {
     CPPUNIT_ASSERT(multisetDiff(serverElemsStr, clientElemsStr).size() == 0);
     CPPUNIT_ASSERT(multisetDiff(clientElemsStr, serverElemsStr).size() == 0);
 }
-

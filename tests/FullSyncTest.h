@@ -16,6 +16,7 @@ class FullSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(FullSyncTest);
     
     CPPUNIT_TEST(basicTest);
+    CPPUNIT_TEST(thoroughTest);
             
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -28,6 +29,7 @@ public:
      * Runs a simple test where server and client are initialized with fixed sets that differ in exactly one element.
      */
     void basicTest();
+    void thoroughTest();
 private:
 
 };

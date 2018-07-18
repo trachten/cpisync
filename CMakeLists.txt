@@ -27,7 +27,7 @@ include_directories(/opt/local/include)
 include_directories(${cppunit_INCLUDE_DIR})
 link_directories(/opt/local/lib)
 
-# Add libs and exes
+# Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES})
 
 #################
@@ -35,18 +35,18 @@ add_library(cpisynclib ${SOURCE_FILES})
 #################
 # Following : https://cmake.org/pipermail/cmake/2007-March/013361.html
 
-ADD_EXECUTABLE(AuxiliaryTest.exe
+ADD_EXECUTABLE(AuxiliaryTest
         ${TEST_DIR}/AuxiliaryTestRunner.cpp
         ${TEST_DIR}/AuxiliaryTest.cpp
 )
-target_link_libraries(AuxiliaryTest.exe cpisynclib ntl cppunit gmp)
-ADD_TEST(AuxiliaryTest AuxiliaryTest.exe)
+target_link_libraries(AuxiliaryTest cpisynclib ntl cppunit gmp)
+ADD_TEST(AuxiliaryTest AuxiliaryTest)
 
-ADD_EXECUTABLE(SystemTest.exe
+ADD_EXECUTABLE(SystemTest
         ${TEST_DIR}/cpi_system_test.cpp
 )
-target_link_libraries(SystemTest.exe cpisynclib ntl cppunit gmp)
-ADD_TEST(SystemTest SystemTest.exe)
+target_link_libraries(SystemTest cpisynclib ntl cppunit gmp)
+ADD_TEST(SystemTest SystemTest)
 
 ADD_EXECUTABLE(FullSyncTest.exe
         ${TEST_DIR}/FullSyncTestRunner.cpp

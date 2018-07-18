@@ -66,7 +66,6 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
     else
       bitNum = bits;
 
-    hashQ = true;
     currDiff = maxDiff;
 
     if (redundant == 0) // i.e. use the probability of error to calculate redundancy

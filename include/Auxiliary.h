@@ -19,9 +19,9 @@
 #include <vector>
 #include <iterator>
 #include <set>
+#include <algorithm>
 #include <signal.h>
 #include <sys/wait.h>
-#include "GenSync.h"
 #include "SyncMethod.h"
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
@@ -43,66 +43,6 @@ using std::invalid_argument;
 using std::runtime_error;
 
 // FUNCTIONS
-/**
- * Runs a synchronization between client1 and client2 in a separate process, recording some statistics in the process.
- * @param client1 The first client to sync.
- * @param client2 The second client to sync.
- * @return Exit status for child/parent processes.
- */
-
-/**
- * Report structure for a forkHandle run
-  */
-struct forkHandleReport {
-    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
-    long bytes;       // the number of bytes communicated
-    double CPUtime;   // the amount of CPU time used
-    double totalTime; // total time used
-    bool success;     // true iff the sync completed successfully
-};
-
-/**
- * Runs client1 (child process) and client2 (parent process), returning statistics for client2.
- * @param server The GenSync object that plays the role of server in the sync.
- * @param client The GenSync object that plays the role of client in the sync.
- * @return Synchronization statistics as reported by the server.
- */
-inline forkHandleReport forkHandle(GenSync server, GenSync client) {   
-    int err = 1;
-    int chld_state;
-    int my_opt = 0;
-    forkHandleReport result;
-    clock_t start = clock();
-    try {
-        pid_t pID = fork();
-        int method_num = 0;
-        if (pID == 0) {
-            signal(SIGCHLD, SIG_IGN);
-            Logger::gLog(Logger::COMM,"created a server process");
-            client.listenSync(method_num);
-            exit(0);
-        } else if (pID < 0) {
-            //handle_error("error to fork a child process");
-            cout << "throw out err = " << err << endl;
-            throw err;
-        } else {
-            Logger::gLog(Logger::COMM,"created a client process");
-            server.startSync(method_num);
-            result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
-            result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
-            result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
-            waitpid(pID, &chld_state, my_opt);
-            result.success=true;
-        }
-
-    } catch (int& err) {
-        sleep(1); // why?
-        cout << "handle_error caught" << endl;
-        result.success=false;
-    }
-    
-    return result;
-}
 
 /**
  * Converts a string into a vector of bytes
@@ -236,7 +176,7 @@ inline string multisetPrint(multiset<string> container) {
 template <class T>
 multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
@@ -252,10 +192,20 @@ multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second)
 template <class T>
 multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
+}
+
+template <class IteratorA, class IteratorB, class IteratorOut>
+void rangeDiff(IteratorA begA, IteratorA endA, IteratorB begB, IteratorB endB, IteratorOut coll) {
+    typedef typename std::iterator_traits<IteratorA>::value_type T;
+
+    set_difference(begA, endA, begB, endB, coll,
+        // comparison lambda expression; compares a and b as dereferenced objects
+        [](T a, T b) { return (a -> operator<(*b)); }
+    );
 }
 
 /**
@@ -268,7 +218,7 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
 template <class T>
 multiset<T> multisetUnion(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_union(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_union(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
@@ -333,7 +283,7 @@ const int signed_shift = 128; // shift to get from unsigned to signed
  * Encodes a given ASCII c-style string into a (base64) string using only characters from '>' to '~'
  * @param bytes_to_encode The bytes to encode base 64
  * @param len The length of the bytes array
- * @return An ascii-armored string.
+ * @return An ASCII-armored string.
  */
 inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
     string ret = "";

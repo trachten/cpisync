@@ -14,6 +14,7 @@
 #include <list>
 
 #include "UID.h"
+#include "Auxiliary.h"
 
 // namespaces
 using std::string;
@@ -50,7 +51,9 @@ public:
      * @param item The item to place in the DataObject.
      */
     template<typename T>
-    DataObject(const T item);
+    DataObject(const T item) {
+        myBuffer = pack(toStr(item));
+    }
     
     // INFORMATION METHODS
 

@@ -1,5 +1,5 @@
 
-# Created by https://www.gitignore.io/api/c++,netbeans
+# Created by https://www.gitignore.io/api/c++,cmake,netbeans
 
 ### C++ ###
 # Prerequisites
@@ -35,6 +35,18 @@
 *.out
 *.app
 
+### CMake ###
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+build
+
 ### NetBeans ###
 nbproject/private/
 build/
@@ -42,6 +54,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+nbactions.xml
 
-# End of https://www.gitignore.io/api/c++,netbeans
 
+# End of https://www.gitignore.io/api/c++,cmake,netbeans

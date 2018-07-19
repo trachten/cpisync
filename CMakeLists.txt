@@ -21,13 +21,14 @@ set(SOURCE_FILES
         src/UID.cpp
         src/IBLT.cpp
         src/MurmurHash3.cpp)
+)
 
 include_directories(include)
 include_directories(/opt/local/include)
 include_directories(${cppunit_INCLUDE_DIR})
 link_directories(/opt/local/lib)
 
-# Add libs and exes
+# Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES})
 
 #################
@@ -35,24 +36,31 @@ add_library(cpisynclib ${SOURCE_FILES})
 #################
 # Following : https://cmake.org/pipermail/cmake/2007-March/013361.html
 
-ADD_EXECUTABLE(AuxiliaryTest.exe
+ADD_EXECUTABLE(IBLTTest
+        ${TEST_DIR}/IBLTTestRunner.cpp
+        ${TEST_DIR}/IBLTTest.cpp)
+target_link_libraries(IBLTTest cpisynclib ntl cppunit gmp)
+ADD_TEST(IBLTTest IBLTTest)
+
+ADD_EXECUTABLE(AuxiliaryTest
         ${TEST_DIR}/AuxiliaryTestRunner.cpp
         ${TEST_DIR}/AuxiliaryTest.cpp
 )
-target_link_libraries(AuxiliaryTest.exe cpisynclib ntl cppunit gmp)
-ADD_TEST(AuxiliaryTest AuxiliaryTest.exe)
+target_link_libraries(AuxiliaryTest cpisynclib ntl cppunit gmp)
+ADD_TEST(AuxiliaryTest AuxiliaryTest)
 
-ADD_EXECUTABLE(SystemTest.exe
+ADD_EXECUTABLE(SystemTest
         ${TEST_DIR}/cpi_system_test.cpp
 )
-target_link_libraries(SystemTest.exe cpisynclib ntl cppunit gmp)
-ADD_TEST(SystemTest SystemTest.exe)
+target_link_libraries(SystemTest cpisynclib ntl cppunit gmp)
+ADD_TEST(SystemTest SystemTest)
 
-ADD_EXECUTABLE(IBLTTest.exe
-        ${TEST_DIR}/IBLTTestRunner.cpp
-        ${TEST_DIR}/IBLTTest.cpp)
-target_link_libraries(IBLTTest.exe cpisynclib ntl cppunit gmp)
-ADD_TEST(IBLTTest IBLTTest.exe)
+ADD_EXECUTABLE(CommStringTest
+	${TEST_DIR}/CommStringTestRunner.cpp
+	${TEST_DIR}/CommStringTest.cpp
+)
+target_link_libraries(CommStringTest cpisynclib ntl cppunit gmp)
+ADD_TEST(CommStringTest CommStringTest)
 
 # TODO: Add all testa automagically
 # FILE(GLOB UnitTests_SRCS ${TEST_DIR} "*TestRunner.cpp" )

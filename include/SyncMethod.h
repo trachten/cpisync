@@ -4,7 +4,7 @@
 #define SYNC_METHODS_H
 
 #include "Communicant.h"
-
+#include <algorithm>
 // namespaces
 using std::vector;
 
@@ -51,7 +51,7 @@ public:
      */
     virtual bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
         commSync->resetCommCounters();
-          return true;
+        return true;
     }
 
     // MANIPULATE DATA
@@ -66,13 +66,13 @@ public:
     /**
      * Delete an element from the data structure that will be performing the synchronization.
      * @param datum The element to delete.
-     * @return true iff the addition was successful
+     * @return true iff the removal was successful
      */
-    virtual bool delElem(DataObject* datum) { vector<DataObject*>::iterator ii=elements.begin();
-        for(;ii!=elements.end(); ii++)
-            if (*ii==datum)
-                elements.erase(ii);
-        return true; };
+    virtual bool delElem(DataObject* datum) { 
+        long int before = elements.size();
+        elements.erase(std::remove(elements.begin(), elements.end(), datum), elements.end());
+        return before > elements.size(); // true iff there were more elements before removal than after
+    };
 
     // INFORMATIONAL
     /**

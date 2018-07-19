@@ -40,7 +40,7 @@ void CPISync::initData(int num) {
     }
 
     probCPI = oneWay = keepAlive = false; // assume not OneWay or Probabilistic synchronization unless otherwise stated, and manage our own communicant connections
-    SyncID = SYNCTYPE_CPISync;
+    SyncID = SYNC_TYPE::CPISync;
 }
 
 CPISync::CPISync(long m_bar, long bits, int epsilon, int redundant, bool hashes /* = false */) :
@@ -361,7 +361,7 @@ void CPISync::SendSyncParam(Communicant* commSync, bool oneWay /* = false */) {
     SyncMethod::SendSyncParam(commSync, oneWay);
 
     // ... sync ID, mbar, bits, and epsilon
-    commSync->commSend(SyncID);
+    commSync->commSend(enumToByte(SyncID));
     commSync->commSend(maxDiff);
     commSync->commSend(bitNum);
     commSync->commSend(probEps);
@@ -381,7 +381,7 @@ void CPISync::RecvSyncParam(Communicant* commSync, bool oneWay /* = false */) {
     long bitsClient = commSync->commRecv_long();
     int epsilonClient = commSync->commRecv_int();
 
-    if (theSyncID != SyncID ||
+    if (theSyncID != enumToByte(SyncID) ||
             mbarClient != maxDiff ||
             bitsClient != bitNum ||
             epsilonClient != probEps) {

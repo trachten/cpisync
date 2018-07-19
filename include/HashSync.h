@@ -16,11 +16,17 @@
  * 2.  After synchronization of hashes, another synchronization exchange occurs to translate
  *      hashed entries into actual objects.
  */
- template <class SYNC_CLASS>
+template <class SYNC_CLASS>
 class HashSync : SyncMethod {
     static_assert(std::is_base_of<SyncMethod, SYNC_CLASS>::value,"SYNC_CLASS must extend SyncMethod");
 
  public:
+     /**
+      * Creates a HashSync object, whose elements are hashed to length {@code hashLen}
+      * @param hashLen
+      */
+     HashSync(int hashLen);
+
  protected:
      /**
       * Hashes an input into a (presumably smaller) output.  May not be invertible, or one-to-one.
@@ -29,6 +35,7 @@ class HashSync : SyncMethod {
       */
      DataObject hash(const DataObject input);
 
+     SYNC_CLASS SyncObject;
 };
 
 

@@ -19,7 +19,7 @@ class PriorityCPISync : public InterCPISync {
 public:
 
   PriorityCPISync(long m_bar, long bits, int epsilon, int partition): InterCPISync(m_bar, bits +1, epsilon,partition)
-	{SyncID = SYNCTYPE_Priority_CPISync; useExisting = true;}
+	{SyncID = SYNC_TYPE::Priority_CPISync; useExisting = true;}
   ~PriorityCPISync();
   string getName() { return "Priority CPISync\n";}
    

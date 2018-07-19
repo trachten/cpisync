@@ -17,12 +17,14 @@ IBLT::IBLT(unsigned long expectedNumEntries)
 IBLT::~IBLT() = default;
 
 hashVal IBLT::_hash(hashVal initial, long kk) {
-    if(kk <= 0) return initial;
-    std::hash<unsigned long> hhash;
-    return _hash(hhash(initial), kk-1);
+    if(kk == -1) return initial;
+    std::hash<std::string> shash;
+    return _hash(shash(toStr(initial)), kk-1);
 }
 
 hashVal IBLT::hashK(const ZZ& item, long kk) {
+    unsigned long hi;
+    MurmurHash3_x86_32(&item, item.size(), kk, &hi);
     std::hash<std::string> shash;
     return _hash(shash(toStr(item)), kk-1);
 }
@@ -46,6 +48,7 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
         //hashVal hk = hashK(initialHashes, ii);
         hashVal hk = hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
+        int loc = startEntry + (hk%bucketsPerHash);
         IBLT::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
 
         entry.count += plusOrMinus;

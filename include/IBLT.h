@@ -12,6 +12,7 @@
 #include <NTL/ZZ.h>
 #include <sstream>
 #include "Auxiliary.h"
+#include "MurmurHash3.h"
 
 using std::vector;
 using std::hash;

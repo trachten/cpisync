@@ -19,7 +19,8 @@ set(SOURCE_FILES
         src/probCPISync.cpp
         src/SyncMethod.cpp
         src/UID.cpp
-        src/IBLT.cpp)
+        src/IBLT.cpp
+        src/MurmurHash3.cpp)
 
 include_directories(include)
 include_directories(/opt/local/include)

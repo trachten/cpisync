@@ -89,7 +89,11 @@ public:
      * %M:  If a file is associated with this object, then updates are stored in that file.
      *      *    */
     template <typename T>
-    void addElem(T* newDatum);
+    void addElem(T* newDatum) {
+        Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
+        DataObject *newDO = new DataObject(*newDatum);
+        addElem(newDO);
+    }
 
     /**
      * Deletes a given element from the GenSync data structure

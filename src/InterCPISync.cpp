@@ -16,6 +16,7 @@
 #include "Communicant.h"
 #include "Exceptions.h"
 #include "Logger.h"
+
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition)
 : maxDiff(m_bar), bitNum(bits), probEps(epsilon + bits), pFactor(partition) {
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
@@ -75,7 +76,7 @@ bool InterCPISync::addElem(DataObject* newDatum) {
   {
 	 treeNode = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k), pFactor);
   }	  
-  CPISync * curr = treeNode->getDatum();
+  CPISync *curr = treeNode->getDatum();
   return curr->addElem(newDatum);	
 //  return addElem(newDatum, treeNode, NULL, ZZ_ZERO, DATA_MAX); // use the recursive helper method
 }

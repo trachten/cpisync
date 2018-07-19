@@ -113,6 +113,16 @@ void Communicant::commSend(DataObject& dob) {
     commSend(dob.to_string());
 }
 
+void Communicant::commSend(list<DataObject *> &dob) {
+  // send the size of the list
+  commSend((long) dob.size());
+
+  // then every entry in it
+  for (DataObject *&dop : dob) {
+    commSend(*dop); // request the data object
+  }
+}
+
 void Communicant::commSend(DataObject& dob,bool prio) {
 
     Logger::gLog(Logger::COMM, "... attempting to send: DataObject " + dob.to_priority_string());
@@ -257,6 +267,20 @@ DataObject* Communicant::commRecv_DataObject() {
     Logger::gLog(Logger::COMM, "... received: DataObject " + res->to_string());
 
     return res;
+}
+
+list<DataObject *> Communicant::commRecv_DataObject_List() {
+  list<DataObject *> result;
+
+  // receive the size of the list
+  long size = commRecv_long();
+
+  // then every entry in it
+  for (int ii=0; ii<size; ii++) {
+    result.push_back(commRecv_DataObject()); // receive the data object
+  }
+
+  return result;
 }
 
 DataObject* Communicant::commRecv_DataObject_Priority() {

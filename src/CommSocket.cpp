@@ -50,14 +50,14 @@ void CommSocket::commListen() {
 
     // binds the socket to the current host and port
     if (::bind(sockDesc, (struct sockaddr *) &myAddr, sizeof (myAddr)) == -1) {
-        Logger::error_and_quit("Could not bind to a Communicant!");
+      Logger::error_and_quit("Could not bind to a Communicant!");
 
-        // Keep trying to bind for a short time ... (currently disabled)
-                        int count=0;
-                        while(bind(sockDesc, (struct sockaddr *)&myAddr, sizeof(struct sockaddr)) == -1 && count < MAX_CONNECTS){
-                                sleep(20);
-                                count++;
-                        }
+      // Keep trying to bind for a short time ... (currently disabled)
+//      int count = 0;
+//      while (bind(sockDesc, (struct sockaddr *) &myAddr, sizeof(struct sockaddr)) == -1 && count < MAX_CONNECTS) {
+//        sleep(20);
+//        count++;
+//      }
     }
 
 

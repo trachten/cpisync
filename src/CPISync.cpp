@@ -686,7 +686,7 @@ bool CPISync::addElem(DataObject * datum) {
             hashID = makeData(hash(datum) + hash2(count++)); // a double hash to allow repeated elements
             hashNum = rep(hashID);
         } else { // noHash is enabled
-            hashID = hash(datum); // a simpler, reversable hash
+            hashID = hash(datum); // a simpler, potentially reversable hash
             hashNum = rep(hashID);
             if (CPI_hash.find(hashNum) != CPI_hash.end()) { // an item with this hash already exists
                 Logger::error("Item with hash " + toStr(hashNum) + " already exists in the set.  Under the noHash option, duplicate elements are not permitted.");

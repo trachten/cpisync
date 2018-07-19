@@ -86,8 +86,14 @@ public:
      *    Allows stream printing of the object
      */
     friend ostream& operator<<(ostream& out, const DataObject &datum);
+
+    // comparisons
     bool operator < (const DataObject second) const{
         return this->myBuffer < second.to_ZZ();
+    }
+
+    bool operator== (const DataObject second) const {
+        return this->myBuffer == second.to_ZZ();
     }
        
     // static variables

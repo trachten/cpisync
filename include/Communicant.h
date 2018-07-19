@@ -95,6 +95,7 @@ public:
      * @param do The data object to send
      */
     void commSend(DataObject& dob);
+    void commSend(list<DataObject *>&dob);
     void commSend(DataObject& dob, bool priority);
     
     /**
@@ -206,6 +207,7 @@ public:
      * @return A pointer to the received DataObject.
      */
     DataObject *commRecv_DataObject();
+    list<DataObject *> commRecv_DataObject_List();
     DataObject *commRecv_DataObject_Priority();
     
     /**

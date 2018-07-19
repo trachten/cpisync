@@ -40,6 +40,12 @@ public:
     void tearDown();
 
 private:
+    // constants
+    const int TIMES = 100; // Amount of times to run each test
+    const int LOWER_BOUND = 0; // Lower bound on the length of random strings
+    const int UPPER_BOUND = 50; // Upper bound on the length of random strings
+    const int DELTA = 0.00001; // error tolerance comparing doubles
+
     // Tests argument-free construction.
     void testConstruct();
     

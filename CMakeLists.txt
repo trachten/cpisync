@@ -19,6 +19,7 @@ set(SOURCE_FILES
         src/probCPISync.cpp
         src/SyncMethod.cpp
         src/UID.cpp
+		tests/CommDummy.cpp
 )
 
 include_directories(include)
@@ -53,6 +54,13 @@ ADD_EXECUTABLE(CommStringTest
 )
 target_link_libraries(CommStringTest cpisynclib ntl cppunit gmp)
 ADD_TEST(CommStringTest CommStringTest)
+
+ADD_EXECUTABLE(CommunicantTest
+        ${TEST_DIR}/CommunicantTestRunner.cpp
+        ${TEST_DIR}/CommunicantTest.cpp
+)
+target_link_libraries(CommunicantTest cpisynclib ntl cppunit gmp)
+ADD_TEST(CommunicantTest CommunicantTest)
 
 # TODO: Add all testa automagically
 # FILE(GLOB UnitTests_SRCS ${TEST_DIR} "*TestRunner.cpp" )

@@ -12,11 +12,9 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommStringTest);
 
-CommStringTest::CommStringTest() {
-}
+CommStringTest::CommStringTest() = default;
 
-CommStringTest::~CommStringTest() {
-}
+CommStringTest::~CommStringTest() = default;
 
 void CommStringTest::setUp() {
 }

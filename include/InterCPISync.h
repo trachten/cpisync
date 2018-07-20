@@ -198,9 +198,6 @@ private:
      * the parent in the supplied range.
      */
     bool createTreeNode(pTree * &treeNode, pTree * parent, const ZZ &begRange, const ZZ &endRange);
-    void createNewParent(pTree *&parentTree,bool server,Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
-    bool syncRemainingServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
-    bool syncRemainingClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
     // ... FIELDS
     
     

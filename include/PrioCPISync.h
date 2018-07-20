@@ -22,15 +22,7 @@ public:
 	{SyncID = SYNC_TYPE::Priority_CPISync; useExisting = true;}
   ~PriorityCPISync();
   string getName() { return "Priority CPISync\n";}
-   
-  bool addElem(DataObject* newDatum);
-  bool delElem(DataObject* newDatum);
-  bool SyncClient(Communicant* commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf);
-  bool SyncServer(Communicant* commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf);
-  ZZ_p hash(DataObject* datum) const;
-  void translateMaps(list<DataObject*>& tempSelfMinusOther,  list<DataObject*>& selfMinusOther);
-  void sendResults(Communicant* commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf);
-  void receiveResults(Communicant* commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf);
+
 protected:
         map< DataObject , DataObject * > priority_map;
 };

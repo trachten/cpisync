@@ -14,8 +14,7 @@ Communicant::Communicant() {
     MOD_SIZE = NOT_SET;
 }
 
-Communicant::~Communicant() {
-}
+Communicant::~Communicant() = default;
 
 void Communicant::resetCommCounters() {
     xferBytes = recvBytes = 0;
@@ -102,7 +101,7 @@ void Communicant::commSend(const ustring ustr) {
 
     Logger::gLog(Logger::COMM, "... attempting to send: ustring " + ustrToStr(ustr));
     commSend((long) ustr.length());
-    commSend(ustr.data(), ustr.length());
+    commSend(ustr, ustr.length());
 }
 
 void Communicant::commSend(DataObject& dob) {

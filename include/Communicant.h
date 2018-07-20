@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 #include <list>
-#include <errno.h>
+#include <cerrno>
 #include <NTL/ZZ_p.h>
 #include <NTL/vec_ZZ_p.h>
 #include "ConstantsAndTypes.h"

@@ -3,9 +3,9 @@
 #ifndef SYNC_METHODS_H
 #define SYNC_METHODS_H
 
-#include "Communicant.h"
 #include <algorithm>
 #include <vector>
+#include "Communicant.h"
 
 // namespaces
 using std::vector;

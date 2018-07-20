@@ -18,10 +18,10 @@
 #include <map>
 #include <vector>
 #include <iterator>
+#include <list>
 #include <set>
 #include <signal.h>
 #include <sys/wait.h>
-#include "SyncMethod.h"
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
 
@@ -36,10 +36,14 @@ using std::stringstream;
 using std::istringstream;
 using std::ostringstream;
 using std::ostream;
+using std::list;
 using std::map;
 using std::multiset;
 using std::invalid_argument;
 using std::runtime_error;
+
+// forward declarations
+class SyncMethod;
 
 // FUNCTIONS
 

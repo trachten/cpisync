@@ -7,6 +7,7 @@
 #include <algorithm>
 // namespaces
 using std::vector;
+using std::list;
 
 /**
  * SyncMethod.h -- abstract class for sync methods

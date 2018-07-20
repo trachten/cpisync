@@ -425,6 +425,7 @@ inline ZZ randZZ() {
     return ZZ(randLong());
 }
 
+/**
  * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
  */
 template <class T>

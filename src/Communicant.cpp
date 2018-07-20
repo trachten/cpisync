@@ -35,11 +35,11 @@ long Communicant::getRecvBytes() {
 }
 
 long Communicant::getXmitBytesTot() {
-    return xferBytes;
+    return xferBytesTot;
 }
 
 long Communicant::getRecvBytesTot() {
-    return recvBytes;
+    return recvBytesTot;
 }
 
 clock_t Communicant::getResetTime() {

@@ -44,9 +44,9 @@ string DataObject::to_string() const {
     return RepIsInt?toStr(myBuffer):unpack(myBuffer);
 }
 
-const char *DataObject::to_char_array(int &len) const {
+const char *DataObject::to_char_array(long &len) const {
     len = NumBytes(myBuffer);
-    return to_string().data();
+    return strndup(to_string().data(), len);
 }
 
 string DataObject::print() const {
@@ -64,7 +64,7 @@ ostream& operator<<( ostream &out, const DataObject &datum)
 }
 
 string DataObject::to_priority_string() const{
-    return RepIsInt?toStr(priority)+","+toStr(myBuffer):unpack(myBuffer);
+    return toStr(priority) + "," + (RepIsInt?toStr(myBuffer):unpack(myBuffer));
 }
 
 

@@ -182,7 +182,7 @@ void CommunicantTest::testCommDataObjectPriority() { // fix this test so that th
 
     for(int ii = 0; ii < TIMES; ii++) {
 
-        DataObject exp(randIntString());
+        DataObject exp(randLong());
         exp.setPriority(randZZ());
 
         cSend.Communicant::commSend(exp, true);

@@ -77,7 +77,7 @@ public:
      * @return A char array version of the contents of this data object.
      *         The string could have null bytes and non-printable characters.
      */
-    const char *to_char_array(int &len) const;
+    const char *to_char_array(long &len) const;
 
     /**
      * @return A string of printable characters representing the object, essentially

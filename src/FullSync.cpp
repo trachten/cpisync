@@ -56,6 +56,8 @@ bool FullSync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOth
         msg << "FullSync succeeded." << endl;
         msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
         msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
+        int i = selfMinusOther.size();
+        int j = otherMinusSelf.size();
         Logger::gLog(Logger::METHOD, msg.str());
         
         return true;
@@ -86,7 +88,7 @@ bool FullSync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOth
         for (int ii = 0; ii < SIZE; ii++) {
             other.insert(commSync->commRecv_DataObject());
         }
-            
+
         // Calculate differences between two lists and splice onto respective lists
         rangeDiff(SyncMethod::beginElements(), SyncMethod::endElements(), other.begin(), other.end(), back_inserter(selfMinusOther));
         rangeDiff(other.begin(), other.end(), SyncMethod::beginElements(), SyncMethod::endElements(), back_inserter(otherMinusSelf));
@@ -94,11 +96,12 @@ bool FullSync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOth
         // send back differences. keep in mind that our otherMinusSelf is their selfMinusOther and v.v.
         commSync->commSend(otherMinusSelf);
         commSync->commSend(selfMinusOther);
-        
+
         stringstream msg;
         msg << "FullSync succeeded." << endl;
         msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
         msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
+
         Logger::gLog(Logger::METHOD, msg.str());
         
         return true;
@@ -124,4 +127,9 @@ bool FullSync::delElem(DataObject* newDatum){
     bool success = SyncMethod::delElem(newDatum);
     if(success) Logger::gLog(Logger::METHOD, "Successfully removed DataObject* {" + newDatum->print() + "}");
     return success;
+}
+
+FullSync* FullSync::clone() const        // Virtual constructor (copying)
+{
+    return new FullSync (*this);
 }

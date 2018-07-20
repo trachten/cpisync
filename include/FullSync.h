@@ -35,6 +35,9 @@ public:
     
     // General class destructor
     ~FullSync();
+
+    // Clones the FullSync
+    FullSync* clone() const;
   
     
     // parent methods to override

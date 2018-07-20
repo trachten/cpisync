@@ -48,12 +48,12 @@ ADD_EXECUTABLE(SystemTest
 target_link_libraries(SystemTest cpisynclib ntl cppunit gmp)
 ADD_TEST(SystemTest SystemTest)
 
-ADD_EXECUTABLE(FullSyncTest.exe
+ADD_EXECUTABLE(FullSyncTest
         ${TEST_DIR}/FullSyncTestRunner.cpp
         ${TEST_DIR}/FullSyncTest.cpp
 )
-target_link_libraries(FullSyncTest.exe cpisynclib ntl cppunit gmp)
-ADD_TEST(FullSyncTest FullSyncTest.exe)
+target_link_libraries(FullSyncTest cpisynclib ntl cppunit gmp)
+ADD_TEST(FullSyncTest FullSyncTest)
 
 # TODO: Add all testa automagically
 # FILE(GLOB UnitTests_SRCS ${TEST_DIR} "*TestRunner.cpp" )

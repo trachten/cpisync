@@ -496,3 +496,7 @@ bool InterCPISync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinu
 		throw (s);
 	}
 }
+
+InterCPISync* InterCPISync::clone() const {
+    return new InterCPISync (*this);
+}

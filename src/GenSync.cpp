@@ -58,6 +58,22 @@ GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mV
 
 }
 
+// copy a GenSync object
+GenSync::GenSync(const GenSync &other) {
+    this->myCommVec = other.myCommVec;
+    this->myData = other.myData;
+    this->outFile = other.outFile;
+
+    /**
+     * syncVec contains pointers to preexisting syncMethods. This means that changes to syncMethods
+     * in other would be reflected in the syncMethods in GenSync. To avoid this, we duplicate each
+     * syncMethod in other.mySyncVec
+     */
+     for(SyncMethod* sync: other.mySyncVec) {
+        this->mySyncVec.push_back(sync->clone());
+     }
+}
+
 // destruct a gensync object
 
 GenSync::~GenSync() {
@@ -112,8 +128,10 @@ bool GenSync::listenSync(int method_num) {
 
         // add any items that were found in the reconciliation
         list<DataObject*>::iterator itDO;
-        for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
+        for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++) {
             addElem(*itDO);
+        }
+
 
     }
 

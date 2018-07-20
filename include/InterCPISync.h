@@ -74,6 +74,8 @@ public:
      */
     bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
 
+    InterCPISync* clone() const;
+
     /*
      ** update metadata when an element is being added.
      * The maximum number of elements that the data structure can store is 1<<bitNum

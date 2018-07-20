@@ -71,6 +71,8 @@ public:
      */
     GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, string fileName);
 
+    // copy function
+    GenSync(const GenSync& other);
 
     // DATA MANIPULATION
     /**
@@ -412,7 +414,7 @@ private:
 
     // ... bookkeeping variables
     Communicant *myComm;
-    SyncMethod *myMeth;
+    SyncMethod *myMeth; // this causes bugs with copying!
 
     // DEFAULT constants
     static const long UNDEFINED = -1;

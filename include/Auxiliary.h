@@ -358,5 +358,14 @@ inline ZZ min(const ZZ& aa, const ZZ& bb) {
         return bb;
 }
 
+/**
+ * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
+ */
+template <class T>
+inline byte enumToByte(T theEnum) {
+    static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
+        "Underlying enum class is not byte - cannot convert to byte!");
+    return static_cast< byte >(theEnum);
+};
 #endif	/* AUX_H */
 

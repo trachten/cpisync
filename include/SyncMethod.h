@@ -5,6 +5,8 @@
 
 #include "Communicant.h"
 #include <algorithm>
+#include <vector>
+
 // namespaces
 using std::vector;
 using std::list;
@@ -117,7 +119,7 @@ protected:
      */
     virtual void RecvSyncParam(Communicant* commSync, bool oneWay = false);
     
-    byte SyncID; /** A number that uniquely identifies a given synchronization protocol. */
+    SYNC_TYPE SyncID; /** A number that uniquely identifies a given synchronization protocol. */
     
 private:
     vector<DataObject *> elements; /** Pointers to the elements stored in the data structure. */

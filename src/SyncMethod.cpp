@@ -6,7 +6,7 @@
 #include "Exceptions.h"
 
 SyncMethod::SyncMethod() {
-    SyncID = SYNCTYPE_GenericSync; // synchronization type
+    SyncID = SYNC_TYPE::GenericSync; // synchronization type
 }
 
 SyncMethod::~SyncMethod() {

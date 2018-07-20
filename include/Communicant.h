@@ -12,13 +12,11 @@
 #include <NTL/ZZ_p.h>
 #include <NTL/vec_ZZ_p.h>
 #include "ConstantsAndTypes.h"
+#include "DataObject.h"
 
 // namespace imports
 using namespace NTL;
 using std::list;
-
-// forward declarations
-class DataObject;
 
 /**
  * A communicant is either a local or remote entity to whom one connects

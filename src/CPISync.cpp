@@ -712,15 +712,6 @@ bool CPISync::addElem(DataObject * datum) {
     return result;
 }
 
-template <typename T>
-bool CPISync::addElem(T * newDatum) {
-
-    DataObject *newDO = new DataObject(*newDatum);
-    bool result = addElem(newDO);
-    delete newDO;
-    return result;
-}
-
 // update metadata when delete an element by index
 
 bool CPISync::delElem(DataObject * newDatum) {

@@ -18,11 +18,11 @@
 #include <map>
 #include <vector>
 #include <iterator>
+#include <list>
 #include <set>
 #include <signal.h>
 #include <sys/wait.h>
 #include <climits>
-#include "SyncMethod.h"
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
 
@@ -37,10 +37,14 @@ using std::stringstream;
 using std::istringstream;
 using std::ostringstream;
 using std::ostream;
+using std::list;
 using std::map;
 using std::multiset;
 using std::invalid_argument;
 using std::runtime_error;
+
+// forward declarations
+class SyncMethod;
 
 // FUNCTIONS
 
@@ -421,5 +425,13 @@ inline ZZ randZZ() {
     return ZZ(randLong());
 }
 
+ * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
+ */
+template <class T>
+inline byte enumToByte(T theEnum) {
+    static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
+        "Underlying enum class is not byte - cannot convert to byte!");
+    return static_cast< byte >(theEnum);
+};
 #endif	/* AUX_H */
 

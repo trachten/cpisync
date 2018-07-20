@@ -19,8 +19,8 @@ set(SOURCE_FILES
         src/probCPISync.cpp
         src/SyncMethod.cpp
         src/UID.cpp
-		tests/CommDummy.cpp
-)
+		    tests/CommDummy.cpp
+        src/HashSync.cpp include/HashSync.h)
 
 include_directories(include)
 include_directories(/opt/local/include)

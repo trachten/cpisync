@@ -16,6 +16,7 @@
 #include "Communicant.h"
 #include "Exceptions.h"
 #include "Logger.h"
+
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition)
 : maxDiff(m_bar), bitNum(bits), probEps(epsilon + bits), pFactor(partition) {
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
@@ -31,7 +32,7 @@ InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition)
   DATA_MAX = power(ZZ_TWO, bitNum); // maximum data element for the multiset
   treeNode = NULL;
   useExisting=false;
-  SyncID = SYNCTYPE_Interactive_CPISync; // the synchronization type
+  SyncID = SYNC_TYPE::Interactive_CPISync; // the synchronization type
 }
 
 InterCPISync::~InterCPISync() {
@@ -75,7 +76,7 @@ bool InterCPISync::addElem(DataObject* newDatum) {
   {
 	 treeNode = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k), pFactor);
   }	  
-  CPISync * curr = treeNode->getDatum();
+  CPISync *curr = treeNode->getDatum();
   return curr->addElem(newDatum);	
 //  return addElem(newDatum, treeNode, NULL, ZZ_ZERO, DATA_MAX); // use the recursive helper method
 }
@@ -165,7 +166,7 @@ void InterCPISync::SendSyncParam(Communicant* commSync, bool oneWay /* = false *
     // take care of parent sync method
   SyncMethod::SendSyncParam(commSync);
 
-  commSync->commSend(SyncID);
+  commSync->commSend(enumToByte(SyncID));
   commSync->commSend(maxDiff);
   commSync->commSend(bitNum);
   commSync->commSend(probEps);
@@ -267,7 +268,7 @@ void InterCPISync::RecvSyncParam(Communicant* commSync, bool oneWay /* = false *
   int epsilonClient = commSync->commRecv_int();
   long pFactorClient = commSync->commRecv_long();
 
-  if (theSyncID != SyncID ||
+  if (theSyncID != enumToByte(SyncID) ||
           mbarClient != maxDiff ||
           bitsClient != bitNum ||
           epsilonClient != probEps ||

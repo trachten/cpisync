@@ -81,20 +81,17 @@ void DataObjectTest::testToCharArray(){
     DataObject::RepIsInt = false;
     for(int ii = 0; ii < TIMES; ii++) {
         const string ss = randString(LOWER, UPPER);
-        int  expLen = ss.length();
+        long  expLen = ss.length();
         const char *expected = ss.data();
 
         DataObject dd(ss);
 
-        int resLen;
+        long resLen;
         const char *result = dd.to_char_array(resLen);
 
         CPPUNIT_ASSERT_EQUAL(expLen, resLen);
+        CPPUNIT_ASSERT_EQUAL(0, strcmp(expected, result));
 
-        // assert equality of char* arrays by checking equality of each corresponding elt
-        for(int jj = 0; jj < expLen; jj++){
-            CPPUNIT_ASSERT_EQUAL(result[jj], expected[jj]);
-        }
     }
 }
 
@@ -137,7 +134,8 @@ void DataObjectTest::testGetPriority(){
     DataObject::RepIsInt = false;
     for(int ii = 0; ii < TIMES; ii++) {
         const ZZ priority = randZZ();
-        DataObject dd(priority);
+        DataObject dd;
+        dd.setPriority(priority);
         CPPUNIT_ASSERT_EQUAL(priority, dd.getPriority());
     }
 }

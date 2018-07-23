@@ -112,7 +112,8 @@ void DataObjectTest::testStreamInsertion(){
     for(int ii = 0; ii < TIMES; ii++) {
         const string ss = randString(LOWER, UPPER);
         stringstream exp;
-        exp << ss;
+        DataObject dd(ss);
+        exp << dd;
         CPPUNIT_ASSERT_EQUAL(ss, exp.str());
     }
 }

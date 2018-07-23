@@ -28,21 +28,6 @@ inline int randBetween(int lower, int upper) {
     return length;
 }
 
-inline byte randByte() {
-    return (byte) (rand() % 256);
-}
-inline string randString(int lower, int upper) {
-    stringstream str;
-
-    // pick a length in between lower and upper, inclusive
-    int length = randBetween(lower, upper);
-
-    for(int jj = 0; jj < length; jj++)
-        str << randByte(); // generate a random character and add to stringstream
-
-    return str.str();
-}
-
 void CommStringTest::testGetString() {
     const int TIMES = 50;
     for(int ii = 0; ii < TIMES; ii++) {

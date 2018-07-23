@@ -22,6 +22,7 @@
 #include <set>
 #include <csignal>
 #include <sys/wait.h>
+#include <climits>
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
 
@@ -356,6 +357,72 @@ inline ZZ min(const ZZ& aa, const ZZ& bb) {
         return aa;
     else
         return bb;
+}
+
+/**
+ * @return A random integer in [lower, upper]
+ * @require srand() must've been called
+ */
+inline int randLenBetween(int lower, int upper) {
+    int length = (rand() % (upper+1));
+    if(length < lower) length = lower;
+    return length;
+}
+
+/**
+ * @return A random long
+ * @require srand() must've been called
+ */
+inline long randLong() {
+    return (static_cast<long>(rand()) << (sizeof(int) * CHAR_BIT)) | rand(); // lshift the amount of bits in an int and then bitwise or a random int
+}
+
+/**
+ * @return A random byte
+ * @require srand() must've been called
+ */
+inline byte randByte() {
+    return (byte) (rand() % (int) pow(2, CHAR_BIT));
+}
+
+/**
+ * @return A string of random characters with a random length in [lower, upper]
+ * @require srand() must've been called
+ */
+inline string randString(int lower, int upper) {
+    stringstream str;
+
+    // pick a length in between lower and upper, inclusive
+    int length = randLenBetween(lower, upper);
+
+    for(int jj = 0; jj < length; jj++)
+        str << (char) randByte(); // generate a random character and add to the stringstream
+
+    return str.str();
+}
+
+/**
+ * @return A random integer converted to a string
+ * @require srand() must've been called
+ */
+inline string randIntString() {
+    return toStr(rand());
+}
+
+/**
+ * @return A random double in [lower, upper]
+ * @require srand() must've been called
+ */
+inline double randDouble(double lower, double upper) {
+    return ((double)rand() * (upper - lower)) / (double)RAND_MAX + lower;
+}
+
+/**
+ * @return A random ZZ s.t. it is <= ZZ(LONG_MAX)
+ * @require srand() must've been called
+ */
+inline ZZ randZZ() {
+    return ZZ(randLong());
 }
 
 /**

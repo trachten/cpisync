@@ -232,7 +232,7 @@ public:
     // Informational
 
     /**
-     * Resets communication counters that record the number of bytes transmitted/received.
+     * Resets communication counters that record the number of bytes transmitted/received since the last communication counter reset
      */
     void resetCommCounters();
 

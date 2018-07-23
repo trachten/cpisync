@@ -24,7 +24,6 @@ string CommString::getString() {
 }
 
 void CommString::commConnect() {
-    return;
 } // nothing needed to connect to a string
 
 void CommString::commListen() {

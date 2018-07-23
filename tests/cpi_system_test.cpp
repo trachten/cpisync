@@ -11,7 +11,7 @@
  * Created on June 15, 2017, 3:56 PM
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <list>
 #include <thread>

@@ -1,10 +1,9 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
-
 /* 
- * File:   AuxiliaryTestRunner.cpp
- * Author: trachten
+ * File:   CommunicantTestRunner.cpp
+ * Author: kaets
  * 
- * Created on Jun 21, 2017, 4:17:10 PM
+ * Created on May 24, 2018, 10:08:53 AM
  */
 
 // CppUnit site http://sourceforge.net/projects/cppunit/files
@@ -27,10 +26,10 @@ public:
     : m_lastTestFailed(false) {
     }
 
-    ~ProgressListener() override {
+    ~ProgressListener() {
     }
 
-    void startTest(CPPUNIT_NS::Test *test) override {
+    void startTest(CPPUNIT_NS::Test *test) {
         CPPUNIT_NS::stdCOut() << test->getName();
         CPPUNIT_NS::stdCOut() << "\n";
         CPPUNIT_NS::stdCOut().flush();
@@ -38,12 +37,12 @@ public:
         m_lastTestFailed = false;
     }
 
-    void addFailure(const CPPUNIT_NS::TestFailure &failure) override {
+    void addFailure(const CPPUNIT_NS::TestFailure &failure) {
         CPPUNIT_NS::stdCOut() << " : " << (failure.isError() ? "error" : "assertion");
         m_lastTestFailed = true;
     }
 
-    void endTest(CPPUNIT_NS::Test *test) override {
+    void endTest(CPPUNIT_NS::Test *test) {
         if (!m_lastTestFailed)
             CPPUNIT_NS::stdCOut() << " : OK";
         CPPUNIT_NS::stdCOut() << "\n";
@@ -51,10 +50,10 @@ public:
 
 private:
     /// Prevents the use of the copy constructor.
-    ProgressListener(const ProgressListener &copy) = delete;
+    ProgressListener(const ProgressListener &copy);
 
     /// Prevents the use of the copy operator.
-    void operator=(const ProgressListener &copy) = delete;
+    void operator=(const ProgressListener &copy);
 
 private:
     bool m_lastTestFailed;

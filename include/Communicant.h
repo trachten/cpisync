@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 #include <list>
-#include <errno.h>
+#include <cerrno>
 #include <NTL/ZZ_p.h>
 #include <NTL/vec_ZZ_p.h>
 #include "ConstantsAndTypes.h"
@@ -232,7 +232,7 @@ public:
     // Informational
 
     /**
-     * Resets communication counters that record the number of bytes transmitted/received.
+     * Resets communication counters that record the number of bytes transmitted/received since the last communication counter reset
      */
     void resetCommCounters();
 

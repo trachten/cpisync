@@ -19,6 +19,7 @@ set(SOURCE_FILES
         src/probCPISync.cpp
         src/SyncMethod.cpp
         src/UID.cpp
+		    tests/CommDummy.cpp
         src/HashSync.cpp include/HashSync.h)
 
 include_directories(include)
@@ -54,14 +55,14 @@ ADD_EXECUTABLE(CommStringTest
 target_link_libraries(CommStringTest cpisynclib ntl cppunit gmp)
 ADD_TEST(CommStringTest CommStringTest)
 
-ADD_EXECUTABLE(DataObjectTest
-		${TEST_DIR}/DataObjectTestRunner.cpp
-		${TEST_DIR}/DataObjectTest.cpp
+ADD_EXECUTABLE(CommunicantTest
+        ${TEST_DIR}/CommunicantTestRunner.cpp
+        ${TEST_DIR}/CommunicantTest.cpp
 )
-target_link_libraries(DataObjectTest cpisynclib ntl cppunit gmp)
-ADD_TEST(DataObjectTest DataObjectTest)
+target_link_libraries(CommunicantTest cpisynclib ntl cppunit gmp)
+ADD_TEST(CommunicantTest CommunicantTest)
 
-# TODO: Add all testa automagically
+# TODO: Add all tests automagically
 # FILE(GLOB UnitTests_SRCS ${TEST_DIR} "*TestRunner.cpp" )
 # FOREACH(test ${UnitTests_SRCS})
 #         GET_FILENAME_COMPONENT(TestName ${test} NAME_WE)

@@ -42,9 +42,6 @@ using std::multiset;
 using std::invalid_argument;
 using std::runtime_error;
 
-// forward declarations
-class SyncMethod;
-
 // FUNCTIONS
 
 /**

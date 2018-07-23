@@ -20,7 +20,7 @@ set(SOURCE_FILES
         src/probCPISync.cpp
         src/SyncMethod.cpp
         src/UID.cpp
-)
+        src/HashSync.cpp include/HashSync.h)
 
 include_directories(include)
 include_directories(/opt/local/include)
@@ -54,6 +54,13 @@ ADD_EXECUTABLE(FullSyncTest
 )
 target_link_libraries(FullSyncTest cpisynclib ntl cppunit gmp)
 ADD_TEST(FullSyncTest FullSyncTest)
+
+ADD_EXECUTABLE(CommStringTest
+	${TEST_DIR}/CommStringTestRunner.cpp
+	${TEST_DIR}/CommStringTest.cpp
+)
+target_link_libraries(CommStringTest cpisynclib ntl cppunit gmp)
+ADD_TEST(CommStringTest CommStringTest)
 
 # TODO: Add all testa automagically
 # FILE(GLOB UnitTests_SRCS ${TEST_DIR} "*TestRunner.cpp" )

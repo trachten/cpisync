@@ -83,7 +83,11 @@ public:
     bool addElem(DataObject* newDatum);
 
     template <typename T>
-    bool addElem(T* newDatum);
+    bool addElem(T* newDatum) {
+        Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
+        DataObject *newDO = new DataObject(*newDatum);
+        addElem(newDO);
+    }
 
     // update metadata when an element is being deleted (the element is supplied by index)
     bool delElem(DataObject* newDatum);

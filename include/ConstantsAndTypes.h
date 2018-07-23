@@ -32,15 +32,18 @@ const byte SYNC_FAIL_FLAG = 0; /** The sync failed. */
 const byte SYNC_OK_FLAG = 1; /** The sync succeeded. */
 const byte SYNC_SOME_INFO = 2; /** I have some information to sync. */
 const byte SYNC_NO_INFO = 3; /** I have no information to sync. */
-// ... ... synchronization types
-const byte SYNCTYPE_GenericSync = 0;
-const byte SYNCTYPE_CPISync = 1;
-const byte SYNCTYPE_CPISync_HalfRound = 2;
-const byte SYNCTYPE_CPISync_HalfRound_Hashed = 3;
-const byte SYNCTYPE_CPISync_OneLessRound = 4;
-const byte SYNCTYPE_CPISync_ExistingConnection = 5;
-const byte SYNCTYPE_Interactive_CPISync = 10;
-const byte SYNCTYPE_Priority_CPISync = 11;
+// ... ... synchronization type
+enum class SYNC_TYPE : byte {
+  GenericSync,
+  CPISync,
+  CPISync_HalfRound,
+  CPISync_HalfRound_Hashed,
+  CPISync_OneLessRound,
+  CPISync_ExistingConnection,
+  Interactive_CPISync,
+  Priority_CPISync,
+  HashSync,
+};
 
 // ... Error constants
 static const int SYNC_SUCCESS = 0; /** Exit status when synchronization succeeds. */

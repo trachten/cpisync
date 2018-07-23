@@ -22,7 +22,7 @@ class CPISync_OneLessRound : public CPISync {
 public:
    // Duplicate the CPISync constructors, but set the noHash flag to true
     CPISync_OneLessRound(long m_bar, long bits, int epsilon, int redundant=0) : CPISync(m_bar, bits, epsilon, redundant, false)
-    { hashQ=false; SyncID = SYNCTYPE_CPISync_OneLessRound; }
+    { hashQ=false; SyncID = SYNC_TYPE::CPISync_OneLessRound; }
     
     string getName() {return CPISync::getName() + "   * no hashes\n";}
 };

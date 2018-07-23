@@ -23,6 +23,9 @@
 /**
  * A simplified logging class.
  */
+
+using namespace std;
+
 class Logger {
 
 public:

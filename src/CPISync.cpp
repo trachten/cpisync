@@ -40,7 +40,7 @@ void CPISync::initData(int num) {
     }
 
     probCPI = oneWay = keepAlive = false; // assume not OneWay or Probabilistic synchronization unless otherwise stated, and manage our own communicant connections
-    SyncID = SYNCTYPE_CPISync;
+    SyncID = SYNC_TYPE::CPISync;
 }
 
 CPISync::CPISync(long m_bar, long bits, int epsilon, int redundant, bool hashes /* = false */) :
@@ -66,7 +66,6 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
     else
       bitNum = bits;
 
-    hashQ = true;
     currDiff = maxDiff;
 
     if (redundant == 0) // i.e. use the probability of error to calculate redundancy
@@ -362,7 +361,7 @@ void CPISync::SendSyncParam(Communicant* commSync, bool oneWay /* = false */) {
     SyncMethod::SendSyncParam(commSync, oneWay);
 
     // ... sync ID, mbar, bits, and epsilon
-    commSync->commSend(SyncID);
+    commSync->commSend(enumToByte(SyncID));
     commSync->commSend(maxDiff);
     commSync->commSend(bitNum);
     commSync->commSend(probEps);
@@ -382,7 +381,7 @@ void CPISync::RecvSyncParam(Communicant* commSync, bool oneWay /* = false */) {
     long bitsClient = commSync->commRecv_long();
     int epsilonClient = commSync->commRecv_int();
 
-    if (theSyncID != SyncID ||
+    if (theSyncID != enumToByte(SyncID) ||
             mbarClient != maxDiff ||
             bitsClient != bitNum ||
             epsilonClient != probEps) {
@@ -687,7 +686,7 @@ bool CPISync::addElem(DataObject * datum) {
             hashID = makeData(hash(datum) + hash2(count++)); // a double hash to allow repeated elements
             hashNum = rep(hashID);
         } else { // noHash is enabled
-            hashID = hash(datum); // a simpler, reversable hash
+            hashID = hash(datum); // a simpler, potentially reversable hash
             hashNum = rep(hashID);
             if (CPI_hash.find(hashNum) != CPI_hash.end()) { // an item with this hash already exists
                 Logger::error("Item with hash " + toStr(hashNum) + " already exists in the set.  Under the noHash option, duplicate elements are not permitted.");
@@ -709,15 +708,6 @@ bool CPISync::addElem(DataObject * datum) {
 
     Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) added item " + datum->to_string() + " with hash = " + toStr(hashNum));
 
-    return result;
-}
-
-template <typename T>
-bool CPISync::addElem(T * newDatum) {
-
-    DataObject *newDO = new DataObject(*newDatum);
-    bool result = addElem(newDO);
-    delete newDO;
     return result;
 }
 

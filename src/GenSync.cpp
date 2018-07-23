@@ -195,14 +195,6 @@ void GenSync::addElem(DataObject* newDatum) {
         (*outFile) << newDatum->to_string() << endl;
 }
 
-template <typename T>
-void GenSync::addElem(T* newDatum) {
-    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
-    DataObject *newDO = new DataObject(*newDatum);
-    addElem(newDO);
-    delete newDO;
-}
-
 // delete element
 
 void GenSync::delElem(DataObject* newDatum) {

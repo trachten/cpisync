@@ -18,12 +18,11 @@
 #include <map>
 #include <vector>
 #include <iterator>
+#include <list>
 #include <set>
 #include <algorithm>
 #include <signal.h>
 #include <sys/wait.h>
-#include "GenSync.h"
-#include "SyncMethod.h"
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
 
@@ -38,22 +37,13 @@ using std::stringstream;
 using std::istringstream;
 using std::ostringstream;
 using std::ostream;
+using std::list;
 using std::map;
 using std::multiset;
 using std::invalid_argument;
 using std::runtime_error;
 
 // FUNCTIONS
-/**
- * Runs a synchronization between client1 and client2 in a separate process, recording some statistics in the process.
- * @param client1 The first client to sync.
- * @param client2 The second client to sync.
- * @return Exit status for child/parent processes.
- */
-
-
-class GenSync; // forward declaration
-
 
 /**
  * Converts a string into a vector of bytes
@@ -376,5 +366,14 @@ inline ZZ min(const ZZ& aa, const ZZ& bb) {
         return bb;
 }
 
+/**
+ * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
+ */
+template <class T>
+inline byte enumToByte(T theEnum) {
+    static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
+        "Underlying enum class is not byte - cannot convert to byte!");
+    return static_cast< byte >(theEnum);
+};
 #endif	/* AUX_H */
 

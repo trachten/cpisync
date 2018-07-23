@@ -5,10 +5,10 @@
 
 #include "IBLT.h"
 
-IBLT::IBLT(unsigned long expectedNumEntries)
+IBLT::IBLT(size_t expectedNumEntries)
 {
     // 3x expectedNumEntries gives very low probability of decoding failure
-    unsigned long nEntries = expectedNumEntries + expectedNumEntries/2;
+    size_t nEntries = expectedNumEntries + expectedNumEntries/2;
     // ... make nEntries exactly divisible by N_HASH
     while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;
     hashTable.resize(nEntries);
@@ -16,36 +16,21 @@ IBLT::IBLT(unsigned long expectedNumEntries)
 
 IBLT::~IBLT() = default;
 
-hashVal IBLT::_hash(hashVal initial, long kk) {
+hashVal IBLT::_hash(const hashVal& initial, long kk) {
     if(kk == -1) return initial;
     std::hash<std::string> shash;
     return _hash(shash(toStr(initial)), kk-1);
 }
 
 hashVal IBLT::hashK(const ZZ& item, long kk) {
-    unsigned long hi;
-    MurmurHash3_x86_32(&item, item.size(), kk, &hi);
-    std::hash<std::string> shash;
+    std::hash<std::string> shash; // stl uses MurmurHashUnaligned2
     return _hash(shash(toStr(item)), kk-1);
 }
 
-//hashVal IBLT::hashK(const pair<hashVal, hashVal>& initial, long kk) {
-//    return initial.first + kk*initial.second;
-//}
-
-//pair<hashVal, hashVal> IBLT::initialHash(ZZ zz){
-//    hash<string> shash;
-//    hash<hashVal> hhash;
-//    unsigned long h1 = shash(toStr(zz)); // could make more efficient... currently creates a string copy of ZZ
-//    return {h1, hhash(h1)};
-//}
-
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
-    //auto initialHashes = initialHash(key);
 
     for(int ii=0; ii < N_HASH; ii++){
-        //hashVal hk = hashK(initialHashes, ii);
         hashVal hk = hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
         int loc = startEntry + (hk%bucketsPerHash);
@@ -53,7 +38,6 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
 
         entry.count += plusOrMinus;
         entry.keySum ^= key;
-        //entry.keyCheck ^= hashK(initialHashes, N_HASHCHECK);
         entry.keyCheck ^= hashK(key, N_HASHCHECK);
         if (entry.empty()) {
             entry.valueSum.kill();
@@ -66,7 +50,6 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
 
 void IBLT::insert(ZZ key, ZZ value)
 {
-    //Logger::gLog(Logger::METHOD, std::string("entering: insert"));
     _insert(1, key, value);
 }
 
@@ -78,13 +61,11 @@ void IBLT::erase(ZZ key, ZZ value)
 
 bool IBLT::get(ZZ key, ZZ& result){
     long bucketsPerHash = hashTable.size()/N_HASH;
-    //auto keyInit = initialHash(key);
     for (long ii = 0; ii < N_HASH; ii++) {
         long startEntry = ii*bucketsPerHash;
-
-        //unsigned long hk = hashK(keyInit, ii);
         unsigned long hk = hashK(key, ii);
         const IBLT::HashTableEntry& entry = hashTable[startEntry + (hk%bucketsPerHash)];
+
         if (entry.empty()) {
             // Definitely not in table. Leave
             // result empty, return true.
@@ -112,6 +93,7 @@ bool IBLT::get(ZZ key, ZZ& result){
         for (IBLT::HashTableEntry &entry : this->hashTable) {
             if (entry.isPure()) {
                 if (entry.keySum == key) {
+                    string s = toStr(entry.valueSum);
                     result = entry.valueSum;
                     return true;
                 }
@@ -138,32 +120,26 @@ bool IBLT::HashTableEntry::empty() const
 }
 
 // For debugging during development:
-string IBLT::DumpTable() const
-{
-    stringstream result;
-
-    result << "count keySum keyCheckMatch\n";
-    for(const IBLT::HashTableEntry& entry : hashTable) {
-        result << entry.count << " " << entry.keySum << " ";
-       //auto initial = initialHash(entry.keySum);
-        //result << (hashK(initial, N_HASHCHECK) == entry.keyCheck ? "true" : "false");
-        result << (hashK(entry.keySum, N_HASHCHECK) == entry.keyCheck ? "true" : "false");
-        result << "\n";
-    }
-
-    return result.str();
-}
+//string IBLT::DumpTable() const
+//{
+//    stringstream result;
+//
+//    result << "count keySum keyCheckMatch\n";
+//    for(const IBLT::HashTableEntry& entry : hashTable) {
+//        result << entry.count << " " << entry.keySum << " ";
+//        result << (hashK(entry.keySum, N_HASHCHECK) == entry.keyCheck ? "true" : "false");
+//        result << "\n";
+//    }
+//
+//    return result.str();
+//}
 
 bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
     long nErased = 0;
-    //cout << "Begin" << endl;
     do {
-        //cout << "Start" << endl;
         nErased = 0;
         for(IBLT::HashTableEntry& entry : this->hashTable) {
-            //cout << "entry" << endl;
             if (entry.isPure()) {
-                //cout << "pure: " << entry.keySum << endl;
                 if (entry.count == 1) {
                     positive.emplace_back(std::make_pair(entry.keySum, entry.valueSum));
                 }
@@ -175,7 +151,6 @@ bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &neg
             }
         }
     } while (nErased > 0);
-    cout << DumpTable() << endl;
 
     // If any buckets for one of the hash functions is not empty,
     // then we didn't peel them all:
@@ -184,11 +159,6 @@ bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &neg
     }
     return true;
 }
-
-//bool IBLT::HashTableEntry::isPure() const {
-//    auto initial = initialHash(this->keySum);
-//    return isPure(initial);
-//}
 
 IBLT& IBLT::operator-=(const IBLT& other) {
     for (unsigned long ii = 0; ii < hashTable.size(); ii++) {
@@ -212,3 +182,6 @@ IBLT IBLT::operator-(const IBLT& other) const {
     return result -= other;
 }
 
+size_t IBLT::size() {
+    return hashTable.size();
+}

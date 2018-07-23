@@ -12,7 +12,6 @@
 #include <NTL/ZZ.h>
 #include <sstream>
 #include "Auxiliary.h"
-#include "MurmurHash3.h"
 
 using std::vector;
 using std::hash;
@@ -37,8 +36,11 @@ typedef unsigned long int hashVal;
 
 class IBLT {
 public:
-    // default constructor
-    IBLT(unsigned long expectedNumEntries);
+    /**
+     * Constructs an IBLT object with size relative to expectedNumEntries.
+     * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
+     */
+    IBLT(size_t expectedNumEntries);
     
     // default destructor
     ~IBLT();
@@ -81,30 +83,28 @@ public:
      */
     bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
 
-    // @require iblts same size and params
-    // -= more efficient
     /**
      * Subtracts two IBLTs.
-     * -= is destructive, whereas - isn't. -= is more efficient than -
+     * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
+     * @require IBLT must have the same number of entries and the values must be of the same size
      */
     IBLT operator-(const IBLT& other) const;
     IBLT& operator-=(const IBLT& other);
 
-    // for debugging purposes only.
-    std::string DumpTable() const;
+    /**
+     * @return the number of cells in the IBLT. Not necessarily equal to the expected number of entries
+     */
+    size_t size();
 private:
     // local data
 
     // Helper function for insert and erase
     void _insert(long plusOrMinus, ZZ key, ZZ value);
 
-    // Returns a pair of the first and second unique hashes of zz.
-    //static pair<hashVal, hashVal> initialHash(ZZ zz);
-
     // Returns the kk-th unique hash of the zz that produced initial.
-    //static hashVal hashK(const pair<hashVal, hashVal>& initial, long kk);
     static hashVal hashK(const ZZ& item, long kk);
-    static hashVal _hash(hashVal initial, long kk);
+    static hashVal _hash(const hashVal& initial, long kk);
+
     // Represents each entry in the iblt
     class HashTableEntry
     {

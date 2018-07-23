@@ -18,11 +18,11 @@
 #include <map>
 #include <vector>
 #include <iterator>
+#include <list>
 #include <set>
 #include <signal.h>
 #include <sys/wait.h>
-#include "GenSync.h"
-#include "SyncMethod.h"
+#include <climits>
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
 
@@ -37,72 +37,16 @@ using std::stringstream;
 using std::istringstream;
 using std::ostringstream;
 using std::ostream;
+using std::list;
 using std::map;
 using std::multiset;
 using std::invalid_argument;
 using std::runtime_error;
 
+// forward declarations
+class SyncMethod;
+
 // FUNCTIONS
-/**
- * Runs a synchronization between client1 and client2 in a separate process, recording some statistics in the process.
- * @param client1 The first client to sync.
- * @param client2 The second client to sync.
- * @return Exit status for child/parent processes.
- */
-
-/**
- * Report structure for a forkHandle run
-  */
-struct forkHandleReport {
-    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
-    long bytes;       // the number of bytes communicated
-    double CPUtime;   // the amount of CPU time used
-    double totalTime; // total time used
-    bool success;     // true iff the sync completed successfully
-};
-
-/**
- * Runs client1 (child process) and client2 (parent process), returning statistics for client2.
- * @param server The GenSync object that plays the role of server in the sync.
- * @param client The GenSync object that plays the role of client in the sync.
- * @return Synchronization statistics as reported by the server.
- */
-inline forkHandleReport forkHandle(GenSync server, GenSync client) {   
-    int err = 1;
-    int chld_state;
-    int my_opt = 0;
-    forkHandleReport result;
-    clock_t start = clock();
-    try {
-        pid_t pID = fork();
-        int method_num = 0;
-        if (pID == 0) {
-            signal(SIGCHLD, SIG_IGN);
-            Logger::gLog(Logger::COMM,"created a server process");
-            client.listenSync(method_num);
-            exit(0);
-        } else if (pID < 0) {
-            //handle_error("error to fork a child process");
-            cout << "throw out err = " << err << endl;
-            throw err;
-        } else {
-            Logger::gLog(Logger::COMM,"created a client process");
-            server.startSync(method_num);
-            result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
-            result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
-            result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
-            waitpid(pID, &chld_state, my_opt);
-            result.success=true;
-        }
-
-    } catch (int& err) {
-        sleep(1); // why?
-        cout << "handle_error caught" << endl;
-        result.success=false;
-    }
-    
-    return result;
-}
 
 /**
  * Converts a string into a vector of bytes
@@ -415,5 +359,79 @@ inline ZZ min(const ZZ& aa, const ZZ& bb) {
         return bb;
 }
 
+/**
+ * @return A random integer in [lower, upper]
+ * @require srand() must've been called
+ */
+inline int randLenBetween(int lower, int upper) {
+    int length = (rand() % (upper+1));
+    if(length < lower) length = lower;
+    return length;
+}
+
+/**
+ * @return A random long
+ * @require srand() must've been called
+ */
+inline long randLong() {
+    return (static_cast<long>(rand()) << (sizeof(int) * CHAR_BIT)) | rand(); // lshift the amount of bits in an int and then bitwise or a random int
+}
+
+/**
+ * @return A random byte
+ * @require srand() must've been called
+ */
+inline byte randByte() {
+    return (byte) (rand() % (int) pow(2, CHAR_BIT));
+}
+
+/**
+ * @return A string of random characters with a random length in [lower, upper]
+ * @require srand() must've been called
+ */
+inline string randString(int lower, int upper) {
+    stringstream str;
+
+    // pick a length in between lower and upper, inclusive
+    int length = randLenBetween(lower, upper);
+
+    for(int jj = 0; jj < length; jj++)
+        str << (char) randByte(); // generate a random character and add to the stringstream
+
+    return str.str();
+}
+
+/**
+ * @return A random integer converted to a string
+ * @require srand() must've been called
+ */
+inline string randIntString() {
+    return toStr(rand());
+}
+
+/**
+ * @return A random double in [lower, upper]
+ * @require srand() must've been called
+ */
+inline double randDouble(double lower, double upper) {
+    return ((double)rand() * (upper - lower)) / (double)RAND_MAX + lower;
+}
+
+/**
+ * @return A random ZZ s.t. it is <= ZZ(LONG_MAX)
+ * @require srand() must've been called
+ */
+inline ZZ randZZ() {
+    return ZZ(randLong());
+}
+/**
+ * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
+ */
+template <class T>
+inline byte enumToByte(T theEnum) {
+    static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
+        "Underlying enum class is not byte - cannot convert to byte!");
+    return static_cast< byte >(theEnum);
+};
 #endif	/* AUX_H */
 

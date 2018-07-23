@@ -7,13 +7,13 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "IBLT.h"
+#include "Auxiliary.h"
 #include <iostream>
 #include <algorithm>
 
 class IBLTTest : public CPPUNIT_NS::TestFixture{
     CPPUNIT_TEST_SUITE(IBLTTest);
-    CPPUNIT_TEST(simpleTest);
-    CPPUNIT_TEST(testAddRemoveAndList);
+    CPPUNIT_TEST(testAll);
     CPPUNIT_TEST_SUITE_END();
 public:
     IBLTTest();
@@ -21,10 +21,8 @@ public:
     void setUp();
     void tearDown();
 
-    // Super simple and ugly test for the moment
-    void simpleTest();
-
-    void testAddRemoveAndList();
+    // Tests every function in IBLT together, except for size
+    void testAll();
 };
 
 

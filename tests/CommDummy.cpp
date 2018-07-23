@@ -34,13 +34,13 @@ void CommDummy::commClose(){
 }
 
 void CommDummy::commSend(const char* toSend, const int numBytes){
-    
+
     // If numBytes is zero, then toSend's length must be calculated.
     const int calcLen = 0;
     int bytes = numBytes == calcLen ? strlen(toSend) : numBytes;
     for(int i = 0; i < numBytes; i++)
         intermediate->emplace(toSend[i]);
-    
+
     // Update transmitted-bytes-counter.
     addXmitBytes(bytes);
 }

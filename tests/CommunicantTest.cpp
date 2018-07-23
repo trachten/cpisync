@@ -96,7 +96,7 @@ void CommunicantTest::testEstablishModAndCommZZ_p() {
         CPPUNIT_ASSERT(cRecv.establishModRecv(true));
         
         ZZ_p exp(rand());
-        cSend.Communicant::commSend(exp);
+        cSend.commSend(exp);
         
         CPPUNIT_ASSERT_EQUAL(exp, cRecv.commRecv_ZZ_p());
     }
@@ -225,7 +225,7 @@ void CommunicantTest::testCommDataObjectList() {
             exp.push_back(dd);
         }
 
-        cSend.Communicant::commSend(exp);
+        cSend.commSend(exp);
         const list<DataObject*> res = cRecv.commRecv_DoList();
         // assert same length before iterating to check their equality
         CPPUNIT_ASSERT_EQUAL(exp.size(), res.size());

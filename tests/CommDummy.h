@@ -9,16 +9,18 @@
 #ifndef COMMDUMMY_H
 #define COMMDUMMY_H
 
-#include "Communicant.h"
 #include <string>
 #include <sstream>
 #include <cstring>
 #include <queue>
 
+#include <Communicant.h>
+
 using namespace std;
 class CommDummy : public Communicant {
 public:
-    
+    using Communicant::commSend;  // see https://stackoverflow.com/questions/888235/overriding-a-bases-overloaded-function-in-c
+
     /** 
     * Constructs a CommDummy that sends to, and receives from, a given queue of 
     * characters.
@@ -33,12 +35,14 @@ public:
     ~CommDummy();
     
     // Inherited Communicant methods
-    void commListen();
-    void commConnect();
-    void commClose();
-    void commSend(const char* toSend, const int numBytes);
-    string commRecv(long numBytes);
-    inline string getName(){ return "dummy"; }
+    void commListen() override;
+    void commConnect() override;
+    void commClose() override;
+
+    void commSend(const char* toSend, const int numBytes) override;
+    string commRecv(long numBytes) override ;
+    inline string getName() override { return "dummy"; }
+
 protected:
     
     // Instance variable that stores a pointer to intermediate.

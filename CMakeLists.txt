@@ -62,7 +62,7 @@ ADD_EXECUTABLE(CommunicantTest
 target_link_libraries(CommunicantTest cpisynclib ntl cppunit gmp)
 ADD_TEST(CommunicantTest CommunicantTest)
 
-# TODO: Add all testa automagically
+# TODO: Add all tests automagically
 # FILE(GLOB UnitTests_SRCS ${TEST_DIR} "*TestRunner.cpp" )
 # FOREACH(test ${UnitTests_SRCS})
 #         GET_FILENAME_COMPONENT(TestName ${test} NAME_WE)

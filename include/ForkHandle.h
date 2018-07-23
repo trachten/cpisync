@@ -23,12 +23,24 @@
 #ifndef FORKHANDLE_H
 #define FORKHANDLE_H
 
+
+#ifndef SHM_R
+#define SHM_R 0200
+#endif
+#ifndef SHM_W
+#define SHM_W 0600
+#endif
+
 #include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
 #include "GenSync.h"
 
-
+const size_t SPACE = 1024; // allocates 3 gb for storage, but accessed in a lazy fashion. so only the size of object is allocated
 
 /**
  * Report structure for a forkHandle run
@@ -48,6 +60,7 @@ struct forkHandleReport {
  * @param client The GenSync object that plays the role of client in the sync.
  * @return Synchronization statistics as reported by the server.
  */
+
 inline forkHandleReport forkHandle(GenSync& server, GenSync client) {
     int err = 1;
     int chld_state;
@@ -70,8 +83,9 @@ inline forkHandleReport forkHandle(GenSync& server, GenSync client) {
             Logger::gLog(Logger::COMM,"created a client process");
             server.startSync(method_num);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
-            result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            result.CPUtime = server.getSyncTime(method_num); // assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
+            // to preserve other parameters,
             waitpid(pID, &chld_state, my_opt);
             result.success=true;
         }

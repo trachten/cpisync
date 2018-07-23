@@ -38,7 +38,7 @@ add_library(cpisynclib ${SOURCE_FILES})
 ADD_EXECUTABLE(AuxiliaryTest
         ${TEST_DIR}/AuxiliaryTestRunner.cpp
         ${TEST_DIR}/AuxiliaryTest.cpp
-)
+		tests/GenSyncTest.cpp tests/GenSyncTest.h tests/GenSyncTestRunner.cpp)
 target_link_libraries(AuxiliaryTest cpisynclib ntl cppunit gmp)
 ADD_TEST(AuxiliaryTest AuxiliaryTest)
 
@@ -68,6 +68,13 @@ ADD_EXECUTABLE(DataObjectTest
 		)
 target_link_libraries(DataObjectTest cpisynclib ntl cppunit gmp)
 ADD_TEST(DataObjectTest DataObjectTest)
+
+ADD_EXECUTABLE(GenSyncTest
+		${TEST_DIR}/GenSyncTestRunner.cpp
+		${TEST_DIR}/GenSyncTest.cpp
+		)
+target_link_libraries(GenSyncTest cpisynclib ntl cppunit gmp)
+ADD_TEST(GenSyncTest GenSyncTest)
 
 # TODO: Add all tests automagically
 # FILE(GLOB UnitTests_SRCS ${TEST_DIR} "*TestRunner.cpp" )

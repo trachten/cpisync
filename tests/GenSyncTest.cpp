@@ -64,7 +64,7 @@ void GenSyncTest::testSync() {
         CPPUNIT_ASSERT(resultClient.success);
 
         multiset<string> resClient;
-        for(auto dop : GenSyncServer.dumpElements()) {
+        for(auto dop : GenSyncClient.dumpElements()) {
             resClient.insert(dop->print());
         }
         CPPUNIT_ASSERT_EQUAL(reconciled.size(), resClient.size());
@@ -74,6 +74,7 @@ void GenSyncTest::testSync() {
         cout << "throw out err = " << err << endl;
         throw err;
     } else {
+        waitpid(pID, &chld_state, my_opt);
         forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
         // check reasonable statistics
         CPPUNIT_ASSERT(resultServer.bytes > 0);
@@ -86,7 +87,6 @@ void GenSyncTest::testSync() {
 
         CPPUNIT_ASSERT_EQUAL(reconciled.size(), resServer.size());
         CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).empty());
-        waitpid(pID, &chld_state, my_opt);
     }
 
 

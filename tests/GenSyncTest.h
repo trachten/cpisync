@@ -17,6 +17,8 @@ public:
     void setUp();
     void tearDown();
     void testSync();
+
+    const int TIMES = 1; // times to run randomized tests
 };
 
 

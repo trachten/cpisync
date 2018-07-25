@@ -23,6 +23,7 @@
 #include <csignal>
 #include <sys/wait.h>
 #include <climits>
+#include <cstring>
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
 
@@ -389,7 +390,7 @@ inline byte randByte() {
  * @return A string of random characters with a random length in [lower, upper]
  * @require srand() must've been called
  */
-inline string randString(int lower, int upper) {
+inline string randString(int lower=0, int upper=10) {
     stringstream str;
 
     // pick a length in between lower and upper, inclusive
@@ -413,7 +414,7 @@ inline string randIntString() {
  * @return A random double in [lower, upper]
  * @require srand() must've been called
  */
-inline double randDouble(double lower, double upper) {
+inline double randDouble(double lower=0.0, double upper=1.0) {
     return ((double)rand() * (upper - lower)) / (double)RAND_MAX + lower;
 }
 

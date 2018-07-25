@@ -32,7 +32,7 @@ public:
     /**
      * Specific class constructor.
      * 
-     * @param m_bar Maximum number of differences to sync in one round.  Must be &lt;= 2^bits.
+     * @param m_bar Maximum number of differences to sync in one round.  Must be <= 2^bits.
      * @param bits  The number of bits used to represent each set element. Must be >= 2.  The data structure
      *    cannot store more than 1^bits elements.
      * @param epsilon An upper bound on the probability of error of the synchronization,

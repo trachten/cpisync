@@ -7,13 +7,13 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 class GenSyncTest : public CPPUNIT_NS::TestFixture {
-    CPPUNIT_TEST_SUITE(GenSyncTest);
-    CPPUNIT_TEST(testAddRemoveElems);
-    CPPUNIT_TEST(testGetName);
-    CPPUNIT_TEST(testBuilder);
-    CPPUNIT_TEST(testTwoWaySync);
-    CPPUNIT_TEST(testOneWaySync);
-    CPPUNIT_TEST(testAddSyncMethodAndComm);
+   CPPUNIT_TEST_SUITE(GenSyncTest);
+   // CPPUNIT_TEST(testAddRemoveElems);
+   // CPPUNIT_TEST(testGetName);
+    //CPPUNIT_TEST(testBuilder);
+   // CPPUNIT_TEST(testTwoWaySync);
+   // CPPUNIT_TEST(testOneWaySync);
+    //CPPUNIT_TEST(testAddSyncMethodAndComm);
     CPPUNIT_TEST(testCounters);
     CPPUNIT_TEST_SUITE_END();
 public:

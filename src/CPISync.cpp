@@ -494,6 +494,7 @@ bool CPISync::SyncServer(Communicant* commSync, list<DataObject*>& selfMinusOthe
     vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
             delta_other; /** items the other has that I do not, based on the last synchronization. */
 
+    SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf); // call the base method - sets some fields to 0
 
     // Verify commonality initial parameters
     if (!keepAlive) {

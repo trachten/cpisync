@@ -216,6 +216,10 @@ void GenSync::delComm(int index) {
 
 }
 
+void GenSync::delComm(Communicant* oldComm) {
+    myCommVec.erase(std::remove(myCommVec.begin(), myCommVec.end(), oldComm), myCommVec.end());
+}
+
 int GenSync::numComm() {
     return myCommVec.size();
 }
@@ -266,10 +270,10 @@ const double GenSync::getSyncTime(int commIndex) const {
     Communicant* comm = myCommVec[commIndex];
 
     // true iff there has been a sync (since sync resets comm counters)
-    if(comm->getTotalTime() != comm->getResetTime()) {
-        return (clock() - comm->getResetTime()) / CLOCKS_PER_SEC;
+    if(comm->Communicant::getTotalTime() != comm->Communicant::getResetTime()) {
+        return (double) (clock() - comm->Communicant::getResetTime()) / CLOCKS_PER_SEC;
     } else {
-        return comm->getTotalTime();
+        return comm->Communicant::getTotalTime();
     }
 
 }

@@ -14,64 +14,55 @@
 #include "GenSync.h"
 #include "CommDummy.h"
 
-const int TIMES = 1; // times to test syncing
 
-// consts for reasonable values
-const size_t eltSize = sizeof(randZZ()) * CHAR_BIT;
-const int mBar = UCHAR_MAX*2;
-const string iostr = "";
-const string host = "localhost";
-const unsigned int port = 8001;
-const int err = 8;
-const int numParts = 3;
-const bool b64 = true;
+// constants
+
+const int TIMES = 1; // Times to run oneWay and twoWay sync tests
+
+const size_t eltSize = sizeof(randZZ()) * CHAR_BIT; // size of elements stored in sync tests
+const int mBar = UCHAR_MAX*2; // max differences between client and server in sync tests
+const string iostr = ""; // initial string used to construct CommString
+const bool b64 = true; // whether CommString should communicate in b64
+const string host = "localhost"; // host for CommSocket
+const unsigned int port = 8021; // port for CommSocket
+const int err = 8; // negative log of acceptable error probability for probabilistic syncs
+const int numParts = 3; // partitions per level for divide-and-conquer syncs
 
 CPPUNIT_TEST_SUITE_REGISTRATION(GenSyncTest);
-GenSyncTest::GenSyncTest(){}
-GenSyncTest::~GenSyncTest(){}
+
+GenSyncTest::GenSyncTest() = default;
+GenSyncTest::~GenSyncTest() = default;
+
 void GenSyncTest::setUp(){
+    // constant seed so that randomness is the same across runs
     const int SEED = 617;
     srand(SEED);
 }
 void GenSyncTest::tearDown(){}
 
-/**
- * An awkward helper for iterating enums.
- * @param curr The current enum value
- * @return the next enum value
- */
-template <typename T>
-T &operator++(T& curr) {
-    curr = (T)(((int) (curr) + 1));
-    return curr;
-}
+// helpers
 
 /**
  * Get the temp directory of the system (POSIX).
- * In C++17, this can be replaced with std::filesystem::temp_directory_path
+ * In C++17, this can be replaced with std::filesystem::temp_directory_path.
  * @return path to temp directory
  */
  string tempDir() {
-     // possible environment variables that store the temp directory
+     // possible environment variables containing path to temp directory
      const char* opts[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
 
      // return the first defined env var in opts
      for(const char* ss : opts) {
-         if(const char* loc = getenv(ss))
-             return string(loc);
+         // true iff ss is an env var
+         if(const char* path = getenv(ss)) {
+             return string(path);
+         }
      }
      return "/tmp"; // default temp directory if no env var is found
  }
 
 /**
- * returns all possible gensync configurations constructed using the builder way of creating GenSync objects
- * @param eltSize The size, in bits, of elements in CPISync-based sync protocols.
- * @param mbar The max amount of differences between GenSyncs in CPISync-based sync protocols.
- * @param iostr The string initializing string-based communicants.
- * @param host The host connected to by socket-based communicants.
- * @param port The port connected to by socket-based communicants.
- * @param err The negative log of the failure probability for probability-based syncs.
- * @param numParts Amount of partitions per level for partition-based syncs.
+ * returns all possible gensync configurations constructed using GenSync::Builder
  */
 vector<GenSync> builderCombos() {
     vector<GenSync> ret;
@@ -156,10 +147,7 @@ vector<GenSync> constructorCombos(bool useFile) {
                     CPPUNIT_FAIL("Unreachable");
                     break;
             }
-
-            GenSync test = GenSync(communicants, methods, tempDir() + "/gensynctest/" + toStr(rand()));
-            GenSync other = GenSync(communicants, methods);
-            ret.emplace_back(useFile ? test : other);
+            ret.emplace_back(useFile ? GenSync(communicants, methods, tempDir() + "/gensynctest/" + toStr(rand())) : GenSync(communicants, methods));
         }
     }
     return ret;
@@ -191,6 +179,105 @@ vector<GenSync> standardCombos() {
  */
 vector<GenSync> fileCombos() {
     return constructorCombos(true);
+}
+
+/**
+ * Runs tests assuring that two GenSync objects successfully sync via two-way communication
+ */
+
+void _syncTest(bool oneWay, GenSync GenSyncClient, GenSync GenSyncServer) {
+    // TODO: implement this for different protocols and communicants
+    for(int jj = 0; jj < TIMES; jj++) {
+        // setup DataObjects
+        const unsigned char SIMILAR = rand(); // amt of elems common to both GenSyncs
+        const unsigned char CLIENT_MINUS_SERVER = rand(); // amt of elems unique to client
+        const unsigned char SERVER_MINUS_CLIENT = rand(); // amt of elems unique to server
+
+        vector<DataObject *> objectsPtr;
+
+        for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER -
+                                        1; ii++) {
+            objectsPtr.push_back(new DataObject(randZZ()));
+        }
+        ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested
+        objectsPtr.push_back(new DataObject(*last));
+
+
+        // ... add data objects unique to the server
+        for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {
+            GenSyncServer.addElem(*iter);
+        }
+
+        // ... add data objects unique to the client
+        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT;
+             iter != objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; iter++) {
+            GenSyncClient.addElem(*iter);
+        }
+
+        // add common data objects to both
+        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
+             iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
+            GenSyncClient.addElem(*iter);
+            GenSyncServer.addElem(*iter);
+        }
+
+        GenSyncClient.addElem(last);
+        GenSyncServer.addElem(last); // ensure that adding a object that fits the generic type T works
+
+        // create the expected reconciled multiset
+        multiset<string> reconciled;
+        for (auto dop : objectsPtr) {
+            reconciled.insert(dop->print());
+        }
+
+        // create two processes to test successful reconciliation
+        int err = 1;
+        int chld_state;
+        int my_opt = 0;
+        pid_t pID = fork();
+        if (pID == 0) {
+            signal(SIGCHLD, SIG_IGN);
+            if(!oneWay) {
+                forkHandleReport resultClient = forkHandle(GenSyncClient, GenSyncServer);
+                // check reasonable statistics
+                CPPUNIT_ASSERT(resultClient.bytes > 0);
+                CPPUNIT_ASSERT(resultClient.success);
+
+                multiset<string> resClient;
+                for (auto dop : GenSyncClient.dumpElements()) {
+                    resClient.insert(dop->print());
+                }
+
+                // check that expected and resultant reconciled sets match up in both size and contents
+                CPPUNIT_ASSERT_EQUAL(reconciled.size(), resClient.size());
+                CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).empty());
+            }
+            exit(0);
+        } else if (pID < 0) {
+            cout << "throw out err = " << err << endl;
+            throw err;
+        } else {
+            waitpid(pID, &chld_state, my_opt);
+            forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
+            // check reasonable statistics
+            CPPUNIT_ASSERT(resultServer.bytes > 0);
+            CPPUNIT_ASSERT(resultServer.success);
+
+            multiset<string> resServer;
+            for (auto dop : GenSyncServer.dumpElements()) {
+                resServer.insert(dop->print());
+            }
+
+            // check that expected and resultant reconciled sets match up in both size and contents
+            CPPUNIT_ASSERT_EQUAL(reconciled.size(), resServer.size());
+            CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).empty());
+        }
+    }
+}
+
+
+void syncTestOneWay(GenSync GenSyncClient, GenSync GenSyncServer) {
+    _syncTest(true, GenSyncClient, GenSyncServer);
 }
 
 /**
@@ -278,7 +365,7 @@ vector<GenSync> oneWayCombos() {
                     communicants = {new CommSocket(port, host)};
                     break;
                 case GenSync::SyncComm::string:
-                    communicants = {new CommString(iostr, b64)};
+                    continue; // not a 1way sync
                 default:
                     CPPUNIT_FAIL("Unreachable");
                     break;
@@ -289,96 +376,11 @@ vector<GenSync> oneWayCombos() {
     return ret;
 }
 
-/**
- * Runs tests assuring that two GenSync objects successfully sync via two-way communication
- */
 void syncTest(GenSync GenSyncClient, GenSync GenSyncServer) {
-    // TODO: implement this for different protocols and communicants
-    for(int jj = 0; jj < TIMES; jj++) {
-        // setup DataObjects
-        const unsigned char SIMILAR = rand(); // amt of elems common to both GenSyncs
-        const unsigned char CLIENT_MINUS_SERVER = rand(); // amt of elems unique to client
-        const unsigned char SERVER_MINUS_CLIENT = rand(); // amt of elems unique to server
-
-        vector<DataObject *> objectsPtr;
-
-        for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER -
-                                        1; ii++) {
-            objectsPtr.push_back(new DataObject(randZZ()));
-        }
-        ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested
-        objectsPtr.push_back(new DataObject(*last));
-
-
-        // ... add data objects unique to the server
-        for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {
-            GenSyncServer.addElem(*iter);
-        }
-
-        // ... add data objects unique to the client
-        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT;
-             iter != objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; iter++) {
-            GenSyncClient.addElem(*iter);
-        }
-
-        // add common data objects to both
-        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
-             iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
-            GenSyncClient.addElem(*iter);
-            GenSyncServer.addElem(*iter);
-        }
-
-        GenSyncClient.addElem(last);
-        GenSyncServer.addElem(last); // ensure that adding a object that fits the generic type T works
-
-        // create the expected reconciled multiset
-        multiset<string> reconciled;
-        for (auto dop : objectsPtr) {
-            reconciled.insert(dop->print());
-        }
-
-        // create two processes to test successful reconciliation
-        int err = 1;
-        int chld_state;
-        int my_opt = 0;
-        pid_t pID = fork();
-        if (pID == 0) {
-            signal(SIGCHLD, SIG_IGN);
-            forkHandleReport resultClient = forkHandle(GenSyncClient, GenSyncServer);
-            // check reasonable statistics
-            CPPUNIT_ASSERT(resultClient.bytes > 0);
-            CPPUNIT_ASSERT(resultClient.success);
-
-            multiset<string> resClient;
-            for (auto dop : GenSyncClient.dumpElements()) {
-                resClient.insert(dop->print());
-            }
-
-            // check that expected and resultant reconciled sets match up in both size and contents
-            CPPUNIT_ASSERT_EQUAL(reconciled.size(), resClient.size());
-            CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).empty());
-            exit(0);
-        } else if (pID < 0) {
-            cout << "throw out err = " << err << endl;
-            throw err;
-        } else {
-            waitpid(pID, &chld_state, my_opt);
-            forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
-            // check reasonable statistics
-            CPPUNIT_ASSERT(resultServer.bytes > 0);
-            CPPUNIT_ASSERT(resultServer.success);
-
-            multiset<string> resServer;
-            for (auto dop : GenSyncServer.dumpElements()) {
-                resServer.insert(dop->print());
-            }
-
-            // check that expected and resultant reconciled sets match up in both size and contents
-            CPPUNIT_ASSERT_EQUAL(reconciled.size(), resServer.size());
-            CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).empty());
-        }
-    }
+    _syncTest(false, GenSyncClient, GenSyncServer);
 }
+
+// tests
 
 void GenSyncTest::testAddRemoveElems() {
     const unsigned char ELTS = 64; // amt of elems in the data structure
@@ -390,9 +392,6 @@ void GenSyncTest::testAddRemoveElems() {
     }
 
     ZZ *last = new ZZ(randZZ());
-
-    int bits = sizeof(randZZ()) * CHAR_BIT;
-    int mbar = ELTS;
 
     auto combos = standardCombos(); // also do other combos for this test
     auto file = fileCombos();
@@ -426,25 +425,19 @@ void GenSyncTest::testAddSyncMethodAndComm() {
     GenSync genSync({}, {});
     GenSync genSyncOther({}, {});
 
-    int port = 8001;
     int before = genSync.numComm();
-    genSync.addComm(new CommSocket(port));
-    genSyncOther.addComm(new CommSocket(port));
+    genSync.addComm(new CommSocket(port, host));
+    genSyncOther.addComm(new CommSocket(port, host));
     int after = genSync.numComm();
     CPPUNIT_ASSERT_EQUAL(before + 1, after);
 
-    size_t eltSize = UCHAR_MAX*2;
-    int mBar = sizeof(randZZ()) * CHAR_BIT;
-    int err = 8;
-
-    CPISync toAdd(eltSize, mBar, err);
+    ProbCPISync toAdd(mBar, eltSize, err);
     genSync.addSyncAgt(&toAdd);
-    genSyncOther.addSyncAgt(new CPISync(eltSize, mBar, err));
-    CPPUNIT_ASSERT_EQUAL((CPISync*) *genSync.getSyncAgt(0), &toAdd);
+    genSyncOther.addSyncAgt(new ProbCPISync(mBar, eltSize, err));
+    CPPUNIT_ASSERT_EQUAL((ProbCPISync*) *genSync.getSyncAgt(0), &toAdd);
 
     // should succeed.
     syncTest(genSync, genSyncOther);
-
 }
 
 void GenSyncTest::testGetName() {
@@ -455,23 +448,44 @@ void GenSyncTest::testGetName() {
 
 void GenSyncTest::testCounters() {
     // create the first CommSocket here so that we can check GenSync counters against Communicant counters
-    CommSocket* cs = new CommSocket(port);
+    CommSocket cs(port);
 
     // initialize GenSync objects
-    GenSync genSync({cs}, {new CPISync(mBar, eltSize, err)});
-    GenSync genSyncOther({new CommSocket(port)}, {new CPISync(mBar, eltSize, err)});
+    GenSync genSync({&cs}, {new ProbCPISync(mBar, eltSize, err)});
+    GenSync genSyncOther({new CommSocket(port)}, {new ProbCPISync(mBar, eltSize, err)});
+
+    CPPUNIT_ASSERT_EQUAL(cs.getTotalTime(), (clock_t) genSync.getSyncTime(0)); // since no sync yet, getSyncTime should be time since communicant creation
 
     // perform the sync-tests on both GenSync objects. this will result in bytes being transmitted and recieved
-    syncTest(genSync, genSyncOther);
+    clock_t before = clock();
+    genSyncOther.numComm();
+    syncTest(genSyncOther, genSync);
+    clock_t after = clock();
+    double res = genSyncOther.getSyncTime(0);
+    clock_t afterGetSync = clock();
 
     // check that Communicant counters == the respective GenSync counters
-    CPPUNIT_ASSERT_EQUAL(cs->getXmitBytes(), genSync.getXmitBytes(0));
-    CPPUNIT_ASSERT_EQUAL(cs->getRecvBytes(), genSync.getRecvBytes(0));
+    CPPUNIT_ASSERT_EQUAL(cs.getXmitBytes(), genSync.getXmitBytes(0));
+    CPPUNIT_ASSERT_EQUAL(cs.getRecvBytes(), genSync.getRecvBytes(0));
+
+    // res should be >= the time spent in syncTest, but <= the clock() called right after it
+    // CPPUNIT_ASSERT(res >= (after - before) && res <= afterGetSync); //TODO: uncomment when GenSync::getSyncTime() memleak is resolved
+    CPPUNIT_ASSERT_EQUAL(port, (const unsigned int) genSync.getPort(0));
+
+    genSync.delComm(&cs);
+    CPPUNIT_ASSERT_EQUAL(0, genSync.numComm());
+    genSyncOther.delComm(0);
+    CPPUNIT_ASSERT_EQUAL(0, genSyncOther.numComm());
+
+    auto secondSync = new ProbCPISync(mBar, eltSize, err);
+    genSync.addSyncAgt(secondSync); // by default, pushed to back of the sync vector. 2 syncs now.
+    genSync.delSyncAgt(0); // removes the first sync. the only sync should be secondSync
+    CPPUNIT_ASSERT_EQUAL(secondSync->getName(), (*genSync.getSyncAgt(0))->getName()); // ensure that the first and only sync is now secondSync
+
 }
 
 void GenSyncTest::testBuilder() {
-
-    // random parameters... we aren't actually syncing GenSyncs, so values don't need to be actual
+    // generate two vectors, one of builder-generated GenSyncs, the other of standard-generated GenSyncs
     vector<GenSync> builderConstructor = builderCombos();
     vector<GenSync> standardConstructor = standardCombos();
 
@@ -482,21 +496,26 @@ void GenSyncTest::testBuilder() {
     for(int ii = 0; ii < builderConstructor.size(); ii++) {
         // basic tests
         CPPUNIT_ASSERT_EQUAL((*builderConstructor.at(ii).getSyncAgt(0))->getName(), (*standardConstructor.at(ii).getSyncAgt(0))->getName());
-        CPPUNIT_ASSERT_EQUAL(builderConstructor.at(ii).numComm(), standardConstructor.at(ii).numComm()); // todo: add a test that the communicants are the same and that there is only 1 syncagent
-    } // better test - sync them.
+        CPPUNIT_ASSERT_EQUAL(builderConstructor.at(ii).numComm(), standardConstructor.at(ii).numComm());
+    } // better test - sync them. although that is tough
 }
 
 void GenSyncTest::testTwoWaySync() {
-    vector<GenSync> genSyncsClient = twoWayCombos();
-    vector<GenSync> genSyncsServer = twoWayCombos();
+    vector<GenSync> twoWayClient = twoWayCombos();
+    vector<GenSync> twoWayServer = twoWayCombos();
 
     // sync every GenSync configuration with itself
-    for(int ii = 0; ii < genSyncsClient.size(); ii++) {
-        syncTest(genSyncsClient.at(ii), genSyncsServer.at(ii));
+    for(int ii = 0; ii < twoWayClient.size(); ii++) {
+        syncTest(twoWayClient.at(ii), twoWayServer.at(ii));
     }
 }
 
 void GenSyncTest::testOneWaySync() {
-    CPPUNIT_ASSERT_MESSAGE("Unimplemented", true);
-    // TODO: implement a test that syncs two gensync objects using a one-way sync (halfround cpi and commstring for instance)
+    vector<GenSync> oneWayClient = oneWayCombos();
+    vector<GenSync> oneWayServer = oneWayCombos();
+
+    // sync every GenSync configuration with itself
+    for(int ii = 0; ii < oneWayClient.size(); ii++) {
+        syncTestOneWay(oneWayClient.at(ii), oneWayServer.at(ii));
+    }
 }

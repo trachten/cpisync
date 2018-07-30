@@ -53,7 +53,7 @@ GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mV
     inFile.close();
 
     // register the file to which new data should be appended
-    outFile = new ofstream(fileName.c_str(), ios::app);
+    outFile = shared_ptr<ofstream>(new ofstream(fileName.c_str(), ios::app));
 
 }
 
@@ -61,6 +61,7 @@ GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mV
 
 GenSync::~GenSync() {
     // clear out memory
+    int a = myData.size();
     myData.clear();
 
     //    vector<SyncMethod*>::iterator itAgt = mySyncVec.begin();
@@ -78,7 +79,7 @@ GenSync::~GenSync() {
     // close and free the output file
     if (outFile != NULL) {
         outFile->close();
-        delete outFile;
+        outFile.reset();
     }
 
 }
@@ -322,4 +323,4 @@ GenSync GenSync::Builder::build() {
 
 const string GenSync::Builder::DFT_HOST = "localhost";
 const string GenSync::Builder::DFT_IO = "";
-const double GenSync::Builder::DFT_ERROR = 1E-8;
+const int GenSync::Builder::DFT_ERROR = 8;

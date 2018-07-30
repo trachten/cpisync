@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "Communicant.h"
 #include "DataObject.h"
@@ -30,7 +31,7 @@ using std::ifstream;
 using std::ios;
 using std::invalid_argument;
 using std::runtime_error;
-
+using std::shared_ptr;
 /**
  * Implements a data structure for storing sets of data
  * in a manner that is designed for efficient synchronization.
@@ -287,7 +288,7 @@ private:
     vector<SyncMethod*> mySyncVec;
 
     /** The file to which to output any additions to the data structure. */
-    ofstream *outFile;
+    shared_ptr<ofstream> outFile;
 };
 
 
@@ -353,7 +354,7 @@ public:
     /**
      * Sets an upper bound on the desired error probability for the synchronization.
      */
-    Builder& setErr(double theErrorProb) {
+    Builder& setErr(int theErrorProb) {
         this->errorProb = theErrorProb;
         return *this;
     }
@@ -405,7 +406,7 @@ private:
     SyncComm comm; /** communication means for the synchronization */
     string host; /** the host with which to connect for a socket-based sync */
     int port; /** connection port for a socket-based sync */
-    double errorProb; /** an upper bound on the probability of error tolerance of the sync */
+    int errorProb; /** negative log of the upper bound on the probability of error tolerance of the sync */
     const bool base64; /** whether or not ioStr represents a base64 string */
     string ioStr; /** the string with which to communicate input/output for string-based sync. */
     long mbar; /** an upper estimate on the number of differences between synchronizing data multisets. */
@@ -427,7 +428,7 @@ private:
     // ... initialized in .cpp file due to C++ quirks
     static const string DFT_HOST;
     static const string DFT_IO;
-    static const double DFT_ERROR;
+    static const int DFT_ERROR;
 };
 
 #endif

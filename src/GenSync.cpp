@@ -266,6 +266,16 @@ const double GenSync::getSyncTime(int commIndex) const {
     return (clock() - myCommVec[commIndex]->getResetTime()) / CLOCKS_PER_SEC;
 }
 
+int GenSync::getPort(int commIndex) {
+    // null if comm isn't a CommSocket
+    if (auto cs = dynamic_cast<CommSocket*>(myCommVec[commIndex])) {
+        return cs->getPort();
+    } else {
+        return -1;
+    }
+
+}
+
 // Builder methods
 
 GenSync GenSync::Builder::build() {

@@ -225,7 +225,7 @@ public:
      * If no server is listening for this communicant, the port returned is -1
      * @param comm_index       The index of the communicant that interests us.
      * */
-    int getPort(int comm_index);
+    int getPort(int commIndex);
 
     /**
      * Displays some internal information about this method

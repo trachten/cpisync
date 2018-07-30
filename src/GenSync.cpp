@@ -263,11 +263,19 @@ const long GenSync::getRecvBytes(int commIndex) const {
 }
 
 const double GenSync::getSyncTime(int commIndex) const {
-    return (clock() - myCommVec[commIndex]->getResetTime()) / CLOCKS_PER_SEC;
+    Communicant* comm = myCommVec[commIndex];
+
+    // true iff there has been a sync (since sync resets comm counters)
+    if(comm->getTotalTime() != comm->getResetTime()) {
+        return (clock() - comm->getResetTime()) / CLOCKS_PER_SEC;
+    } else {
+        return comm->getTotalTime();
+    }
+
 }
 
 int GenSync::getPort(int commIndex) {
-    // null if comm isn't a CommSocket
+    // null iff comm isn't a CommSocket
     if (auto cs = dynamic_cast<CommSocket*>(myCommVec[commIndex])) {
         return cs->getPort();
     } else {

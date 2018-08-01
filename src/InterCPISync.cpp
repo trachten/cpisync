@@ -162,7 +162,7 @@ bool InterCPISync::addElem(DataObject* newDatum, pTree * &treeNode, pTree * pare
   return true;
 }
 
-void InterCPISync::SendSyncParam(Communicant* commSync, bool oneWay /* = false */) {
+void InterCPISync::SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = false */) {
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::SendSyncParam");
     // take care of parent sync method
   SyncMethod::SendSyncParam(commSync);
@@ -177,7 +177,7 @@ void InterCPISync::SendSyncParam(Communicant* commSync, bool oneWay /* = false *
   Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
-bool InterCPISync::SyncClient(Communicant* commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
+bool InterCPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD, "Entering InterCPISync::SyncClient");
   // 0. Set up communicants
     if(!useExisting)
@@ -211,7 +211,7 @@ bool InterCPISync::SyncClient(Communicant* commSync, list<DataObject*>& selfMinu
 
 // Recursive helper function for SyncClient
 
-bool InterCPISync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode) {
+bool InterCPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode) {
     Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncClient");
   try {
     // Declare whether we have an empty node or not
@@ -258,7 +258,7 @@ bool InterCPISync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinu
   }
 }
 
-void InterCPISync::RecvSyncParam(Communicant* commSync, bool oneWay /* = false */) {
+void InterCPISync::RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = false */) {
     Logger::gLog(Logger::METHOD,"Entering InterCPISync::RecvSyncParam");
   // take care of parent sync method
   SyncMethod::RecvSyncParam(commSync);
@@ -285,7 +285,7 @@ void InterCPISync::RecvSyncParam(Communicant* commSync, bool oneWay /* = false *
   Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
-bool InterCPISync::SyncServer(Communicant* commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
+bool InterCPISync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
   // 0. Set up communicants
     if(!useExisting)
@@ -320,7 +320,7 @@ bool InterCPISync::SyncServer(Communicant* commSync, list<DataObject*>& selfMinu
 
 // Recursive helper function for SyncServer
 
-bool InterCPISync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode) {
+bool InterCPISync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode) {
     Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
   // Declare whether we have an empty node or not
    // printf("SyncLevel = [%d]\n",syncLevel);
@@ -366,7 +366,7 @@ bool InterCPISync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinu
     return true; // should always return true
   }
 }
-bool InterCPISync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ begRange, const ZZ endRange)
+bool InterCPISync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ begRange, const ZZ endRange)
 {
         //Establish initial Handshakes - Check If I have nothing or If Client has nothing
 	int response;
@@ -450,7 +450,7 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
 		}
 	}
 }
-bool InterCPISync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ begRange, const ZZ endRange) 
+bool InterCPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ begRange, const ZZ endRange)
 {
 	try{
                 //Initial Handshakes - Check if I have nothing or server has nothing

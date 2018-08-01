@@ -435,5 +435,39 @@ inline byte enumToByte(T theEnum) {
         "Underlying enum class is not byte - cannot convert to byte!");
     return static_cast< byte >(theEnum);
 };
+
+/**
+ * An awkward helper for iterating enums.
+ * @param curr The current enum value
+ * @return the next enum value
+ */
+template <typename T>
+inline T &operator++(T& curr) {
+    curr = (T)(((int) (curr) + 1));
+    return curr;
+}
+
+/**
+ * Get the temp directory of the system (POSIX).
+ * In C++17, this can be replaced with std::filesystem::temp_directory_path.
+ * @return path to temp directory
+ */
+inline string temporaryDir() {
+    // possible environment variables containing path to temp directory
+    const char* opts[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
+
+    // return the first defined env var in opts
+    for(const char* ss : opts) {
+
+        // true iff ss is an env var
+        if(const char* path = getenv(ss)) {
+            return string(path);
+        }
+    }
+
+    // default temp directory if no env var is found
+    return "/tmp";
+}
+
 #endif	/* AUX_H */
 

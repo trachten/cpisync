@@ -62,7 +62,7 @@ public:
      * @param otherMinusSelf A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    bool SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
 
     /**
      * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
@@ -72,7 +72,7 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
 
     /*
      ** update metadata when an element is being added.
@@ -121,7 +121,7 @@ protected:
      * @param commSync The communicant to whom to send the parameters.
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    void SendSyncParam(Communicant* commSync, bool oneWay = false);
+    void SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
 
     /**
      * Receive synchronization parameters from another communicant and compare to the current object.
@@ -129,7 +129,7 @@ protected:
      * @param commSync The communicant to whom to send the parameters.
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    void RecvSyncParam(Communicant* commSync, bool oneWay = false);
+    void RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
     void createChildren(pTree * treeNode, pTree * tempTree, const ZZ begRange, const ZZ endRange);
 private:
     // METHODS
@@ -159,26 +159,26 @@ private:
     // Recursive versions of public methods
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
-     * @see Sync_Client(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
+     * @see Sync_Client(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
      * @param treeNode The current node in the tree to synchronize
      * @modifies selfMinusOther - Adds to items discovered to be in my set but not the others'
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      * @return true iff all constituent sync's succeeded
      */
-    bool SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
+    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
 
-    bool SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
+    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
-     * @see Sync_Server(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
+     * @see Sync_Server(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
      * @param treeNode The current node in the tree to synchronize
      * @modifies selfMinusOther - Adds to items discovered to be in my set but not the others'
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      *     * @return true iff all constituent sync's succeeded
      */
-    bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
+    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
 
-    bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
+    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
 
     
     /**

@@ -37,8 +37,7 @@ add_library(cpisynclib ${SOURCE_FILES})
 
 ADD_EXECUTABLE(AuxiliaryTest
         ${TEST_DIR}/AuxiliaryTestRunner.cpp
-        ${TEST_DIR}/AuxiliaryTest.cpp
-		tests/GenSyncTest.cpp tests/GenSyncTest.h tests/GenSyncTestRunner.cpp)
+        ${TEST_DIR}/AuxiliaryTest.cpp)
 target_link_libraries(AuxiliaryTest cpisynclib ntl cppunit gmp)
 ADD_TEST(AuxiliaryTest AuxiliaryTest)
 

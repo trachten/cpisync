@@ -57,7 +57,7 @@ public:
      *                      if not specified.
      * 
      */
-    GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, const list<DataObject*> &data = list<DataObject*>());
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject*> &data = list<DataObject*>());
 
     /**
      * Specific GenSync constructor
@@ -70,7 +70,7 @@ public:
      *                   this data structure.  As elements are added to this data structure, they
      *                   are also stored in the file.
      */
-    GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, string fileName);
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName);
 
 
     // DATA MANIPULATION
@@ -123,13 +123,13 @@ public:
      *                  synchronized upon a synchronization call.
      *                  By default, new communicants are added to the back of the vector
      */
-    void addComm(Communicant* newComm, int index = 0);
+    void addComm(shared_ptr<Communicant> newComm, int index = 0);
 
     /**
      * Delete all communicants oldComm (i.e. stored at the same memory address) from the communicant vector.
      * @param oldComm  A pointer to the desired communicant.
      */
-    void delComm(Communicant* oldComm);
+    void delComm(shared_ptr<Communicant> oldComm);
 
     /**
      * Delete the communicant at the given index in the communicant vector.
@@ -157,7 +157,7 @@ public:
      *                  The order of agents is not significant.
      *                  By default, new agents are added to the back of the sync vector
      */
-    void addSyncAgt(SyncMethod* newAgt, int index = 0);
+    void addSyncAgt(shared_ptr<SyncMethod> newAgt, int index = 0);
 
     /**
      * Delete the agent at the given index in the agent vector.
@@ -170,7 +170,7 @@ public:
      * @param index The index of the agent to return
      * @return The ii-th Sync Agent attached to this object
      */
-    vector<SyncMethod*>::iterator getSyncAgt(int index);
+    vector<shared_ptr<SyncMethod>>::iterator getSyncAgt(int index);
 
 
 
@@ -221,9 +221,9 @@ public:
     const double getSyncTime(int commIndex) const;
 
     /**
-     * @return the port on which the server is listening for communicant comm_index.
+     * @return the port on which the server is listening for communicant commIndex.
      * If no server is listening for this communicant, the port returned is -1
-     * @param comm_index       The index of the communicant that interests us.
+     * @param commIndex       The index of the communicant that interests us.
      * */
     int getPort(int commIndex);
 
@@ -282,10 +282,10 @@ private:
     list<DataObject*> myData;
 
     /** A vector of communicants registered to be able to sync with this GenSync object. */
-    vector<Communicant*> myCommVec;
+    vector<shared_ptr<Communicant>> myCommVec;
 
     /** A vector of synchronization methods that can be used to sync with this GenSync object. */
-    vector<SyncMethod*> mySyncVec;
+    vector<shared_ptr<SyncMethod>> mySyncVec;
 
     /** The file to which to output any additions to the data structure. */
     shared_ptr<ofstream> outFile;
@@ -414,8 +414,8 @@ private:
     int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
 
     // ... bookkeeping variables
-    Communicant *myComm;
-    SyncMethod *myMeth;
+    shared_ptr<Communicant> myComm;
+    shared_ptr<SyncMethod> myMeth;
 
     // DEFAULT constants
     static const long UNDEFINED = -1;

@@ -34,7 +34,7 @@ public:
     AuxiliaryTest();
 
     ~AuxiliaryTest() override;
-    void setUp();
+    void setUp() override;
     void tearDown() override;
 
 private:

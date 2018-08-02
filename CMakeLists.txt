@@ -8,19 +8,18 @@ set(TEST_DIR tests)
 
 # Set file config
 set(SOURCE_FILES
-        src/CommSocket.cpp
-        src/CommString.cpp
-        src/Communicant.cpp
-        src/CPISync.cpp
-        src/DataObject.cpp
-        src/GenSync.cpp
-        src/InterCPISync.cpp
-        src/Logger.cpp
-        src/probCPISync.cpp
-        src/SyncMethod.cpp
-        src/UID.cpp
-		    tests/CommDummy.cpp
-        src/HashSync.cpp include/HashSync.h)
+        ${SRC_DIR}/CommSocket.cpp
+        ${SRC_DIR}/CommString.cpp
+        ${SRC_DIR}/Communicant.cpp
+        ${SRC_DIR}/CPISync.cpp
+        ${SRC_DIR}/DataObject.cpp
+        ${SRC_DIR}/GenSync.cpp
+        ${SRC_DIR}/InterCPISync.cpp
+        ${SRC_DIR}/Logger.cpp
+        ${SRC_DIR}/probCPISync.cpp
+        ${SRC_DIR}/SyncMethod.cpp
+        ${SRC_DIR}/UID.cpp
+		${SRC_DIR}/HashSync.cpp)
 
 include_directories(include)
 include_directories(/opt/local/include)
@@ -57,6 +56,7 @@ ADD_TEST(CommStringTest CommStringTest)
 ADD_EXECUTABLE(CommunicantTest
         ${TEST_DIR}/CommunicantTestRunner.cpp
         ${TEST_DIR}/CommunicantTest.cpp
+		${TEST_DIR}/CommDummy.cpp
 )
 target_link_libraries(CommunicantTest cpisynclib ntl cppunit gmp)
 ADD_TEST(CommunicantTest CommunicantTest)

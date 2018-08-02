@@ -4,9 +4,14 @@
 #ifndef INCRE_CPI_H
 #define INCRE_CPI_H
 
+#include <list>
 #include "Auxiliary.h"
-#include "CPISync.h"
+#include "Communicant.h"
+#include "DataObject.h"
 #include "CPISync_ExistingConnection.h"
+
+using std::list;
+
 /**
  * Implements a data structure for interactively synchronizing sets of
  * data.  The expected amount of communication and computation is linear in the
@@ -84,7 +89,7 @@ public:
     bool addElem(T* newDatum) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
         DataObject *newDO = new DataObject(*newDatum);
-        addElem(newDO);
+        return addElem(newDO);
     }
 
     // update metadata when an element is being deleted (the element is supplied by index)

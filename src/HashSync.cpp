@@ -33,8 +33,8 @@ bool HashSync::delElem(DataObject *newDatum) {
   return syncObject->delElem(hashedDatumPtr);
 
   // cleanup
-  delete hashedDatumPtr;
-  myHashMap.erase(hashed);
+  //delete hashedDatumPtr;
+  //myHashMap.erase(hashed);
 }
 
 bool HashSync::SyncClient(shared_ptr<Communicant>commSync,

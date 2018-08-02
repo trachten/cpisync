@@ -32,17 +32,6 @@
 // some helpers
 
 /**
- * An awkward helper for iterating enums.
- * @param curr The current enum value
- * @return the next enum value
- */
-template <typename T>
-T &operator++(T& curr) {
-    curr = (T)(((int) (curr) + 1));
-    return curr;
-}
-
-/**
  * Tests whether synchronization through a socket (no data) works
  */
 bool SocketSync() {

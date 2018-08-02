@@ -101,7 +101,11 @@ public:
   bool addElem(DataObject* newDatum);
 
   template <typename T>
-  bool addElem(T* newDatum);
+  bool addElem(T* newDatum) {
+      DataObject *newDO = new DataObject(*newDatum);
+      bool result = addElem(newDO);
+      return result;
+  }
 
   // update metadata when an element is being deleted (the element is supplied by index)
   bool delElem(DataObject* newDatum);

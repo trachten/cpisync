@@ -16,6 +16,7 @@
 #include <list>
 #include <thread>
 #include <cassert>
+#include <ForkHandle.h>
 
 #include "Auxiliary.h"
 #include "GenSync.h"

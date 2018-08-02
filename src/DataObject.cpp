@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-#include "Auxiliary.h"
 #include "DataObject.h"
+#include "Auxiliary.h"
 #include "NTL/mat_ZZ_p.h"
 #include "NTL/ZZ_pXFactoring.h"
 
@@ -20,11 +20,6 @@ DataObject::DataObject(const ZZ &datum)  : UID() {
 
 DataObject::DataObject(const string str) : UID() {
     myBuffer = RepIsInt?strTo<ZZ>(str):pack(str);
-}
-
-template<typename T>
-DataObject::DataObject(T item) : UID() {
-    myBuffer = pack(toStr<T> (item));
 }
 
 ZZ DataObject::pack(const string theStr) {

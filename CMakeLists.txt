@@ -20,7 +20,7 @@ set(SOURCE_FILES
         src/SyncMethod.cpp
         src/UID.cpp
         src/IBLT.cpp
-		)
+        src/HashSync.cpp include/HashSync.h)
 
 include_directories(include)
 include_directories(/opt/local/include)

@@ -23,12 +23,6 @@ class DataObjectTest : public CPPUNIT_NS::TestFixture {
     // Tests DataObject::to_string and constructing an empty DataObject
     CPPUNIT_TEST(testToStringAndInitEmpty);
 
-    /**
-     * Tests DataObject::to_priority_string, initializing a DataObject with a generic type that can be converted into a
-     * string, and DataObject::setPriority.
-     */
-    CPPUNIT_TEST(testToPriorityStringAndInitStringableAndSetPriority);
-
     // Tests DataObject::to_char_array
     CPPUNIT_TEST(testToCharArray);
 
@@ -40,12 +34,6 @@ class DataObjectTest : public CPPUNIT_NS::TestFixture {
 
     // Tests DataObject::operator<
     CPPUNIT_TEST(testLessThan);
-
-    // Tests DataObject::getPriority
-    CPPUNIT_TEST(testGetPriority);
-
-    // Tests DataObject::setTimeStamp and DataObject::getTimeStamp
-    CPPUNIT_TEST(testTimeStamp);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -63,13 +51,10 @@ private:
     void testToZZAndInitZZ();
     void testToStringAndInitString();
     void testToStringAndInitEmpty();
-    void testToPriorityStringAndInitStringableAndSetPriority();
     void testToCharArray();
     void testPrint();
     void testStreamInsertion();
     void testLessThan();
-    void testGetPriority();
-    void testTimeStamp();
 };
 
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( DataObjectTest, DataObjectTest );

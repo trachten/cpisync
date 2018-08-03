@@ -27,7 +27,7 @@ public:
 
     ~GenSyncTest() override;
     void setUp() override;
-    void tearDown();
+    void tearDown() override;
 
     // Test that GenSyncs constructed using GenSync::Builder create equivalent GenSyncs to those constructed using the standard constructor
     void testBuilder();
@@ -54,7 +54,7 @@ public:
     void testPort();
 private:
     // constants
-    const int TIMES = 1; // Times to run oneWay and twoWay sync tests
+    const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
     const size_t eltSize = sizeof(randZZ()) * CHAR_BIT; // size of elements stored in sync tests
     const int mBar = UCHAR_MAX*2; // max differences between client and server in sync tests

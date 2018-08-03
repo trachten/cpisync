@@ -182,11 +182,11 @@ void CommunicantTest::testCommDataObjectPriority() { // fix this test so that th
 
     for(int ii = 0; ii < TIMES; ii++) {
 
-        DataObject exp(randLong());
+        DataPriorityObject exp(randLong());
         exp.setPriority(randZZ());
 
-        cSend.Communicant::commSend(exp, true);
-        DataObject* res = cRecv.commRecv_DataObject_Priority();
+        cSend.Communicant::commSend(exp);
+        DataPriorityObject* res = cRecv.commRecv_DataObject_Priority();
 
         CPPUNIT_ASSERT_EQUAL(exp.to_string(), res->to_string());
         CPPUNIT_ASSERT_EQUAL(exp.getPriority(), res->getPriority());
@@ -196,11 +196,11 @@ void CommunicantTest::testCommDataObjectPriority() { // fix this test so that th
     DataObject::RepIsInt = false;
 
     for(int ii = 0; ii < TIMES; ii++) {
-        DataObject exp(randLong());
+        DataPriorityObject exp(randLong());
         exp.setPriority(randZZ());
 
-        cSend.Communicant::commSend(exp, true);
-        DataObject* res = cRecv.commRecv_DataObject_Priority();
+        cSend.Communicant::commSend(exp);
+        DataPriorityObject* res = cRecv.commRecv_DataObject_Priority();
 
         CPPUNIT_ASSERT_EQUAL(exp.to_string(), res->to_string());
         CPPUNIT_ASSERT_EQUAL(exp.getPriority(), res->getPriority());
@@ -233,16 +233,6 @@ void CommunicantTest::testCommDataObjectList() {
         list<DataObject*>::const_iterator expI = exp.begin();
         list<DataObject*>::const_iterator resI = res.begin();
 
-        for(int jj = 0; jj < length; jj++) {
-            DataObject currExp = **expI;
-            DataObject currRes = **resI;
-            CPPUNIT_ASSERT_EQUAL(currExp.to_string(), currRes.to_string());
-            CPPUNIT_ASSERT_EQUAL(currExp.getPriority(), currRes.getPriority());
-            // increment both iterators
-            
-            expI++;
-            resI++;
-        }
         for(DataObject* dop : exp)
             delete dop;
     }

@@ -13,6 +13,7 @@
 #include <NTL/vec_ZZ_p.h>
 #include "ConstantsAndTypes.h"
 #include "DataObject.h"
+#include "DataPriorityObject.h"
 
 // namespace imports
 using namespace NTL;
@@ -94,7 +95,7 @@ public:
      */
     void commSend(DataObject& dob);
     void commSend(list<DataObject *>&dob);
-    void commSend(DataObject& dob, bool priority);
+    void commSend(DataPriorityObject& dob);
     
     /**
      * Sends a list of data object pointers over the line.
@@ -206,7 +207,7 @@ public:
      */
     DataObject *commRecv_DataObject();
     list<DataObject *> commRecv_DataObject_List();
-    DataObject *commRecv_DataObject_Priority();
+    DataPriorityObject * commRecv_DataObject_Priority();
     
     /**
      * Receives a list of Data Objects and transforms this into a list of pointers to DataObjects.

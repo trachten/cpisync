@@ -6,6 +6,7 @@
 #include "CommSocket.h"
 #include "Logger.h"
 #include "DataObject.h"
+#include "DataPriorityObject.h"
 
 Communicant::Communicant() {
     resetCommCounters();
@@ -122,7 +123,7 @@ void Communicant::commSend(list<DataObject *> &dob) {
   }
 }
 
-void Communicant::commSend(DataObject& dob,bool prio) {
+void Communicant::commSend(DataPriorityObject& dob) {
 
     Logger::gLog(Logger::COMM, "... attempting to send: DataObject " + dob.to_priority_string());
 
@@ -282,13 +283,13 @@ list<DataObject *> Communicant::commRecv_DataObject_List() {
   return result;
 }
 
-DataObject* Communicant::commRecv_DataObject_Priority() {
+DataPriorityObject * Communicant::commRecv_DataObject_Priority() {
     string str = commRecv_string();
     string prio = str.substr(0, str.find(','));
     str = str.substr(str.find(',') + 1);
-    DataObject * res = new DataObject(str);
+    DataPriorityObject * res = new DataPriorityObject(str);
     res->setPriority(strTo<ZZ > (prio));
-    Logger::gLog(Logger::COMM, "... received: DataObject " + res->to_string());
+    Logger::gLog(Logger::COMM, "... received: DataPriorityObject " + res->to_string());
     return res;
 }
 

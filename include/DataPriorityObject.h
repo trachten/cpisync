@@ -16,19 +16,34 @@
 using namespace NTL;
 
 class DataPriorityObject : public DataObject {
-public:
 
-    DataPriorityObject(ZZ pri, clock_t ts) : DataObject() {
-        priority = pri;
+public:
+    DataPriorityObject() { initFields(); }
+
+    DataPriorityObject(const string str) : DataObject(str) { initFields(); }
+
+
+    DataPriorityObject(const ZZ &datum) : DataObject(datum) { initFields(); }
+
+    DataPriorityObject(clock_t ts) : DataObject() {
         timestamp=ts;
     }
-    // MORE CONSTRUCTORS NEEDED
 
-    ZZ getPriority();
 
-    void setPriority(ZZ priority);
+    ZZ getPriority() {
+        return priority;
+    }
+
+        void setPriority(ZZ pri) {
+            priority = pri;
+        };
+
+    string to_priority_string() const{
+        return toStr(priority) + "," + (RepIsInt?toStr(myBuffer):unpack(myBuffer));
+    }
 
 private:
+    void initFields() {priority=0; timestamp=clock(); }
     ZZ priority;
     clock_t timestamp;
 };

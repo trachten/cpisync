@@ -209,7 +209,7 @@ vector<GenSync> GenSyncTest::fileCombos() {
 }
 
 void GenSyncTest::_syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient) {
-    for(int jj = 0; jj < TIMES; jj++) {
+    for(int jj = 0; jj < NUM_TESTS; jj++) {
         // setup DataObjects
         const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
         const unsigned char CLIENT_MINUS_SERVER = randByte(); // amt of elems unique to client

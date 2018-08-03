@@ -28,7 +28,7 @@ set(SOURCE_FILES
         ${SRC_DIR}/UID.cpp
 		${SRC_DIR}/HashSync.cpp
         ${SRC_DIR}/CommDummy.cpp
-        )
+        tests/unit/DataPriorityObjectTest.cpp tests/unit/DataPriorityObjectTest.h)
 
 #cppunit
 include_directories(include)

@@ -63,14 +63,6 @@ ostream& operator<<( ostream &out, const DataObject &datum)
  return out;
 }
 
-string DataObject::to_priority_string() const{
-    return toStr(priority) + "," + (RepIsInt?toStr(myBuffer):unpack(myBuffer));
-}
-
-
-void DataObject::setPriority(ZZ pri) {
-    priority = pri;
-};
 
 clock_t DataObject::getTimeStamp() {
     return timestamp;
@@ -79,6 +71,4 @@ clock_t DataObject::getTimeStamp() {
 void DataObject::setTimeStamp(clock_t ts) {
     timestamp = ts;
 }
-ZZ DataObject::getPriority(){
-    return priority;
-}
+

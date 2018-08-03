@@ -5,7 +5,11 @@
 #ifndef CPISYNCLIB_GENSYNCTEST_H
 #define CPISYNCLIB_GENSYNCTEST_H
 
+#include <string>
 #include <cppunit/extensions/HelperMacros.h>
+
+#include "Auxiliary.h"
+#include "GenSync.h"
 
 class GenSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(GenSyncTest);
@@ -20,8 +24,9 @@ class GenSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 public:
     GenSyncTest();
-    virtual ~GenSyncTest();
-    void setUp();
+
+    ~GenSyncTest() override;
+    void setUp() override;
     void tearDown();
 
     // Test that GenSyncs constructed using GenSync::Builder create equivalent GenSyncs to those constructed using the standard constructor

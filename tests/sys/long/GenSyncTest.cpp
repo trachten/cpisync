@@ -419,7 +419,7 @@ void GenSyncTest::testCounters() {
     GenSync genSyncOther({make_shared<CommSocket>(port)}, {make_shared<ProbCPISync>(mBar, eltSize, err)});
 
     // since no sync has happened yet, getSyncTime should report the time since the Communicant at idx #0's creation
-    CPPUNIT_ASSERT_DOUBLES_EQUAL((double) cs->getTotalTime() / CLOCKS_PER_SEC, genSync.getSyncTime(0), 0.0001);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL((double) cs->getTotalTime() / CLOCKS_PER_SEC, genSync.getSyncTime(0), 1.0);
 
     // perform the sync-tests on both GenSync objects. this will result in bytes being transmitted and received.
 

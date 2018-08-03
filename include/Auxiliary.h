@@ -23,6 +23,7 @@
 #include <csignal>
 #include <sys/wait.h>
 #include <climits>
+#include <cstring>
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
 
@@ -389,7 +390,7 @@ inline byte randByte() {
  * @return A string of random characters with a random length in [lower, upper]
  * @require srand() must've been called
  */
-inline string randString(int lower, int upper) {
+inline string randString(int lower=0, int upper=10) {
     stringstream str;
 
     // pick a length in between lower and upper, inclusive
@@ -413,7 +414,7 @@ inline string randIntString() {
  * @return A random double in [lower, upper]
  * @require srand() must've been called
  */
-inline double randDouble(double lower, double upper) {
+inline double randDouble(double lower=0.0, double upper=1.0) {
     return ((double)rand() * (upper - lower)) / (double)RAND_MAX + lower;
 }
 
@@ -434,5 +435,39 @@ inline byte enumToByte(T theEnum) {
         "Underlying enum class is not byte - cannot convert to byte!");
     return static_cast< byte >(theEnum);
 };
+
+/**
+ * An awkward helper for iterating enums.
+ * @param curr The current enum value
+ * @return the next enum value
+ */
+template <typename T>
+inline T &operator++(T& curr) {
+    curr = (T)(((int) (curr) + 1));
+    return curr;
+}
+
+/**
+ * Get the temp directory of the system (POSIX).
+ * In C++17, this can be replaced with std::filesystem::temp_directory_path.
+ * @return path to temp directory
+ */
+inline string temporaryDir() {
+    // possible environment variables containing path to temp directory
+    const char* opts[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
+
+    // return the first defined env var in opts
+    for(const char* ss : opts) {
+
+        // true iff ss is an env var
+        if(const char* path = getenv(ss)) {
+            return string(path);
+        }
+    }
+
+    // default temp directory if no env var is found
+    return "/tmp";
+}
+
 #endif	/* AUX_H */
 

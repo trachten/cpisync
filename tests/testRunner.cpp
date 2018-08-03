@@ -1,8 +1,8 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
-/* 
+/*
  * File:   DataTestRunner.cpp
  * Author: kaets
- * 
+ *
  * Created on May 15, 2018, 10:33:52 AM
  */
 
@@ -23,7 +23,7 @@ class ProgressListener : public CPPUNIT_NS::TestListener {
 public:
 
     ProgressListener()
-    : m_lastTestFailed(false) {
+            : m_lastTestFailed(false) {
     }
 
     ~ProgressListener() {

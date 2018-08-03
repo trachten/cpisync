@@ -48,8 +48,10 @@ public:
      *    in the union of the two sets that are being synchronized.
      */
     ProbCPISync(long m_bar, long bits, int epsilon);
-private:
+
     ~ProbCPISync() {};
+private:
+
 
 };
 

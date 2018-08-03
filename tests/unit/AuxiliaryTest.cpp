@@ -7,9 +7,8 @@
  * Created on Jun 21, 2017, 4:17:10 PM
  */
 
-#include "AuxiliaryTest.h"
 #include "Auxiliary.h"
-
+#include "AuxiliaryTest.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(AuxiliaryTest);
 

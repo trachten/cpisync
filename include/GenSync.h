@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "Communicant.h"
 #include "DataObject.h"
@@ -30,7 +31,7 @@ using std::ifstream;
 using std::ios;
 using std::invalid_argument;
 using std::runtime_error;
-
+using std::shared_ptr;
 /**
  * Implements a data structure for storing sets of data
  * in a manner that is designed for efficient synchronization.
@@ -56,7 +57,7 @@ public:
      *                      if not specified.
      * 
      */
-    GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, const list<DataObject*> &data = list<DataObject*>());
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject*> &data = list<DataObject*>());
 
     /**
      * Specific GenSync constructor
@@ -69,7 +70,7 @@ public:
      *                   this data structure.  As elements are added to this data structure, they
      *                   are also stored in the file.
      */
-    GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, string fileName);
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName);
 
 
     // DATA MANIPULATION
@@ -122,13 +123,13 @@ public:
      *                  synchronized upon a synchronization call.
      *                  By default, new communicants are added to the back of the vector
      */
-    void addComm(Communicant* newComm, int index = 0);
+    void addComm(shared_ptr<Communicant> newComm, int index = 0);
 
     /**
      * Delete all communicants oldComm (i.e. stored at the same memory address) from the communicant vector.
      * @param oldComm  A pointer to the desired communicant.
      */
-    void delComm(Communicant* oldComm);
+    void delComm(shared_ptr<Communicant> oldComm);
 
     /**
      * Delete the communicant at the given index in the communicant vector.
@@ -156,7 +157,7 @@ public:
      *                  The order of agents is not significant.
      *                  By default, new agents are added to the back of the sync vector
      */
-    void addSyncAgt(SyncMethod* newAgt, int index = 0);
+    void addSyncAgt(shared_ptr<SyncMethod> newAgt, int index = 0);
 
     /**
      * Delete the agent at the given index in the agent vector.
@@ -169,7 +170,7 @@ public:
      * @param index The index of the agent to return
      * @return The ii-th Sync Agent attached to this object
      */
-    vector<SyncMethod*>::iterator getSyncAgt(int index);
+    vector<shared_ptr<SyncMethod>>::iterator getSyncAgt(int index);
 
 
 
@@ -220,11 +221,11 @@ public:
     const double getSyncTime(int commIndex) const;
 
     /**
-     * @return the port on which the server is listening for communicant comm_index.
+     * @return the port on which the server is listening for communicant commIndex.
      * If no server is listening for this communicant, the port returned is -1
-     * @param comm_index       The index of the communicant that interests us.
+     * @param commIndex       The index of the communicant that interests us.
      * */
-    int getPort(int comm_index);
+    int getPort(int commIndex);
 
     /**
      * Displays some internal information about this method
@@ -281,13 +282,13 @@ private:
     list<DataObject*> myData;
 
     /** A vector of communicants registered to be able to sync with this GenSync object. */
-    vector<Communicant*> myCommVec;
+    vector<shared_ptr<Communicant>> myCommVec;
 
     /** A vector of synchronization methods that can be used to sync with this GenSync object. */
-    vector<SyncMethod*> mySyncVec;
+    vector<shared_ptr<SyncMethod>> mySyncVec;
 
     /** The file to which to output any additions to the data structure. */
-    ofstream *outFile;
+    shared_ptr<ofstream> outFile;
 };
 
 
@@ -353,7 +354,7 @@ public:
     /**
      * Sets an upper bound on the desired error probability for the synchronization.
      */
-    Builder& setErr(double theErrorProb) {
+    Builder& setErr(int theErrorProb) {
         this->errorProb = theErrorProb;
         return *this;
     }
@@ -405,7 +406,7 @@ private:
     SyncComm comm; /** communication means for the synchronization */
     string host; /** the host with which to connect for a socket-based sync */
     int port; /** connection port for a socket-based sync */
-    double errorProb; /** an upper bound on the probability of error tolerance of the sync */
+    int errorProb; /** negative log of the upper bound on the probability of error tolerance of the sync */
     const bool base64; /** whether or not ioStr represents a base64 string */
     string ioStr; /** the string with which to communicate input/output for string-based sync. */
     long mbar; /** an upper estimate on the number of differences between synchronizing data multisets. */
@@ -413,8 +414,8 @@ private:
     int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
 
     // ... bookkeeping variables
-    Communicant *myComm;
-    SyncMethod *myMeth;
+    shared_ptr<Communicant> myComm;
+    shared_ptr<SyncMethod> myMeth;
 
     // DEFAULT constants
     static const long UNDEFINED = -1;
@@ -427,7 +428,7 @@ private:
     // ... initialized in .cpp file due to C++ quirks
     static const string DFT_HOST;
     static const string DFT_IO;
-    static const double DFT_ERROR;
+    static const int DFT_ERROR;
 };
 
 #endif

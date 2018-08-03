@@ -24,11 +24,12 @@ void IBLTTest::tearDown() {
 void IBLTTest::testAll() {
     vector<pair<ZZ, ZZ>> items;
     const int SIZE = 50; // should be even
+    const size_t ITEM_SIZE = sizeof(randZZ());
     for(int ii = 0; ii < SIZE; ii++) {
         items.push_back({randZZ(), randZZ()});
     }
 
-    IBLT iblt(SIZE);
+    IBLT iblt(SIZE, ITEM_SIZE);
     for(int ii=0; ii < SIZE/2; ii++) {
         iblt.insert(items.at(ii).first, items.at(ii).second);
     }

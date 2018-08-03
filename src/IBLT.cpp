@@ -1,13 +1,14 @@
 //
-// Created by eliezer pearl on 7/9/18.
-// Heavily based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
-//
+// Created by eliezer pearl on 7/9/18.lt.h in https://github.com/mwcote/IBLT-Research.
+////
+// Heavily based on iblt.cpp and ib
 
 #include "IBLT.h"
 
-IBLT::IBLT(size_t expectedNumEntries)
+IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize)
+: valueSize(_valueSize)
 {
-    // 3x expectedNumEntries gives very low probability of decoding failure
+    // 1.5x expectedNumEntries gives very low probability of decoding failure
     size_t nEntries = expectedNumEntries + expectedNumEntries/2;
     // ... make nEntries exactly divisible by N_HASH
     while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;
@@ -118,21 +119,6 @@ bool IBLT::HashTableEntry::empty() const
 {
     return (count == 0 && IsZero(keySum) && keyCheck == 0);
 }
-
-// For debugging during development:
-//string IBLT::DumpTable() const
-//{
-//    stringstream result;
-//
-//    result << "count keySum keyCheckMatch\n";
-//    for(const IBLT::HashTableEntry& entry : hashTable) {
-//        result << entry.count << " " << entry.keySum << " ";
-//        result << (hashK(entry.keySum, N_HASHCHECK) == entry.keyCheck ? "true" : "false");
-//        result << "\n";
-//    }
-//
-//    return result.str();
-//}
 
 bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
     long nErased = 0;

@@ -27,7 +27,8 @@ set(SOURCE_FILES
         ${SRC_DIR}/UID.cpp
 		${SRC_DIR}/HashSync.cpp
         ${SRC_DIR}/CommDummy.cpp
-        )
+        ${SRC_DIR}/IBLT.cpp
+        ${SRC_DIR}/IBLTSync.cpp)
 
 include_directories(include)
 

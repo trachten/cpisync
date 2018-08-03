@@ -40,7 +40,8 @@ public:
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
      */
-    IBLT(size_t expectedNumEntries);
+    IBLT(size_t expectedNumEntries, size_t _valueSize);
+    IBLT() = default;
     
     // default destructor
     ~IBLT();
@@ -131,6 +132,7 @@ private:
 
     // vector of all entries
     vector<HashTableEntry> hashTable;
+    size_t valueSize;
 };
 
 #endif //CPISYNCLIB_IBLT_H

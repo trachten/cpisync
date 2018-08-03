@@ -4,9 +4,14 @@
 #ifndef INCRE_CPI_H
 #define INCRE_CPI_H
 
+#include <list>
 #include "Auxiliary.h"
-#include "CPISync.h"
+#include "Communicant.h"
+#include "DataObject.h"
 #include "CPISync_ExistingConnection.h"
+
+using std::list;
+
 /**
  * Implements a data structure for interactively synchronizing sets of
  * data.  The expected amount of communication and computation is linear in the
@@ -32,7 +37,7 @@ public:
     /**
      * Specific class constructor.
      * 
-     * @param m_bar Maximum number of differences to sync in one round.  Must be &lt;= 2^bits.
+     * @param m_bar Maximum number of differences to sync in one round.  Must be <= 2^bits.
      * @param bits  The number of bits used to represent each set element. Must be >= 2.  The data structure
      *    cannot store more than 1^bits elements.
      * @param epsilon An upper bound on the probability of error of the synchronization,
@@ -62,7 +67,7 @@ public:
      * @param otherMinusSelf A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    bool SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
 
     /**
      * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
@@ -72,7 +77,7 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
 
     /*
      ** update metadata when an element is being added.
@@ -84,7 +89,7 @@ public:
     bool addElem(T* newDatum) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
         DataObject *newDO = new DataObject(*newDatum);
-        addElem(newDO);
+        return addElem(newDO);
     }
 
     // update metadata when an element is being deleted (the element is supplied by index)
@@ -121,7 +126,7 @@ protected:
      * @param commSync The communicant to whom to send the parameters.
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    void SendSyncParam(Communicant* commSync, bool oneWay = false);
+    void SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
 
     /**
      * Receive synchronization parameters from another communicant and compare to the current object.
@@ -129,7 +134,7 @@ protected:
      * @param commSync The communicant to whom to send the parameters.
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    void RecvSyncParam(Communicant* commSync, bool oneWay = false);
+    void RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
     void createChildren(pTree * treeNode, pTree * tempTree, const ZZ begRange, const ZZ endRange);
 private:
     // METHODS
@@ -159,26 +164,26 @@ private:
     // Recursive versions of public methods
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
-     * @see Sync_Client(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
+     * @see Sync_Client(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
      * @param treeNode The current node in the tree to synchronize
      * @modifies selfMinusOther - Adds to items discovered to be in my set but not the others'
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      * @return true iff all constituent sync's succeeded
      */
-    bool SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
+    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
 
-    bool SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
+    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
-     * @see Sync_Server(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
+     * @see Sync_Server(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
      * @param treeNode The current node in the tree to synchronize
      * @modifies selfMinusOther - Adds to items discovered to be in my set but not the others'
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      *     * @return true iff all constituent sync's succeeded
      */
-    bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
+    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
 
-    bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
+    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
 
     
     /**
@@ -198,9 +203,6 @@ private:
      * the parent in the supplied range.
      */
     bool createTreeNode(pTree * &treeNode, pTree * parent, const ZZ &begRange, const ZZ &endRange);
-    void createNewParent(pTree *&parentTree,bool server,Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
-    bool syncRemainingServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
-    bool syncRemainingClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
     // ... FIELDS
     
     

@@ -12,37 +12,14 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommStringTest);
 
-CommStringTest::CommStringTest() {
-}
+CommStringTest::CommStringTest() = default;
 
-CommStringTest::~CommStringTest() {
-}
+CommStringTest::~CommStringTest() = default;
 
 void CommStringTest::setUp() {
 }
 
 void CommStringTest::tearDown() {
-}
-
-inline int randBetween(int lower, int upper) {
-    int length = (rand() % (upper + 1));
-    if(length < lower) length = lower;
-    return length;
-}
-
-inline byte randByte() {
-    return (byte) (rand() % 256);
-}
-inline string randString(int lower, int upper) {
-    stringstream str;
-
-    // pick a length in between lower and upper, inclusive
-    int length = randBetween(lower, upper);
-
-    for(int jj = 0; jj < length; jj++)
-        str << randByte(); // generate a random character and add to stringstream
-
-    return str.str();
 }
 
 void CommStringTest::testGetString() {
@@ -84,7 +61,7 @@ void CommStringTest::testComm(){
 
         CPPUNIT_ASSERT_EQUAL((long) toSend.length(), cs.getXmitBytes());
 
-        long byteNumRecv = randBetween(LOWER, toSend.length());
+        long byteNumRecv = randLenBetween(LOWER, toSend.length());
 
         CPPUNIT_ASSERT_EQUAL(toSend.substr(0, byteNumRecv), cs.commRecv(byteNumRecv));
         CPPUNIT_ASSERT_EQUAL(byteNumRecv, cs.getRecvBytes());

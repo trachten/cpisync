@@ -11,6 +11,7 @@
 #ifndef DATAPRIORITYOBJECT_H
 #define	DATAPRIORITYOBJECT_H
 #include "NTL/mat_ZZ_p.h"
+#include "DataObject.h"
 
 using namespace NTL;
 

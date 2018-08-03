@@ -28,12 +28,12 @@ class HashSync : SyncMethod {
       * @param hashUB All elements hare hashed to a number 0..{@code hashUB}-1, which is presented
       *     as a {@code DataObject} to the underlying sync engine.
       */
-     HashSync(SyncMethod *theSyncObject, int hashUB);
+     HashSync(shared_ptr<SyncMethod> theSyncObject, int hashUB);
 
   // inherited
-  bool SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+  bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
 
-  bool SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+  bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
 
   bool addElem(DataObject* newDatum);
 
@@ -51,7 +51,7 @@ class HashSync : SyncMethod {
        return (input->to_ZZ()%largerPrime)%hashUB;
      }
 
-     SyncMethod *syncObject;
+     shared_ptr<SyncMethod> syncObject;
 
   // maps a hash value to [ the memory where the hashed object is kept, the DataObject that was hashed to get this ]
      std::map<ZZ, std::pair<DataObject*,DataObject *> > myHashMap;

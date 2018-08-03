@@ -10,8 +10,7 @@
 #include "CommSocket.h"
 #include "Logger.h"
 
-CommSocket::CommSocket() {
-}
+CommSocket::CommSocket() = default;
 
 CommSocket::CommSocket(int port, string host) : Communicant() {
     remoteHost = host;
@@ -43,7 +42,7 @@ void CommSocket::commListen() {
     }
 
     //sockaddr_in contains Internet address defined in netinet/in.h
-    struct sockaddr_in myAddr, otherAddr;
+    struct sockaddr_in myAddr{}, otherAddr{};
     myAddr.sin_family = AF_INET;
     myAddr.sin_port = htons(remotePort); // converts nPort from host byte order to network byte order
     myAddr.sin_addr.s_addr = INADDR_ANY;
@@ -95,7 +94,7 @@ void CommSocket::commConnect() {
     }
 
     //sockaddr_in contains internet address defined in netinet/in.h
-    struct sockaddr_in myAddr, otherAddr;
+    struct sockaddr_in myAddr{}, otherAddr{};
     // myAddr structure contains address of my server
     myAddr.sin_family = AF_INET;
     myAddr.sin_port = htons(remotePort);
@@ -109,7 +108,7 @@ void CommSocket::commConnect() {
         // defines a host computer on the Internet
         struct hostent *he;
         // get the IP from the host computer
-        if ((he = gethostbyname(remoteHost.c_str())) == NULL)
+        if ((he = gethostbyname(remoteHost.c_str())) == nullptr)
             Logger::error_and_quit("Could not resolve hostname " + remoteHost);
 
         // copy the network address to the sockaddr_in structure which is passed to connect()
@@ -136,7 +135,7 @@ void CommSocket::commConnect() {
             Logger::error_and_quit("Could not close the socket");
 
         // repoen the socket
-        int sockDesc = socket(AF_INET, SOCK_STREAM, 0);
+        sockDesc= socket(AF_INET, SOCK_STREAM, 0);
         if (sockDesc == -1)
             Logger::error_and_quit("socket");
         if (setsockopt(sockDesc, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int)) == -1)

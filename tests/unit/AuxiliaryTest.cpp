@@ -13,8 +13,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(AuxiliaryTest);
 
-AuxiliaryTest::AuxiliaryTest() {
-}
+AuxiliaryTest::AuxiliaryTest() = default;
 
 AuxiliaryTest::~AuxiliaryTest() {
 }

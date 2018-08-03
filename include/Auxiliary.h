@@ -20,9 +20,10 @@
 #include <iterator>
 #include <list>
 #include <set>
-#include <signal.h>
+#include <csignal>
 #include <sys/wait.h>
 #include <climits>
+#include <cstring>
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
 
@@ -54,7 +55,7 @@ class SyncMethod;
  * @require string must have fewer than MAXINT characters
  * @return A vector of bytes, corresponding, one by one, to the characters of data
  */
-inline vector<byte> StrToVec(string data) {
+inline vector<byte> StrToVec(const string data) {
     vector<byte> result; // where we will be build the result to be returned
 
     const char *data_c_str = data.c_str();
@@ -72,8 +73,8 @@ inline vector<byte> StrToVec(string data) {
  */
 inline string VecToStr(vector<byte> data) {
     string result;
-    for (int ii = 0; ii < (int) data.size(); ii++)
-        result.push_back(data[ii]);
+    for (unsigned char ii : data)
+        result.push_back(ii);
     return result;
 }
 
@@ -111,7 +112,7 @@ inline string toStr(T item) {
 /**
  * Reinterprets a ustring into a string
  */
-inline string ustrToStr(ustring ustr) {
+inline string ustrToStr(const ustring ustr) {
     return string(reinterpret_cast<const char *> ((unsigned char *) ustr.data()), ustr.length());
 }
 
@@ -133,7 +134,7 @@ string printListOfPtrs(list<T *> theList) {
  */
 template <class T>
 string writeInts(T *data, int len) {
-    string result = "";
+    string result;
     for (int ii = 0; ii < len; ii++)
         result += toStr((char) data[ii]) + " (" + toStr((int) data[ii]) + ") ";
     return result;
@@ -144,7 +145,7 @@ string writeInts(T *data, int len) {
  */
 template <class S, class T>
 inline string printMap(map<S, T> theMap) {
-    string result = "";
+    string result;
     typename map<S, T>::const_iterator iter;
     for (iter = theMap.begin(); iter != theMap.end(); iter++) {
         result += toStr(iter->first) + " -> " + toStr(iter->second) + "\n";
@@ -160,7 +161,7 @@ inline string printMap(map<S, T> theMap) {
  * @return a string representing the contents of the container
  */
 inline string multisetPrint(multiset<string> container) {
-    string result = "";
+    string result;
     multiset<string>::const_iterator ii;
     for (ii = container.begin();
             ii != container.end();
@@ -280,7 +281,7 @@ const int signed_shift = 128; // shift to get from unsigned to signed
  * @return An ascii-armored string.
  */
 inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
-    string ret = "";
+    string ret;
 
     int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
     // every 3 ASCII characters get converted into four base64 characters
@@ -389,7 +390,7 @@ inline byte randByte() {
  * @return A string of random characters with a random length in [lower, upper]
  * @require srand() must've been called
  */
-inline string randString(int lower, int upper) {
+inline string randString(int lower=0, int upper=10) {
     stringstream str;
 
     // pick a length in between lower and upper, inclusive
@@ -413,7 +414,7 @@ inline string randIntString() {
  * @return A random double in [lower, upper]
  * @require srand() must've been called
  */
-inline double randDouble(double lower, double upper) {
+inline double randDouble(double lower=0.0, double upper=1.0) {
     return ((double)rand() * (upper - lower)) / (double)RAND_MAX + lower;
 }
 
@@ -424,6 +425,7 @@ inline double randDouble(double lower, double upper) {
 inline ZZ randZZ() {
     return ZZ(randLong());
 }
+
 /**
  * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
  */
@@ -433,5 +435,39 @@ inline byte enumToByte(T theEnum) {
         "Underlying enum class is not byte - cannot convert to byte!");
     return static_cast< byte >(theEnum);
 };
+
+/**
+ * An awkward helper for iterating enums.
+ * @param curr The current enum value
+ * @return the next enum value
+ */
+template <typename T>
+inline T &operator++(T& curr) {
+    curr = (T)(((int) (curr) + 1));
+    return curr;
+}
+
+/**
+ * Get the temp directory of the system (POSIX).
+ * In C++17, this can be replaced with std::filesystem::temp_directory_path.
+ * @return path to temp directory
+ */
+inline string temporaryDir() {
+    // possible environment variables containing path to temp directory
+    const char* opts[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
+
+    // return the first defined env var in opts
+    for(const char* ss : opts) {
+
+        // true iff ss is an env var
+        if(const char* path = getenv(ss)) {
+            return string(path);
+        }
+    }
+
+    // default temp directory if no env var is found
+    return "/tmp";
+}
+
 #endif	/* AUX_H */
 

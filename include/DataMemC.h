@@ -31,8 +31,11 @@ private:
         // the name of the file associated with data object
 	int memsize;
 
+	const int CBUFSIZE=1000; // memory buffer size
+
 	// the address of the memory block
 	char memaddr[CBUFSIZE];
+
 
 
 };

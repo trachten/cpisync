@@ -29,7 +29,7 @@ public:
     /**
      * Destructor
      */
-    ~CommString();
+    ~CommString() override;
 
     // Accessors
     /**
@@ -37,16 +37,16 @@ public:
      */
     string getString();
 
-    string getName() { return "CommString"; }
+    string getName() override { return "CommString"; }
     
     /**
      * Implemented methods from Communicant
      */
-    void commConnect();
-    void commListen();
-    void commClose();
-    void commSend(const char *toSend, const int numBytes);
-    string commRecv(long numBytes);
+    void commConnect() override;
+    void commListen() override;
+    void commClose() override;
+    void commSend(const char *toSend, const int numBytes) override;
+    string commRecv(long numBytes) override;
 
 protected:
     stringstream *stream; // the output stream to which to write characters

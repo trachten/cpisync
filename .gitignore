@@ -58,3 +58,7 @@ nbactions.xml
 
 
 # End of https://www.gitignore.io/api/c++,cmake,netbeans
+
+# Ignore all test files that are generated in the main directory
+*Test
+*Test.exe

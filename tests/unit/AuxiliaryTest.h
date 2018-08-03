@@ -32,9 +32,10 @@ class AuxiliaryTest : public CPPUNIT_NS::TestFixture {
 
 public:
     AuxiliaryTest();
-    virtual ~AuxiliaryTest();
-    void setUp();
-    void tearDown();
+
+    ~AuxiliaryTest() override;
+    void setUp() override;
+    void tearDown() override;
 
 private:
     void testStrToVecToStr();

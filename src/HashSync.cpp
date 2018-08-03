@@ -5,7 +5,7 @@
 #include "Logger.h"
 #include "HashSync.h"
 
-HashSync::HashSync(SyncMethod *theSyncObject, int theHashUB) : SyncMethod(),
+HashSync::HashSync(shared_ptr<SyncMethod> theSyncObject, int theHashUB) : SyncMethod(),
                                                  hashUB(theHashUB)
 {
   largerPrime=NextPrime(hashUB);
@@ -33,11 +33,11 @@ bool HashSync::delElem(DataObject *newDatum) {
   return syncObject->delElem(hashedDatumPtr);
 
   // cleanup
-  delete hashedDatumPtr;
-  myHashMap.erase(hashed);
+  //delete hashedDatumPtr;
+  //myHashMap.erase(hashed);
 }
 
-bool HashSync::SyncClient(Communicant *commSync,
+bool HashSync::SyncClient(shared_ptr<Communicant>commSync,
                           list<DataObject *> &selfMinusOther,
                           list<DataObject *> &otherMinusSelf) {
 
@@ -62,7 +62,7 @@ bool HashSync::SyncClient(Communicant *commSync,
   return result;
 }
 
-bool HashSync::SyncServer(Communicant *commSync,
+bool HashSync::SyncServer(shared_ptr<Communicant>commSync,
                           list<DataObject *> &selfMinusOther,
                           list<DataObject *> &otherMinusSelf) {
 

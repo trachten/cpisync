@@ -19,4 +19,6 @@ CPISync(m_bar, bits, epsilon + ceil(log(bits) / log(2))) // adding lg(b) gives a
    probEps = epsilon; // this was the designed probability of error
    probCPI = true; // switches some code in the CPISync superclass
    currDiff = 1;
+
+
 }

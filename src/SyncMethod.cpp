@@ -12,12 +12,12 @@ SyncMethod::SyncMethod() {
 SyncMethod::~SyncMethod() {
 }
 
-void SyncMethod::SendSyncParam(Communicant* commSync, bool oneWay /* = false */) {
+void SyncMethod::SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = false */) {
  if (!commSync->establishModSend(oneWay)) // establish ZZ_p modulus - must be first
      throw SyncFailureException("Sync parameters do not match between communicants.");
 }
 
-void SyncMethod::RecvSyncParam(Communicant* commSync, bool oneWay /* = false */) {
+void SyncMethod::RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = false */) {
 if (!commSync->establishModRecv(oneWay)) // establish ZZ_p modulus - must be first
       throw SyncFailureException("Sync parameters do not match between communicants.");   
 }

@@ -11,14 +11,17 @@ using namespace NTL;
 bool DataObject::RepIsInt = false; /** How DataObject handles strings. */
 
 DataObject::DataObject()  : UID()
-{ myBuffer = 0; } // myBuffer should be initially empty
+{
+    myBuffer = 0; timestamp=clock();
 
-DataObject::DataObject(const ZZ &datum)  : UID() {
+} // myBuffer should be initially empty
+
+DataObject::DataObject(const ZZ &datum)  : DataObject() {
     myBuffer = datum;
     
 }
 
-DataObject::DataObject(const string str) : UID() {
+DataObject::DataObject(const string str) : DataObject() {
     myBuffer = RepIsInt?strTo<ZZ>(str):pack(str);
 }
 

@@ -46,7 +46,7 @@ public:
     void commListen() override;
     void commClose() override;
     void commSend(const char *toSend, const int numBytes) override;
-    string commRecv(long numBytes) override;
+    string commRecv(unsigned long numBytes) override;
 
 protected:
     stringstream *stream; // the output stream to which to write characters

@@ -84,7 +84,7 @@ bool Communicant::establishModSend(bool oneWay /* = false */) {
         return (commRecv_byte() != SYNC_FAIL_FLAG);
 }
 
-void Communicant::commSend(const ustring toSend, const int numBytes) {
+void Communicant::commSend(const ustring toSend, const unsigned int numBytes) {
     Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
             + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
 
@@ -221,12 +221,12 @@ vec_ZZ_p Communicant::commRecv_vec_ZZ_p() {
 void Communicant::commSend(const ZZ& num, int size) {
     Logger::gLog(Logger::COMM, "... attempting to send: ZZ " + toStr(num));
 
-    int num_size = (size == NOT_SET ? NumBytes(num) : size);
+    unsigned int num_size = (unsigned int) (size == NOT_SET ? NumBytes(num) : size);
     if (num_size == 0) num_size = 1; // special case for sending the integer 0 - need one bit
     unsigned char toSend[num_size];
 
     if (size == NOT_SET) // first send the number of bytes represented by the ZZ
-        commSend(num_size);
+        commSend((int) num_size);
 
     // next send the actual number, as a byte sequence
     BytesFromZZ(toSend, num, num_size);
@@ -235,7 +235,7 @@ void Communicant::commSend(const ZZ& num, int size) {
 
 }
 
-ustring Communicant::commRecv_ustring(long numBytes) {
+ustring Communicant::commRecv_ustring(unsigned int numBytes) {
     string received = commRecv(numBytes);
     ustring result((const unsigned char *) (received.data()), numBytes);
     Logger::gLog(Logger::COMM_DETAILS, "... received ustring: " +

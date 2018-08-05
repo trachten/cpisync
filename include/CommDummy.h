@@ -40,7 +40,7 @@ public:
     void commClose() override;
 
     void commSend(const char* toSend, const int numBytes) override;
-    string commRecv(long numBytes) override ;
+    string commRecv(unsigned long numBytes) override ;
     inline string getName() override { return "dummy"; }
 
 protected:

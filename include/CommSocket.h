@@ -62,7 +62,7 @@ public:
      * @return The string of characters received.
      * @see Communicant.h for more explanations, please.
      */
-    string commRecv(long numBytes) override;
+    string commRecv(unsigned long numBytes) override;
 
     // INFORMATIONAL
     int getPort() { return remotePort; }

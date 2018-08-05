@@ -37,7 +37,7 @@ void CommDummy::commSend(const char* toSend, const int numBytes){
 
     // If numBytes is zero, then toSend's length must be calculated.
     const int calcLen = 0;
-    int bytes = numBytes == calcLen ? strlen(toSend) : numBytes;
+    const size_t bytes = numBytes == calcLen ? strlen(toSend) : numBytes;
     for(int i = 0; i < numBytes; i++)
         intermediate->emplace(toSend[i]);
 
@@ -45,7 +45,7 @@ void CommDummy::commSend(const char* toSend, const int numBytes){
     addXmitBytes(bytes);
 }
 
-string CommDummy::commRecv(long numBytes){
+string CommDummy::commRecv(unsigned long numBytes){
 
     // Create a stringstream to store the first numBytes characters.
     stringstream recv;

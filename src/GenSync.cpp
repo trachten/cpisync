@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "GenSync.h"
 #include "Exceptions.h"

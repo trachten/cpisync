@@ -40,7 +40,7 @@ void CommString::commSend(const char *toSend, const int numBytes) {
     addXmitBytes(numBytes); // update the byte transfer counter
 }
 
-string CommString::commRecv(long numBytes) {
+string CommString::commRecv(unsigned long numBytes) {
     // returns the next few bytes from the string stream
 
     char *tmpBuf = new char[numBytes]; // buffer into which received bytes are placed

@@ -112,7 +112,7 @@ void CommSocket::commConnect() {
             Logger::error_and_quit("Could not resolve hostname " + remoteHost);
 
         // copy the network address to the sockaddr_in structure which is passed to connect()
-        memcpy(&otherAddr.sin_addr, he->h_addr_list[0], he->h_length);
+        memcpy(&otherAddr.sin_addr, he->h_addr_list[0], static_cast<size_t>(he->h_length));
     } else {
         //means we are going to use LocalHost
         otherAddr.sin_addr.s_addr = INADDR_ANY;
@@ -198,7 +198,7 @@ void CommSocket::commSend(const char* toSend, const int len) {
     } while (doAgain);  
 }
 
-string CommSocket::commRecv(long numBytes) {
+string CommSocket::commRecv(unsigned long numBytes) {
        if (my_fd == -1)
         Logger::error_and_quit("Not connected to a socket!");
 

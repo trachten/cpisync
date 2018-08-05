@@ -55,7 +55,7 @@ public:
   /**
    * General class destructor
    */
-  ~CPISync();
+  ~CPISync() override;
 
   /**
    * Connect as a client to a specific communicant and computes differences between the two (without actually updating them).
@@ -67,7 +67,7 @@ public:
    * @param otherMinusSlef A result of reconciliation.  Elements that the other Communicant has that I do not.
    * @return true iff the connection and subsequent synchronization appear to be successful.
    */
-  bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+  bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
   /**
    * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
@@ -78,7 +78,7 @@ public:
    * @param otherMinusSelf A result of reconciliation.  Elements that the other Communicant has that I do not.
    * @return true iff the connection and subsequent synchronization appear to be successful.
    */
-  bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+  bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
 
   /**
@@ -98,7 +98,7 @@ public:
   /*
    ** update metadata when an element is being added
    */
-  bool addElem(DataObject* newDatum);
+  bool addElem(DataObject* newDatum) override;
 
   template <typename T>
   bool addElem(T* newDatum) {
@@ -108,12 +108,12 @@ public:
   }
 
   // update metadata when an element is being deleted (the element is supplied by index)
-  bool delElem(DataObject* newDatum);
+  bool delElem(DataObject* newDatum) override;
 
   /**
    * @return A string with some internal information about this object.
    */
-  string getName();
+  string getName() override;
 
   /**
    * @return A string representing the elements (with hashes) stored in the CPISync object.
@@ -231,7 +231,7 @@ protected:
      * @require commSync must already be connected
     * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
       */
-  void SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
+  void SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false) override;
 
   /**
    * Receive synchronization parameters from another communicant and compare to the current object.
@@ -241,7 +241,7 @@ protected:
    * @require commSync must already be connected
    * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
    */
-  void RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
+  void RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false) override;
 
 private:
   /**

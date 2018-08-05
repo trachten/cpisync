@@ -18,10 +18,9 @@ using namespace NTL;
 class DataPriorityObject : public DataObject {
 
 public:
-    DataPriorityObject() { initFields(); }
+    DataPriorityObject() : DataObject() { initFields(); }
 
     DataPriorityObject(const string str) : DataObject(str) { initFields(); }
-
 
     DataPriorityObject(const ZZ &datum) : DataObject(datum) { initFields(); }
 
@@ -43,9 +42,8 @@ public:
     }
 
 private:
-    void initFields() {priority=0; timestamp=clock(); }
+    void initFields() {priority=0; }
     ZZ priority;
-    clock_t timestamp;
 };
 
 

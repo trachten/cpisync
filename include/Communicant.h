@@ -87,7 +87,7 @@ public:
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(ustring str, const int numBytes);
+    void commSend(const ustring str, const unsigned int numBytes);
 
     /**
      * Sends a data object over the line
@@ -175,7 +175,7 @@ public:
      * @return The string of characters received.
      * @see Communicant.h for more explanations, please.
      */
-    virtual string commRecv(long numBytes) = 0;
+    virtual string commRecv(unsigned long numBytes) = 0;
     
     /**
      * Receive data over an existing connection.  This is the primitive for receiving data.
@@ -183,7 +183,7 @@ public:
      * @return The data received from the connection
      * %M: adds to recvBytes the number of bytes received.
      */
-    ustring commRecv_ustring(long numBytes);
+    ustring commRecv_ustring(unsigned int numBytes);
 
     /**
      * Receive a string object over an existing connection.  Note,
@@ -302,9 +302,9 @@ protected:
     
     // CONSTANTS
     const static int NOT_SET = -1; /** An integer value that has not yet been set. */
-    const static int XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
-    const static int XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
-    const static int XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */
+    const static int unsigned XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
+    const static int unsigned XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
+    const static int unsigned XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */
  };
 
 #endif

@@ -17,11 +17,8 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommunicantTest);
 
-CommunicantTest::CommunicantTest() {
-}
-
-CommunicantTest::~CommunicantTest() {
-}
+CommunicantTest::CommunicantTest() = default;
+CommunicantTest::~CommunicantTest() = default;
 
 void CommunicantTest::setUp() {
     const int MY_SEED = 617; // a preset seed for pseudorandom number generation
@@ -231,7 +228,7 @@ void CommunicantTest::testCommDataObjectList() {
         CPPUNIT_ASSERT_EQUAL(exp.size(), res.size());
 
         list<DataObject*>::const_iterator expI = exp.begin();
-        list<DataObject*>::const_iterator resI = res.begin();
+        auto resI = res.begin();
 
         for(DataObject* dop : exp)
             delete dop;

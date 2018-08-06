@@ -241,16 +241,16 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::find_roots");
     vec_ZZ_pX nn, dd;
     nn = SFBerlekamp(P_poly);
     if (nn.length() > 0)
-        for (long ii = 0; ii < nn.length(); ii++)
-            if (deg(nn[ii]) > 1) { // ended with a non-linear factor
+        for (const ZZ_pX& fact : nn)
+            if (deg(fact) > 1) { // ended with a non-linear factor
                 Logger::gLog(Logger::METHOD, "Cannot reduce P_poly to linear factors..\n");
                 return false;
             }
 
     dd = SFBerlekamp(Q_poly);
     if (dd.length() > 0)
-        for (long jj = 0; jj < dd.length(); jj++)
-            if (deg(dd[jj]) > 1) { // ended with a non-linear factor
+        for (const ZZ_pX& fact : dd)
+            if (deg(fact) > 1) { // ended with a non-linear factor
                 Logger::gLog(Logger::METHOD, "Cannot reduce Q_poly to linear factors.\n");
                 return false;
             }
@@ -283,7 +283,7 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
         for (itCPI = CPI_hash.begin(); itCPI != CPI_hash.end(); itCPI++)
             append(delta_self, to_ZZ_p(itCPI->first));
     } else // otherSetSize >=1 - the other set has something
-        if (CPI_hash.size() == 0) { // I have nothing new
+        if (CPI_hash.empty()) { // I have nothing new
         return true;
     } else { // we both have something new
         vec_ZZ_p coefficient_P, coefficient_Q;
@@ -318,7 +318,7 @@ void CPISync::sendSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &s
     else {
         // Translate to an actual string and send it to the client
         DataObject *dop = CPI_hash[rep(element)];
-        if (dop == NULL)
+        if (dop == nullptr)
             throw SyncFailureException("Element not found - decrease probability of error requirement for sync.");
         commSync->commSend(*dop);
 
@@ -344,18 +344,18 @@ void CPISync::makeStructures(shared_ptr<Communicant> commSync, list<DataObject*>
     Logger::gLog(Logger::METHOD,"Entering CPISync::makeStructures");
     // Send self minus other
     try {
-        for (int ii = 0; ii < delta_self.length(); ii++)
-            sendSetElem(commSync, selfMinusOther, delta_self[ii]);
-    } catch (SyncFailureException s) {
+        for (const ZZ_p& dop : delta_self)
+            sendSetElem(commSync, selfMinusOther, dop);
+    } catch (const SyncFailureException& s) {
         throw (s); // rethrow the exception onward
     }
 
     // Receive other minus self
-    for (int ii = 0; ii < delta_other.length(); ii++)
-        recvSetElem(commSync, otherMinusSelf, delta_other[ii]);
+    for (const auto &ii : delta_other)
+        recvSetElem(commSync, otherMinusSelf, ii);
 }
 
-void CPISync::SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = false */) {
+void CPISync::SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SendSyncParam");
     // take care of parent sync method
     SyncMethod::SendSyncParam(commSync, oneWay);
@@ -370,7 +370,7 @@ void CPISync::SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = f
     Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
-void CPISync::RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = false */) {
+void CPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::RecvSyncParam");
     // take care of parent sync method
     SyncMethod::RecvSyncParam(commSync, oneWay);
@@ -398,7 +398,7 @@ void CPISync::RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = f
     Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
-bool CPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncClient");
     // local variables
     vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
@@ -407,7 +407,6 @@ bool CPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &se
     // 0. Initialization;
     try {
         SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf); // call the base method - sets some fields to 0
-        clock_t commStart = clock();
 
         // 0.5  verify commonality initial parameters
         // ... connect to the other party
@@ -449,7 +448,6 @@ bool CPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &se
                 tmp_vec.kill();
             }
         }
-        clock_t end1 = clock();
 
         if (!oneWay) {
             delta_other = commSync->commRecv_vec_ZZ_p();
@@ -481,9 +479,8 @@ bool CPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &se
     }
 }
 
-bool CPISync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
+bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncServer");
-    int source;
     string mystring;
     vector<long> self_hash;
     vector<long> recv_hash;
@@ -533,16 +530,16 @@ bool CPISync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*>& se
             vec_ZZ_p value_other = meta_other;
             // perform a check with the redundant data
             for (long jj = 0; jj < redundant_k; jj++) {
-                for (long ii = 0; ii < delta_other.length(); ii++) {
+                for (const auto &ii : delta_other) {
                     //value_self[jj] *= (sampleLoc[maxDiff + jj] - delta_other[ii]);
-                     value_self[jj] *= (sampleLoc[currDiff + jj] - delta_other[ii]);
+                     value_self[jj] *= (sampleLoc[currDiff + jj] - ii);
                 }
             }
 
             for (long jj = 0; jj < redundant_k; jj++) {
-                for (long ii = 0; ii < delta_self.length(); ii++) {
+                for (const auto &ii : delta_self) {
                     //value_other[jj] *= (sampleLoc[maxDiff + jj] - delta_self[ii]);
-                    value_other[jj] *= (sampleLoc[currDiff + jj] - delta_self[ii]);
+                    value_other[jj] *= (sampleLoc[currDiff + jj] - ii);
                 }
             }
 
@@ -560,7 +557,6 @@ bool CPISync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*>& se
 
                 if (!oneWay)
                     commSync->commSend(SYNC_OK_FLAG); // sync succeeded
-                clock_t serverCPUTime = clock() - serverStart;
 
                 if (!oneWay) {
                     commSync->commSend(delta_self);
@@ -571,12 +567,7 @@ bool CPISync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*>& se
                         + "   self - other =  " + toStr<vec_ZZ_p > (delta_self) + "\n"
                         + "   other - self =  " + toStr<vec_ZZ_p > (delta_other) + "\n"
                         + "\n");
-		string results= string("... results:\n")
-                        + "   self - other =  " + toStr<vec_ZZ_p > (delta_self) + "\n"
-                        + "   other - self =  " + toStr<vec_ZZ_p > (delta_other) + "\n"
-                        + "\n";
-		//cout<<results;
-		
+
                 // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
                 try {
                     makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
@@ -645,8 +636,8 @@ void CPISync::receiveAllElem(shared_ptr<Communicant> commSync, list<DataObject*>
 
 DataObject * CPISync::invHash(const ZZ_p num) const {
     Logger::gLog(Logger::METHOD,"Entering CPISync::invHash");
-    ZZ numZZ = rep(num);
-    DataObject *result = new DataObject(numZZ);
+    const ZZ &numZZ = rep(num);
+    auto *result = new DataObject(numZZ);
     return result;
 }
 
@@ -721,12 +712,12 @@ bool CPISync::delElem(DataObject * newDatum) {
 
 // for debugging
 
-void showVec(vec_ZZ_p vec) {
+void showVec(const vec_ZZ_p &vec) {
 
     cout << vec << endl;
 }
 
-void showNum(ZZ_p num) {
+void showNum(const ZZ_p &num) {
     cout << num << endl;
 }
 
@@ -737,8 +728,4 @@ string CPISync::printElem() {
     for (it = CPI_hash.begin(); it != CPI_hash.end(); it++)
         result << (it->second)->to_string() << " [hash=" << (it->first) << "], ";
     return result.str();
-}
-
-CPISync* CPISync::clone() const {
-    return new CPISync(*this);
 }

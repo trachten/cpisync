@@ -27,7 +27,7 @@ public:
      *    This parameter can be ignored if the Communicant is intended to listen for other connections.
      * @param port A port on the host to use for communications.
      */
-    CommSocket(int port, string host = "");
+    explicit CommSocket(int port, string host = "");
 
     // Destructor
     ~CommSocket() override;
@@ -53,7 +53,7 @@ public:
      * %R: Must have called either commListen or commConnect already.
      * @see Communicant.h for more explanations, please.
      */
-    void commSend(const char *toSend, const int numBytes) override;
+    void commSend(const char *toSend, int numBytes) override;
 
     /**
      * Receives numBytes characters from the socket.

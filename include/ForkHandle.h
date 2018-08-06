@@ -25,7 +25,7 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#include <signal.h>
+#include <csignal>
 #include "GenSync.h"
 
 
@@ -55,21 +55,10 @@ inline forkHandleReport forkHandle(GenSync& server, GenSync client) {
     forkHandleReport result;
     clock_t start = clock();
     try {
-        int fd[2]; // pipe to send contents of child GenSync
-        if(pipe(fd)==-1) {
-            cout << "throw out err = " << err << endl;
-            throw err;
-        }
         pid_t pID = fork();
         int method_num = 0;
         if (pID == 0) {
             signal(SIGCHLD, SIG_IGN);
-            close(fd[0]); // close reading end of pipe
-
-            char test[100] = "hi there!\0";
-            write(fd[1], test, strlen(test)+1);
-            close(fd[1]);
-
             Logger::gLog(Logger::COMM,"created a server process");
             client.listenSync(method_num);
             exit(0);
@@ -79,20 +68,12 @@ inline forkHandleReport forkHandle(GenSync& server, GenSync client) {
             throw err;
         } else {
             Logger::gLog(Logger::COMM,"created a client process");
-            server.startSync(method_num);
+            bool success = server.startSync(method_num);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
             result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
             waitpid(pID, &chld_state, my_opt);
-
-            close(fd[1]);
-            char testRec[100];
-            read(fd[0], testRec, 100);
-
-            cout << testRec;
-            close(fd[0]);
-
-            result.success=true;
+            result.success=success;
         }
 
     } catch (int& err) {

@@ -6,6 +6,7 @@
 
 // standard libraries
 #include <list>
+#include <utility>
 #include <vector>
 #include <string>
 #include <memory>
@@ -71,9 +72,6 @@ public:
      *                   are also stored in the file.
      */
     GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName);
-
-    // copy function
-    GenSync(const GenSync& other);
 
     // DATA MANIPULATION
     /**
@@ -258,7 +256,7 @@ public:
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
         // CPISync and variants
-        CPISync= BEGIN,
+        CPISync=BEGIN,
         InteractiveCPISync,
         OneWayCPISync,
         FullSync,
@@ -313,8 +311,8 @@ public:
     mbar(DFT_MBAR),
     bits(DFT_BITS),
     numParts(DFT_PARTS) {
-        myComm = NULL;
-        myMeth = NULL;
+        myComm = nullptr;
+        myMeth = nullptr;
     }
 
     /**
@@ -335,7 +333,7 @@ public:
      * Sets the host to which to connect for synchronization in a socket-based sync.
      */
     Builder& setHost(string theHost) {
-        this->host = theHost;
+        this->host = std::move(theHost);
         return *this;
     }
 
@@ -367,7 +365,7 @@ public:
      * Sets the string with which to synchronize for string-based communication.
      */
     Builder& setIoStr(string theIoStr) {
-        this->ioStr = theIoStr;
+        this->ioStr = std::move(theIoStr);
         return *this;
     }
 

@@ -56,7 +56,7 @@ public:
     InterCPISync(long m_bar, long bits, int epsilon, int partition);
 
     // destructor
-    ~InterCPISync();
+    ~InterCPISync() override;
 
     /**
      * Connect as a client to a specific communicant and computes differences between the two (without actually updating them).
@@ -67,7 +67,7 @@ public:
      * @param otherMinusSelf A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
     /**
      * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
@@ -77,15 +77,13 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
-
-    InterCPISync* clone() const;
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
     /*
      ** update metadata when an element is being added.
      * The maximum number of elements that the data structure can store is 1<<bitNum
      */
-    bool addElem(DataObject* newDatum);
+    bool addElem(DataObject* newDatum) override;
 
     template <typename T>
     bool addElem(T* newDatum) {
@@ -95,12 +93,12 @@ public:
     }
 
     // update metadata when an element is being deleted (the element is supplied by index)
-    bool delElem(DataObject* newDatum);
+    bool delElem(DataObject* newDatum) override;
 
     /**
      * Displays some internal information about this object.
      */
-    string getName() {
+    string getName() override {
         return string("Interactive CPISync: bitNum=") + toStr(bitNum)
                 + ", perr = 2^-" + toStr(probEps) + ", mbar = " + toStr(maxDiff)
                 + ", pFactor = " + toStr(pFactor);
@@ -128,7 +126,7 @@ protected:
      * @param commSync The communicant to whom to send the parameters.
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    void SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
+    void SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
 
     /**
      * Receive synchronization parameters from another communicant and compare to the current object.
@@ -136,8 +134,8 @@ protected:
      * @param commSync The communicant to whom to send the parameters.
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    void RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
-    void createChildren(pTree * treeNode, pTree * tempTree, const ZZ begRange, const ZZ endRange);
+    void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
+    void createChildren(pTree * treeNode, pTree * tempTree, ZZ begRange, ZZ endRange);
 private:
     // METHODS
 
@@ -172,9 +170,11 @@ private:
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      * @return true iff all constituent sync's succeeded
      */
-    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
 
-    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,
+                    ZZ begRange,
+                    ZZ endRange);
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
      * @see Sync_Server(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
@@ -183,9 +183,11 @@ private:
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      *     * @return true iff all constituent sync's succeeded
      */
-    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
 
-    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,const ZZ begRange, const ZZ endRange);
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,
+                    ZZ begRange,
+                    ZZ endRange);
 
     
     /**

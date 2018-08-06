@@ -28,11 +28,11 @@ set(SOURCE_FILES
         ${SRC_DIR}/UID.cpp
 		${SRC_DIR}/HashSync.cpp
         ${SRC_DIR}/CommDummy.cpp
-        ${SRC_DIR}/FullSync.cpp
-        tests/unit/DataPriorityObjectTest.cpp tests/unit/DataPriorityObjectTest.h)
+        ${SRC_DIR}/FullSync.cpp)
 
 #cppunit
 include_directories(include)
+include_directories(tests)
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} )

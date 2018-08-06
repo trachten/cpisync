@@ -15,21 +15,26 @@
 class FullSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(FullSyncTest);
     
-    CPPUNIT_TEST(basicTest);
-    CPPUNIT_TEST(thoroughTest);
+    CPPUNIT_TEST(justSyncTest);
+    CPPUNIT_TEST(testAddDelElem);
+    CPPUNIT_TEST(testGetStrings);
             
     CPPUNIT_TEST_SUITE_END();
 public:
     FullSyncTest();
-    virtual ~FullSyncTest();
-    void setUp();
-    void tearDown();
-    
-    /**
-     * Runs a simple test where server and client are initialized with fixed sets that differ in exactly one element.
-     */
-    void basicTest();
-    void thoroughTest();
+
+    ~FullSyncTest() override;
+    void setUp() override;
+    void tearDown() override;
+
+    // Test reconciliation
+    void justSyncTest();
+
+    // Test adding and deleting elements
+    void testAddDelElem();
+
+    // Test that printElem() and getName() return some nonempty string
+    void testGetStrings();
 private:
 
 };

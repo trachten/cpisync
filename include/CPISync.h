@@ -50,7 +50,6 @@ public:
    *    in the union of the two sets that are being synchronized int.
    */
   CPISync(long m_bar, long bits, int epsilon, int redundant = 0, bool hashes = false);
-  CPISync* clone() const;
 
   /**
    * General class destructor
@@ -67,7 +66,7 @@ public:
    * @param otherMinusSlef A result of reconciliation.  Elements that the other Communicant has that I do not.
    * @return true iff the connection and subsequent synchronization appear to be successful.
    */
-  bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+  bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
   /**
    * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
@@ -78,7 +77,7 @@ public:
    * @param otherMinusSelf A result of reconciliation.  Elements that the other Communicant has that I do not.
    * @return true iff the connection and subsequent synchronization appear to be successful.
    */
-  bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+  bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
 
   /**
@@ -218,7 +217,7 @@ protected:
    *    * inability to interpolate the reconciliation rational function
    *    * inability to factor the numerator or denominator of the interpolation rational function
    */
-  bool set_reconcile(const long otherSetSize, const vec_ZZ_p& otherEvals, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
+  bool set_reconcile(long otherSetSize, const vec_ZZ_p& otherEvals, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
 
   vec_ZZ_p CPI_evals; /** The ii-th entry of this vector is the evaluation of this data structure's characteristic
                         * polynomial at the ii-th sample point. */
@@ -231,7 +230,7 @@ protected:
      * @require commSync must already be connected
     * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
       */
-  void SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false) override;
+  void SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
 
   /**
    * Receive synchronization parameters from another communicant and compare to the current object.
@@ -241,7 +240,7 @@ protected:
    * @require commSync must already be connected
    * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
    */
-  void RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false) override;
+  void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
 
 private:
   /**
@@ -258,7 +257,7 @@ private:
   /**
    * Inverts the hash above when the noHash boolean is set
    */
-  DataObject *invHash(const ZZ_p num) const;
+  DataObject *invHash(ZZ_p num) const;
 
   /**
    * A secondary hash used for disambiguating set elements with the same hash.
@@ -269,7 +268,7 @@ private:
    * @param num A parameter of the hash.
    * @return An arbitrary ZZ_p corresponding to num.
    */
-  ZZ_p hash2(const long num) const;
+  ZZ_p hash2(long num) const;
 
   /**
    * Converts num to a number between 1 and DATA_MAX

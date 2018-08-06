@@ -49,7 +49,7 @@ public:
      */
     ProbCPISync(long m_bar, long bits, int epsilon);
 
-    ~ProbCPISync() {};
+    ~ProbCPISync() override = default;;
 private:
 
 

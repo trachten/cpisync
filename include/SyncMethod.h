@@ -26,8 +26,6 @@ public:
     SyncMethod();
     // destructor
     virtual ~SyncMethod();
-    // copy
-    virtual SyncMethod* clone () const = 0;
 
     // SYNC
 
@@ -41,7 +39,7 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    virtual bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+    virtual bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
         commSync->resetCommCounters();
         return true;
     }
@@ -55,7 +53,7 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    virtual bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+    virtual bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
         commSync->resetCommCounters();
         return true;
     }
@@ -111,7 +109,7 @@ protected:
      * @param oneWay If set to true, no response is expected from the other communicant (the sync is one-way).
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    virtual void SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
+    virtual void SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false);
     
     /**
      * Receive synchronization parameters from another communicant and compare to the current object.
@@ -120,7 +118,7 @@ protected:
      * @param oneWay If set to true, no response is expected from the other communicant (the sync is one-way).
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    virtual void RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay = false);
+    virtual void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false);
     
     SYNC_TYPE SyncID; /** A number that uniquely identifies a given synchronization protocol. */
     

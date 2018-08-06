@@ -35,10 +35,11 @@ public:
     const int LOWER = 0;
     const int UPPER = 50;
 
-    DataPriorityObjectTest() {}
+    DataPriorityObjectTest() = default;
+
     //virtual ~DataPriorityObjectTest();
-    void setUp();
-    void tearDown() {}
+    void setUp() override;
+    void tearDown() override {}
 
 private:
     void testToPriorityStringAndInitStringableAndSetPriority();

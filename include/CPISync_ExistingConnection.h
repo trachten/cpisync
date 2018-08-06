@@ -21,7 +21,7 @@ public:
     CPISync_ExistingConnection(long m_bar, long bits, int epsilon, int redundant=0) : CPISync(m_bar, bits, epsilon, redundant, false)
     { hashQ=false; keepAlive = true; SyncID = SYNC_TYPE::CPISync_ExistingConnection; }
     
-    string getName() {return CPISync::getName() + "   * assuming an existing connection\n";}
+    string getName() override {return CPISync::getName() + "   * assuming an existing connection\n";}
 };
 
 #endif	/* CPISYNC_EXISTINGCONNECTION_H */

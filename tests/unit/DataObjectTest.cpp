@@ -13,11 +13,9 @@ using namespace std;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(DataObjectTest);
 
-DataObjectTest::DataObjectTest() {
-}
+DataObjectTest::DataObjectTest() = default;
 
-DataObjectTest::~DataObjectTest() {
-}
+DataObjectTest::~DataObjectTest() = default;
 
 void DataObjectTest::setUp(){
     const int SEED = 617;

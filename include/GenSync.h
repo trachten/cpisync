@@ -255,7 +255,7 @@ public:
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
         // CPISync and variants
-        CPISync= BEGIN,
+        CPISync=BEGIN,
         InteractiveCPISync,
         OneWayCPISync,
         FullSync,

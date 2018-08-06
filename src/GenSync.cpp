@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "GenSync.h"
 #include "Exceptions.h"
@@ -27,7 +28,7 @@ GenSync::GenSync() {
 /**
  * Construct a specific GenSync object
  */
-GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, const list<DataObject*> &data) {
+GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject*> &data) {
     myCommVec = cVec;
     mySyncVec = mVec;
     outFile = NULL; // no output file is being used
@@ -38,7 +39,7 @@ GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mV
         addElem(*itData);
 }
 
-GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mVec, string fileName) {
+GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName) {
     myCommVec = cVec;
     mySyncVec = mVec;
     outFile = NULL; // add elements without writing to the file at first
@@ -54,39 +55,24 @@ GenSync::GenSync(const vector<Communicant*> &cVec, const vector<SyncMethod*> &mV
     inFile.close();
 
     // register the file to which new data should be appended
-    outFile = new ofstream(fileName.c_str(), ios::app);
+    outFile = shared_ptr<ofstream>(new ofstream(fileName.c_str(), ios::app));
 
-}
-
-// copy a GenSync object
-GenSync::GenSync(const GenSync &other) {
-    this->myCommVec = other.myCommVec;
-    this->myData = other.myData;
-    this->outFile = other.outFile;
-
-    /**
-     * syncVec contains pointers to preexisting syncMethods. This means that changes to syncMethods
-     * in other would be reflected in the syncMethods in GenSync. To avoid this, we duplicate each
-     * syncMethod in other.mySyncVec
-     */
-     for(SyncMethod* sync: other.mySyncVec) {
-        this->mySyncVec.push_back(sync->clone());
-     }
 }
 
 // destruct a gensync object
 
 GenSync::~GenSync() {
     // clear out memory
+    int a = myData.size();
     myData.clear();
 
-    //    vector<SyncMethod*>::iterator itAgt = mySyncVec.begin();
+    //    vector<shared_ptr<SyncMethod>>::iterator itAgt = mySyncVec.begin();
     //    for (; itAgt != mySyncVec.end(); itAgt++) {
     //        delete *itAgt;
     //    }
     mySyncVec.clear();
 
-    //    vector<Communicant*>::iterator itComm = myCommVec.begin();
+    //    vector<shared_ptr<Communicant>>::iterator itComm = myCommVec.begin();
     //    for (; itComm != myCommVec.end(); itComm++) {
     //        delete *itComm;
     //    }
@@ -95,7 +81,7 @@ GenSync::~GenSync() {
     // close and free the output file
     if (outFile != NULL) {
         outFile->close();
-        delete outFile;
+        outFile.reset();
     }
 
 }
@@ -106,13 +92,13 @@ GenSync::~GenSync() {
 bool GenSync::listenSync(int method_num) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::listenSync");
     // find the right syncAgent	
-    vector<SyncMethod*>::iterator syncAgent = mySyncVec.begin();
+    vector<shared_ptr<SyncMethod>>::iterator syncAgent = mySyncVec.begin();
     advance(syncAgent, method_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
 
     // ask each communicant to listen, one by one
-    vector<Communicant*>::iterator itComm;
+    vector<shared_ptr<Communicant>>::iterator itComm;
     list<DataObject*> selfMinusOther, otherMinusSelf;
     for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
         // initialize variables
@@ -142,11 +128,11 @@ bool GenSync::listenSync(int method_num) {
 bool GenSync::startSync(int method_num) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::startSync");
     // find the right syncAgent	
-    vector<SyncMethod*>::iterator syncAgentIt = mySyncVec.begin();
+    vector<shared_ptr<SyncMethod>>::iterator syncAgentIt = mySyncVec.begin();
     advance(syncAgentIt, method_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
-    vector<Communicant*>::iterator itComm;
+    vector<shared_ptr<Communicant>>::iterator itComm;
     list<DataObject*> selfMinusOther, otherMinusSelf;
 
     for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
@@ -184,7 +170,7 @@ void GenSync::addElem(DataObject* newDatum) {
     myData.push_back(newDatum);
 
     // update synch methods' metadata
-    vector<SyncMethod*>::iterator itAgt;
+    vector<shared_ptr<SyncMethod>>::iterator itAgt;
     for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
         if (!(*itAgt)->addElem(newDatum))
             Logger::error_and_quit("Could not add item " + newDatum->to_string() + ".  Please considering increasing the number of bits per set element.");
@@ -205,9 +191,9 @@ void GenSync::delElem(DataObject* newDatum) {
 
 // insert a communicant in the vector at the index position
 
-void GenSync::addComm(Communicant* newComm, int index) {
+void GenSync::addComm(shared_ptr<Communicant> newComm, int index) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addComm");
-    vector<Communicant*>::iterator itComm;
+    vector<shared_ptr<Communicant>>::iterator itComm;
 
     itComm = myCommVec.begin();
     if (index == 0) {
@@ -223,10 +209,10 @@ void GenSync::addComm(Communicant* newComm, int index) {
  *  delete a communicant from the vector at the index position
  * */
 void GenSync::delComm(int index) {
-    vector<Communicant*>::iterator itComm;
+    vector<shared_ptr<Communicant>>::iterator itComm;
 
     itComm = myCommVec.begin();
-    if (index == 1) {
+    if (index == 0) {
         myCommVec.erase(itComm);
     } else {
         advance(itComm, index - 1);
@@ -235,13 +221,17 @@ void GenSync::delComm(int index) {
 
 }
 
+void GenSync::delComm(shared_ptr<Communicant> oldComm) {
+    myCommVec.erase(std::remove(myCommVec.begin(), myCommVec.end(), oldComm), myCommVec.end());
+}
+
 int GenSync::numComm() {
     return myCommVec.size();
 }
 
 // insert a syncmethod in the vector at the index position
 
-void GenSync::addSyncAgt(SyncMethod* newAgt, int index) {
+void GenSync::addSyncAgt(shared_ptr<SyncMethod> newAgt, int index) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addSyncAgt");
     // create and populate the new agent
     list<DataObject*>::iterator itData;
@@ -260,8 +250,8 @@ void GenSync::delSyncAgt(int index) {
     mySyncVec.erase(getSyncAgt(index));
 }
 
-vector<SyncMethod*>::iterator GenSync::getSyncAgt(int index) {
-    vector<SyncMethod*>::iterator itAgt;
+vector<shared_ptr<SyncMethod>>::iterator GenSync::getSyncAgt(int index) {
+    vector<shared_ptr<SyncMethod>>::iterator itAgt;
 
     itAgt = mySyncVec.begin();
     advance(itAgt, index);
@@ -282,15 +272,33 @@ const long GenSync::getRecvBytes(int commIndex) const {
 }
 
 const double GenSync::getSyncTime(int commIndex) const {
-    return (clock() - myCommVec[commIndex]->getResetTime()) / CLOCKS_PER_SEC;
+    shared_ptr<Communicant> comm = myCommVec[commIndex];
+
+    // true iff there has been a sync (since sync resets comm counters)
+    if(comm->getTotalTime() != comm->getResetTime()) {
+        return (double) (clock() - comm->getResetTime()) / CLOCKS_PER_SEC;
+    } else {
+        return (double) comm->getTotalTime() / CLOCKS_PER_SEC;
+    }
+
+}
+
+int GenSync::getPort(int commIndex) {
+    // null iff comm isn't a CommSocket
+    if (auto cs = dynamic_cast<CommSocket*>(myCommVec[commIndex].get())) {
+        return cs->getPort();
+    } else {
+        return -1;
+    }
+
 }
 
 // Builder methods
 
 GenSync GenSync::Builder::build() {
     // variables of possible use
-    vector<Communicant*> theComms;
-    vector<SyncMethod*> theMeths;
+    vector<shared_ptr<Communicant>> theComms;
+    vector<shared_ptr<SyncMethod>> theMeths;
 
     // check pre-conditions
     if (proto == SyncProtocol::UNDEFINED)
@@ -301,11 +309,11 @@ GenSync GenSync::Builder::build() {
     // setup
     switch (comm) {
         case SyncComm::socket:
-            myComm = new CommSocket(port, host);
+            myComm = make_shared<CommSocket>(port, host);
             Logger::gLog(Logger::METHOD, "Connecting to host " + host + " on port " + toStr(port));
             break;
         case SyncComm::string:
-            myComm = new CommString(ioStr, base64);
+            myComm = make_shared<CommString>(ioStr, base64);
             Logger::gLog(Logger::METHOD, "Connecting to " + toStr(base64 ? "base64" : "") + " string " + ioStr);
             break;
         default:
@@ -318,17 +326,17 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::CPISync:
             if (mbar == Builder::UNDEFINED)
                 throw noMbar;
-            myMeth = new ProbCPISync(mbar, bits, errorProb);
+            myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb);
             break;
         case SyncProtocol::InteractiveCPISync:
             if (mbar == Builder::UNDEFINED)
                 throw noMbar;
-            myMeth = new InterCPISync(mbar, bits, errorProb, numParts);
+            myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts);
             break;
         case SyncProtocol::OneWayCPISync:
             if (mbar == Builder::UNDEFINED)
                 throw noMbar;
-            myMeth = new CPISync_HalfRound(mbar, bits, errorProb);
+            myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
             break;
         case SyncProtocol::FullSync:
             myMeth = new FullSync();
@@ -345,4 +353,4 @@ GenSync GenSync::Builder::build() {
 
 const string GenSync::Builder::DFT_HOST = "localhost";
 const string GenSync::Builder::DFT_IO = "";
-const double GenSync::Builder::DFT_ERROR = 1E-8;
+const int GenSync::Builder::DFT_ERROR = 8;

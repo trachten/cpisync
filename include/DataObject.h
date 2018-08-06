@@ -77,7 +77,7 @@ public:
      * @return A char array version of the contents of this data object.
      *         The string could have null bytes and non-printable characters.
      */
-    const char *to_char_array(int &len) const;
+    const char *to_char_array(long &len) const;
 
     /**
      * @return A string of printable characters representing the object, essentially
@@ -104,15 +104,19 @@ public:
                            * arbitrarily-sized integers.  Otherwise, DataObject string inputs
                            * are interpreted as byte sequences.
                            */
-    void setPriority(ZZ pri);
-    ZZ getPriority();
     void setTimeStamp(clock_t ts);
     clock_t getTimeStamp();
 protected:
     ZZ myBuffer; /** The buffer for the data object container itself. */
-    ZZ priority;
     clock_t timestamp;
-    
+
+    /**
+  * Unpacks a ZZ into a string
+  * @param num
+  * @return
+  */
+    static string unpack(const ZZ num);
+
 private:
     /**
      * Packs a string into a ZZ in a memory-efficient manner
@@ -120,12 +124,6 @@ private:
      * @return a ZZ representing the string
      */
     static ZZ pack(const string theStr);
-    
-    /**
-     * Unpacks a ZZ into a string
-     * @param num
-     * @return 
-     */
-    static string unpack(const ZZ num);
+
 };
 #endif

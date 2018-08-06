@@ -2,70 +2,56 @@ cmake_minimum_required(VERSION 3.6)
 project(cpisynclib)
 set(CMAKE_CXX_STANDARD 11)
 
+
 # Set project directory strucuture
 set(SRC_DIR src)
 set(TEST_DIR tests)
+set(UNIT_TEST_DIR ${TEST_DIR}/unit)
+#set(SYSSHORT_TEST_DIR ${TEST_DIR}/sys/short)
+set(SYSLONG_TEST_DIR ${TEST_DIR}/sys/long)
+
+# Set location of the test runner
+set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
 
 # Set file config
 set(SOURCE_FILES
-        src/CommSocket.cpp
-        src/CommString.cpp
-        src/Communicant.cpp
-        src/CPISync.cpp
-        src/DataObject.cpp
-        src/FullSync.cpp
-        src/GenSync.cpp
-        src/InterCPISync.cpp
-        src/Logger.cpp
-        src/probCPISync.cpp
-        src/SyncMethod.cpp
-        src/UID.cpp
-        src/HashSync.cpp include/HashSync.h)
+        ${SRC_DIR}/CommSocket.cpp
+        ${SRC_DIR}/CommString.cpp
+        ${SRC_DIR}/Communicant.cpp
+        ${SRC_DIR}/CPISync.cpp
+        ${SRC_DIR}/DataObject.cpp
+        ${SRC_DIR}/GenSync.cpp
+        ${SRC_DIR}/InterCPISync.cpp
+        ${SRC_DIR}/Logger.cpp
+        ${SRC_DIR}/probCPISync.cpp
+        ${SRC_DIR}/SyncMethod.cpp
+        ${SRC_DIR}/UID.cpp
+		${SRC_DIR}/HashSync.cpp
+        ${SRC_DIR}/CommDummy.cpp
+        ${SRC_DIR}/FullSync.cpp
+        tests/unit/DataPriorityObjectTest.cpp tests/unit/DataPriorityObjectTest.h)
 
+#cppunit
 include_directories(include)
-include_directories(/opt/local/include)
-include_directories(${cppunit_INCLUDE_DIR})
-link_directories(/opt/local/lib)
 
 # Add libs and executables
-add_library(cpisynclib ${SOURCE_FILES})
+add_library(cpisynclib ${SOURCE_FILES} )
 
-#################
-### Add tests ###
-#################
-# Following : https://cmake.org/pipermail/cmake/2007-March/013361.html
+# Define a macro for adding executables testing multiple files
+# @param dir The relative path to the folder containing test files to add
+# @param name The executable name
+macro(add_group_test dir name)
+    FILE(GLOB testPaths ${dir}/*Test.cpp)
+    ADD_EXECUTABLE(${name} ${TEST_RUNNER} ${testPaths})
 
-ADD_EXECUTABLE(AuxiliaryTest
-        ${TEST_DIR}/AuxiliaryTestRunner.cpp
-        ${TEST_DIR}/AuxiliaryTest.cpp
-)
-target_link_libraries(AuxiliaryTest cpisynclib ntl cppunit gmp)
-ADD_TEST(AuxiliaryTest AuxiliaryTest)
+    FOREACH(test ${testPaths})
+        GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
+        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit gmp)
+        ADD_TEST(${testName} ${name})
+    ENDFOREACH(test)
+endmacro()
 
-ADD_EXECUTABLE(SystemTest
-        ${TEST_DIR}/cpi_system_test.cpp
-)
-target_link_libraries(SystemTest cpisynclib ntl cppunit gmp)
-ADD_TEST(SystemTest SystemTest)
-
-ADD_EXECUTABLE(FullSyncTest
-        ${TEST_DIR}/FullSyncTestRunner.cpp
-        ${TEST_DIR}/FullSyncTest.cpp
-)
-target_link_libraries(FullSyncTest cpisynclib ntl cppunit gmp)
-ADD_TEST(FullSyncTest FullSyncTest)
-
-ADD_EXECUTABLE(CommStringTest
-	${TEST_DIR}/CommStringTestRunner.cpp
-	${TEST_DIR}/CommStringTest.cpp
-)
-target_link_libraries(CommStringTest cpisynclib ntl cppunit gmp)
-ADD_TEST(CommStringTest CommStringTest)
-
-# TODO: Add all testa automagically
-# FILE(GLOB UnitTests_SRCS ${TEST_DIR} "*TestRunner.cpp" )
-# FOREACH(test ${UnitTests_SRCS})
-#         GET_FILENAME_COMPONENT(TestName ${test} NAME_WE)
-#         ADD_EXECUTABLE(UnitTester test_runner.cpp ${UnitTests_SRCS})
-#         ADD_TEST(${TestName} UnitTester ${TestName})
-# ENDFOREACH(test)
+# Add test groups (note: executable will throw errors if there are no tests in the respective folder)
+add_group_test(${UNIT_TEST_DIR} UnitTests)
+#add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
+add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)

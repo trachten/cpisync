@@ -5,6 +5,8 @@
 #ifndef CONSTS_AND_TYPES
 #define CONSTS_AND_TYPES
 
+#include <NTL/ZZ.h>
+
 typedef unsigned char byte;
 typedef std::basic_string<unsigned char> ustring; // a string of unsigned characters
 

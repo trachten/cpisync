@@ -22,9 +22,10 @@ class CommStringTest : public CPPUNIT_NS::TestFixture {
 
 public:
     CommStringTest();
-    virtual ~CommStringTest();
-    void setUp();
-    void tearDown();
+
+    ~CommStringTest() override;
+    void setUp() override;
+    void tearDown() override;
 
 private:
     // Tests that CommString::getString() correctly returns the string passed at construction

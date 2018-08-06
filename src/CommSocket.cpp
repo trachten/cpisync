@@ -10,8 +10,7 @@
 #include "CommSocket.h"
 #include "Logger.h"
 
-CommSocket::CommSocket() {
-}
+CommSocket::CommSocket() = default;
 
 CommSocket::CommSocket(int port, string host) : Communicant() {
     remoteHost = host;
@@ -43,7 +42,7 @@ void CommSocket::commListen() {
     }
 
     //sockaddr_in contains Internet address defined in netinet/in.h
-    struct sockaddr_in myAddr, otherAddr;
+    struct sockaddr_in myAddr{}, otherAddr{};
     myAddr.sin_family = AF_INET;
     myAddr.sin_port = htons(remotePort); // converts nPort from host byte order to network byte order
     myAddr.sin_addr.s_addr = INADDR_ANY;
@@ -95,7 +94,7 @@ void CommSocket::commConnect() {
     }
 
     //sockaddr_in contains internet address defined in netinet/in.h
-    struct sockaddr_in myAddr, otherAddr;
+    struct sockaddr_in myAddr{}, otherAddr{};
     // myAddr structure contains address of my server
     myAddr.sin_family = AF_INET;
     myAddr.sin_port = htons(remotePort);
@@ -109,11 +108,11 @@ void CommSocket::commConnect() {
         // defines a host computer on the Internet
         struct hostent *he;
         // get the IP from the host computer
-        if ((he = gethostbyname(remoteHost.c_str())) == NULL)
+        if ((he = gethostbyname(remoteHost.c_str())) == nullptr)
             Logger::error_and_quit("Could not resolve hostname " + remoteHost);
 
         // copy the network address to the sockaddr_in structure which is passed to connect()
-        memcpy(&otherAddr.sin_addr, he->h_addr_list[0], he->h_length);
+        memcpy(&otherAddr.sin_addr, he->h_addr_list[0], static_cast<size_t>(he->h_length));
     } else {
         //means we are going to use LocalHost
         otherAddr.sin_addr.s_addr = INADDR_ANY;
@@ -136,7 +135,7 @@ void CommSocket::commConnect() {
             Logger::error_and_quit("Could not close the socket");
 
         // repoen the socket
-        int sockDesc = socket(AF_INET, SOCK_STREAM, 0);
+        sockDesc= socket(AF_INET, SOCK_STREAM, 0);
         if (sockDesc == -1)
             Logger::error_and_quit("socket");
         if (setsockopt(sockDesc, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int)) == -1)
@@ -199,7 +198,7 @@ void CommSocket::commSend(const char* toSend, const int len) {
     } while (doAgain);  
 }
 
-string CommSocket::commRecv(long numBytes) {
+string CommSocket::commRecv(unsigned long numBytes) {
        if (my_fd == -1)
         Logger::error_and_quit("Not connected to a socket!");
 

@@ -8,11 +8,12 @@
 #include <string>
 #include <iostream>
 #include <list>
-#include <errno.h>
+#include <cerrno>
 #include <NTL/ZZ_p.h>
 #include <NTL/vec_ZZ_p.h>
 #include "ConstantsAndTypes.h"
 #include "DataObject.h"
+#include "DataPriorityObject.h"
 
 // namespace imports
 using namespace NTL;
@@ -86,7 +87,7 @@ public:
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(ustring str, const int numBytes);
+    void commSend(const ustring str, const unsigned int numBytes);
 
     /**
      * Sends a data object over the line
@@ -94,7 +95,7 @@ public:
      */
     void commSend(DataObject& dob);
     void commSend(list<DataObject *>&dob);
-    void commSend(DataObject& dob, bool priority);
+    void commSend(DataPriorityObject& dob);
     
     /**
      * Sends a list of data object pointers over the line.
@@ -174,7 +175,7 @@ public:
      * @return The string of characters received.
      * @see Communicant.h for more explanations, please.
      */
-    virtual string commRecv(long numBytes) = 0;
+    virtual string commRecv(unsigned long numBytes) = 0;
     
     /**
      * Receive data over an existing connection.  This is the primitive for receiving data.
@@ -182,7 +183,7 @@ public:
      * @return The data received from the connection
      * %M: adds to recvBytes the number of bytes received.
      */
-    ustring commRecv_ustring(long numBytes);
+    ustring commRecv_ustring(unsigned int numBytes);
 
     /**
      * Receive a string object over an existing connection.  Note,
@@ -206,7 +207,7 @@ public:
      */
     DataObject *commRecv_DataObject();
     list<DataObject *> commRecv_DataObject_List();
-    DataObject *commRecv_DataObject_Priority();
+    DataPriorityObject * commRecv_DataObject_Priority();
     
     /**
      * Receives a list of Data Objects and transforms this into a list of pointers to DataObjects.
@@ -232,7 +233,7 @@ public:
     // Informational
 
     /**
-     * Resets communication counters that record the number of bytes transmitted/received.
+     * Resets communication counters that record the number of bytes transmitted/received since the last communication counter reset
      */
     void resetCommCounters();
 
@@ -301,9 +302,9 @@ protected:
     
     // CONSTANTS
     const static int NOT_SET = -1; /** An integer value that has not yet been set. */
-    const static int XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
-    const static int XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
-    const static int XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */
+    const static int unsigned XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
+    const static int unsigned XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
+    const static int unsigned XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */
  };
 
 #endif

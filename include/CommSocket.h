@@ -30,30 +30,30 @@ public:
     CommSocket(int port, string host = "");
 
     // Destructor
-    ~CommSocket();
+    ~CommSocket() override;
 
     /**
      * Await a connection on the designated port.
      * *Note*:  Blocks until a client connects.
      */
-    void commListen();
+    void commListen() override;
 
     /**
      * Connect to the designated remote host on the designated port.
      */
-    void commConnect();
+    void commConnect() override;
 
     /**
      * Close all attempts to communicate (either listening or connecting)
      */                         
-    void commClose();
+    void commClose() override;
 
     /**
      * Send data over the socket.  This is the primitive send method for the class.
      * %R: Must have called either commListen or commConnect already.
      * @see Communicant.h for more explanations, please.
      */
-    void commSend(const char *toSend, const int numBytes);
+    void commSend(const char *toSend, const int numBytes) override;
 
     /**
      * Receives numBytes characters from the socket.
@@ -62,18 +62,11 @@ public:
      * @return The string of characters received.
      * @see Communicant.h for more explanations, please.
      */
-    string commRecv(long numBytes);
-
-    /**
-     * Receives a string of unsigned characters
-     * @param numBytes The number of bytes to receive.
-     * @return A string of unsigned characters received.
-     */
-    ustring commRecv_ustring(long numBytes);
+    string commRecv(unsigned long numBytes) override;
 
     // INFORMATIONAL
     int getPort() { return remotePort; }
-    string getName() { return "CommSocket"; }
+    string getName() override { return "CommSocket"; }
 
 private:
     string remoteHost; /** The name of the host represented by this Communicant. */

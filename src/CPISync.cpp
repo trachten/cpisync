@@ -311,7 +311,7 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
     return true;
 }
 
-void CPISync::sendSetElem(Communicant* commSync, list<DataObject*> &selfMinusOther, ZZ_p element) {
+void CPISync::sendSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, ZZ_p element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
         selfMinusOther.push_back(invHash(element));
@@ -327,7 +327,7 @@ void CPISync::sendSetElem(Communicant* commSync, list<DataObject*> &selfMinusOth
     }
 }
 
-void CPISync::recvSetElem(Communicant* commSync, list<DataObject*> &otherMinusSelf, ZZ_p element) {
+void CPISync::recvSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf, ZZ_p element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::recvSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
         otherMinusSelf.push_back(invHash(element));
@@ -340,7 +340,7 @@ void CPISync::recvSetElem(Communicant* commSync, list<DataObject*> &otherMinusSe
     }
 }
 
-void CPISync::makeStructures(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
+void CPISync::makeStructures(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::makeStructures");
     // Send self minus other
     try {
@@ -355,7 +355,7 @@ void CPISync::makeStructures(Communicant* commSync, list<DataObject*> &selfMinus
         recvSetElem(commSync, otherMinusSelf, delta_other[ii]);
 }
 
-void CPISync::SendSyncParam(Communicant* commSync, bool oneWay /* = false */) {
+void CPISync::SendSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = false */) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SendSyncParam");
     // take care of parent sync method
     SyncMethod::SendSyncParam(commSync, oneWay);
@@ -370,7 +370,7 @@ void CPISync::SendSyncParam(Communicant* commSync, bool oneWay /* = false */) {
     Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
-void CPISync::RecvSyncParam(Communicant* commSync, bool oneWay /* = false */) {
+void CPISync::RecvSyncParam(shared_ptr<Communicant> commSync, bool oneWay /* = false */) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::RecvSyncParam");
     // take care of parent sync method
     SyncMethod::RecvSyncParam(commSync, oneWay);
@@ -398,7 +398,7 @@ void CPISync::RecvSyncParam(Communicant* commSync, bool oneWay /* = false */) {
     Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
-bool CPISync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+bool CPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncClient");
     // local variables
     vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
@@ -481,7 +481,7 @@ bool CPISync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOthe
     }
 }
 
-bool CPISync::SyncServer(Communicant* commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
+bool CPISync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncServer");
     int source;
     string mystring;
@@ -494,6 +494,7 @@ bool CPISync::SyncServer(Communicant* commSync, list<DataObject*>& selfMinusOthe
     vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
             delta_other; /** items the other has that I do not, based on the last synchronization. */
 
+    SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf); // call the base method - sets some fields to 0
 
     // Verify commonality initial parameters
     if (!keepAlive) {
@@ -616,7 +617,7 @@ bool CPISync::SyncServer(Communicant* commSync, list<DataObject*>& selfMinusOthe
     return result;
 }
 
-void CPISync::sendAllElem(Communicant* commSync, list<DataObject*> &selfMinusOther) {
+void CPISync::sendAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendAllElem");
     commSync->commSend((long) CPI_hash.size()); // first send the size
 
@@ -630,7 +631,7 @@ void CPISync::sendAllElem(Communicant* commSync, list<DataObject*> &selfMinusOth
     }
 }
 
-void CPISync::receiveAllElem(Communicant* commSync, list<DataObject*> &otherMinusSelf) {
+void CPISync::receiveAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::receiveAllElem");
     long size = commSync->commRecv_long();
 

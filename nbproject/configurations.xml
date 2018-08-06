@@ -87,9 +87,7 @@
     </logicalFolder>
     <itemPath>README</itemPath>
   </logicalFolder>
-  <sourceRootList>
-    <Elem>include</Elem>
-  </sourceRootList>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="2">

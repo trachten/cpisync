@@ -11,14 +11,17 @@ using namespace NTL;
 bool DataObject::RepIsInt = false; /** How DataObject handles strings. */
 
 DataObject::DataObject()  : UID()
-{ myBuffer = 0; } // myBuffer should be initially empty
+{
+    myBuffer = 0; timestamp=clock();
 
-DataObject::DataObject(const ZZ &datum)  : UID() {
+} // myBuffer should be initially empty
+
+DataObject::DataObject(const ZZ &datum)  : DataObject() {
     myBuffer = datum;
     
 }
 
-DataObject::DataObject(const string str) : UID() {
+DataObject::DataObject(const string str) : DataObject() {
     myBuffer = RepIsInt?strTo<ZZ>(str):pack(str);
 }
 
@@ -44,9 +47,9 @@ string DataObject::to_string() const {
     return RepIsInt?toStr(myBuffer):unpack(myBuffer);
 }
 
-const char *DataObject::to_char_array(int &len) const {
+const char *DataObject::to_char_array(long &len) const {
     len = NumBytes(myBuffer);
-    return to_string().data();
+    return strndup(to_string().data(), len);
 }
 
 string DataObject::print() const {
@@ -63,14 +66,6 @@ ostream& operator<<( ostream &out, const DataObject &datum)
  return out;
 }
 
-string DataObject::to_priority_string() const{
-    return RepIsInt?toStr(priority)+","+toStr(myBuffer):unpack(myBuffer);
-}
-
-
-void DataObject::setPriority(ZZ pri) {
-    priority = pri;
-};
 
 clock_t DataObject::getTimeStamp() {
     return timestamp;
@@ -79,6 +74,4 @@ clock_t DataObject::getTimeStamp() {
 void DataObject::setTimeStamp(clock_t ts) {
     timestamp = ts;
 }
-ZZ DataObject::getPriority(){
-    return priority;
-}
+

@@ -50,7 +50,6 @@ public:
    *    in the union of the two sets that are being synchronized int.
    */
   CPISync(long m_bar, long bits, int epsilon, int redundant = 0, bool hashes = false);
-  CPISync* clone() const;
 
   /**
    * General class destructor

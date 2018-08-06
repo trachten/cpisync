@@ -35,14 +35,11 @@ public:
     
     // General class destructor
     ~FullSync();
-
-    // Clones the FullSync
-    FullSync* clone() const;
   
     
     // parent methods to override
-    bool SyncClient(Communicant* commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf);
-    bool SyncServer(Communicant* commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf);
+    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf);
+    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf);
     bool addElem(DataObject* newDatum);
     bool delElem(DataObject* newDatum);
     inline string getName() { return "I am a FullSync object."; }
@@ -51,6 +48,8 @@ public:
      * @return A string representing the elements stored in the FullSync object.
      */
     string printElem();
+private:
+    multiset<DataObject*, cmp<DataObject*>> myData;
 };
 
 #endif /* FULLSYNC_H */

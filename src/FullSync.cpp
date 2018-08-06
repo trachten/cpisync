@@ -16,7 +16,7 @@ FullSync::~FullSync() {
 }
 
 string FullSync::printElem() {
-    vector<DataObject *>::const_iterator iter = SyncMethod::beginElements();
+    auto iter = SyncMethod::beginElements();
 
     stringstream ss;
     ss << '[';
@@ -28,7 +28,7 @@ string FullSync::printElem() {
 
 }
 
-bool FullSync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
+bool FullSync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
     try{
         Logger::gLog(Logger::METHOD, "Entering FullSync::SyncClient");
 
@@ -44,7 +44,7 @@ bool FullSync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOth
         commSync->commSend(SyncMethod::getNumElem());
 
         // then send each DataObject.
-        for (auto iter = beginElements(); iter != endElements(); iter++) {
+        for (auto iter = SyncMethod::beginElements(); iter != SyncMethod::endElements(); iter++) {
             commSync->commSend(**iter);
         }
 
@@ -67,7 +67,7 @@ bool FullSync::SyncClient(Communicant* commSync, list<DataObject*> &selfMinusOth
     }
     
 }
-bool FullSync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
+bool FullSync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
     try {
         Logger::gLog(Logger::METHOD, "Entering FullSync::SyncServer");
 
@@ -82,18 +82,17 @@ bool FullSync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOth
         // first, receive how many DataObjects have been sent...
         const long SIZE = commSync->commRecv_long();
 
-
         // then receive each DataObject and store to a multiset
-        multiset<DataObject*> other;
+        multiset<DataObject*, cmp<DataObject*>> other;
         for (int ii = 0; ii < SIZE; ii++) {
             other.insert(commSync->commRecv_DataObject());
         }
 
         // Calculate differences between two lists and splice onto respective lists
-        rangeDiff(SyncMethod::beginElements(), SyncMethod::endElements(), other.begin(), other.end(), back_inserter(selfMinusOther));
-        rangeDiff(other.begin(), other.end(), SyncMethod::beginElements(), SyncMethod::endElements(), back_inserter(otherMinusSelf));
-        
-        // send back differences. keep in mind that our otherMinusSelf is their selfMinusOther and v.v.
+        rangeDiff(myData.begin(), myData.end(), other.begin(), other.end(), back_inserter(selfMinusOther));
+        rangeDiff(other.begin(), other.end(), myData.begin(), myData.end(), back_inserter(otherMinusSelf));
+
+        // send back differences. our otherMinusSelf is their selfMinusOther and v.v.
         commSync->commSend(otherMinusSelf);
         commSync->commSend(selfMinusOther);
 
@@ -114,22 +113,19 @@ bool FullSync::SyncServer(Communicant* commSync, list<DataObject*> &selfMinusOth
 
 bool FullSync::addElem(DataObject* newDatum){
     Logger::gLog(Logger::METHOD,"Entering FullSync::addElem");
-    
-    bool success = SyncMethod::addElem(newDatum);
-    if(success) Logger::gLog(Logger::METHOD, "Successfully added DataObject* {" + newDatum->print() + "}");
-    return success;
+
+    if(!SyncMethod::addElem(newDatum)) return false;
+    myData.insert(newDatum);
+    Logger::gLog(Logger::METHOD, "Successfully added DataObject* {" + newDatum->print() + "}");
+    return true;
     
 }
 
 bool FullSync::delElem(DataObject* newDatum){
     Logger::gLog(Logger::METHOD, "Entering FullSync::delElem");
-    
-    bool success = SyncMethod::delElem(newDatum);
-    if(success) Logger::gLog(Logger::METHOD, "Successfully removed DataObject* {" + newDatum->print() + "}");
-    return success;
-}
 
-FullSync* FullSync::clone() const        // Virtual constructor (copying)
-{
-    return new FullSync (*this);
+    if(!SyncMethod::delElem(newDatum)) return false;
+    myData.erase(newDatum);
+    Logger::gLog(Logger::METHOD, "Successfully removed DataObject* {" + newDatum->print() + "}");
+    return true;
 }

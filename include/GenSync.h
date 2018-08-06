@@ -72,9 +72,6 @@ public:
      */
     GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName);
 
-    // copy function
-    GenSync(const GenSync& other);
-
     // DATA MANIPULATION
     /**
      * Adds a new datum into the existing GenSync data structure

@@ -26,8 +26,6 @@ public:
     SyncMethod();
     // destructor
     virtual ~SyncMethod();
-    // copy
-    virtual SyncMethod* clone () const = 0;
 
     // SYNC
 

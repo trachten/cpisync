@@ -498,7 +498,3 @@ bool InterCPISync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*
 		throw (s);
 	}
 }
-
-InterCPISync* InterCPISync::clone() const {
-    return new InterCPISync (*this);
-}

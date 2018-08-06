@@ -339,7 +339,7 @@ GenSync GenSync::Builder::build() {
             myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
             break;
         case SyncProtocol::FullSync:
-            myMeth = new FullSync();
+            myMeth = make_shared<FullSync>();
             break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");

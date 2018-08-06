@@ -738,7 +738,3 @@ string CPISync::printElem() {
         result << (it->second)->to_string() << " [hash=" << (it->first) << "], ";
     return result.str();
 }
-
-CPISync* CPISync::clone() const {
-    return new CPISync(*this);
-}

@@ -201,14 +201,22 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
     return result;
 }
 
+/**
+ * Functor for comparing pointers to objects by dereferencing these pointers and comparing the resulting objects
+ * @tparam T A pointer to an object that s.t. (*T)::operator<(const (*T)&) is defined
+ */
+template <typename T>
+class cmp {
+public:
+    bool operator()(T a, T b) {
+        return (*a) < (*b);
+    }
+};
+
 template <class IteratorA, class IteratorB, class IteratorOut>
 void rangeDiff(IteratorA begA, IteratorA endA, IteratorB begB, IteratorB endB, IteratorOut coll) {
     typedef typename std::iterator_traits<IteratorA>::value_type T;
-
-    set_difference(begA, endA, begB, endB, coll,
-        // comparison lambda expression; compares a and b as dereferenced objects
-        [](T a, T b) { return (a -> operator<(*b)); }
-    );
+    set_difference(begA, endA, begB, endB, coll, cmp<T>());
 }
 
 /**

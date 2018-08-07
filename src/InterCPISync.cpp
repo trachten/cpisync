@@ -453,7 +453,7 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
 bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ begRange, const ZZ endRange)
 {
 	try{
-                //Initial Handshakes - Check if I have nothing or server has nothing
+	    //Initial Handshakes - Check if I have nothing or server has nothing
 		int response;
 		if(parentNode == nullptr)
 		{

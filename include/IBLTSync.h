@@ -16,10 +16,10 @@ public:
     ~IBLTSync();
 
     // Implemented parent class methods
-    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
-    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
-    bool addElem(DataObject* datum);
-    bool delElem(DataObject* datum);
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+    bool addElem(DataObject* datum) override;
+    bool delElem(DataObject* datum) override;
     string getName();
 private:
     IBLT myIBLT;

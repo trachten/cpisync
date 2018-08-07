@@ -18,12 +18,12 @@
  */
 class UnimplementedMethodException:public runtime_error {
 public:
-    UnimplementedMethodException(string specifics) : runtime_error(specifics) {}
+    explicit UnimplementedMethodException(const string &specifics) : runtime_error(specifics) {}
 };
 
 class SyncFailureException: public runtime_error {
 public:
-    SyncFailureException(string specifics) : runtime_error(specifics)  {}
+    explicit SyncFailureException(const string &specifics) : runtime_error(specifics)  {}
 
 };
 #endif	/* EXCEPTIONS_H */

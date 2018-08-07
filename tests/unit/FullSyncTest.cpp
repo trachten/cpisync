@@ -17,11 +17,9 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(FullSyncTest);
 
-FullSyncTest::FullSyncTest() {
-}
+FullSyncTest::FullSyncTest() = default;
 
-FullSyncTest::~FullSyncTest() {
-}
+FullSyncTest::~FullSyncTest() = default;
 
 void FullSyncTest::setUp() {
     const int SEED = 90;

@@ -45,14 +45,14 @@ public:
     /**
      * Default constructor
      */
-    Logger() {} /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/ 
+    Logger() = default; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/
     
     /**
      * Outputs a text string to the log with a given logging level.
      * @param level The logging level.
      * @param text The text to be logged.
      */
-    inline static void gLog(int level, string text) {
+    inline static void gLog(int level, const string &text) {
     if (level <= logLevel) {
         clog << (::getpid()%2==1?">":"") << string(level+1,' ') << "(level=" << level << ")  " << text << endl;
     }
@@ -68,6 +68,6 @@ public:
      * Outputs an error message and stops execution.
      * @param msg The error message.
      */
-    static void error_and_quit(string msg);
+    static void error_and_quit(const string& msg);
  };
 #endif	/* LOGGER_H */

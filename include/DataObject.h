@@ -36,13 +36,13 @@ public:
      * Constructs a data object that contains the given byte vector (not a copy!).
      * @param data An vector of bytes containing the data of the object.
      */
-    DataObject(const ZZ &datum);
+    explicit DataObject(const ZZ &datum);
 
     /**
      * Constructs a data object that contains the given string (in an encoded format).
      * @param data The string to place in the DataObject.
      */
-    DataObject(const string str);
+    explicit DataObject(string str);
     
     /**
      * Constructs a data object that contains the given object of type T, which must
@@ -51,7 +51,7 @@ public:
      * @param item The item to place in the DataObject.
      */
     template<typename T>
-    DataObject(const T item) {
+    explicit DataObject(const T item) {
         myBuffer = pack(toStr(item));
     }
     
@@ -115,7 +115,7 @@ protected:
   * @param num
   * @return
   */
-    static string unpack(const ZZ num);
+    static string unpack(ZZ num);
 
 private:
     /**
@@ -123,7 +123,7 @@ private:
      * @param theStr The string to pack
      * @return a ZZ representing the string
      */
-    static ZZ pack(const string theStr);
+    static ZZ pack(string theStr);
 
 };
 #endif

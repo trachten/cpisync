@@ -118,14 +118,14 @@ void GenSyncTest::testAddRemoveSyncMethodAndComm() {
     // removes the first SyncMethod. if delSyncAgt is successful, the SyncMethod at idx #0 should be `secondSync`
     genSync.delSyncAgt(0);
     auto newFirst = dynamic_cast<InterCPISync*>((*genSync.getSyncAgt(0)).get());
-    CPPUNIT_ASSERT(newFirst != NULL && newFirst->getName() == secondSync->getName());
+    CPPUNIT_ASSERT(newFirst != nullptr && newFirst->getName() == secondSync->getName());
 }
 
 void GenSyncTest::testGetName() {
     GenSync genSync({}, {});
 
     // check that string returned by getName actually contains some form of information about the GenSync object
-    CPPUNIT_ASSERT(genSync.getName() != string());
+    CPPUNIT_ASSERT(!genSync.getName().empty());
 }
 
 void GenSyncTest::testCounters() {

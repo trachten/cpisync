@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <string>
 #include <thread>
-
+#include <utility>
 #include "Auxiliary.h"
 #include "CommSocket.h"
 #include "Logger.h"
@@ -14,7 +14,7 @@
 CommSocket::CommSocket() = default;
 
 CommSocket::CommSocket(int port, string host) : Communicant() {
-    remoteHost = host;
+    remoteHost = std::move(host);
     remotePort = port;
 
     my_fd = -1;  // no socket currently open
@@ -122,8 +122,8 @@ void CommSocket::commConnect() {
 
     // establish a connection to the host computer
     my_fd = sockDesc;  // no new socket descriptors made
-    int connerror, count = 0;
-    while ((connerror = connect(my_fd, (struct sockaddr *) &otherAddr, sizeof (struct sockaddr)))
+    int count = 0;
+    while (connect(my_fd, (struct sockaddr *) &otherAddr, sizeof (struct sockaddr))
             == -1) {  // keep trying to connect until the connection is made
         Logger::gLog(Logger::COMM, "Connecting to server " + toStr(count));
         count++;  // keep track of the number of connection attempts
@@ -176,7 +176,7 @@ void CommSocket::commSend(const char* toSend, const int len) {
     long numBytes = (len == 0 ? strlen(toSend) + 1 : len);  // the size of the string to be sent, including "\0"
     long numSent;
 
-    bool doAgain = false;
+    bool doAgain;
     do {
         if ((numSent = send(my_fd, toSend, numBytes * sizeof (char), 0)) == -1) {
             string numBytesString;
@@ -206,9 +206,8 @@ string CommSocket::commRecv(unsigned long numBytes) {
        if (my_fd == -1)
         Logger::error_and_quit("Not connected to a socket!");
 
-    static long sizeMyBuf = 0;  // number characters stored so far
     long numRecv = 0;  // number of bytes received in this call
-    char *tmpBuf = new char[numBytes];  // buffer into which received bytes are placed
+    auto tmpBuf = new char[numBytes];  // buffer into which received bytes are placed
 
     // wait until the buffer has been filled
     if ((numRecv = recv(my_fd, tmpBuf, numBytes * sizeof (char), MSG_WAITALL)) < 0)

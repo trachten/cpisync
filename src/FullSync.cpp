@@ -9,11 +9,9 @@
 
 #include "FullSync.h"
 
-FullSync::FullSync() {
-}
+FullSync::FullSync() = default;
 
-FullSync::~FullSync() {
-}
+FullSync::~FullSync() = default;
 
 string FullSync::printElem() {
     auto iter = SyncMethod::beginElements();
@@ -28,7 +26,7 @@ string FullSync::printElem() {
 
 }
 
-bool FullSync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
+bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
     try{
         Logger::gLog(Logger::METHOD, "Entering FullSync::SyncClient");
 
@@ -56,8 +54,6 @@ bool FullSync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &s
         msg << "FullSync succeeded." << endl;
         msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
         msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
-        int i = selfMinusOther.size();
-        int j = otherMinusSelf.size();
         Logger::gLog(Logger::METHOD, msg.str());
         
         return true;
@@ -67,7 +63,7 @@ bool FullSync::SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &s
     }
     
 }
-bool FullSync::SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
+bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
     try {
         Logger::gLog(Logger::METHOD, "Entering FullSync::SyncServer");
 

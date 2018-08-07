@@ -22,9 +22,10 @@ class FullSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 public:
     FullSyncTest();
-    virtual ~FullSyncTest();
-    void setUp();
-    void tearDown();
+
+    ~FullSyncTest() override;
+    void setUp() override;
+    void tearDown() override;
 
     // Test reconciliation
     void justSyncTest();

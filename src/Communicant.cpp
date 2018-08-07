@@ -88,7 +88,7 @@ void Communicant::commSend(const ustring toSend, const unsigned int numBytes) {
     Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
             + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
 
-    const char *sendptr = reinterpret_cast<const char *> ((unsigned char *) toSend.data());
+    auto sendptr = reinterpret_cast<const char *> ((unsigned char *) toSend.data());
     commSend(sendptr, numBytes);
 }
 
@@ -221,7 +221,7 @@ vec_ZZ_p Communicant::commRecv_vec_ZZ_p() {
 void Communicant::commSend(const ZZ& num, int size) {
     Logger::gLog(Logger::COMM, "... attempting to send: ZZ " + toStr(num));
 
-    unsigned int num_size = (unsigned int) (size == NOT_SET ? NumBytes(num) : size);
+    auto num_size = (unsigned int) (size == NOT_SET ? NumBytes(num) : size);
     if (num_size == 0) num_size = 1; // special case for sending the integer 0 - need one bit
     unsigned char toSend[num_size];
 
@@ -287,7 +287,7 @@ DataPriorityObject * Communicant::commRecv_DataObject_Priority() {
     string str = commRecv_string();
     string prio = str.substr(0, str.find(','));
     str = str.substr(str.find(',') + 1);
-    DataPriorityObject * res = new DataPriorityObject(str);
+    auto * res = new DataPriorityObject(str);
     res->setPriority(strTo<ZZ > (prio));
     Logger::gLog(Logger::COMM, "... received: DataPriorityObject " + res->to_string());
     return res;

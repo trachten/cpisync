@@ -26,10 +26,9 @@ public:
             : m_lastTestFailed(false) {
     }
 
-    ~ProgressListener() {
-    }
+    ~ProgressListener() override = default;
 
-    void startTest(CPPUNIT_NS::Test *test) {
+    void startTest(CPPUNIT_NS::Test *test) override {
         CPPUNIT_NS::stdCOut() << test->getName();
         CPPUNIT_NS::stdCOut() << "\n";
         CPPUNIT_NS::stdCOut().flush();
@@ -37,23 +36,22 @@ public:
         m_lastTestFailed = false;
     }
 
-    void addFailure(const CPPUNIT_NS::TestFailure &failure) {
+    void addFailure(const CPPUNIT_NS::TestFailure &failure) override {
         CPPUNIT_NS::stdCOut() << " : " << (failure.isError() ? "error" : "assertion");
         m_lastTestFailed = true;
     }
 
-    void endTest(CPPUNIT_NS::Test *test) {
+    void endTest(CPPUNIT_NS::Test *test) override {
         if (!m_lastTestFailed)
             CPPUNIT_NS::stdCOut() << " : OK";
         CPPUNIT_NS::stdCOut() << "\n";
     }
 
-private:
     /// Prevents the use of the copy constructor.
-    ProgressListener(const ProgressListener &copy);
+    ProgressListener(const ProgressListener &copy) = delete;
 
     /// Prevents the use of the copy operator.
-    void operator=(const ProgressListener &copy);
+    void operator=(const ProgressListener &copy) = delete;
 
 private:
     bool m_lastTestFailed;

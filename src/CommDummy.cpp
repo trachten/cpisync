@@ -15,22 +15,18 @@ CommDummy::CommDummy(queue<char> *intermediate) {
     this->intermediate = intermediate;
 }
 
-CommDummy::~CommDummy() {
-}
+CommDummy::~CommDummy() = default;
 
 // No action needed to listen to the intermediate.
 void CommDummy::commListen() {
-    return;
 }
 
 // No action needed to connect to the intermediate.
 void CommDummy::commConnect() {
-    return;
 }
 
 // No action needed to close connection with intermediate.
 void CommDummy::commClose() {
-    return;
 }
 
 void CommDummy::commSend(const char* toSend, const int numBytes) {

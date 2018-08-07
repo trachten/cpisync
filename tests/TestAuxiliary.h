@@ -20,7 +20,7 @@ const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSize = sizeof(randZZ()) * CHAR_BIT; // size of elements stored in sync tests
 const int mBar = UCHAR_MAX*2; // max differences between client and server in sync tests
-const string iostr = ""; // initial string used to construct CommString
+const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
 const string host = "localhost"; // host for CommSocket
 const unsigned int port = 8031; // port for CommSocket
@@ -173,7 +173,7 @@ inline vector<GenSync> oneWayCombos() {
                     CPPUNIT_FAIL("A communicant is not being tested for!");
                     break;
             }
-            ret.push_back(GenSync(communicants, methods));
+            ret.emplace_back(communicants, methods);
         }
     }
     return ret;
@@ -219,7 +219,7 @@ inline vector<GenSync> twoWayCombos() {
                     break;
             }
 
-            ret.push_back(GenSync(communicants, methods));
+            ret.emplace_back(communicants, methods);
         }
     }
     return ret;
@@ -350,7 +350,7 @@ inline void _syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient)
  * @param GenSyncClient
  * @param GenSyncServer
  */
-inline void syncTestOneWay(GenSync GenSyncClient, GenSync GenSyncServer) {
+inline void syncTestOneWay(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
     _syncTest(true, GenSyncClient, GenSyncServer);
 }
 
@@ -359,7 +359,7 @@ inline void syncTestOneWay(GenSync GenSyncClient, GenSync GenSyncServer) {
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
  */
-inline void syncTest(GenSync GenSyncServer, GenSync GenSyncClient) {
+inline void syncTest(const GenSync &GenSyncServer, const GenSync &GenSyncClient) {
     _syncTest(false, GenSyncServer, GenSyncClient);
 }
 

@@ -77,7 +77,7 @@ public:
      * @require listen or connect must have been called to establish a connection.
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */  
-    virtual void commSend(const char* toSend, const int numBytes)=0;
+    virtual void commSend(const char* toSend, int numBytes)=0;
     
     /**
      * Send data over an existing connection.
@@ -87,7 +87,7 @@ public:
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(const ustring str, const unsigned int numBytes);
+    void commSend(ustring str, unsigned int numBytes);
 
     /**
      * Sends a data object over the line
@@ -107,37 +107,37 @@ public:
      * Sends a string over the line.
      * @param str The string to send.
      */
-    void commSend(const string str);
+    void commSend(string str);
     
         /**
      * Sends a ustring over the line.
      * @param str The ustring to send.
      */
-    void commSend(const ustring ustr);
+    void commSend(ustring ustr);
     
     /**
      * Sends a double over the line.  The recipient must have the same representation of floats.
      * @param num The double to send
      */
-    void commSend(const double num);
+    void commSend(double num);
     
     /**
      * Sends a long integer over the line
      * @param num The number to send
      */
-    void commSend(const long num);
+    void commSend(long num);
     
     /**
      * Sends an integer over the line
      * @param num The number to send
      */
-    void commSend(const int num);
+    void commSend(int num);
     
     /**
      * Sends out a single byte over the line
      * @param num
      */
-    void commSend(const byte bt);
+    void commSend(byte bt);
     
     // Specialized send functions for specific data types
     /**

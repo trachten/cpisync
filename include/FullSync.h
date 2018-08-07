@@ -34,15 +34,15 @@ public:
     FullSync();
     
     // General class destructor
-    ~FullSync();
+    ~FullSync() override;
   
     
     // parent methods to override
-    bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf);
-    bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf);
-    bool addElem(DataObject* newDatum);
-    bool delElem(DataObject* newDatum);
-    inline string getName() { return "I am a FullSync object."; }
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf) override;
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf) override;
+    bool addElem(DataObject* newDatum) override;
+    bool delElem(DataObject* newDatum) override;
+    inline string getName() override { return "I am a FullSync object."; }
 
     /**
      * @return A string representing the elements stored in the FullSync object.

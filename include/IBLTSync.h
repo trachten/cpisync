@@ -23,6 +23,7 @@ public:
     string getName();
 private:
     IBLT myIBLT;
+    bool oneWay = false;
 };
 
 

@@ -1,7 +1,7 @@
 //
-// Created by eliezer pearl on 7/9/18.lt.h in https://github.com/mwcote/IBLT-Research.
-////
-// Heavily based on iblt.cpp and ib
+// Created by Eliezer Pearl on 7/9/18.
+// Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
+//
 
 #include "IBLT.h"
 
@@ -24,17 +24,20 @@ hashVal IBLT::_hash(const hashVal& initial, long kk) {
 }
 
 hashVal IBLT::hashK(const ZZ& item, long kk) {
-    std::hash<std::string> shash; // stl uses MurmurHashUnaligned2
+    std::hash<std::string> shash; // stl uses MurmurHashUnaligned2 for calculating the hash of a string
     return _hash(shash(toStr(item)), kk-1);
 }
 
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
 
+    if(value.size() != valueSize)
+        Logger::error_and_quit("The value being inserted is different than the IBLT value size! value size: "
+        + toStr(value.size()) + ". IBLT value size: " + toStr(valueSize));
+
     for(int ii=0; ii < N_HASH; ii++){
         hashVal hk = hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
-        int loc = startEntry + (hk%bucketsPerHash);
         IBLT::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
 
         entry.count += plusOrMinus;
@@ -56,7 +59,6 @@ void IBLT::insert(ZZ key, ZZ value)
 
 void IBLT::erase(ZZ key, ZZ value)
 {
-    //Logger::gLog(Logger::METHOD, std::string("entering: erase"));
     _insert(-1, key, value);
 }
 
@@ -147,6 +149,13 @@ bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &neg
 }
 
 IBLT& IBLT::operator-=(const IBLT& other) {
+    if(valueSize != other.valueSize)
+        Logger::error_and_quit("The value sizes between IBLTs don't match! Ours: "
+        + toStr(valueSize) + ". Theirs: " + toStr(other.valueSize));
+    if(hashTable.size() != other.hashTable.size())
+        Logger::error_and_quit("The IBLT hash table sizes are different! Ours: "
+        + toStr(hashTable.size()) + ". Theirs: " + toStr(other.valueSize));
+
     for (unsigned long ii = 0; ii < hashTable.size(); ii++) {
         IBLT::HashTableEntry& e1 = this->hashTable.at(ii);
         const IBLT::HashTableEntry& e2 = other.hashTable.at(ii);
@@ -168,6 +177,10 @@ IBLT IBLT::operator-(const IBLT& other) const {
     return result -= other;
 }
 
-size_t IBLT::size() {
+size_t IBLT::size() const {
     return hashTable.size();
+}
+
+size_t IBLT::eltSize() const {
+    return valueSize;
 }

@@ -1,6 +1,6 @@
 //
-// Created by eliezer pearl on 7/9/18.
-// Heavily based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
+// Created by Eliezer Pearl on 7/9/18.
+// Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
 //
 
 #ifndef CPISYNCLIB_IBLT_H
@@ -36,12 +36,14 @@ typedef unsigned long int hashVal;
 
 class IBLT {
 public:
+    // Communicant needs to access the internal representation of an IBLT to send it and receive it
+    friend class Communicant;
+
     /**
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
      */
     IBLT(size_t expectedNumEntries, size_t _valueSize);
-    IBLT() = default;
     
     // default destructor
     ~IBLT();
@@ -95,9 +97,17 @@ public:
     /**
      * @return the number of cells in the IBLT. Not necessarily equal to the expected number of entries
      */
-    size_t size();
+    size_t size() const;
+
+    /**
+     * @return the size of a value stored in the IBLT.
+     */
+    size_t eltSize() const;
 private:
     // local data
+
+    // default constructor - no internal parameters are initialized
+    IBLT();
 
     // Helper function for insert and erase
     void _insert(long plusOrMinus, ZZ key, ZZ value);
@@ -124,7 +134,6 @@ private:
 
         // Returns whether the entry contains just one insertion or deletion
         bool isPure() const;
-        //bool isPure(const pair<hashVal, hashVal>& initial) const;
 
         // Returns whether the entry is empty
         bool empty() const;

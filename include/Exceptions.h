@@ -11,7 +11,11 @@
 #define	EXCEPTIONS_H
 
 #include <stdexcept>
-        
+
+// namespaces
+using std::runtime_error;
+using std::string;
+
 /**
  * Denotes that a specific method has not (yet?) been implemented.
  * @param specifics A string to supply with the exception.

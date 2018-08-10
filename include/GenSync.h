@@ -260,6 +260,8 @@ public:
         InteractiveCPISync,
         OneWayCPISync,
         FullSync,
+        IBLTSync,
+        OneWayIBLTSync,
         END     // one after the end of iterable options
     };
 
@@ -310,7 +312,8 @@ public:
     base64(DFT_BASE64),
     mbar(DFT_MBAR),
     bits(DFT_BITS),
-    numParts(DFT_PARTS) {
+    numParts(DFT_PARTS),
+    numExpElem(DFT_EXPELEMS){
         myComm = nullptr;
         myMeth = nullptr;
     }
@@ -392,6 +395,11 @@ public:
         this->numParts = theNumParts;
         return *this;
     }
+
+    Builder& setNumExpectedElements(size_t theNumExpElems) {
+        this->numExpElem = theNumExpElems;
+        return *this;
+    }
     
     /**
      * Destructor - clear up any possibly allocated internal variables
@@ -414,6 +422,7 @@ private:
     long mbar; /** an upper estimate on the number of differences between synchronizing data multisets. */
     long bits; /** the number of bits per element of data */
     int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
+    size_t numExpElem; /** the number of expected elements to be stored in an IBLT */
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
@@ -427,6 +436,7 @@ private:
     static const long DFT_MBAR = UNDEFINED; // this parameter *must* be specified for sync to work
     static const long DFT_BITS = 32;
     static const int DFT_PARTS = 2;
+    static const size_t DFT_EXPELEMS = 50;
     // ... initialized in .cpp file due to C++ quirks
     static const string DFT_HOST;
     static const string DFT_IO;

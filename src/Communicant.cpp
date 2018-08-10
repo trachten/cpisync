@@ -427,7 +427,6 @@ IBLT Communicant::commRecv_IBLT(size_t size, size_t eltSize) {
         numEltSize = eltSize;
     }
 
-
     IBLT theirs;
     theirs.valueSize = numEltSize;
 

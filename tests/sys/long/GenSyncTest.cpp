@@ -9,7 +9,6 @@
 #include <InterCPISync.h>
 #include <CommString.h>
 #include <cstdlib>
-#include "ForkHandle.h"
 #include "GenSyncTest.h"
 #include "GenSync.h"
 #include "CommDummy.h"
@@ -26,7 +25,7 @@ GenSyncTest::~GenSyncTest() = default;
 
 void GenSyncTest::setUp(){
     // constant seed so that randomness is the same across runs
-    const int SEED = 617;
+    const int SEED = 619;
     srand(SEED);
 }
 void GenSyncTest::tearDown(){}
@@ -34,7 +33,7 @@ void GenSyncTest::tearDown(){}
 // tests
 
 void GenSyncTest::testAddRemoveElems() {
-    const unsigned char ELTS = 64; // amt of elems to be put in the data structure
+
     vector<DataObject *> objectsPtr;
 
     // create one object that is convertible to a DataObject
@@ -95,9 +94,9 @@ void GenSyncTest::testAddRemoveSyncMethodAndComm() {
     CPPUNIT_ASSERT_EQUAL(before + 1, after);
 
     // add a ProbCPISync and test that getSyncAgt correctly reports the sync agent at index #0
-    auto toAdd = make_shared<ProbCPISync>(mBar, eltSize, err);
+    auto toAdd = make_shared<ProbCPISync>(mBar, eltSizeSq, err);
     genSync.addSyncAgt(toAdd);
-    genSyncOther.addSyncAgt(make_shared<ProbCPISync>(mBar, eltSize, err));
+    genSyncOther.addSyncAgt(make_shared<ProbCPISync>(mBar, eltSizeSq, err));
     CPPUNIT_ASSERT_EQUAL((ProbCPISync*)(*genSync.getSyncAgt(0)).get(), toAdd.get());
 
     // syncing with the newly added commsocket and probcpisync should succeed
@@ -112,13 +111,14 @@ void GenSyncTest::testAddRemoveSyncMethodAndComm() {
     // test deleting a syncmethod
 
     // create an InterCPISync to add and push to the end of the SyncMethod vector in `genSync`
-    auto secondSync = make_shared<InterCPISync>(mBar, eltSize, err, numParts);
+    auto secondSync = make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts);
     genSync.addSyncAgt(secondSync);
 
     // removes the first SyncMethod. if delSyncAgt is successful, the SyncMethod at idx #0 should be `secondSync`
     genSync.delSyncAgt(0);
     auto newFirst = dynamic_cast<InterCPISync*>((*genSync.getSyncAgt(0)).get());
-    CPPUNIT_ASSERT(newFirst != nullptr && newFirst->getName() == secondSync->getName());
+    CPPUNIT_ASSERT(newFirst != nullptr);
+    CPPUNIT_ASSERT_EQUAL(newFirst->getName(), secondSync->getName());
 }
 
 void GenSyncTest::testGetName() {
@@ -133,8 +133,8 @@ void GenSyncTest::testCounters() {
     auto cs = make_shared<CommSocket>(port);
 
     // initialize GenSync objects
-    GenSync genSync({cs}, {make_shared<ProbCPISync>(mBar, eltSize, err)});
-    GenSync genSyncOther({make_shared<CommSocket>(port)}, {make_shared<ProbCPISync>(mBar, eltSize, err)});
+    GenSync genSync({cs}, {make_shared<ProbCPISync>(mBar, eltSizeSq, err)});
+    GenSync genSyncOther({make_shared<CommSocket>(port)}, {make_shared<ProbCPISync>(mBar, eltSizeSq, err)});
 
     // since no sync has happened yet, getSyncTime should report the time since the Communicant at idx #0's creation
     CPPUNIT_ASSERT_DOUBLES_EQUAL((double) cs->getTotalTime() / CLOCKS_PER_SEC, genSync.getSyncTime(0), 1.0);
@@ -156,10 +156,10 @@ void GenSyncTest::testCounters() {
 }
 
 void GenSyncTest::testPort() {
-    GenSync genSync({make_shared<CommSocket>(port)}, {make_shared<ProbCPISync>(eltSize, mBar, err)});
+    GenSync genSync({make_shared<CommSocket>(port)}, {make_shared<ProbCPISync>(eltSizeSq, mBar, err)});
     CPPUNIT_ASSERT_EQUAL(port, (const unsigned int) genSync.getPort(0));
 
-    GenSync genSyncOther({make_shared<CommString>(iostr)}, {make_shared<ProbCPISync>(eltSize, mBar, err)});
+    GenSync genSyncOther({make_shared<CommString>(iostr)}, {make_shared<ProbCPISync>(eltSizeSq, mBar, err)});
     CPPUNIT_ASSERT_EQUAL(-1, genSyncOther.getPort(0));
 }
 

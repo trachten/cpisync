@@ -5,6 +5,9 @@
 
 #include "IBLT.h"
 
+IBLT::IBLT() = default;
+IBLT::~IBLT() = default;
+
 IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize)
 : valueSize(_valueSize)
 {
@@ -14,8 +17,6 @@ IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize)
     while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;
     hashTable.resize(nEntries);
 }
-
-IBLT::~IBLT() = default;
 
 hashVal IBLT::_hash(const hashVal& initial, long kk) {
     if(kk == -1) return initial;
@@ -31,9 +32,10 @@ hashVal IBLT::hashK(const ZZ& item, long kk) {
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
 
-    if(value.size() != valueSize)
+    if(sizeof(value) != valueSize) {
         Logger::error_and_quit("The value being inserted is different than the IBLT value size! value size: "
-        + toStr(value.size()) + ". IBLT value size: " + toStr(valueSize));
+                               + toStr(sizeof(value)) + ". IBLT value size: " + toStr(valueSize));
+    }
 
     for(int ii=0; ii < N_HASH; ii++){
         hashVal hk = hashK(key, ii);

@@ -53,6 +53,10 @@ public:
     // Tests getPort
     void testPort();
 
+private:
+    // constants
+    const unsigned int ELTS = 64; // amount of elements to be added to the GenSync object for testAddRemoveElems
+
 };
 
 

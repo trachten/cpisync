@@ -2,12 +2,13 @@
 // Created by eliez on 8/6/2018.
 //
 
+#include <IBLTSync.h>
+#include <IBLTSync_HalfRound.h>
 #include "ProbCPISync.h"
 #include "CPISync_HalfRound.h"
 #include "InterCPISync.h"
 #include "CommString.h"
 #include "CommSocket.h"
-#include "ForkHandle.h"
 #include "Auxiliary.h"
 #include "GenSync.h"
 #include "FullSync.h"
@@ -18,16 +19,73 @@
 // constants
 const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
-const size_t eltSize = sizeof(randZZ()) * CHAR_BIT; // size of elements stored in sync tests
+const size_t eltSizeSq = pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
+const size_t eltSize = sizeof(randZZ());
 const int mBar = UCHAR_MAX*2; // max differences between client and server in sync tests
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
 const string host = "localhost"; // host for CommSocket
-const unsigned int port = 8031; // port for CommSocket
+const unsigned int port = 8032; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
+const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
 
 // helpers
+
+/**
+ * Report structure for a forkHandle run
+  */
+struct forkHandleReport {
+    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
+    long bytes;       // the number of bytes communicated
+    double CPUtime;   // the amount of CPU time used
+    double totalTime; // total time used
+    bool success;     // true iff the sync completed successfully
+};
+
+/**
+ * Runs client (child process) and server (parent process), returning statistics for server.
+ * server is modified to reflect reconciliation, whereas client is not.
+ * @param server The GenSync object that plays the role of server in the sync.
+ * @param client The GenSync object that plays the role of client in the sync.
+ * @return Synchronization statistics as reported by the server.
+ */
+inline forkHandleReport forkHandle(GenSync& server, GenSync client) {
+    int err = 1;
+    int chld_state;
+    int my_opt = 0;
+    forkHandleReport result;
+    clock_t start = clock();
+    try {
+        pid_t pID = fork();
+        int method_num = 0;
+        if (pID == 0) {
+            signal(SIGCHLD, SIG_IGN);
+            Logger::gLog(Logger::COMM,"created a client process");
+            client.listenSync(method_num);
+            exit(0);
+        } else if (pID < 0) {
+            //handle_error("error to fork a child process");
+            cout << "throw out err = " << err << endl;
+            throw err;
+        } else {
+            Logger::gLog(Logger::COMM,"created a server process");
+            bool success = server.startSync(method_num);
+            result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
+            result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
+            waitpid(pID, &chld_state, my_opt);
+            result.success=success;
+        }
+
+    } catch (int& err) {
+        sleep(1); // why?
+        cout << "handle_error caught" << endl;
+        result.success=false;
+    }
+
+    return result;
+}
 
 /**
  * returns all possible gensync configurations constructed using GenSync::Builder
@@ -47,20 +105,29 @@ inline vector<GenSync> builderCombos() {
                 case GenSync::SyncProtocol::CPISync:
                 case GenSync::SyncProtocol::OneWayCPISync:
                     builder.
-                            setBits(eltSize).
+                            setBits(eltSizeSq).
                             setMbar(mBar);
                     break;
                 case GenSync::SyncProtocol::InteractiveCPISync:
                     builder.
-                            setBits(eltSize).
+                            setBits(eltSizeSq).
                             setMbar(mBar).
                             setNumPartitions(numParts);
                     break;
                 case GenSync::SyncProtocol::FullSync:
                     break; // nothing needs to be done for a fullsync
-                default:
-                    CPPUNIT_FAIL("A sync method is not being tested for!");
+                case GenSync::SyncProtocol::IBLTSync:
+                    builder.
+                            setBits(eltSize).
+                            setNumExpectedElements(numExpElem);
                     break;
+                case GenSync::SyncProtocol::OneWayIBLTSync:
+                    builder.
+                            setBits(eltSize).
+                            setNumExpectedElements(numExpElem);
+                    break;
+                default:
+                    continue;
             }
 
             switch(comm) {
@@ -74,8 +141,7 @@ inline vector<GenSync> builderCombos() {
                             setPort(port);
                     break;
                 default:
-                    CPPUNIT_FAIL("A communicant is not being tested for!");
-                    break;
+                    continue;
             }
 
             ret.emplace_back(GenSync(builder.build()));
@@ -99,20 +165,25 @@ inline vector<GenSync> constructorCombos(bool useFile) {
             vector<shared_ptr<SyncMethod>> methods;
             switch(prot) {
                 case GenSync::SyncProtocol::CPISync:
-                    methods = {make_shared<ProbCPISync>(mBar, eltSize, err)};
+                    methods = {make_shared<ProbCPISync>(mBar, eltSizeSq, err)};
                     break;
                 case GenSync::SyncProtocol::OneWayCPISync:
-                    methods = {make_shared<CPISync_HalfRound>(mBar, eltSize, err)};
+                    methods = {make_shared<CPISync_HalfRound>(mBar, eltSizeSq, err)};
                     break;
                 case GenSync::SyncProtocol::InteractiveCPISync:
-                    methods = {make_shared<InterCPISync>(mBar, eltSize, err, numParts)};
+                    methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
                     break;
                 case GenSync::SyncProtocol::FullSync:
                     methods = {make_shared<FullSync>()};
                     break;
-                default:
-                    CPPUNIT_FAIL("A sync method is not being tested for!");
+                case GenSync::SyncProtocol::IBLTSync:
+                    methods = {make_shared<IBLTSync>(numExpElem, eltSize)};
                     break;
+                case GenSync::SyncProtocol::OneWayIBLTSync:
+                    methods = {make_shared<IBLTSync_HalfRound>(numExpElem, eltSize)};
+                    break;
+                default:
+                    continue;
             }
 
             switch(comm) {
@@ -123,8 +194,7 @@ inline vector<GenSync> constructorCombos(bool useFile) {
                     communicants = {make_shared<CommSocket>(port, host)};
                     break;
                 default:
-                    CPPUNIT_FAIL("A communicant is not being tested for!");
-                    break;
+                    continue;
             }
 
             // call constructor depending on useFile
@@ -147,31 +217,22 @@ inline vector<GenSync> oneWayCombos() {
             vector<shared_ptr<Communicant>> communicants;
             vector<shared_ptr<SyncMethod>> methods;
             switch(prot) {
-                case GenSync::SyncProtocol::CPISync:
-                    methods = {make_shared<ProbCPISync>(mBar, eltSize, err)};
-                    break;
                 case GenSync::SyncProtocol::OneWayCPISync:
-                    methods = {make_shared<CPISync_HalfRound>(mBar, eltSize, err)};
-                case GenSync::SyncProtocol::InteractiveCPISync:
-                    methods = {make_shared<InterCPISync>(mBar, eltSize, err, numParts)};
+                    methods = {make_shared<CPISync_HalfRound>(mBar, eltSizeSq, err)};
                     break;
-                case GenSync::SyncProtocol::FullSync:
-                    methods = {make_shared<FullSync>()};
+                case GenSync::SyncProtocol::OneWayIBLTSync:
+                    methods = {make_shared<IBLTSync_HalfRound>(numExpElem, eltSize)};
                     break;
                 default:
-                    CPPUNIT_FAIL("A sync method is not being tested for!");
-                    break;
+                    continue;
             }
 
             switch(comm) {
                 case GenSync::SyncComm::socket:
                     communicants = {make_shared<CommSocket>(port, host)};
                     break;
-                case GenSync::SyncComm::string:
-                    continue; // not a 1way sync
                 default:
-                    CPPUNIT_FAIL("A communicant is not being tested for!");
-                    break;
+                    continue;
             }
             ret.emplace_back(communicants, methods);
         }
@@ -193,30 +254,27 @@ inline vector<GenSync> twoWayCombos() {
             vector<shared_ptr<SyncMethod>> methods;
             switch(prot) {
                 case GenSync::SyncProtocol::CPISync:
-                    methods = {make_shared<ProbCPISync>(mBar, eltSize, err)};
+                    methods = {make_shared<ProbCPISync>(mBar, eltSizeSq, err)};
                     break;
-                case GenSync::SyncProtocol::OneWayCPISync:
-                    continue; // not a 2way sync
                 case GenSync::SyncProtocol::InteractiveCPISync:
-                    methods = {make_shared<InterCPISync>(mBar, eltSize, err, numParts)};
+                    methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
                     break;
                 case GenSync::SyncProtocol::FullSync:
                     methods = {make_shared<FullSync>()};
                     break;
-                default:
-                    CPPUNIT_FAIL("A sync method is not being tested for!");
+                case GenSync::SyncProtocol::IBLTSync:
+                    methods = {make_shared<IBLTSync>(numExpElem, eltSize)};
                     break;
+                default:
+                    continue;
             }
 
             switch(comm) {
                 case GenSync::SyncComm::socket:
                     communicants = {make_shared<CommSocket>(port, host)};
                     break;
-                case GenSync::SyncComm::string:
-                    continue; // not a 2way sync
                 default:
-                    CPPUNIT_FAIL("A communicant is not being tested for!");
-                    break;
+                    continue;
             }
 
             ret.emplace_back(communicants, methods);
@@ -298,13 +356,15 @@ inline void _syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient)
         pid_t pID = fork();
         if (pID == 0) {
             signal(SIGCHLD, SIG_IGN);
+
+            // in oneWay mode, we only care about the results from the server-side sync
             if(!oneWay) {
                 // reconcile client with server
                 forkHandleReport resultClient = forkHandle(GenSyncClient, GenSyncServer);
 
                 // check reasonable statistics
-                CPPUNIT_ASSERT(resultClient.bytes > 0);
                 CPPUNIT_ASSERT(resultClient.success);
+                CPPUNIT_ASSERT(resultClient.bytes > 0);
 
                 // convert reconciled elements into string representation
                 multiset<string> resClient;
@@ -328,8 +388,8 @@ inline void _syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient)
             forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
 
             // check reasonable statistics
-            CPPUNIT_ASSERT(resultServer.bytes > 0);
             CPPUNIT_ASSERT(resultServer.success);
+            CPPUNIT_ASSERT(resultServer.bytes > 0);
 
             // convert reconciled elements into string representation
             multiset<string> resServer;

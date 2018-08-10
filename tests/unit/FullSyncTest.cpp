@@ -11,7 +11,6 @@
 #include "FullSyncTest.h"
 #include "FullSync.h"
 #include "CommSocket.h"
-#include "ForkHandle.h"
 #include "TestAuxiliary.h"
 #include "GenSync.h"
 
@@ -22,7 +21,7 @@ FullSyncTest::FullSyncTest() = default;
 FullSyncTest::~FullSyncTest() = default;
 
 void FullSyncTest::setUp() {
-    const int SEED = 90;
+    const int SEED = 91;
     srand(SEED);
 }
 
@@ -30,14 +29,17 @@ void FullSyncTest::tearDown() {
 }
 
 void FullSyncTest::justSyncTest() {
+    const int PORT = 8002;
     GenSync GenSyncServer = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::FullSync).
             setComm(GenSync::SyncComm::socket).
+            setPort(PORT).
             build();
 
     GenSync GenSyncClient = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::FullSync).
             setComm(GenSync::SyncComm::socket).
+            setPort(PORT).
             build();
 
     syncTest(GenSyncServer, GenSyncClient);

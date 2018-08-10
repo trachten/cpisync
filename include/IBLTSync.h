@@ -9,7 +9,7 @@
 #include "Auxiliary.h"
 #include "IBLT.h"
 
-class IBLTSync : SyncMethod {
+class IBLTSync : public SyncMethod {
 public:
     // Constructors and destructors
     IBLTSync(size_t expected, size_t eltSize);
@@ -21,9 +21,11 @@ public:
     bool addElem(DataObject* datum) override;
     bool delElem(DataObject* datum) override;
     string getName();
+protected:
+    bool oneWay;
 private:
     IBLT myIBLT;
-    bool oneWay = false;
+    size_t expNumElems;
 };
 
 

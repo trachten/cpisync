@@ -17,6 +17,8 @@
 #include "CommString.h"
 #include "ProbCPISync.h"
 #include "InterCPISync.h"
+#include "IBLTSync.h"
+#include "IBLTSync_HalfRound.h"
 #include "CPISync_HalfRound.h"
 #include "FullSync.h"
 
@@ -340,6 +342,12 @@ GenSync GenSync::Builder::build() {
             break;
         case SyncProtocol::FullSync:
             myMeth = make_shared<FullSync>();
+            break;
+        case SyncProtocol::IBLTSync:
+            myMeth = make_shared<IBLTSync>(numExpElem, bits);
+            break;
+        case SyncProtocol::OneWayIBLTSync:
+            myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
             break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");

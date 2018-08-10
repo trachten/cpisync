@@ -35,8 +35,6 @@ public:
 
     // Test that printElem() and getName() return some nonempty string
     void testGetStrings();
-private:
-
 };
 
 #endif /* FULLSYNCTEST_H */

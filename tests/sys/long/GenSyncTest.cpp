@@ -110,15 +110,15 @@ void GenSyncTest::testAddRemoveSyncMethodAndComm() {
 
     // test deleting a syncmethod
 
-    // create an InterCPISync to add and push to the end of the SyncMethod vector in `genSync`
+    // create an InterCPISync to add and push to the beginning of the SyncMethod vector in `genSync`
     auto secondSync = make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts);
-    genSync.addSyncAgt(secondSync);
+    genSync.addSyncAgt(secondSync, 0);
 
-    // removes the first SyncMethod. if delSyncAgt is successful, the SyncMethod at idx #0 should be `secondSync`
+    // removes the first SyncMethod. if delSyncAgt is successful, the SyncMethod at idx #0 should be `firstSync`
     genSync.delSyncAgt(0);
-    auto newFirst = dynamic_cast<InterCPISync*>((*genSync.getSyncAgt(0)).get());
+    auto newFirst = dynamic_cast<ProbCPISync*>((*genSync.getSyncAgt(0)).get());
     CPPUNIT_ASSERT(newFirst != nullptr);
-    CPPUNIT_ASSERT_EQUAL(newFirst->getName(), secondSync->getName());
+    CPPUNIT_ASSERT_EQUAL(newFirst->getName(), toAdd->getName());
 }
 
 void GenSyncTest::testGetName() {

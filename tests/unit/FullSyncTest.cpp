@@ -29,17 +29,14 @@ void FullSyncTest::tearDown() {
 }
 
 void FullSyncTest::justSyncTest() {
-    const int PORT = 8002;
     GenSync GenSyncServer = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::FullSync).
             setComm(GenSync::SyncComm::socket).
-            setPort(PORT).
             build();
 
     GenSync GenSyncClient = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::FullSync).
             setComm(GenSync::SyncComm::socket).
-            setPort(PORT).
             build();
 
     syncTest(GenSyncServer, GenSyncClient);

@@ -12,6 +12,7 @@
 #include "Auxiliary.h"
 #include "GenSync.h"
 #include "FullSync.h"
+#include "ForkHandle.h"
 
 #ifndef CPISYNCLIB_TESTAUXILIARY_H
 #define CPISYNCLIB_TESTAUXILIARY_H
@@ -20,72 +21,17 @@
 const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
-const size_t eltSize = sizeof(randZZ());
+const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
 const int mBar = UCHAR_MAX*2; // max differences between client and server in sync tests
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
 const string host = "localhost"; // host for CommSocket
-const unsigned int port = 8032; // port for CommSocket
+const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
 
 // helpers
-
-/**
- * Report structure for a forkHandle run
-  */
-struct forkHandleReport {
-    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
-    long bytes;       // the number of bytes communicated
-    double CPUtime;   // the amount of CPU time used
-    double totalTime; // total time used
-    bool success;     // true iff the sync completed successfully
-};
-
-/**
- * Runs client (child process) and server (parent process), returning statistics for server.
- * server is modified to reflect reconciliation, whereas client is not.
- * @param server The GenSync object that plays the role of server in the sync.
- * @param client The GenSync object that plays the role of client in the sync.
- * @return Synchronization statistics as reported by the server.
- */
-inline forkHandleReport forkHandle(GenSync& server, GenSync client) {
-    int err = 1;
-    int chld_state;
-    int my_opt = 0;
-    forkHandleReport result;
-    clock_t start = clock();
-    try {
-        pid_t pID = fork();
-        int method_num = 0;
-        if (pID == 0) {
-            signal(SIGCHLD, SIG_IGN);
-            Logger::gLog(Logger::COMM,"created a client process");
-            client.listenSync(method_num);
-            exit(0);
-        } else if (pID < 0) {
-            //handle_error("error to fork a child process");
-            cout << "throw out err = " << err << endl;
-            throw err;
-        } else {
-            Logger::gLog(Logger::COMM,"created a server process");
-            bool success = server.startSync(method_num);
-            result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
-            result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
-            result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
-            waitpid(pID, &chld_state, my_opt);
-            result.success=success;
-        }
-
-    } catch (int& err) {
-        sleep(1); // why?
-        cout << "handle_error caught" << endl;
-        result.success=false;
-    }
-
-    return result;
-}
 
 /**
  * returns all possible gensync configurations constructed using GenSync::Builder
@@ -220,9 +166,6 @@ inline vector<GenSync> oneWayCombos() {
                 case GenSync::SyncProtocol::OneWayCPISync:
                     methods = {make_shared<CPISync_HalfRound>(mBar, eltSizeSq, err)};
                     break;
-                case GenSync::SyncProtocol::OneWayIBLTSync:
-                    methods = {make_shared<IBLTSync_HalfRound>(numExpElem, eltSize)};
-                    break;
                 default:
                     continue;
             }
@@ -262,8 +205,75 @@ inline vector<GenSync> twoWayCombos() {
                 case GenSync::SyncProtocol::FullSync:
                     methods = {make_shared<FullSync>()};
                     break;
+                default:
+                    continue;
+            }
+
+            switch(comm) {
+                case GenSync::SyncComm::socket:
+                    communicants = {make_shared<CommSocket>(port, host)};
+                    break;
+                default:
+                    continue;
+            }
+
+            ret.emplace_back(communicants, methods);
+        }
+    }
+    return ret;
+}
+
+/**
+ * returns gensync configurations that communicate two ways using syncs with probability of only partially succeeding
+ * constructed using the standard way of creating GenSync objects (without a file)
+ * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
+ */
+inline vector<GenSync> twoWayProbCombos() {
+    vector<GenSync> ret;
+
+    // iterate through all possible combinations of communicant and syncmethod
+    for(auto prot = GenSync::SyncProtocol::BEGIN; prot != GenSync::SyncProtocol::END; ++prot) {
+        for(auto comm = GenSync::SyncComm::BEGIN; comm != GenSync::SyncComm::END; ++comm) {
+            vector<shared_ptr<Communicant>> communicants;
+            vector<shared_ptr<SyncMethod>> methods;
+            switch(prot) {
                 case GenSync::SyncProtocol::IBLTSync:
                     methods = {make_shared<IBLTSync>(numExpElem, eltSize)};
+                    break;
+                default:
+                    continue;
+            }
+
+            switch(comm) {
+                case GenSync::SyncComm::socket:
+                    communicants = {make_shared<CommSocket>(port, host)};
+                    break;
+                default:
+                    continue;
+            }
+
+            ret.emplace_back(communicants, methods);
+        }
+    }
+    return ret;
+}
+
+/**
+ * returns gensync configurations that communicate one way using syncs with probability of only partially succeeding
+ * constructed using the standard way of creating GenSync objects (without a file)
+ * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
+ */
+inline vector<GenSync> oneWayProbCombos() {
+    vector<GenSync> ret;
+
+    // iterate through all possible combinations of communicant and syncmethod
+    for(auto prot = GenSync::SyncProtocol::BEGIN; prot != GenSync::SyncProtocol::END; ++prot) {
+        for(auto comm = GenSync::SyncComm::BEGIN; comm != GenSync::SyncComm::END; ++comm) {
+            vector<shared_ptr<Communicant>> communicants;
+            vector<shared_ptr<SyncMethod>> methods;
+            switch(prot) {
+                case GenSync::SyncProtocol::OneWayIBLTSync:
+                    methods = {make_shared<IBLTSync_HalfRound>(numExpElem, eltSize)};
                     break;
                 default:
                     continue;
@@ -305,7 +315,7 @@ inline vector<GenSync> fileCombos() {
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
  */
-inline void _syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient) {
+inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false) {
     for(int jj = 0; jj < NUM_TESTS; jj++) {
         // setup DataObjects
         const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
@@ -372,9 +382,17 @@ inline void _syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient)
                     resClient.insert(dop->print());
                 }
 
-                // check that expected and resultant reconciled sets match up in both size and contents
-                CPPUNIT_ASSERT_EQUAL(reconciled.size(), resClient.size());
-                CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).empty());
+                if(!probSync) {
+                    // check that expected and resultant reconciled sets match up in both size and contents
+                    CPPUNIT_ASSERT_EQUAL(reconciled.size(), resClient.size());
+                    CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).empty());
+                } else {
+                    // True iff the reconciled set contains at least one more element than it did before reconciliation
+                    CPPUNIT_ASSERT(resClient.size() > SIMILAR + CLIENT_MINUS_SERVER);
+
+                    // True iff the elements added during reconciliation were elements that the client was lacking that the server had
+                    CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).size() < CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
+                }
             }
             exit(0);
         } else if (pID < 0) {
@@ -385,6 +403,7 @@ inline void _syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient)
             waitpid(pID, &chld_state, my_opt);
 
             // reconcile server with client
+            // TODO: replace with forkHandleServer once bugs are fixed w/ it
             forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
 
             // check reasonable statistics
@@ -397,9 +416,17 @@ inline void _syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient)
                 resServer.insert(dop->print());
             }
 
-            // check that expected and resultant reconciled sets match up in both size and contents
-            CPPUNIT_ASSERT_EQUAL(reconciled.size(), resServer.size());
-            CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).empty());
+            if(!probSync) {
+                // check that expected and resultant reconciled sets match up in both size and contents
+                CPPUNIT_ASSERT_EQUAL(reconciled.size(), resServer.size());
+                CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).empty());
+            } else {
+                // True iff the reconciled set contains at least one more element than it did before reconciliation
+                CPPUNIT_ASSERT(resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
+
+                // True iff the elements added during reconciliation were elements that the server was lacking that the client had
+                CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).size() < CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
+            }
         }
     }
 }
@@ -411,7 +438,7 @@ inline void _syncTest(bool oneWay, GenSync GenSyncServer, GenSync GenSyncClient)
  * @param GenSyncServer
  */
 inline void syncTestOneWay(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
-    _syncTest(true, GenSyncClient, GenSyncServer);
+    _syncTest(GenSyncClient, GenSyncServer, true);
 }
 
 /**
@@ -420,7 +447,25 @@ inline void syncTestOneWay(const GenSync &GenSyncClient, const GenSync &GenSyncS
  * @param GenSyncClient Client GenSync
  */
 inline void syncTest(const GenSync &GenSyncServer, const GenSync &GenSyncClient) {
-    _syncTest(false, GenSyncServer, GenSyncClient);
+    _syncTest(GenSyncServer, GenSyncClient, false);
+}
+
+/**
+ * One way probabilistic synctest
+ * @param GenSyncServer Server GenSync
+ * @param GenSyncClient Client GenSync
+ */
+inline void syncTestOneWayProb(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
+    _syncTest(GenSyncClient, GenSyncServer, true, true);
+}
+
+/**
+ * Two way probabilistic synctest
+ * @param GenSyncServer Server GenSync
+ * @param GenSyncClient Client GenSync
+ */
+inline void syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
+    _syncTest(GenSyncClient, GenSyncServer, false, true);
 }
 
 #endif //CPISYNCLIB_TESTAUXILIARY_H

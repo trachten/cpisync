@@ -54,6 +54,6 @@ macro(add_group_test dir name)
 endmacro()
 
 # Add test groups (note: executable will throw errors if there are no tests in the respective folder)
-add_group_test(${UNIT_TEST_DIR} UnitTests)
+add_group_test(${UNIT_TEST_DIR} UnitTest)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
 add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)

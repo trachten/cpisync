@@ -17,7 +17,9 @@ class GenSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testGetName);
     CPPUNIT_TEST(testBuilder);
     CPPUNIT_TEST(testTwoWaySync);
+    CPPUNIT_TEST(testTwoWayProbSync);
     //CPPUNIT_TEST(testOneWaySync); TODO: Fix forkHandle s.t. server uses listenSync in parent, client uses startSync in child
+    //CPPUNIT_TEST(testOneWayProbSync); TODO: " "
     CPPUNIT_TEST(testAddRemoveSyncMethodAndComm);
     CPPUNIT_TEST(testCounters);
     CPPUNIT_TEST(testPort);
@@ -32,11 +34,17 @@ public:
     // Test that GenSyncs constructed using GenSync::Builder create equivalent GenSyncs to those constructed using the standard constructor
     void testBuilder();
 
-    // Test syncinc GenSyncs with two-way SyncMethods
+    // Test syncing GenSyncs with two-way SyncMethods
     void testTwoWaySync();
+
+    // Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
+    void testTwoWayProbSync();
 
     // Test syncing GenSyncs with one-way SyncMethods
     void testOneWaySync();
+
+    // Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
+    void testOneWayProbSync();
 
     // Test that GenSync::getName returns some nonempty string
     void testGetName();

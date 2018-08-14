@@ -21,25 +21,24 @@ void IBLTSyncTest::tearDown() {
 }
 
 void IBLTSyncTest::justSyncTest() {
-    const int PORT = 8003;
+    const int BITS = sizeof(randZZ());
+    const int EXP_ELEM = UCHAR_MAX * 2;
 
     GenSync GenSyncServer = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::IBLTSync).
             setComm(GenSync::SyncComm::socket).
-            setBits(sizeof(randZZ())).
-            setNumExpectedElements(UCHAR_MAX * 2).
-            setPort(PORT).
+            setBits(BITS).
+            setNumExpectedElements(EXP_ELEM).
             build();
 
     GenSync GenSyncClient = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::IBLTSync).
             setComm(GenSync::SyncComm::socket).
-            setBits(sizeof(randZZ())).
-            setNumExpectedElements(UCHAR_MAX * 2).
-            setPort(PORT).
+            setBits(BITS).
+            setNumExpectedElements(EXP_ELEM).
             build();
 
-    syncTest(GenSyncServer, GenSyncClient);
+    syncTestProb(GenSyncServer, GenSyncClient);
 }
 
 void IBLTSyncTest::testAddDelElem() {

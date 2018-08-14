@@ -198,3 +198,23 @@ void GenSyncTest::testOneWaySync() {
         syncTestOneWay(oneWayClient.at(ii), oneWayServer.at(ii));
     }
 }
+
+void GenSyncTest::testTwoWayProbSync() {
+    vector<GenSync> twoWayProbClient = twoWayProbCombos();
+    vector<GenSync> twoWayProbServer = twoWayProbCombos();
+
+    // sync every GenSync configuration with itself
+    for(int ii = 0; ii < twoWayProbClient.size(); ii++) {
+        syncTestProb(twoWayProbClient.at(ii), twoWayProbServer.at(ii));
+    }
+}
+
+void GenSyncTest::testOneWayProbSync() {
+    vector<GenSync> oneWayProbClient = oneWayProbCombos();
+    vector<GenSync> oneWayProbServer = oneWayProbCombos();
+
+    // sync every GenSync configuration with itself
+    for(int ii = 0; ii < oneWayProbClient.size(); ii++) {
+        syncTestOneWayProb(oneWayProbClient.at(ii), oneWayProbServer.at(ii));
+    }
+}

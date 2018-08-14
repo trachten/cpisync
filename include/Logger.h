@@ -40,8 +40,8 @@ public:
     };
     
     // Variables
-    static const LOG_TYPES logLevel = NONE; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/
-    
+    static const LOG_TYPES logLevel = DEFAULT_LOGLEVEL; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/
+
     /**
      * Default constructor
      */

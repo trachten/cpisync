@@ -55,6 +55,8 @@ bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
         msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
         msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
         Logger::gLog(Logger::METHOD, msg.str());
+
+        commSync->commClose();
         
         return true;
     } catch(SyncFailureException s) {
@@ -98,7 +100,9 @@ bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
 
         Logger::gLog(Logger::METHOD, msg.str());
-        
+
+        commSync->commClose();
+
         return true;
     } catch (SyncFailureException s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());

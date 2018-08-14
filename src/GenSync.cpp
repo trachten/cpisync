@@ -118,8 +118,6 @@ bool GenSync::listenSync(int method_num) {
         for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++) {
             addElem(*itDO);
         }
-
-
     }
 
     return syncSuccess;

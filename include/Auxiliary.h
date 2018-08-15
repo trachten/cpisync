@@ -21,6 +21,7 @@
 #include <list>
 #include <set>
 #include <csignal>
+#include <algorithm>
 #include <sys/wait.h>
 #include <climits>
 #include <cstring>
@@ -44,9 +45,6 @@ using std::multiset;
 using std::invalid_argument;
 using std::runtime_error;
 
-// forward declarations
-class SyncMethod;
-
 // FUNCTIONS
 
 /**
@@ -55,7 +53,7 @@ class SyncMethod;
  * @require string must have fewer than MAXINT characters
  * @return A vector of bytes, corresponding, one by one, to the characters of data
  */
-inline vector<byte> StrToVec(const string data) {
+inline vector<byte> StrToVec(const string& data) {
     vector<byte> result; // where we will be build the result to be returned
 
     const char *data_c_str = data.c_str();
@@ -112,7 +110,7 @@ inline string toStr(T item) {
 /**
  * Reinterprets a ustring into a string
  */
-inline string ustrToStr(const ustring ustr) {
+inline string ustrToStr(const ustring& ustr) {
     return string(reinterpret_cast<const char *> ((unsigned char *) ustr.data()), ustr.length());
 }
 
@@ -160,7 +158,7 @@ inline string printMap(map<S, T> theMap) {
  * @param container The multiset whose contents should be shown in the string
  * @return a string representing the contents of the container
  */
-inline string multisetPrint(multiset<string> container) {
+inline string multisetPrint(const multiset<string>& container) {
     string result;
     multiset<string>::const_iterator ii;
     for (ii = container.begin();
@@ -181,7 +179,7 @@ inline string multisetPrint(multiset<string> container) {
 template <class T>
 multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
@@ -197,10 +195,28 @@ multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second)
 template <class T>
 multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
+}
+
+/**
+ * Functor for comparing pointers to objects by dereferencing these pointers and comparing the resulting objects
+ * @tparam T A pointer to an object that s.t. (*T)::operator<(const (*T)&) is defined
+ */
+template <typename T>
+class cmp {
+public:
+    bool operator()(T a, T b) {
+        return (*a) < (*b);
+    }
+};
+
+template <class IteratorA, class IteratorB, class IteratorOut>
+void rangeDiff(IteratorA begA, IteratorA endA, IteratorB begB, IteratorB endB, IteratorOut coll) {
+    typedef typename std::iterator_traits<IteratorA>::value_type T;
+    set_difference(begA, endA, begB, endB, coll, cmp<T>());
 }
 
 /**
@@ -213,7 +229,7 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
 template <class T>
 multiset<T> multisetUnion(const multiset<T> first, const multiset<T> second) {
     vector<T> resultVec;
-    set_union(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
+    std::set_union(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
@@ -278,7 +294,7 @@ const int signed_shift = 128; // shift to get from unsigned to signed
  * Encodes a given ASCII c-style string into a (base64) string using only characters from '>' to '~'
  * @param bytes_to_encode The bytes to encode base 64
  * @param len The length of the bytes array
- * @return An ascii-armored string.
+ * @return An ASCII-armored string.
  */
 inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
     string ret;
@@ -286,7 +302,7 @@ inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
     int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
     // every 3 ASCII characters get converted into four base64 characters
     for (int ii = 0; ii < round3; ii += 3) {
-        unsigned long group = signed_shift + bytes_to_encode[ii] +
+        int group = signed_shift + bytes_to_encode[ii] +
                 256 * (ii + 1 >= (int) in_len ? 0 : signed_shift + bytes_to_encode[ii + 1]) +
                 256 * 256 * (ii + 2 >= (int) in_len ? 0 : signed_shift + bytes_to_encode[ii + 2]);
         ret += (char) min_base64 + group % 64;

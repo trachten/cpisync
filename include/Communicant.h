@@ -13,6 +13,7 @@
 #include <NTL/vec_ZZ_p.h>
 #include "ConstantsAndTypes.h"
 #include "DataObject.h"
+#include "DataPriorityObject.h"
 
 // namespace imports
 using namespace NTL;
@@ -76,7 +77,7 @@ public:
      * @require listen or connect must have been called to establish a connection.
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */  
-    virtual void commSend(const char* toSend, const int numBytes)=0;
+    virtual void commSend(const char* toSend, int numBytes)=0;
     
     /**
      * Send data over an existing connection.
@@ -86,7 +87,7 @@ public:
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(ustring str, const int numBytes);
+    void commSend(ustring str, unsigned int numBytes);
 
     /**
      * Sends a data object over the line
@@ -94,7 +95,7 @@ public:
      */
     void commSend(DataObject& dob);
     void commSend(list<DataObject *>&dob);
-    void commSend(DataObject& dob, bool priority);
+    void commSend(DataPriorityObject& dob);
     
     /**
      * Sends a list of data object pointers over the line.
@@ -106,37 +107,37 @@ public:
      * Sends a string over the line.
      * @param str The string to send.
      */
-    void commSend(const string str);
+    void commSend(string str);
     
         /**
      * Sends a ustring over the line.
      * @param str The ustring to send.
      */
-    void commSend(const ustring ustr);
+    void commSend(ustring ustr);
     
     /**
      * Sends a double over the line.  The recipient must have the same representation of floats.
      * @param num The double to send
      */
-    void commSend(const double num);
+    void commSend(double num);
     
     /**
      * Sends a long integer over the line
      * @param num The number to send
      */
-    void commSend(const long num);
+    void commSend(long num);
     
     /**
      * Sends an integer over the line
      * @param num The number to send
      */
-    void commSend(const int num);
+    void commSend(int num);
     
     /**
      * Sends out a single byte over the line
      * @param num
      */
-    void commSend(const byte bt);
+    void commSend(byte bt);
     
     // Specialized send functions for specific data types
     /**
@@ -174,7 +175,7 @@ public:
      * @return The string of characters received.
      * @see Communicant.h for more explanations, please.
      */
-    virtual string commRecv(long numBytes) = 0;
+    virtual string commRecv(unsigned long numBytes) = 0;
     
     /**
      * Receive data over an existing connection.  This is the primitive for receiving data.
@@ -182,7 +183,7 @@ public:
      * @return The data received from the connection
      * %M: adds to recvBytes the number of bytes received.
      */
-    ustring commRecv_ustring(long numBytes);
+    ustring commRecv_ustring(unsigned int numBytes);
 
     /**
      * Receive a string object over an existing connection.  Note,
@@ -206,7 +207,7 @@ public:
      */
     DataObject *commRecv_DataObject();
     list<DataObject *> commRecv_DataObject_List();
-    DataObject *commRecv_DataObject_Priority();
+    DataPriorityObject * commRecv_DataObject_Priority();
     
     /**
      * Receives a list of Data Objects and transforms this into a list of pointers to DataObjects.
@@ -301,9 +302,9 @@ protected:
     
     // CONSTANTS
     const static int NOT_SET = -1; /** An integer value that has not yet been set. */
-    const static int XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
-    const static int XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
-    const static int XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */
+    const static int unsigned XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
+    const static int unsigned XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
+    const static int unsigned XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */
  };
 
 #endif

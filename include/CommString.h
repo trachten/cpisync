@@ -24,7 +24,7 @@ public:
      * @param base64 If set to true, then the string is interpreted as a base64
      *  (ASCII armored) text.
      */
-    CommString(string initial = "", bool base64 = false);
+    explicit CommString(string initial = "", bool base64 = false);
     
     /**
      * Destructor
@@ -45,8 +45,8 @@ public:
     void commConnect() override;
     void commListen() override;
     void commClose() override;
-    void commSend(const char *toSend, const int numBytes) override;
-    string commRecv(long numBytes) override;
+    void commSend(const char *toSend, int numBytes) override;
+    string commRecv(unsigned long numBytes) override;
 
 protected:
     stringstream *stream; // the output stream to which to write characters

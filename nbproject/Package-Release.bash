@@ -6,7 +6,11 @@
 
 # Macros
 TOP=`pwd`
+<<<<<<< HEAD
 CND_PLATFORM=GNU-Linux
+=======
+CND_PLATFORM=brew_gcc-MacOSX
+>>>>>>> 15f3fb765e96a2244a98cdd558e4ff1703d4bf5d
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -15,7 +19,11 @@ NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
 OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisync.${CND_DLIB_EXT}
 OUTPUT_BASENAME=libcpisync.${CND_DLIB_EXT}
+<<<<<<< HEAD
 PACKAGE_TOP_DIR=libcpisync.so/
+=======
+PACKAGE_TOP_DIR=libcpisync.dylib/
+>>>>>>> 15f3fb765e96a2244a98cdd558e4ff1703d4bf5d
 
 # Functions
 function checkReturnCode
@@ -60,15 +68,25 @@ mkdir -p ${NBTMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
+<<<<<<< HEAD
 makeDirectory "${NBTMPDIR}/libcpisync.so/lib"
+=======
+makeDirectory "${NBTMPDIR}/libcpisync.dylib/lib"
+>>>>>>> 15f3fb765e96a2244a98cdd558e4ff1703d4bf5d
 copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 
 # Generate tar file
 cd "${TOP}"
+<<<<<<< HEAD
 rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libcpisync.so.tar
 cd ${NBTMPDIR}
 tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libcpisync.so.tar *
+=======
+rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libcpisync.dylib.tar
+cd ${NBTMPDIR}
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libcpisync.dylib.tar *
+>>>>>>> 15f3fb765e96a2244a98cdd558e4ff1703d4bf5d
 checkReturnCode
 
 # Cleanup

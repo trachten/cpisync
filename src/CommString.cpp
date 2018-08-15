@@ -27,7 +27,6 @@ void CommString::commConnect() {
 } // nothing needed to connect to a string
 
 void CommString::commListen() {
-    return;
 }// nothing needed to listen from a string
 
 void CommString::commClose() {
@@ -40,10 +39,10 @@ void CommString::commSend(const char *toSend, const int numBytes) {
     addXmitBytes(numBytes); // update the byte transfer counter
 }
 
-string CommString::commRecv(long numBytes) {
+string CommString::commRecv(unsigned long numBytes) {
     // returns the next few bytes from the string stream
 
-    char *tmpBuf = new char[numBytes]; // buffer into which received bytes are placed
+    auto *tmpBuf = new char[numBytes]; // buffer into which received bytes are placed
     stream->read(tmpBuf, numBytes);
 
     addRecvBytes(numBytes); // update the received byte counter

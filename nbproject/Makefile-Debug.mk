@@ -40,6 +40,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/CommString.o \
 	${OBJECTDIR}/src/Communicant.o \
 	${OBJECTDIR}/src/DataObject.o \
+	${OBJECTDIR}/src/FullSync.o \
 	${OBJECTDIR}/src/GenSync.o \
 	${OBJECTDIR}/src/IBLT.o \
 	${OBJECTDIR}/src/InterCPISync.o \
@@ -54,12 +55,15 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 # Test Files
 TESTFILES= \
 	${TESTDIR}/TestFiles/f2 \
-	${TESTDIR}/TestFiles/f1
+	${TESTDIR}/TestFiles/f1 \
+	${TESTDIR}/TestFiles/f3
 
 # Test Object Files
 TESTOBJECTFILES= \
 	${TESTDIR}/tests/AuxiliaryTest.o \
 	${TESTDIR}/tests/AuxiliaryTestRunner.o \
+	${TESTDIR}/tests/FullSyncTest.o \
+	${TESTDIR}/tests/FullSyncTestRunner.o \
 	${TESTDIR}/tests/cpi_system_test.o
 
 # C Compiler Flags
@@ -84,7 +88,7 @@ LDLIBSOPTIONS=-L/opt/local/lib -lntl
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisync.${CND_DLIB_EXT}: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisync.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -shared -fPIC
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libcpisync.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -dynamiclib -install_name libcpisync.${CND_DLIB_EXT} -fPIC
 
 ${OBJECTDIR}/src/CPISync.o: src/CPISync.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -110,6 +114,11 @@ ${OBJECTDIR}/src/DataObject.o: src/DataObject.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/DataObject.o src/DataObject.cpp
+
+${OBJECTDIR}/src/FullSync.o: src/FullSync.cpp
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -std=c++11 -fPIC  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/FullSync.o src/FullSync.cpp
 
 ${OBJECTDIR}/src/GenSync.o: src/GenSync.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -155,11 +164,15 @@ ${OBJECTDIR}/src/probCPISync.o: src/probCPISync.cpp
 
 ${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/AuxiliaryTest.o ${TESTDIR}/tests/AuxiliaryTestRunner.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.cc} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS}   -lcppunit 
+	${LINK.cc} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS}   -L/opt/local/lib -lcppunit 
 
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/cpi_system_test.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS}   
+
+${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/FullSyncTest.o ${TESTDIR}/tests/FullSyncTestRunner.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc} -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS}   -L/opt/local/lib -lcppunit 
 
 
 ${TESTDIR}/tests/AuxiliaryTest.o: tests/AuxiliaryTest.cpp 
@@ -178,6 +191,18 @@ ${TESTDIR}/tests/cpi_system_test.o: tests/cpi_system_test.cpp
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -I. -I/opt/local/include -std=c++11 -g -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/cpi_system_test.o tests/cpi_system_test.cpp
+
+
+${TESTDIR}/tests/FullSyncTest.o: tests/FullSyncTest.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -I. -std=c++11 -std=c++11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/FullSyncTest.o tests/FullSyncTest.cpp
+
+
+${TESTDIR}/tests/FullSyncTestRunner.o: tests/FullSyncTestRunner.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -Iinclude -I/opt/local/include -I. -std=c++11 -std=c++11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/FullSyncTestRunner.o tests/FullSyncTestRunner.cpp
 
 
 ${OBJECTDIR}/src/CPISync_nomain.o: ${OBJECTDIR}/src/CPISync.o src/CPISync.cpp 
@@ -243,6 +268,19 @@ ${OBJECTDIR}/src/DataObject_nomain.o: ${OBJECTDIR}/src/DataObject.o src/DataObje
 	    $(COMPILE.cc) -g -Iinclude -I/opt/local/include -std=c++11 -fPIC  -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/DataObject_nomain.o src/DataObject.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/src/DataObject.o ${OBJECTDIR}/src/DataObject_nomain.o;\
+	fi
+
+${OBJECTDIR}/src/FullSync_nomain.o: ${OBJECTDIR}/src/FullSync.o src/FullSync.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/FullSync.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -Iinclude -I/opt/local/include -std=c++11 -fPIC  -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/FullSync_nomain.o src/FullSync.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/src/FullSync.o ${OBJECTDIR}/src/FullSync_nomain.o;\
 	fi
 
 ${OBJECTDIR}/src/GenSync_nomain.o: ${OBJECTDIR}/src/GenSync.o src/GenSync.cpp 
@@ -342,6 +380,7 @@ ${OBJECTDIR}/src/probCPISync_nomain.o: ${OBJECTDIR}/src/probCPISync.o src/probCP
 	then  \
 	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
+	    ${TESTDIR}/TestFiles/f3 || true; \
 	else  \
 	    ./${TEST} || true; \
 	fi

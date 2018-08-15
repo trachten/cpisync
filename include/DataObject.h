@@ -36,13 +36,13 @@ public:
      * Constructs a data object that contains the given byte vector (not a copy!).
      * @param data An vector of bytes containing the data of the object.
      */
-    DataObject(const ZZ &datum);
+    explicit DataObject(const ZZ &datum);
 
     /**
      * Constructs a data object that contains the given string (in an encoded format).
      * @param data The string to place in the DataObject.
      */
-    DataObject(const string str);
+    explicit DataObject(string str);
     
     /**
      * Constructs a data object that contains the given object of type T, which must
@@ -51,7 +51,7 @@ public:
      * @param item The item to place in the DataObject.
      */
     template<typename T>
-    DataObject(const T item) {
+    explicit DataObject(const T item) {
         myBuffer = pack(toStr(item));
     }
     
@@ -91,11 +91,11 @@ public:
     friend ostream& operator<<(ostream& out, const DataObject &datum);
 
     // comparisons
-    bool operator < (const DataObject second) const{
+    bool operator < (const DataObject& second) const{
         return this->myBuffer < second.to_ZZ();
     }
 
-    bool operator== (const DataObject second) const {
+    bool operator== (const DataObject& second) const {
         return this->myBuffer == second.to_ZZ();
     }
        
@@ -104,28 +104,26 @@ public:
                            * arbitrarily-sized integers.  Otherwise, DataObject string inputs
                            * are interpreted as byte sequences.
                            */
-    void setPriority(ZZ pri);
-    ZZ getPriority();
     void setTimeStamp(clock_t ts);
     clock_t getTimeStamp();
 protected:
     ZZ myBuffer; /** The buffer for the data object container itself. */
-    ZZ priority;
     clock_t timestamp;
-    
+
+    /**
+  * Unpacks a ZZ into a string
+  * @param num
+  * @return
+  */
+    static string unpack(ZZ num);
+
 private:
     /**
      * Packs a string into a ZZ in a memory-efficient manner
      * @param theStr The string to pack
      * @return a ZZ representing the string
      */
-    static ZZ pack(const string theStr);
-    
-    /**
-     * Unpacks a ZZ into a string
-     * @param num
-     * @return 
-     */
-    static string unpack(const ZZ num);
+    static ZZ pack(string theStr);
+
 };
 #endif

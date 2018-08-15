@@ -13,11 +13,9 @@ using namespace std;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(DataObjectTest);
 
-DataObjectTest::DataObjectTest() {
-}
+DataObjectTest::DataObjectTest() = default;
 
-DataObjectTest::~DataObjectTest() {
-}
+DataObjectTest::~DataObjectTest() = default;
 
 void DataObjectTest::setUp(){
     const int SEED = 617;
@@ -62,20 +60,6 @@ void DataObjectTest::testToStringAndInitEmpty(){
     }
 }
 
-void DataObjectTest::testToPriorityStringAndInitStringableAndSetPriority(){
-    DataObject::RepIsInt = false;
-// TODO: Improve this test once the to_string and to_priority_string docs are more specific
-
-    for(int ii = 0; ii < TIMES; ii++) {
-        int init = rand();
-        ZZ prio = randZZ();
-
-        DataObject dd(init);
-        dd.setPriority(prio);
-
-        // TODO: Check that the priority and initial value were set correctly using to_priority_string
-    }
-}
 
 void DataObjectTest::testToCharArray(){
     DataObject::RepIsInt = false;
@@ -128,25 +112,5 @@ void DataObjectTest::testLessThan(){
         DataObject big(first);
         DataObject small(second);
         CPPUNIT_ASSERT(small < big);
-    }
-}
-
-void DataObjectTest::testGetPriority(){
-    DataObject::RepIsInt = false;
-    for(int ii = 0; ii < TIMES; ii++) {
-        const ZZ priority = randZZ();
-        DataObject dd;
-        dd.setPriority(priority);
-        CPPUNIT_ASSERT_EQUAL(priority, dd.getPriority());
-    }
-}
-
-void DataObjectTest::testTimeStamp(){
-    DataObject::RepIsInt = false;
-    for(int ii = 0; ii < TIMES; ii++) {
-        const clock_t time = (unsigned) randLong();
-        DataObject dd;
-        dd.setTimeStamp(time);
-        CPPUNIT_ASSERT_EQUAL(dd.getTimeStamp(), time);
     }
 }

@@ -1,5 +1,5 @@
 //
-// Created by eliez on 7/23/2018.
+// Created by Eliezer Pearl on 7/23/2018.
 //
 
 #ifndef CPISYNCLIB_GENSYNCTEST_H

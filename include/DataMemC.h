@@ -18,25 +18,24 @@ public:
 	// destructor
 	~DataMemC();
 
-        // read data from memory 
-        DataObject* get(int index);
+    // read data from memory
+    DataObject* get(int index);
 
-        // write data into memory
-        void put(DataObject* mydata, int index);
+    // write data into memory
+    void put(DataObject* mydata, int index);
 
-        // write data into memory
-        void delObj(int index);
+    // write data into memory
+    void delObj(int index);
 
 private:
-        // the name of the file associated with data object
+    // the name of the file associated with data object
 	int memsize;
 
-	const int CBUFSIZE=1000; // memory buffer size
+    // memory buffer size
+	const int CBUFSIZE=1000;
 
 	// the address of the memory block
 	char memaddr[CBUFSIZE];
-
-
 
 };
 

@@ -8,8 +8,6 @@
  */
 
 #include "CommDummy.h"
-#include <queue>
-#include <string>
 
 CommDummy::CommDummy(queue<char> *intermediate) {
     this->intermediate = intermediate;

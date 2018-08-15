@@ -3,13 +3,6 @@
 #include <NTL/RR.h>
 #include <Communicant.h>
 
-#include "Auxiliary.h"
-#include "Communicant.h"
-#include "CommSocket.h"
-#include "Logger.h"
-#include "DataObject.h"
-#include "DataPriorityObject.h"
-
 Communicant::Communicant() {
     resetCommCounters();
     xferBytesTot = recvBytesTot = 0;

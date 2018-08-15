@@ -1,7 +1,10 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
-/* 
+
+/*
  * File:   CommDummy.h
- * Author: kaets
+ *
+ * This communicant communicates by sending and receiving data from a queue of characters shared with another
+ * CommDummy.
  *
  * Created on May 24, 2018, 10:13 AM
  */
@@ -41,11 +44,11 @@ public:
 
     void commSend(const char* toSend, int numBytes) override;
     string commRecv(unsigned long numBytes) override ;
-    inline string getName() override { return "dummy"; }
+    inline string getName() override { return "CommDummy"; }
 
 protected:
     
-    // Instance variable that stores a pointer to intermediate.
+    // Instance variable that stores a pointer to an intermediate queue of characters.
     queue<char>* intermediate;
 };
 

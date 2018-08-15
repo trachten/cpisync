@@ -3,13 +3,9 @@
 
 #include <sys/socket.h>
 #include <sstream>
-#include <algorithm>
-#include <string>
 #include <thread>
-#include <utility>
 #include "Auxiliary.h"
 #include "CommSocket.h"
-#include "Logger.h"
 
 CommSocket::CommSocket() = default;
 

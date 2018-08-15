@@ -10,12 +10,8 @@
 #include "Auxiliary.h"
 #include "Communicant.h"
 #include "Exceptions.h"
-#include "Logger.h"
-#include "DataObject.h"
 #include "CPISync.h"
 #include "InterCPISync.h"
-#include "CPISync_HalfRound.h"
-#include "CPISync_HalfRound_Hashed.h"
 
 // might be a bug with epsilon... getting passed a double but receives an int
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition)

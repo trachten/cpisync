@@ -1,3 +1,5 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
 // Created by Eliezer Pearl on 7/9/18.
 // Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.

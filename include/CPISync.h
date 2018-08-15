@@ -63,7 +63,7 @@ public:
    * 
    * @param commSync The communicant to whom to connect.
    * @param selfMinusOther A result of reconciliation.  Elements that I have that the other Communicant does not.
-   * @param otherMinusSlef A result of reconciliation.  Elements that the other Communicant has that I do not.
+   * @param otherMinusSelf A result of reconciliation.  Elements that the other Communicant has that I do not.
    * @return true iff the connection and subsequent synchronization appear to be successful.
    */
   bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;

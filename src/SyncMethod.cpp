@@ -1,7 +1,6 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 #include "Communicant.h"
-#include "DataObject.h"
 #include "SyncMethod.h"
 #include "Exceptions.h"
 

@@ -2,7 +2,7 @@
 
 /* 
  * File:   FullSyncTest.cpp
- * Author: kaets
+ * Author: Eliezer Pearl
  * 
  * Created on June 27, 2018, 9:49 AM
  */
@@ -10,9 +10,7 @@
 #include <climits>
 #include "FullSyncTest.h"
 #include "FullSync.h"
-#include "CommSocket.h"
 #include "TestAuxiliary.h"
-#include "GenSync.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(FullSyncTest);
 

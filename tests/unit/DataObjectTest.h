@@ -43,9 +43,10 @@ public:
     const int UPPER = 50;
 
     DataObjectTest();
-    virtual ~DataObjectTest();
-    void setUp();
-    void tearDown();
+
+    ~DataObjectTest() override;
+    void setUp() override;
+    void tearDown() override;
 
 private:
     void testToZZAndInitZZ();

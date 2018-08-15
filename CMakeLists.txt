@@ -28,10 +28,11 @@ set(SOURCE_FILES
         ${SRC_DIR}/UID.cpp
 		${SRC_DIR}/HashSync.cpp
         ${SRC_DIR}/CommDummy.cpp
-        tests/unit/DataPriorityObjectTest.cpp tests/unit/DataPriorityObjectTest.h)
+        ${SRC_DIR}/FullSync.cpp)
 
 #cppunit
 include_directories(include)
+include_directories(tests)
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} )
@@ -54,4 +55,3 @@ endmacro()
 add_group_test(${UNIT_TEST_DIR} UnitTests)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
 add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)
-

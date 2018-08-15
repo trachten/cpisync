@@ -25,7 +25,7 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#include <signal.h>
+#include <csignal>
 #include "GenSync.h"
 
 
@@ -68,12 +68,12 @@ inline forkHandleReport forkHandle(GenSync& server, GenSync client) {
             throw err;
         } else {
             Logger::gLog(Logger::COMM,"created a client process");
-            server.startSync(method_num);
+            bool success = server.startSync(method_num);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
             result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
             waitpid(pID, &chld_state, my_opt);
-            result.success=true;
+            result.success=success;
         }
 
     } catch (int& err) {

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <string>
 
 #include "GenSync.h"
@@ -17,12 +18,12 @@
 #include "ProbCPISync.h"
 #include "InterCPISync.h"
 #include "CPISync_HalfRound.h"
+#include "FullSync.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
  */
-GenSync::GenSync() {
-}
+GenSync::GenSync() = default;
 
 /**
  * Construct a specific GenSync object
@@ -30,10 +31,10 @@ GenSync::GenSync() {
 GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject*> &data) {
     myCommVec = cVec;
     mySyncVec = mVec;
-    outFile = NULL; // no output file is being used
+    outFile = nullptr; // no output file is being used
 
     // add each datum one by one
-    list<DataObject*>::const_iterator itData = data.begin();
+    auto itData = data.begin();
     for (; itData != data.end(); itData++)
         addElem(*itData);
 }
@@ -41,7 +42,7 @@ GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<share
 GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName) {
     myCommVec = cVec;
     mySyncVec = mVec;
-    outFile = NULL; // add elements without writing to the file at first
+    outFile = nullptr; // add elements without writing to the file at first
     Logger::gLog(Logger::METHOD, "Entering GenSync::GenSync");
     // read data from a file
     Logger::gLog(Logger::METHOD, "Utilizing file: " + fileName);
@@ -54,7 +55,7 @@ GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<share
     inFile.close();
 
     // register the file to which new data should be appended
-    outFile = shared_ptr<ofstream>(new ofstream(fileName.c_str(), ios::app));
+    outFile = std::make_shared<ofstream>(fileName.c_str(), ios::app);
 
 }
 
@@ -62,7 +63,6 @@ GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<share
 
 GenSync::~GenSync() {
     // clear out memory
-    int a = myData.size();
     myData.clear();
 
     //    vector<shared_ptr<SyncMethod>>::iterator itAgt = mySyncVec.begin();
@@ -78,7 +78,7 @@ GenSync::~GenSync() {
     myCommVec.clear();
 
     // close and free the output file
-    if (outFile != NULL) {
+    if (outFile != nullptr) {
         outFile->close();
         outFile.reset();
     }
@@ -91,7 +91,7 @@ GenSync::~GenSync() {
 bool GenSync::listenSync(int method_num) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::listenSync");
     // find the right syncAgent	
-    vector<shared_ptr<SyncMethod>>::iterator syncAgent = mySyncVec.begin();
+    auto syncAgent = mySyncVec.begin();
     advance(syncAgent, method_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
@@ -113,8 +113,11 @@ bool GenSync::listenSync(int method_num) {
 
         // add any items that were found in the reconciliation
         list<DataObject*>::iterator itDO;
-        for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
+        for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++) {
             addElem(*itDO);
+        }
+
+
     }
 
     return syncSuccess;
@@ -124,7 +127,7 @@ bool GenSync::listenSync(int method_num) {
 bool GenSync::startSync(int method_num) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::startSync");
     // find the right syncAgent	
-    vector<shared_ptr<SyncMethod>>::iterator syncAgentIt = mySyncVec.begin();
+    auto syncAgentIt = mySyncVec.begin();
     advance(syncAgentIt, method_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
@@ -173,7 +176,7 @@ void GenSync::addElem(DataObject* newDatum) {
     }
 
     // update file
-    if (outFile != NULL)
+    if (outFile != nullptr)
         (*outFile) << newDatum->to_string() << endl;
 }
 
@@ -226,7 +229,6 @@ int GenSync::numComm() {
 }
 
 // insert a syncmethod in the vector at the index position
-
 void GenSync::addSyncAgt(shared_ptr<SyncMethod> newAgt, int index) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addSyncAgt");
     // create and populate the new agent
@@ -236,7 +238,9 @@ void GenSync::addSyncAgt(shared_ptr<SyncMethod> newAgt, int index) {
             Logger::error_and_quit("Was not able to add an item to the next syncagent.");
 
     // add the agent to the sync agents vector
-    mySyncVec.push_back(newAgt);
+    auto idxIter = mySyncVec.begin();
+    advance(idxIter, index);
+    mySyncVec.insert(idxIter, newAgt);
 }
 
 
@@ -334,6 +338,9 @@ GenSync GenSync::Builder::build() {
                 throw noMbar;
             myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
             break;
+        case SyncProtocol::FullSync:
+            myMeth = make_shared<FullSync>();
+            break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }
@@ -345,5 +352,5 @@ GenSync GenSync::Builder::build() {
 // static consts
 
 const string GenSync::Builder::DFT_HOST = "localhost";
-const string GenSync::Builder::DFT_IO = "";
+const string GenSync::Builder::DFT_IO;
 const int GenSync::Builder::DFT_ERROR = 8;

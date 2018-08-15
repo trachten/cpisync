@@ -35,9 +35,10 @@ class CommunicantTest : public CPPUNIT_NS::TestFixture {
 
 public:
     CommunicantTest();
-    virtual ~CommunicantTest();
-    void setUp();
-    void tearDown();
+
+    ~CommunicantTest() override;
+    void setUp() override;
+    void tearDown() override;
 
 private:
     // constants

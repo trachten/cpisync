@@ -9,19 +9,19 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=GNU-MacOSX
 CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-MacOSX
-CND_ARTIFACT_NAME_Debug=libcpisynclib.dylib
-CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-MacOSX/libcpisynclib.dylib
+CND_ARTIFACT_NAME_Debug=libcpisync.dylib
+CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-MacOSX/libcpisync.dylib
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU-MacOSX/package
-CND_PACKAGE_NAME_Debug=libcpisynclib.dylib.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-MacOSX/package/libcpisynclib.dylib.tar
+CND_PACKAGE_NAME_Debug=libcpisync.dylib.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-MacOSX/package/libcpisync.dylib.tar
 # Release configuration
-CND_PLATFORM_Release=GNU-MacOSX
-CND_ARTIFACT_DIR_Release=dist/Release/GNU-MacOSX
-CND_ARTIFACT_NAME_Release=libcpisynclib.dylib
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-MacOSX/libcpisynclib.dylib
-CND_PACKAGE_DIR_Release=dist/Release/GNU-MacOSX/package
-CND_PACKAGE_NAME_Release=libcpisynclib.dylib.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-MacOSX/package/libcpisynclib.dylib.tar
+CND_PLATFORM_Release=brew_gcc-MacOSX
+CND_ARTIFACT_DIR_Release=dist/Release/brew_gcc-MacOSX
+CND_ARTIFACT_NAME_Release=libcpisync.dylib
+CND_ARTIFACT_PATH_Release=dist/Release/brew_gcc-MacOSX/libcpisync.dylib
+CND_PACKAGE_DIR_Release=dist/Release/brew_gcc-MacOSX/package
+CND_PACKAGE_NAME_Release=libcpisync.dylib.tar
+CND_PACKAGE_PATH_Release=dist/Release/brew_gcc-MacOSX/package/libcpisync.dylib.tar
 #
 # include compiler specific variables
 #

@@ -4,13 +4,14 @@
 
 #include "Logger.h"
 #include "HashSync.h"
+#include <utility>
 
 HashSync::HashSync(shared_ptr<SyncMethod> theSyncObject, int theHashUB) : SyncMethod(),
                                                  hashUB(theHashUB)
 {
   largerPrime=NextPrime(hashUB);
   SyncID=SYNC_TYPE::HashSync;
-  syncObject = theSyncObject;
+  syncObject = std::move(theSyncObject);
 }
 
 bool HashSync::addElem(DataObject *newDatum) {
@@ -18,7 +19,7 @@ bool HashSync::addElem(DataObject *newDatum) {
 
   // create and remember the hashed entry
   ZZ hashed = hash(newDatum);
-  DataObject *hashedDatumPtr = new DataObject(hashed);
+    auto *hashedDatumPtr = new DataObject(hashed);
   myHashMap[hashed]=std::pair<DataObject*,DataObject *>(hashedDatumPtr,newDatum);
 
   return syncObject->addElem(hashedDatumPtr);
@@ -37,7 +38,7 @@ bool HashSync::delElem(DataObject *newDatum) {
   //myHashMap.erase(hashed);
 }
 
-bool HashSync::SyncClient(shared_ptr<Communicant>commSync,
+bool HashSync::SyncClient(const shared_ptr<Communicant>& commSync,
                           list<DataObject *> &selfMinusOther,
                           list<DataObject *> &otherMinusSelf) {
 
@@ -62,7 +63,7 @@ bool HashSync::SyncClient(shared_ptr<Communicant>commSync,
   return result;
 }
 
-bool HashSync::SyncServer(shared_ptr<Communicant>commSync,
+bool HashSync::SyncServer(const shared_ptr<Communicant>& commSync,
                           list<DataObject *> &selfMinusOther,
                           list<DataObject *> &otherMinusSelf) {
 

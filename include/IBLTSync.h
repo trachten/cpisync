@@ -1,5 +1,7 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
-// Created by eliez on 8/3/2018.
+// Created by Eliezer Pearl on 8/3/2018.
 //
 
 #ifndef CPISYNCLIB_IBLTSYNC_H
@@ -22,9 +24,13 @@ public:
     bool delElem(DataObject* datum) override;
     string getName();
 protected:
+    // one way flag
     bool oneWay;
 private:
+    // IBLT instance variable for storing data
     IBLT myIBLT;
+
+    // Instance variable to sore the expected number of elements
     size_t expNumElems;
 };
 

@@ -1,8 +1,8 @@
-/* This code is part of the CPISync project developed at Boston University.
- * Please see the README for use and references.
- *
+/* This code is part of the CPISync project developed at Boston University. Please see the README for use and references. */
+
+/*
  * File:   CommDummy.cpp
- * Author: kaets
+ * Author: Eliezer Pearl
  * 
  * Created on May 24, 2018, 10:13 AM
  */

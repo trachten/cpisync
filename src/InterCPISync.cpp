@@ -2,7 +2,7 @@
 
 /* 
  * File:   IncreCPI.cpp
- * Author: arit
+ * Author: Ari Trachtenberg
  * 
  * Created on November 30, 2011, 10:46 PM
  */

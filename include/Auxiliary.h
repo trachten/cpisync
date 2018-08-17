@@ -20,6 +20,7 @@
 #include <iterator>
 #include <list>
 #include <set>
+#include <algorithm>
 #include <csignal>
 #include <algorithm>
 #include <sys/wait.h>
@@ -29,7 +30,6 @@
 #include "Logger.h"
 
 // some standard names
-using namespace NTL;
 using std::cout;
 using std::clog;
 using std::endl;

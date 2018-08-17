@@ -14,8 +14,8 @@
 #include "FullSync.h"
 #include "ForkHandle.h"
 
-#ifndef CPISYNCLIB_TESTAUXILIARY_H
-#define CPISYNCLIB_TESTAUXILIARY_H
+#ifndef CPISYNCLIB_GENERIC_SYNC_TESTS_H
+#define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
 const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
@@ -468,4 +468,4 @@ inline void syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncSer
     _syncTest(GenSyncClient, GenSyncServer, false, true);
 }
 
-#endif //CPISYNCLIB_TESTAUXILIARY_H
+#endif //CPISYNCLIB_GENERIC_SYNC_TESTS_H

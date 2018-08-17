@@ -9,7 +9,7 @@
 #include <InterCPISync.h>
 #include <CommString.h>
 #include <cstdlib>
-#include "GenSyncTest.h"
+#include "GenericSyncTests.h"
 #include "GenSync.h"
 #include "CommDummy.h"
 #include "Auxiliary.h"
@@ -186,6 +186,8 @@ void GenSyncTest::testTwoWaySync() {
     // sync every GenSync configuration with itself
     for(int ii = 0; ii < twoWayClient.size(); ii++) {
         syncTest(twoWayClient.at(ii), twoWayServer.at(ii));
+        Logger::gLog(Logger::TEST,"Test with client="+twoWayClient[ii].getName()+
+        ", server="+twoWayServer[ii].getName()+") succeeded.");
     }
 }
 

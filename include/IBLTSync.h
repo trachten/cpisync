@@ -20,7 +20,7 @@ public:
     bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
     bool addElem(DataObject* datum) override;
     bool delElem(DataObject* datum) override;
-    string getName();
+    string getName() override;
 protected:
     bool oneWay;
 private:

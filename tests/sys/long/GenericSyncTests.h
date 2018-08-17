@@ -2,8 +2,8 @@
 // Created by eliez on 7/23/2018.
 //
 
-#ifndef CPISYNCLIB_GENSYNCTEST_H
-#define CPISYNCLIB_GENSYNCTEST_H
+#ifndef CPISYNCLIB_GENSYNCTESTS_H
+#define CPISYNCLIB_GENSYNCTESTS_H
 
 #include <string>
 #include <cppunit/extensions/HelperMacros.h>
@@ -68,4 +68,4 @@ private:
 };
 
 
-#endif //CPISYNCLIB_GENSYNCTEST_H
+#endif //CPISYNCLIB_GENSYNCTESTS_H

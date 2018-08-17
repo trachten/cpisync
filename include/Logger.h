@@ -30,13 +30,14 @@ class Logger {
 
 public:
         // Constants
-    // ... logging levels
+    // ... logging levels, in order least inclusive to most inclusive (e.g. COMM includes all METHOD_DETAILS, METHOD, and TEST messages)
     enum LOG_TYPES {
     NONE = 0,    /** No logging (the default). */
-    METHOD = 1, /** Logging information within method calls. */
-    METHOD_DETAILS = 2, /** More detailed information related to method calls. */
-    COMM = 3, /** Low-level communications logs. */
-    COMM_DETAILS = 4 /** More detailed information related to communication logs. */
+    TEST,        /** Logging of unit/system tests. */
+    METHOD , /** Logging information within method calls. */
+    METHOD_DETAILS , /** More detailed information related to method calls. */
+    COMM , /** Low-level communications logs. */
+    COMM_DETAILS /** More detailed information related to communication logs. */
     };
     
     // Variables

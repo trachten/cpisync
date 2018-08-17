@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.6)
 project(cpisynclib)
 set(CMAKE_CXX_STANDARD 11)
 
+# some flags
+set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST")
 
 # Set project directory strucuture
 set(SRC_DIR src)
@@ -43,7 +45,7 @@ add_library(cpisynclib ${SOURCE_FILES} )
 # @param dir The relative path to the folder containing test files to add
 # @param name The executable name
 macro(add_group_test dir name)
-    FILE(GLOB testPaths ${dir}/*Test.cpp)
+    FILE(GLOB testPaths ${dir}/*Test.cpp ${dir}/*Tests.cpp)
     ADD_EXECUTABLE(${name} ${TEST_RUNNER} ${testPaths})
 
     FOREACH(test ${testPaths})

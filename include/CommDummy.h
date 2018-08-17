@@ -1,10 +1,12 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 /*
- * File:   CommDummy.h
+ * This communicant communicates to and from a queue of characters. The queue is external so it can be used as
+ * a shared resource between two CommDummys. This communicant is meant for use in tests/unit/CommunicantTest.cpp;
+ * as such, it has not been integrated as a formal communicant with GenSync.
  *
- * This communicant communicates by sending and receiving data from a queue of characters shared with another
- * CommDummy.
+ * File:   CommDummy.h
+ * Author: Eliezer Pearl
  *
  * Created on May 24, 2018, 10:13 AM
  */

@@ -1,8 +1,12 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-//
-// Created by Eliezer Pearl on 8/10/2018.
-//
+/*
+ * IBLTSync_HalfRound is a one-way implementation of IBLTSync; only one round of communication
+ * is used, and only the server is reconciled.
+ *
+ * Created by Eliezer Pearl on 8/10/2018.
+ */
+
 
 #ifndef CPISYNCLIB_IBLTSYNC_HALFROUND_H
 #define CPISYNCLIB_IBLTSYNC_HALFROUND_H

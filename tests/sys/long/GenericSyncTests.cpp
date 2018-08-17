@@ -1,11 +1,12 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
-// Created by eliez on 7/23/2018.
+// Created by Eliezer Pearl on 7/23/2018.
 //
 
 #include <CommSocket.h>
 #include <CPISync.h>
 #include <ProbCPISync.h>
-#include <CPISync_HalfRound.h>
 #include <InterCPISync.h>
 #include <CommString.h>
 #include <cstdlib>

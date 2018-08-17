@@ -1,7 +1,9 @@
-/* 
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
+/*
  * Implements a Priority CPISync algorithm
- * 
- * 
+ *
+ *
  * Author: Paul
  * Created on June 25, 2013, 04:31 PM
  */

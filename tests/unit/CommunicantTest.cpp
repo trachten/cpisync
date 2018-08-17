@@ -1,19 +1,13 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 /*
  * File:   CommunicantTest.cpp
- * Author: kaets
+ * Author: Eliezer Pearl
  *
  * Created on May 24, 2018, 10:08:52 AM
  */
 
 #include "CommunicantTest.h"
 #include "CommDummy.h"
-#include "DataObject.h"
-#include "Logger.h"
-#include <algorithm>
-#include <cmath>
-#include <cstdlib>
-#include <climits>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommunicantTest);
 

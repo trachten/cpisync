@@ -2,7 +2,7 @@
 
 /*
  * File:   AuxiliaryTest.cpp
- * Author: trachten
+ * Author: Ari Trachtenberg
  *
  * Created on Jun 21, 2017, 4:17:10 PM
  */

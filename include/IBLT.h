@@ -1,3 +1,5 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
 // Created by Eliezer Pearl on 7/9/18.
 // Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
@@ -36,7 +38,7 @@ typedef unsigned long int hashVal;
 
 class IBLT {
 public:
-    // Communicant needs to access the internal representation of an IBLT to send it and receive it
+    // Communicant needs to access the internal representation of an IBLT to send and receive it
     friend class Communicant;
 
     /**

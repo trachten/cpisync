@@ -9,18 +9,13 @@
 #include <NTL/RR.h>
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZ_pX.h>
-#include <NTL/vec_ZZ_p.h>
-#include <NTL/mat_ZZ_p.h>
 #include <NTL/ZZ_pXFactoring.h>
 
 // project libraries
 #include "Auxiliary.h"
 #include "SyncMethod.h"
 #include "CPISync.h"
-#include "Logger.h"
 #include "Exceptions.h"
-#include "Communicant.h"
-#include "DataObject.h"
 
 // namespaces
 

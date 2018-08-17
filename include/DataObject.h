@@ -36,13 +36,13 @@ public:
      * Constructs a data object that contains the given byte vector (not a copy!).
      * @param data An vector of bytes containing the data of the object.
      */
-    DataObject(const ZZ &datum);
+    explicit DataObject(const ZZ &datum);
 
     /**
      * Constructs a data object that contains the given string (in an encoded format).
      * @param data The string to place in the DataObject.
      */
-    DataObject(const string str);
+    explicit DataObject(string str);
     
     /**
      * Constructs a data object that contains the given object of type T, which must
@@ -51,7 +51,7 @@ public:
      * @param item The item to place in the DataObject.
      */
     template<typename T>
-    DataObject(const T item) {
+    explicit DataObject(const T item) {
         myBuffer = pack(toStr(item));
     }
     
@@ -70,8 +70,7 @@ public:
      *         The string could have null bytes and non-printable characters.
      */
     string to_string() const;
-    string to_priority_string() const;
-    
+
     /**
      * @param len Stores the length of the char array (upon return)
      * @return A char array version of the contents of this data object.
@@ -91,11 +90,11 @@ public:
     friend ostream& operator<<(ostream& out, const DataObject &datum);
 
     // comparisons
-    bool operator < (const DataObject second) const{
+    bool operator < (const DataObject& second) const{
         return this->myBuffer < second.to_ZZ();
     }
 
-    bool operator== (const DataObject second) const {
+    bool operator== (const DataObject& second) const {
         return this->myBuffer == second.to_ZZ();
     }
        
@@ -115,7 +114,7 @@ protected:
   * @param num
   * @return
   */
-    static string unpack(const ZZ num);
+    static string unpack(ZZ num);
 
 private:
     /**
@@ -123,7 +122,7 @@ private:
      * @param theStr The string to pack
      * @return a ZZ representing the string
      */
-    static ZZ pack(const string theStr);
+    static ZZ pack(string theStr);
 
 };
 #endif

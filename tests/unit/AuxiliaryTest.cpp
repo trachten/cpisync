@@ -2,7 +2,7 @@
 
 /*
  * File:   AuxiliaryTest.cpp
- * Author: trachten
+ * Author: Ari Trachtenberg
  *
  * Created on Jun 21, 2017, 4:17:10 PM
  */
@@ -14,8 +14,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(AuxiliaryTest);
 
 AuxiliaryTest::AuxiliaryTest() = default;
 
-AuxiliaryTest::~AuxiliaryTest() {
-}
+AuxiliaryTest::~AuxiliaryTest() = default;
 
 void AuxiliaryTest::setUp() {
 }

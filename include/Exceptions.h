@@ -11,19 +11,23 @@
 #define	EXCEPTIONS_H
 
 #include <stdexcept>
-        
+
+// namespaces
+using std::runtime_error;
+using std::string;
+
 /**
  * Denotes that a specific method has not (yet?) been implemented.
  * @param specifics A string to supply with the exception.
  */
 class UnimplementedMethodException:public runtime_error {
 public:
-    UnimplementedMethodException(string specifics) : runtime_error(specifics) {}
+    explicit UnimplementedMethodException(const string &specifics) : runtime_error(specifics) {}
 };
 
 class SyncFailureException: public runtime_error {
 public:
-    SyncFailureException(string specifics) : runtime_error(specifics)  {}
+    explicit SyncFailureException(const string &specifics) : runtime_error(specifics)  {}
 
 };
 #endif	/* EXCEPTIONS_H */

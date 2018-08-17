@@ -6,6 +6,7 @@
 
 // standard libraries
 #include <list>
+#include <utility>
 #include <vector>
 #include <string>
 #include <memory>
@@ -71,7 +72,6 @@ public:
      *                   are also stored in the file.
      */
     GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName);
-
 
     // DATA MANIPULATION
     /**
@@ -189,11 +189,12 @@ public:
     bool listenSync(int sync_num = 0);
 
     /**
-     * Sequentially sends a specific synchronization request to each communicant.
+     * Sequentially sends a specific synchronization request to each communicant.  If sync is successful,
+     * then the server ends up with data that is synchronized to the client.
      * @param sync_num  This is an index into the vector of synchronization methods supplied upon construction.
      *          Thus, if the first synchronization method supplied in the constructor is
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
-     * @return           true iff all synchronizations were completed successfully
+     * @return  true iff all synchronizations were completed successfully
      */
     bool startSync(int sync_num);
 
@@ -255,9 +256,12 @@ public:
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
         // CPISync and variants
-        CPISync= BEGIN,
+        CPISync=BEGIN,
         InteractiveCPISync,
         OneWayCPISync,
+        FullSync,
+        IBLTSync,
+        OneWayIBLTSync,
         END     // one after the end of iterable options
     };
 
@@ -308,9 +312,10 @@ public:
     base64(DFT_BASE64),
     mbar(DFT_MBAR),
     bits(DFT_BITS),
-    numParts(DFT_PARTS) {
-        myComm = NULL;
-        myMeth = NULL;
+    numParts(DFT_PARTS),
+    numExpElem(DFT_EXPELEMS){
+        myComm = nullptr;
+        myMeth = nullptr;
     }
 
     /**
@@ -331,7 +336,7 @@ public:
      * Sets the host to which to connect for synchronization in a socket-based sync.
      */
     Builder& setHost(string theHost) {
-        this->host = theHost;
+        this->host = std::move(theHost);
         return *this;
     }
 
@@ -363,7 +368,7 @@ public:
      * Sets the string with which to synchronize for string-based communication.
      */
     Builder& setIoStr(string theIoStr) {
-        this->ioStr = theIoStr;
+        this->ioStr = std::move(theIoStr);
         return *this;
     }
 
@@ -390,6 +395,11 @@ public:
         this->numParts = theNumParts;
         return *this;
     }
+
+    Builder& setNumExpectedElements(size_t theNumExpElems) {
+        this->numExpElem = theNumExpElems;
+        return *this;
+    }
     
     /**
      * Destructor - clear up any possibly allocated internal variables
@@ -412,6 +422,7 @@ private:
     long mbar; /** an upper estimate on the number of differences between synchronizing data multisets. */
     long bits; /** the number of bits per element of data */
     int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
+    size_t numExpElem; /** the number of expected elements to be stored in an IBLT */
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
@@ -425,6 +436,7 @@ private:
     static const long DFT_MBAR = UNDEFINED; // this parameter *must* be specified for sync to work
     static const long DFT_BITS = 32;
     static const int DFT_PARTS = 2;
+    static const size_t DFT_EXPELEMS = 50;
     // ... initialized in .cpp file due to C++ quirks
     static const string DFT_HOST;
     static const string DFT_IO;

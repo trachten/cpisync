@@ -20,11 +20,11 @@ class DataPriorityObject : public DataObject {
 public:
     DataPriorityObject() : DataObject() { initFields(); }
 
-    DataPriorityObject(const string str) : DataObject(str) { initFields(); }
+    explicit DataPriorityObject(const string &str) : DataObject(str) { initFields(); }
 
-    DataPriorityObject(const ZZ &datum) : DataObject(datum) { initFields(); }
+    explicit DataPriorityObject(const ZZ &datum) : DataObject(datum) { initFields(); }
 
-    DataPriorityObject(clock_t ts) : DataObject() {
+    explicit DataPriorityObject(clock_t ts) : DataObject() {
         timestamp=ts;
     }
 
@@ -33,11 +33,11 @@ public:
         return priority;
     }
 
-        void setPriority(ZZ pri) {
+        void setPriority(const ZZ &pri) {
             priority = pri;
         };
 
-    string to_priority_string() const{
+    string to_priority_string() const {
         return toStr(priority) + "," + (RepIsInt?toStr(myBuffer):unpack(myBuffer));
     }
 

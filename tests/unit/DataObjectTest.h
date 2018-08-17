@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 /*
  * File:   DataObjectTest.h
- * Author: kaets
+ * Author: Eliezer Pearl
  *
  * Created on May 15, 2018, 10:33:51 AM
  */
@@ -43,9 +43,10 @@ public:
     const int UPPER = 50;
 
     DataObjectTest();
-    virtual ~DataObjectTest();
-    void setUp();
-    void tearDown();
+
+    ~DataObjectTest() override;
+    void setUp() override;
+    void tearDown() override;
 
 private:
     void testToZZAndInitZZ();

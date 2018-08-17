@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 /*
  * File:   DataObjectTest.h
- * Author: kaets
+ * Author: Eliezer Pearl
  *
  * Created on May 15, 2018, 10:33:51 AM
  */
@@ -35,10 +35,11 @@ public:
     const int LOWER = 0;
     const int UPPER = 50;
 
-    DataPriorityObjectTest() {}
+    DataPriorityObjectTest() = default;
+
     //virtual ~DataPriorityObjectTest();
-    void setUp();
-    void tearDown() {}
+    void setUp() override;
+    void tearDown() override {}
 
 private:
     void testToPriorityStringAndInitStringableAndSetPriority();

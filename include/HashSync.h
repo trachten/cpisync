@@ -1,3 +1,5 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
 // Created by Ari Trachtenberg on 7/18/18.
 //
@@ -31,13 +33,13 @@ class HashSync : SyncMethod {
      HashSync(shared_ptr<SyncMethod> theSyncObject, int hashUB);
 
   // inherited
-  bool SyncClient(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+  bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
-  bool SyncServer(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf);
+  bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
-  bool addElem(DataObject* newDatum);
+  bool addElem(DataObject* newDatum) override;
 
-  bool delElem(DataObject* newDatum);
+  bool delElem(DataObject* newDatum) override;
 
  protected:
      /**

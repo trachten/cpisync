@@ -2,7 +2,7 @@
 
 /* 
  * File:   probCPISync.h
- * Author: arit
+ * Author: Ari Trachtenberg
  * 
  * Implements a data structure for storing mathematical sets of data
  *    in a manner that is consistent with fast synchronization.
@@ -49,7 +49,7 @@ public:
      */
     ProbCPISync(long m_bar, long bits, int epsilon);
 
-    ~ProbCPISync() {};
+    ~ProbCPISync() override = default;;
 private:
 
 

@@ -1,0 +1,94 @@
+This file gives a brief overview of the project's key components and how to use them. Instructions on how to add to the
+project are also covered here.
+
+INSTALLATION:
+
+To install this library, you will need the following libraries upon which cpisync is dependent:
+   * NTL - A library for doing Number Theory - http://www.shoup.net/ntl/
+   * cppunit - For testing
+   * cmake - For building
+
+Once these libraries are installed, compilation is straightforward.
+   * Clone a copy of the cpisync library
+   * In the cpisync directory, execute the following commands:
+       - cmake .
+       - make
+       - sudo make install
+   * The header files will be installed to /usr/local/include/cpisync, and the library will be installed to /usr/local/lib
+
+USAGE:
+
+The main class used for syncing is the GenSync class. This class functions as a data structure for storing binary
+data (in the form of the DataObject class) and a node for reconciling its data-set with other GenSync objects
+over a connection.
+
+Below is a brief example of how two GenSync objects might be used to communicate across a network through a port:
+
+------
+SERVER
+------
+#include <cpisync/GenSync.h>
+#include <cpisync/DataObject.h>
+#include <list>
+#include <iostream>
+
+int main() {
+    // Create a server that reconciles using the FullSync protocol over a socket-based communication on localhost:8001
+    GenSync server = GenSync::Builder().
+            setProtocol(GenSync::SyncProtocol::FullSync).
+            setComm(GenSync::SyncComm::socket).
+            setHost("localhost").
+            setPort(8001).
+            build();
+
+    // Add elements to server (interpreted as binary)
+    server.addElem("abc");
+    server.addElem("def");
+    server.addElem("ghi");
+
+    // Start listening for a sync reconciliation on localhost:8001 (blocks until successful reconciliation occurs)
+    server.listenSync();
+
+    // The elements can be accessed as a list of DataObject pointers:
+    std::cout << "The reconciled dataset contains the following elements:" << std::endl;
+    for (DataObject* dop : server.dumpElements()) {
+        std::cout << dop->print() << std::endl;
+    }
+}
+
+------
+CLIENT
+------
+#include <cpisync/GenSync.h>
+#include <cpisync/DataObject.h>
+#include <list>
+#include <iostream>
+
+int main() {
+    // Create a client to reconcile with the server using the FullSync protocol over localhost:8001
+    GenSync client = GenSync::Builder().
+            setProtocol(GenSync::SyncProtocol::FullSync).
+            setComm(GenSync::SyncComm::socket).
+            setHost("localhost").
+            setPort(8001).
+            build().
+
+    // Add elements to the client
+    client.addElem("abc");
+    client.addElem("def");
+    client.addElem("ghi");
+
+    // Try to connect to a port on localhost:8001 and reconcile upon a successful connection
+    client.startSync();
+
+    // The elements can be accessed as a list of DataObject pointers:
+    std::cout << "The reconciled dataset contains the following elements:" << std::endl;
+    for (DataObject* dop : server.dumpElements()) {
+        std::cout << dop->print() << std::endl;
+    }
+}
+
+
+The SyncProtocol and SyncComm can be replaced in the above example to use other types of sync protocols and communicants.
+A complete list of protocols and communicants can be found in include/GenSync.h
+

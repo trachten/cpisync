@@ -1,8 +1,6 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 #include "DataObject.h"
-#include "Auxiliary.h"
-#include "NTL/mat_ZZ_p.h"
 #include "NTL/ZZ_pXFactoring.h"
 
 // namespaces
@@ -31,9 +29,9 @@ ZZ DataObject::pack(const string theStr) {
 
 string DataObject::unpack(const ZZ num) {
     int size = NumBytes(num);
-    unsigned char *rawResult = new unsigned char[size];
+    auto *rawResult = new unsigned char[size];
     BytesFromZZ(rawResult, num, size);
-    const char *result = reinterpret_cast<const char *> (rawResult);
+    const auto *result = reinterpret_cast<const char *> (rawResult);
     string result_str(result,size);
     delete[] result;
     return result_str;

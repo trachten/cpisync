@@ -10,6 +10,7 @@
 #include "Auxiliary.h"
 #include "AuxiliaryTest.h"
 #include <string>
+#include <NTL/ZZ_p.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(AuxiliaryTest);
 
@@ -27,15 +28,16 @@ void AuxiliaryTest::tearDown() {
 void AuxiliaryTest::testStrTo() {
     int expectedInt = 12;
     int resultInt = strTo<int>("12");
-    CPPUNIT_ASSERT(resultInt == expectedInt);
+    CPPUNIT_ASSERT_EQUAL(expectedInt, resultInt);
 
     double expectedDouble = 12.57;
     double resultDouble = strTo<double>("12.57");
-    CPPUNIT_ASSERT(resultDouble == expectedDouble);
+    CPPUNIT_ASSERT_EQUAL(expectedDouble, resultDouble);
 
-    ZZ_p expectedZZp = static_cast<ZZ_p>(12);
+    ZZ_p::init(randZZ());
+    ZZ_p expectedZZp(12l);
     ZZ_p resultZZp = strTo<ZZ_p>("12");
-    CPPUNIT_ASSERT(resultZZp == expectedZZp);
+    CPPUNIT_ASSERT_EQUAL(expectedZZp, resultZZp);
 }
 
 void AuxiliaryTest::testToStr() {
@@ -53,21 +55,21 @@ void AuxiliaryTest::testToStr() {
 }
 
 void AuxiliaryTest::testBase64_encode() {
-    std::string expectedEncode = "YXNkZg==";
+    std::string expectedEncode = "_MMwdA==";
   
     std::string testStlStr = "asdf";
     std::string resultEncode = base64_encode(testStlStr, testStlStr.size());
-    CPPUNIT_ASSERT(resultEncode.compare(expectedEncode) == 0);
+    CPPUNIT_ASSERT_EQUAL(resultEncode, expectedEncode);
 
     const char * testCStr = testStlStr.c_str();
     resultEncode = base64_encode(testCStr, strlen(testCStr));
-    CPPUNIT_ASSERT(resultEncode.compare(expectedEncode) == 0);
+    CPPUNIT_ASSERT_EQUAL(resultEncode, expectedEncode);
 }
 
 void AuxiliaryTest::testBase64_decode() {
     std::string expectedDecode = "asdf";
-    std::string resultDecode = base64_decode("YXNkZg==");
-    CPPUNIT_ASSERT(resultDecode.compare(expectedDecode) == 0);
+    std::string resultDecode = base64_decode("_MMwdA==");
+    CPPUNIT_ASSERT_EQUAL(resultDecode, expectedDecode);
 }
 
 void AuxiliaryTest::testStrToVecToStr() {
@@ -83,18 +85,18 @@ void AuxiliaryTest::testMultisetIntersect() {
     multiset<int> set1;
     set1.insert(1);
     set1.insert(2);
-    set1.insert(3);
+    set1.insert(4);
 
     multiset<int> set2;
     set2.insert(2);
-    set2.insert(4);    
+    set2.insert(4);
     set2.insert(5);
     set2.insert(6);
     
     multiset<int> intersectionSet = multisetIntersect(set1, set2);
 
     // size of the set and all its elements should match the expected values
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(intersectionSet.size()), static_cast<int>(expectedIntersection.size()));
+    CPPUNIT_ASSERT_EQUAL(intersectionSet.size(), expectedIntersection.size());
 
     for (int i : expectedIntersection)
         CPPUNIT_ASSERT(intersectionSet.find(i) != intersectionSet.end());
@@ -102,12 +104,12 @@ void AuxiliaryTest::testMultisetIntersect() {
 
 
 void AuxiliaryTest::testMultisetDiff() {
-    std::vector<int> expectedDiff = {1, 3, 5, 6};
+    std::vector<int> expectedDiffOneMinusTwo = {1}, expectedDiffTwoMinusOne = {5, 6};
 
     multiset<int> set1;
     set1.insert(1);
     set1.insert(2);
-    set1.insert(3);
+    set1.insert(4);
 
     multiset<int> set2;
     set2.insert(2);
@@ -115,18 +117,22 @@ void AuxiliaryTest::testMultisetDiff() {
     set2.insert(5);
     set2.insert(6);
 
-    multiset<int> diff = multisetDiff(set1, set2);
+    multiset<int> diffOneMinusTwo = multisetDiff(set1, set2), diffTwoMinusOne = multisetDiff(set2, set1);
     
     // size of the set and all its elements should match the expected values
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(diff.size()), static_cast<int>(expectedDiff.size()));
+    CPPUNIT_ASSERT_EQUAL(expectedDiffOneMinusTwo.size(), diffOneMinusTwo.size());
+    CPPUNIT_ASSERT_EQUAL(expectedDiffTwoMinusOne.size(), diffTwoMinusOne.size());
 
-    for (const int i : expectedDiff)
-        CPPUNIT_ASSERT(diff.find(i) != diff.end());
+    for (const int ii : expectedDiffOneMinusTwo)
+        CPPUNIT_ASSERT(diffOneMinusTwo.find(ii) != diffOneMinusTwo.end());
+
+    for (const int ii : expectedDiffTwoMinusOne)
+        CPPUNIT_ASSERT(diffTwoMinusOne.find(ii) != diffTwoMinusOne.end());
 
     // test with empty set
     multiset<int> set3;
-    multiset<int> diff2 = multisetUnion(set1, set3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(diff2.size()), 0);
+    multiset<int> diff2 = multisetDiff(set3, set1);
+    CPPUNIT_ASSERT_EQUAL((size_t) 0, diff2.size());
 }
 
 void AuxiliaryTest::testMultisetUnion() {
@@ -145,7 +151,7 @@ void AuxiliaryTest::testMultisetUnion() {
 
     multiset<int> unionSet = multisetUnion(set1, set2);
     // size of the set and all its elements should match the expected values
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(unionSet.size()), static_cast<int>(expectedUnion.size()));
+    CPPUNIT_ASSERT_EQUAL(expectedUnion.size(), unionSet.size());
 
     for (const int i : expectedUnion)
         CPPUNIT_ASSERT(unionSet.find(i) != unionSet.end());
@@ -153,7 +159,7 @@ void AuxiliaryTest::testMultisetUnion() {
     // test with empty set
     multiset<int> set3;
     multiset<int> unionSet2 = multisetUnion(set1, set3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(unionSet2.size()), static_cast<int>(set1.size()));
+    CPPUNIT_ASSERT_EQUAL(set1.size(), unionSet2.size());
     for (const int i : set1)
         CPPUNIT_ASSERT(unionSet2.find(i) != unionSet2.end());
 }
@@ -166,14 +172,11 @@ void AuxiliaryTest::testMultisetSubset() {
         set1.insert(i);
 
     multiset<int> subset = multisetSubset(set1, 2);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(subset.size()), 2);
+    CPPUNIT_ASSERT_EQUAL((size_t) 2, subset.size());
 
     multiset<int> subset2 = multisetSubset(set1, 0);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(subset.size()), 0);
+    CPPUNIT_ASSERT_EQUAL((size_t) 0, subset2.size());
 
     multiset<int> subset3 = multisetSubset(set1, -3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(subset.size()), 0);
-
-    multiset<int> subset4 = multisetSubset(set1, 1000);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(subset.size()), static_cast<int>(nums.size()));
+    CPPUNIT_ASSERT_EQUAL((size_t) 0, subset3.size());
 }

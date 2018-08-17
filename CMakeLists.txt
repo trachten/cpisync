@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.6)
 project(cpisynclib)
 set(CMAKE_CXX_STANDARD 11)
 
+# some flags
+set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST")
 
 # Set project directory strucuture
 set(SRC_DIR src)
@@ -28,10 +30,13 @@ set(SOURCE_FILES
         ${SRC_DIR}/UID.cpp
 		${SRC_DIR}/HashSync.cpp
         ${SRC_DIR}/CommDummy.cpp
-        tests/unit/DataPriorityObjectTest.cpp tests/unit/DataPriorityObjectTest.h)
+        ${SRC_DIR}/IBLT.cpp
+        ${SRC_DIR}/IBLTSync.cpp
+        ${SRC_DIR}/FullSync.cpp)
 
 #cppunit
 include_directories(include)
+include_directories(tests)
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} )
@@ -40,7 +45,7 @@ add_library(cpisynclib ${SOURCE_FILES} )
 # @param dir The relative path to the folder containing test files to add
 # @param name The executable name
 macro(add_group_test dir name)
-    FILE(GLOB testPaths ${dir}/*Test.cpp)
+    FILE(GLOB testPaths ${dir}/*Test.cpp ${dir}/*Tests.cpp)
     ADD_EXECUTABLE(${name} ${TEST_RUNNER} ${testPaths})
 
     FOREACH(test ${testPaths})
@@ -51,7 +56,6 @@ macro(add_group_test dir name)
 endmacro()
 
 # Add test groups (note: executable will throw errors if there are no tests in the respective folder)
-add_group_test(${UNIT_TEST_DIR} UnitTests)
+add_group_test(${UNIT_TEST_DIR} UnitTest)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
 add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)
-

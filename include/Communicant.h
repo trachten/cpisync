@@ -14,6 +14,7 @@
 #include "ConstantsAndTypes.h"
 #include "DataObject.h"
 #include "DataPriorityObject.h"
+#include "IBLT.h"
 
 // namespace imports
 using namespace NTL;
@@ -67,8 +68,28 @@ public:
      * @return true iff the ZZ_p modulus was properly established
      */
     bool establishModSend(bool oneWay = false);
-    
-    
+
+    /**
+     * Establishes common IBLT parameters with another connected Communicant.
+     * @param size The size of the IBLTs to be communicated
+     * @param eltSize The size of values of the IBLTs to be communicated
+     * @param oneWay If true, only the IBLT parameters are sent to the other communicant,
+     * but no response is awaited.
+     * @require an active connection via commConnect
+     * @return true iff common parameters were verified (i.e. other size and eltSize == our size and eltSize) or oneWay is true
+     */
+     bool establishIBLTSend(const size_t size, const size_t eltSize, bool oneWay = false);
+
+    /**
+    * Establishes common IBLT parameters with another connected Communicant.
+    * @param size The size of the IBLTs to be communicated
+    * @param eltSize The size of values of the IBLTs to be communicated
+    * @param oneWay If true, verification of common parameters is sent to the other communicant.
+    * @require an active connection via commConnect
+    * @return true iff common parameters were verified (i.e. other size and eltSize == our size and eltSize)
+    */
+    bool establishIBLTRecv(const size_t size, const size_t eltSize, bool oneWay = false);
+
       /**
      * Primitive for sending data over an existing connection.  All other sending methods
        * eventually call this.
@@ -77,7 +98,7 @@ public:
      * @require listen or connect must have been called to establish a connection.
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */  
-    virtual void commSend(const char* toSend, const int numBytes)=0;
+    virtual void commSend(const char* toSend, int numBytes)=0;
     
     /**
      * Send data over an existing connection.
@@ -87,7 +108,7 @@ public:
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(const ustring str, const unsigned int numBytes);
+    void commSend(ustring str, unsigned int numBytes);
 
     /**
      * Sends a data object over the line
@@ -107,37 +128,37 @@ public:
      * Sends a string over the line.
      * @param str The string to send.
      */
-    void commSend(const string str);
+    void commSend(string str);
     
         /**
      * Sends a ustring over the line.
      * @param str The ustring to send.
      */
-    void commSend(const ustring ustr);
+    void commSend(ustring ustr);
     
     /**
      * Sends a double over the line.  The recipient must have the same representation of floats.
      * @param num The double to send
      */
-    void commSend(const double num);
+    void commSend(double num);
     
     /**
      * Sends a long integer over the line
      * @param num The number to send
      */
-    void commSend(const long num);
+    void commSend(long num);
     
     /**
      * Sends an integer over the line
      * @param num The number to send
      */
-    void commSend(const int num);
+    void commSend(int num);
     
     /**
      * Sends out a single byte over the line
      * @param num
      */
-    void commSend(const byte bt);
+    void commSend(byte bt);
     
     // Specialized send functions for specific data types
     /**
@@ -167,7 +188,14 @@ public:
      * @see commSend(const char *str) for more details.
      *         */
     void commSend(const vec_ZZ_p& vec);
-   
+
+    /**
+     * Sends an IBLT.
+     * @param iblt The IBLT to send.
+     * @param sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the IBLT's size and eltSize
+     */
+    void commSend(const IBLT& iblt, bool sync=false);
+
         /**
      * Receives up to MAX_BUF_SIZE characters from the socket.
      * This is the primitive receive method that all other methods call.
@@ -230,6 +258,14 @@ public:
     double commRecv_double();
     byte commRecv_byte();
 
+    /**
+     * Receives an IBLT.
+     * @param size The size of the IBLT to be received.
+     * @param eltSize The size of values of the IBLTs to be received.
+     * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLT, false) was used to send the IBLT
+     */
+    IBLT commRecv_IBLT(size_t size=NOT_SET, size_t eltSize=NOT_SET);
+
     // Informational
 
     /**
@@ -276,6 +312,17 @@ public:
 protected:
 
     // METHODS
+    /**
+     * Sends an IBLT::HashTableEntry
+     * @param hte The HashTableEntry to send
+     */
+    void commSend(const IBLT::HashTableEntry& hte, size_t eltSize);
+
+    /**
+     * Receives an IBLT::HashTableEntry
+     */
+    IBLT::HashTableEntry commRecv_HashTableEntry(size_t eltSize);
+
     /**
      * Adds <numBytes> bytes to the transmitted byte logs
      * @param numBytes the number of bytes to add to the logs

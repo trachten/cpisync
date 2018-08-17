@@ -29,17 +29,17 @@ public:
     * will be exchanged. This is a pointer since intermediate will be modified
     * in memory by CommDummy functions.
     */
-    CommDummy(queue<char>* intermediate);
+    explicit CommDummy(queue<char>* intermediate);
     
     // Destructor
-    ~CommDummy();
+    ~CommDummy() override;
     
     // Inherited Communicant methods
     void commListen() override;
     void commConnect() override;
     void commClose() override;
 
-    void commSend(const char* toSend, const int numBytes) override;
+    void commSend(const char* toSend, int numBytes) override;
     string commRecv(unsigned long numBytes) override ;
     inline string getName() override { return "dummy"; }
 

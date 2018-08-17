@@ -30,29 +30,30 @@ class Logger {
 
 public:
         // Constants
-    // ... logging levels
+    // ... logging levels, in order least inclusive to most inclusive (e.g. COMM includes all METHOD_DETAILS, METHOD, and TEST messages)
     enum LOG_TYPES {
     NONE = 0,    /** No logging (the default). */
-    METHOD = 1, /** Logging information within method calls. */
-    METHOD_DETAILS = 2, /** More detailed information related to method calls. */
-    COMM = 3, /** Low-level communications logs. */
-    COMM_DETAILS = 4 /** More detailed information related to communication logs. */
+    TEST,        /** Logging of unit/system tests. */
+    METHOD , /** Logging information within method calls. */
+    METHOD_DETAILS , /** More detailed information related to method calls. */
+    COMM , /** Low-level communications logs. */
+    COMM_DETAILS /** More detailed information related to communication logs. */
     };
     
     // Variables
     static const LOG_TYPES logLevel = DEFAULT_LOGLEVEL; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/
-    
+
     /**
      * Default constructor
      */
-    Logger() {} /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/ 
+    Logger() = default; /** A number representing the level logging desired.  All logs of level <= logLevel are outputted.*/
     
     /**
      * Outputs a text string to the log with a given logging level.
      * @param level The logging level.
      * @param text The text to be logged.
      */
-    inline static void gLog(int level, string text) {
+    inline static void gLog(int level, const string &text) {
     if (level <= logLevel) {
         clog << (::getpid()%2==1?">":"") << string(level+1,' ') << "(level=" << level << ")  " << text << endl;
     }
@@ -68,6 +69,6 @@ public:
      * Outputs an error message and stops execution.
      * @param msg The error message.
      */
-    static void error_and_quit(string msg);
+    static void error_and_quit(const string& msg);
  };
 #endif	/* LOGGER_H */

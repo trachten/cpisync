@@ -1,6 +1,8 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 #include <NTL/RR.h>
+#include <Communicant.h>
+
 #include "Auxiliary.h"
 #include "Communicant.h"
 #include "CommSocket.h"
@@ -84,11 +86,39 @@ bool Communicant::establishModSend(bool oneWay /* = false */) {
         return (commRecv_byte() != SYNC_FAIL_FLAG);
 }
 
+bool Communicant::establishIBLTSend(size_t size, size_t eltSize, bool oneWay /* = false */) {
+    commSend((long) size);
+    commSend((long) eltSize);
+    if (oneWay)
+        return true;  // i.e. don't wait for a response
+    else
+        return (commRecv_byte() != SYNC_FAIL_FLAG);
+}
+
+bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* = false */) {
+    // receive other size and eltSize. both must be read, even if the first parameter is wrong
+    long otherSize = commRecv_long();
+    long otherEltSize = commRecv_long();
+
+    if(otherSize == size && otherEltSize == eltSize) {
+        if(!oneWay)
+            commSend(SYNC_OK_FLAG);
+        return true;
+    } else {
+        Logger::gLog(Logger::COMM, "IBLT params do not match: mine(size=" + toStr(size) + ", eltSize="
+        + toStr(eltSize) + ") vs other(size=" + toStr(otherSize) + ", eltSize=" + toStr(otherEltSize) + ").");
+        if(!oneWay)
+            commSend(SYNC_FAIL_FLAG);
+        return false;
+    }
+}
+
+
 void Communicant::commSend(const ustring toSend, const unsigned int numBytes) {
     Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
             + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
 
-    const char *sendptr = reinterpret_cast<const char *> ((unsigned char *) toSend.data());
+    auto sendptr = reinterpret_cast<const char *> ((unsigned char *) toSend.data());
     commSend(sendptr, numBytes);
 }
 
@@ -216,12 +246,29 @@ vec_ZZ_p Communicant::commRecv_vec_ZZ_p() {
     return result;
 }
 
+void Communicant::commSend(const IBLT& iblt, bool sync) {
+    if (!sync) {
+        commSend((long) iblt.size());
+        commSend((long) iblt.eltSize());
+    }
 
+    // Access the hashTable representation of iblt to serialize it
+    for(const IBLT::HashTableEntry& hte : iblt.hashTable) {
+        commSend(hte, iblt.eltSize());
+    }
+}
+
+void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
+    commSend(hte.count);
+    commSend((long) hte.keyCheck);
+    commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
+    commSend(hte.valueSum, (unsigned int) eltSize);
+}
 
 void Communicant::commSend(const ZZ& num, int size) {
     Logger::gLog(Logger::COMM, "... attempting to send: ZZ " + toStr(num));
 
-    unsigned int num_size = (unsigned int) (size == NOT_SET ? NumBytes(num) : size);
+    auto num_size = (unsigned int) (size == NOT_SET ? NumBytes(num) : size);
     if (num_size == 0) num_size = 1; // special case for sending the integer 0 - need one bit
     unsigned char toSend[num_size];
 
@@ -287,7 +334,7 @@ DataPriorityObject * Communicant::commRecv_DataObject_Priority() {
     string str = commRecv_string();
     string prio = str.substr(0, str.find(','));
     str = str.substr(str.find(',') + 1);
-    DataPriorityObject * res = new DataPriorityObject(str);
+    auto * res = new DataPriorityObject(str);
     res->setPriority(strTo<ZZ > (prio));
     Logger::gLog(Logger::COMM, "... received: DataPriorityObject " + res->to_string());
     return res;
@@ -366,4 +413,37 @@ ZZ Communicant::commRecv_ZZ(int size) {
     Logger::gLog(Logger::COMM, "... received ZZ " + toStr(result));
 
     return result;
+}
+
+IBLT Communicant::commRecv_IBLT(size_t size, size_t eltSize) {
+    size_t numSize;
+    size_t numEltSize;
+
+    if(size == NOT_SET || eltSize == NOT_SET) {
+        numSize = (size_t) commRecv_long();
+        numEltSize = (size_t) commRecv_long();
+    } else {
+        numSize = size;
+        numEltSize = eltSize;
+    }
+
+    IBLT theirs;
+    theirs.valueSize = numEltSize;
+
+    for(int ii = 0; ii < numSize; ii++) {
+        theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
+    }
+
+    return theirs;
+}
+
+IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
+    IBLT::HashTableEntry hte;
+
+    hte.count = commRecv_long();
+    hte.keyCheck = (hashVal) commRecv_long();
+    hte.keySum = commRecv_ZZ();
+    hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
+
+    return hte;
 }

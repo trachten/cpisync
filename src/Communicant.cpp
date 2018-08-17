@@ -434,7 +434,7 @@ IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
     IBLT::HashTableEntry hte;
 
     hte.count = commRecv_long();
-    hte.keyCheck = (hashVal) commRecv_long();
+    hte.keyCheck = (hash_t) commRecv_long();
     hte.keySum = commRecv_ZZ();
     hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
 

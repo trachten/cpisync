@@ -20,7 +20,11 @@
 
 class IBLTSync : public SyncMethod {
 public:
-    // Constructors and destructors
+    /*
+     * Constructor.
+     * @param expected The expected number of elements being stored
+     * @param eltSize The size of elements being stored
+     */
     IBLTSync(size_t expected, size_t eltSize);
     ~IBLTSync() override;
 

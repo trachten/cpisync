@@ -715,8 +715,29 @@ bool CPISync::addElem(DataObject * datum) {
 // update metadata when delete an element by index
 
 bool CPISync::delElem(DataObject * newDatum) {
-    SyncMethod::delElem(newDatum);
-    throw new UnimplementedMethodException("CPISync delete element");
+    Logger::gLog(Logger::METHOD, "Entering CPISync::delElem");
+
+    // call the parent method to take care of bookkeeping
+    if(!SyncMethod::delElem(newDatum)) {
+	Logger::error("Couldn't find " + newDatum->to_string() + ".");
+	return false;
+    }
+
+    ZZ_p hashID;
+    // remove data from the hash table. to find the value, a linear search is required
+    for(auto iter = CPI_hash.begin(); iter != CPI_hash.end(); iter++) {
+        if(iter->second == newDatum) {
+            hashID = to_ZZ_p(iter->first);
+            CPI_hash.erase(iter);
+        }
+    }
+
+    // update cpi evals
+    for(int ii = 0; ii < sampleLoc.length(); ii++) {
+        CPI_evals[ii] /= (sampleLoc[ii] - hashID);
+    }
+
+    Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) removed item " + newDatum->print() + ".");
 }
 
 // for debugging

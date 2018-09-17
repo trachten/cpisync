@@ -1,0 +1,8 @@
+//
+// Created by Bowen Song on 9/16/18.
+//
+
+#ifndef CPISYNCLIB_KSHINGLETEST_H
+#define CPISYNCLIB_KSHINGLETEST_H
+
+#endif //CPISYNCLIB_KSHINGLETEST_H

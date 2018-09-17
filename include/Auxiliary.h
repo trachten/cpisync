@@ -418,6 +418,60 @@ inline string randString(int lower=0, int upper=10) {
     return str.str();
 }
 
+inline string genRandString(int len=10){
+    string str;
+
+    for(int jj = 0; jj < len; jj++) {
+        str += toascii(rand()%0x7F);
+    }
+    return str;
+}
+
+/**
+ * Generate a string with upperI number of random insertions of the original string
+ * @param upperI number of insertion upper bound
+ * @return Edited string with upperI insertions away from the original string
+ */
+inline string randStringInsert(string str, int upperI) {
+    for(int jj = 0; jj < upperI; jj++) {
+        //pick a place to edit
+        int pos = randLenBetween(0, str.size()-1);
+        str = str.substr (0,pos) + genRandString(1) + str.substr (pos,str.size());
+    }
+    return str;
+}
+
+/**
+ * Generate a string with upperD number of random deletions of the original string
+ * @param upperD number of deletion upper bound
+ * @return Edited string with upperD deletions away from the original string
+ */
+inline string randStringDel(string str, int upperD) {
+    if (str.size() <= upperD) {
+        return "";
+    }
+
+    for(int jj = 0; jj < upperD; jj++) {
+        //pick a place to edit
+        int pos = randLenBetween(0, str.size()-1);
+        str = str.substr (0,pos) + str.substr (pos+1,str.size());
+    }
+    return str;
+}
+
+/**
+ * Generate a string with upperE number of random edits of the original string
+ * @param upperE Edit upper bound
+ * @return Edited string upperE edit distance away from the original string
+ */
+inline string randStringEdit(string str, int upperE) {
+    for(int jj = 0; jj < upperE; jj++) {
+        int choice = rand() % 2;
+        str = (choice==0) ? randStringDel(str, 1) : randStringInsert(str, 1);
+    }
+    return str;
+}
+
 /**
  * @return A random integer converted to a string
  * @require srand() must've been called

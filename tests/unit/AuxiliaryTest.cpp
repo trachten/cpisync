@@ -53,6 +53,18 @@ void AuxiliaryTest::testToStr() {
     CPPUNIT_ASSERT(resultZZpStr.compare(expectedZZpStr) == 0);
 }
 
+void AuxiliaryTest::testStringEditing() {
+    std::string origI= genRandString(5);
+    std::string inserted = randStringInsert(origI,3);
+    CPPUNIT_ASSERT(origI.size()+3==inserted.size());
+
+    std::string deleted = randStringDel(origI,4);
+    CPPUNIT_ASSERT(origI.size()-4==deleted.size());
+
+    std::string edited = randStringEdit(origI,4);
+    CPPUNIT_ASSERT(origI != edited);
+}
+
 void AuxiliaryTest::testBase64_encode() {
     std::string expectedEncode = "_MMwdA==";
   

@@ -16,6 +16,7 @@ class AuxiliaryTest : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST(testStrTo);
     CPPUNIT_TEST(testToStr);
+    CPPUNIT_TEST(testStringEditing);
     CPPUNIT_TEST(testBase64_encode);
     CPPUNIT_TEST(testBase64_decode);
     CPPUNIT_TEST(testStrToVecToStr);
@@ -36,6 +37,7 @@ public:
 private:
     void testStrTo();
     void testToStr();
+    void testStringEditing();
     void testBase64_encode();
     void testBase64_decode();
     void testStrToVecToStr();

@@ -422,7 +422,7 @@ inline string genRandString(int len=10){
     string str;
 
     for(int jj = 0; jj < len; jj++) {
-        str += toascii(rand()%0x7F);
+        str += toascii(rand());
     }
     return str;
 }

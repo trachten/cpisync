@@ -230,6 +230,9 @@
 		<Unit filename="/Users/bowen/Documents/cpisync/src/UID.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/kshingling.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/src/probCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>

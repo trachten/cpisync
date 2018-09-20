@@ -13,13 +13,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/cpisynclib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/cpisynclib.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/kshingling.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/kshingling.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/kshingling.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/kshingling.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" afterDir="false" />
-    </list>
+    <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added" />
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -314,7 +308,7 @@
       <workItem from="1537283783072" duration="2653000" />
       <workItem from="1537391409810" duration="1644000" />
       <workItem from="1537442185425" duration="2311000" />
-      <workItem from="1537451673687" duration="8293000" />
+      <workItem from="1537451673687" duration="8464000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -327,7 +321,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="41843000" />
+    <option name="totallyTimeSpent" value="42014000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">

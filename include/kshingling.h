@@ -31,7 +31,7 @@ public:
      * Construct a K_Shingle set object with k as each shingle size
      * @param k fixing shingle size to be k
      */
-    K_Shingle(const size_t k, const string str);
+    K_Shingle(const string str, const size_t k);
 
     // Default deconstructor
     ~K_Shingle();
@@ -41,17 +41,24 @@ public:
      * This operation always succeed
      * @param str Original string
      */
-    void create(const ZZ str);
+    void _create();
 
     /**
      * Produces the value s.t. (key, value) is in the shingle set.
      * This operation cannot always find a match.
-     * @param key The key corresponding to the value returned by this function
-     * @param result The resulting value corresponding with the key, if found.
+     * @param ver The ver corresponding to the value returned by this function
+     * @param edge The resulting value corresponding with the key, if found.
      * If not found, result will be set to 0. result is unchanged iff the operation returns false.
-     * @return true iff the presence of the key could be determined
+     * @return An edge of pair<vertex,occurrance> if vertex == ver, ZZ& edge is the result
      */
-    bool get(const ZZ ver, ZZ& edge);
+    bool get(const string ver, pair<string,int>& edge);
+
+    /**
+     * Increment the edge count of the ShingleSet, Creates no copy
+     * Works on object
+     * @param ver shingle
+     */
+    void incrementEdgeCount(const string ver);
 
     /**
      * Reconstruct a string from a shingle set
@@ -84,7 +91,16 @@ private:
     //default constructor
     K_Shingle();
 
-    vector<pair<string,int>> shingleSet;
+    int k;  //shingle size
+
+    vector<pair<string,int>> shingleSet;  // shingle set
+
+    string orig_string;  // original string
+
+    const string stopword = "$";  // default stop word is "$"
+
+
+
 
 };
 

@@ -31,7 +31,7 @@ public:
      * Construct a K_Shingle set object with k as each shingle size
      * @param k fixing shingle size to be k
      */
-    K_Shingle(const size_t k);
+    K_Shingle(const size_t k, const string str);
 
     // Default deconstructor
     ~K_Shingle();
@@ -83,6 +83,8 @@ private:
 
     //default constructor
     K_Shingle();
+
+    vector<pair<string,int>> shingleSet;
 
 };
 

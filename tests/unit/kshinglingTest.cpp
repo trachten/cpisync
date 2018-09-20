@@ -25,6 +25,6 @@ void kshinglingTest::testAll() {
     // init a string of random byte (shortest,longest) possible string len
     string Alicetxt = genRandString(10);
     string Bobtxt = randStringEdit(Alicetxt,3);
-
+    K_Shingle Alice = K_Shingle(2, "bowen");
 
 }

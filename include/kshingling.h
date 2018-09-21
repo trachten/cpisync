@@ -61,11 +61,29 @@ public:
     void incrementEdgeCount(const string ver);
 
     /**
-     * Reconstruct a string from a shingle set
-     * Operation fails if Eulerian Cycle exists in the modified De Brujin Graph representation of the shingle set
-     * @return True iff a string is uniquely decoded from shingle set
+     * Get a list of edges with vertex start with give string in verStart
+     * @param verStart Searching standard for edges start with this string
+     * @param changed_shingleSet a set of shingles available at a recursive stage
+     * @return a list of edges with vertex and count
      */
-    bool reconstructString();
+    vector<pair<string,int>> getEdges(const string verStart, vector<pair<string,int>> changed_shingleSet);
+
+    /**
+     * Recursive function reconstructing string from a shingle set
+     * Operation returns multiple strings if Eulerian Cycle exists in the modified De Brujin Graph representation of the shingle set
+     * @param changed_shingleSet a set of shingles available at a recursive stage
+     * @param curEdge current edge vertex sting
+     * @param strColl a vector of strings that is returnable from the shingle set, Returnable object
+     * @param str current string
+     */
+    void shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, vector<string>& strCollect, string str="");
+
+    /**
+     * Reconstruct a string from object's shingle set
+     * @param changed_shingleSet a set of shingles to decode string from
+     * @return a vector of strings reconstructed from a shingles set
+     */
+    vector<string> reconstructString();
 
     /**
      * Subtracts two K_Shingles.
@@ -84,6 +102,7 @@ public:
      * @return The bit size of shingle set
      */
     size_t set_bit_size() const;
+
 
 private:
     // local data

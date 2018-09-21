@@ -13,7 +13,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added" />
+    <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
+      <change beforePath="$PROJECT_DIR$/include/kshingling.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/kshingling.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kshingling.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/kshingling.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -37,26 +41,26 @@
         <counts>
           <entry key="cpp" value="27" />
           <entry key="h" value="28" />
-          <entry key="iterator" value="1" />
+          <entry key="iterator" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="ObjectiveC" value="56" />
+          <entry key="ObjectiveC" value="57" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="1662" />
-          <entry key="h" value="1781" />
+          <entry key="cpp" value="2653" />
+          <entry key="h" value="2780" />
           <entry key="mm" value="115" />
           <entry key="txt" value="16" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Doxygen file" value="3" />
-          <entry key="ObjectiveC" value="3555" />
+          <entry key="Doxygen file" value="13" />
+          <entry key="ObjectiveC" value="5535" />
           <entry key="PLAIN_TEXT" value="16" />
         </counts>
       </usages-collector>
@@ -72,14 +76,14 @@
     <favorites_list name="cpisynclib" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.4176633">
+    <splitter split-orientation="horizontal" split-proportion="0.5675139">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/unit/kshinglingTest.cpp">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="405">
-                  <caret line="27" column="46" selection-start-line="27" selection-start-column="46" selection-end-line="27" selection-end-column="46" />
+                <state relative-caret-position="420">
+                  <caret line="28" column="28" selection-start-line="28" selection-start-column="28" selection-end-line="28" selection-end-column="28" />
                   <folding>
                     <element signature="e#44#62#0" expanded="true" />
                   </folding>
@@ -87,11 +91,11 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="600">
-                  <caret line="40" column="10" lean-forward="true" selection-start-line="40" selection-start-column="10" selection-end-line="40" selection-end-column="10" />
+                <state relative-caret-position="273">
+                  <caret line="82" selection-start-line="82" selection-end-line="82" />
                 </state>
               </provider>
             </entry>
@@ -115,8 +119,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/include/kshingling.h">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="258">
-                  <caret line="33" column="4" selection-start-line="33" selection-start-column="4" selection-end-line="33" selection-end-column="4" />
+                <state relative-caret-position="617">
+                  <caret line="85" column="4" selection-start-line="85" selection-start-column="4" selection-end-line="85" selection-end-column="18" />
                   <folding>
                     <element signature="e#121#138#0" expanded="true" />
                   </folding>
@@ -172,6 +176,7 @@
       <find>IBLT</find>
       <find>InteractiveCPISync</find>
       <find>insert</find>
+      <find>get</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -187,9 +192,9 @@
         <option value="$PROJECT_DIR$/tests/unit/AuxiliaryTest.cpp" />
         <option value="$PROJECT_DIR$/include/Auxiliary.h" />
         <option value="$PROJECT_DIR$/src/IBLT.cpp" />
-        <option value="$PROJECT_DIR$/src/kshingling.cpp" />
         <option value="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" />
         <option value="$PROJECT_DIR$/include/kshingling.h" />
+        <option value="$PROJECT_DIR$/src/kshingling.cpp" />
       </list>
     </option>
   </component>
@@ -308,7 +313,7 @@
       <workItem from="1537283783072" duration="2653000" />
       <workItem from="1537391409810" duration="1644000" />
       <workItem from="1537442185425" duration="2311000" />
-      <workItem from="1537451673687" duration="8608000" />
+      <workItem from="1537451673687" duration="16436000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -321,7 +326,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="42158000" />
+    <option name="totallyTimeSpent" value="49986000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -336,13 +341,13 @@
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.13780779" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49945593" weight="0.13780779" />
       <window_info id="Structure" order="1" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4992057" weight="0.32919708" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" visible="true" weight="0.4" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4992057" visible="true" weight="0.32919708" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
@@ -744,6 +749,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/include/kshingling.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="617">
+          <caret line="85" column="4" selection-start-line="85" selection-start-column="4" selection-end-line="85" selection-end-column="18" />
+          <folding>
+            <element signature="e#121#138#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file:///Library/Developer/CommandLineTools/usr/include/c++/v1/iterator">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="261">
@@ -751,30 +766,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="82" selection-start-line="82" selection-end-line="82" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/unit/kshinglingTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="27" column="46" selection-start-line="27" selection-start-column="46" selection-end-line="27" selection-end-column="46" />
+        <state relative-caret-position="420">
+          <caret line="28" column="28" selection-start-line="28" selection-start-column="28" selection-end-line="28" selection-end-column="28" />
           <folding>
             <element signature="e#44#62#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/kshingling.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="33" column="4" selection-start-line="33" selection-start-column="4" selection-end-line="33" selection-end-column="4" />
-          <folding>
-            <element signature="e#121#138#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="40" column="10" lean-forward="true" selection-start-line="40" selection-start-column="10" selection-end-line="40" selection-end-column="10" />
         </state>
       </provider>
     </entry>

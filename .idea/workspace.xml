@@ -90,8 +90,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="9">
-                  <caret line="13" selection-start-line="13" selection-end-line="13" />
+                <state relative-caret-position="600">
+                  <caret line="40" column="10" lean-forward="true" selection-start-line="40" selection-start-column="10" selection-end-line="40" selection-end-column="10" />
                 </state>
               </provider>
             </entry>
@@ -308,7 +308,7 @@
       <workItem from="1537283783072" duration="2653000" />
       <workItem from="1537391409810" duration="1644000" />
       <workItem from="1537442185425" duration="2311000" />
-      <workItem from="1537451673687" duration="8464000" />
+      <workItem from="1537451673687" duration="8608000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -321,7 +321,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="42014000" />
+    <option name="totallyTimeSpent" value="42158000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -773,8 +773,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9">
-          <caret line="13" selection-start-line="13" selection-end-line="13" />
+        <state relative-caret-position="600">
+          <caret line="40" column="10" lean-forward="true" selection-start-line="40" selection-start-column="10" selection-end-line="40" selection-end-column="10" />
         </state>
       </provider>
     </entry>

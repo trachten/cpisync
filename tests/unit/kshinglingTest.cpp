@@ -26,8 +26,13 @@ void kshinglingTest::testAll() {
     K_Shingle Alice = K_Shingle(Alicetxt, 3);  // Init k shingling on Alice
     auto AliceStringNOrder = Alice.reconstructStringBacktracking();  // Get order of the cycle
 
+    //test functions
     CPPUNIT_ASSERT(AliceStringNOrder.first=="$"+Alicetxt+"$");  // Make sure Alice can recover her own string from shingle set
     CPPUNIT_ASSERT(AliceStringNOrder.second > -1);  //Make sure string order is not -1 (default)
 
+    auto RedoStringNOrder = Alice.reconstructStringBacktracking(AliceStringNOrder.second);  // Get string through the order of cycle
+    CPPUNIT_ASSERT(RedoStringNOrder.first=="$"+Alicetxt+"$");  // Make sure Alice can recover her own string from shingle set
+    CPPUNIT_ASSERT(RedoStringNOrder.second ==AliceStringNOrder.second);  //Make sure string order returned are the same
 
+    //test with Half round sync
 }

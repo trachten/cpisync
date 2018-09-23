@@ -64,4 +64,4 @@ nbactions.xml
 *Test.exe
 
 # Ignore Mac folder files
-*Icon\r
+*Icon?

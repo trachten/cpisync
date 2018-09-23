@@ -62,3 +62,6 @@ nbactions.xml
 # Ignore all test files that are generated in the main directory
 *Test
 *Test.exe
+
+# Ignore Mac folder files
+*Icon\r

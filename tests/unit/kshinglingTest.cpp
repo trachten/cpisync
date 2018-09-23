@@ -29,10 +29,12 @@ void kshinglingTest::testAll() {
     //test functions
     CPPUNIT_ASSERT(AliceStringNOrder.first=="$"+Alicetxt+"$");  // Make sure Alice can recover her own string from shingle set
     CPPUNIT_ASSERT(AliceStringNOrder.second > -1);  //Make sure string order is not -1 (default)
+    CPPUNIT_ASSERT(Alicetxt!=Bobtxt);
 
     auto RedoStringNOrder = Alice.reconstructStringBacktracking(AliceStringNOrder.second);  // Get string through the order of cycle
     CPPUNIT_ASSERT(RedoStringNOrder.first=="$"+Alicetxt+"$");  // Make sure Alice can recover her own string from shingle set
     CPPUNIT_ASSERT(RedoStringNOrder.second ==AliceStringNOrder.second);  //Make sure string order returned are the same
 
     //test with Half round sync
+
 }

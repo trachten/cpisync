@@ -76,21 +76,23 @@ public:
      * @param strColl a vector of strings that is returnable from the shingle set, Returnable object
      * @param str current string
      */
-    void shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, vector<string>& strCollect, string str="");
+    void shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, vector<string>& strCollect, int & str_order, string str="" );
 
     /**
      * Reconstruct a string from object's shingle set
-     * @param changed_shingleSet a set of shingles to decode string from
-     * @return a vector of strings reconstructed from a shingles set
+     * Using backtracking algorithm
+     * input order of string to retreive that
+     * @param Input int,
+     * @return String if input int, int if input string
      */
-    vector<string> reconstructString();
+    pair<string,int> reconstructStringBacktracking(int strOrder=-1);
 
     /**
      * Subtracts two K_Shingles.
      * -= is destructive and assign
      * @require Shingles have trhe same size k or edge can match
      */
-    K_Shingle operator+=(const K_Shingle& other) const;
+    K_Shingle& operator+=(const K_Shingle& other) const;
     K_Shingle& operator-=(const K_Shingle& other);
 
     /**

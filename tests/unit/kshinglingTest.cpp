@@ -14,8 +14,6 @@ kshinglingTest::~kshinglingTest() {
 }
 
 void kshinglingTest::setUp() {
-//    const int SEED = 617;
-//    srand(SEED);
 }
 
 void kshinglingTest::tearDown() {
@@ -23,8 +21,13 @@ void kshinglingTest::tearDown() {
 
 void kshinglingTest::testAll() {
     // init a string of random byte (shortest,longest) possible string len
-    string Alicetxt = genRandString(10);
-    string Bobtxt = randStringEdit(Alicetxt,3);
-    K_Shingle Alice = K_Shingle("bowen", 2);
-    Alice.reconstructString();
+    string Alicetxt = genRandString(100);  // generate a string
+    string Bobtxt = randStringEdit(Alicetxt,10);  // Generate a edited string
+    K_Shingle Alice = K_Shingle(Alicetxt, 3);  // Init k shingling on Alice
+    auto AliceStringNOrder = Alice.reconstructStringBacktracking();  // Get order of the cycle
+
+    CPPUNIT_ASSERT(AliceStringNOrder.first=="$"+Alicetxt+"$");  // Make sure Alice can recover her own string from shingle set
+    CPPUNIT_ASSERT(AliceStringNOrder.second > -1);  //Make sure string order is not -1 (default)
+
+
 }

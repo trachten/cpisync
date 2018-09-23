@@ -8,303 +8,303 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="UnitTest">
-				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/UnitTest" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug/UnitTest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/bowen/Documents/cpisync/include"/>
-					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 UnitTest"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 UnitTest"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="UnitTest/fast">
-				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/UnitTest" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug/UnitTest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/bowen/Documents/cpisync/include"/>
-					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 UnitTest/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 UnitTest/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="SystemLongTest">
-				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/SystemLongTest" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug/SystemLongTest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/bowen/Documents/cpisync/include"/>
-					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 SystemLongTest"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 SystemLongTest"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="SystemLongTest/fast">
-				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/SystemLongTest" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug/SystemLongTest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/bowen/Documents/cpisync/include"/>
-					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 SystemLongTest/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 SystemLongTest/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="cpisynclib">
-				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/libcpisynclib.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug/libcpisynclib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/bowen/Documents/cpisync/include"/>
-					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 cpisynclib"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 cpisynclib"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="cpisynclib/fast">
-				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/libcpisynclib.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug/libcpisynclib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Users/bowen/Documents/cpisync/include"/>
-					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
 					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
 					<Add directory="/Library/Frameworks"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 cpisynclib/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 cpisynclib/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/bowen/Documents/cpisync/include/kshingling.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include/kshingling.h">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/CPISync.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/CPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/CommDummy.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/CommDummy.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/CommSocket.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/CommSocket.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/CommString.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/CommString.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/Communicant.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/Communicant.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/DataObject.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/DataObject.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/FullSync.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/FullSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/GenSync.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/GenSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/HashSync.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/HashSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/IBLT.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/IBLT.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/IBLTSync.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/IBLTSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/InterCPISync.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/InterCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/Logger.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/Logger.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/SyncMethod.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/SyncMethod.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/UID.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/UID.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/kshingling.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/kshingling.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/src/probCPISync.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/probCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/StringRecon/KshingleTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/StringRecon/KshingleTest.h">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/sys/long/GenericSyncTests.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/sys/long/GenericSyncTests.cpp">
 			<Option target="SystemLongTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/sys/long/GenericSyncTests.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/sys/long/GenericSyncTests.h">
 			<Option target="SystemLongTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/testRunner.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/testRunner.cpp">
 			<Option target="UnitTest"/>
 			<Option target="SystemLongTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AuxiliaryTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AuxiliaryTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AuxiliaryTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AuxiliaryTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/CommStringTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/CommStringTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/CommStringTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/CommStringTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/CommunicantTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/CommunicantTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/CommunicantTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/CommunicantTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/DataObjectTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/DataObjectTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/DataObjectTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/DataObjectTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/DataPriorityObjectTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/DataPriorityObjectTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/DataPriorityObjectTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/DataPriorityObjectTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/FullSyncTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/FullSyncTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/FullSyncTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/FullSyncTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTSyncTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTSyncTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingTest.cpp">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/kshinglingTest.cpp">
 			<Option target="UnitTest"/>
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/kshinglingTest.h">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/CMakeLists.txt">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

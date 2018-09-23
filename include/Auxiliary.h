@@ -421,8 +421,12 @@ inline string randString(int lower=0, int upper=10) {
 inline string genRandString(int len=10){
     string str;
 
-    for(int jj = 0; jj < len; jj++) {
-        str += toascii(rand());
+    for(int jj = 0; jj < len; ++jj) {
+        auto intchar = rand() % 127;  // avoid random string to be "$" changed to "%"
+        if (intchar==36)
+            intchar++;
+        str +=  toascii(intchar);
+
     }
     return str;
 }

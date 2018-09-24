@@ -65,3 +65,6 @@ nbactions.xml
 
 # Ignore Mac folder files
 *Icon?
+
+# Ignore workspace
+.idea/workspace.xml

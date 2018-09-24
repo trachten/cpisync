@@ -35,6 +35,10 @@ void kshinglingTest::testAll() {
     CPPUNIT_ASSERT(RedoStringNOrder.first=="$"+Alicetxt+"$");  // Make sure Alice can recover her own string from shingle set
     CPPUNIT_ASSERT(RedoStringNOrder.second ==AliceStringNOrder.second);  //Make sure string order returned are the same
 
+    CPPUNIT_ASSERT(Alice.getOriginString()==AliceStringNOrder.first);
+    CPPUNIT_ASSERT(Alice.getShingleSet().size()>0);
+
+
     //test with Half round sync
 
 }

@@ -152,3 +152,11 @@ void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, stri
     }
 
 }
+
+//string K_Shingle::getOriginString() {
+//    return
+//}
+//
+//vector<pair<string,int>> K_Shingle::getShingleSet() {
+//
+//}

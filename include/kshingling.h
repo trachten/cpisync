@@ -98,12 +98,24 @@ public:
     /**
      * @return The number of element in she shingle set
      */
-    size_t set_size() const;
+    size_t set_size() const{
+        return shingleSet.size();
+    }
 
     /**
      * @return The bit size of shingle set
      */
-    size_t set_bit_size() const;
+    size_t set_bit_size() const{
+        return sizeof(std::vector<int>) + (sizeof(int) * shingleSet.size());
+    }
+
+    string getOriginString() {
+        return orig_string;
+    }
+
+    vector<pair<string,int>> getShingleSet() {
+        return shingleSet;
+    }
 
 
 private:

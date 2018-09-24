@@ -1,12 +1,12 @@
 //
 // Created by Bowen Song on 9/23/18.
+// Use one or all set recon methods
 //
 
 #ifndef CPISYNCLIB_KSHINGLINGSYNC_H
 #define CPISYNCLIB_KSHINGLINGSYNC_H
 
-#include "SyncMethod.h"
-#include "Auxiliary.h"
+#include "CPISync.h"
 #include "kshingling.h"
 
 class kshinglingSync : public SyncMethod {
@@ -16,15 +16,22 @@ public:
      * Constructor for K-shingling Sync
      * @param edit_distance_bar Edit distance upper bound (used for single round sync)
      * @param bits_symbol Bits per symbol (ascii symbols are 8 bits)
-     * @param k shingle size
+     * @param k shingle size; Using CPI sync, m_bar equals edit_distance_bar*k since each edit_distance_bar gets repeated at most k times
      */
-    kshinglingSync(int edit_distance_bar, long bits_symbol, size_t k);
+    kshinglingSync(int edit_distance_bar, size_t k, long bits_symbol);
     ~kshinglingSync();
 
-    // Implemented parent class methods
-    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
-    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+    /**
+     * Add a string in to a host
+     * @param datum string
+     * @return add success, which should always be the case unless it contains stop words
+     */
+    bool addElem(DataObject* datum) override;
 
+    /**
+     * @return print a string that is reconstructed from object's current set of shingles
+     */
+    string printString();
 
     // Get the name of the sync method
     string getName() override;

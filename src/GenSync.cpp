@@ -21,6 +21,7 @@
 #include "IBLTSync_HalfRound.h"
 #include "CPISync_HalfRound.h"
 #include "FullSync.h"
+#include "kshinglingSync.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
@@ -347,6 +348,8 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::OneWayIBLTSync:
             myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
             break;
+//        case SyncProtocol::KShingleSync:
+//            myMeth = make_shared<kshinglingSync>(edit_distance_bar,k, bits, errorProb);
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }

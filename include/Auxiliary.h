@@ -107,6 +107,7 @@ inline string toStr(T item) {
     return tmp.str();
 }
 
+
 /**
  * Reinterprets a ustring into a string
  */

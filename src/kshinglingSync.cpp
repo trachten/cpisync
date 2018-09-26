@@ -6,61 +6,94 @@
 #include "GenSync.h"
 #include "kshinglingSync.h"
 
-kshinglingSync::kshinglingSync(const GenSync::SyncProtocol sync_protocol, const long edit_distance, const long symbol_size, const size_t shingle_len, const bool one_way){
-    set_sync_protocol = sync_protocol;
-    m_bar = edit_distance;
+kshinglingSync::kshinglingSync(size_t shingle_len,GenSync::SyncProtocol sync_protocol, long edit_distance, long symbol_size) : myKShingle(shingle_len){
+    setSyncProtocol = sync_protocol;
+    mBar = edit_distance;
     bits = symbol_size;  // ascii symbol size is 8
-    oneWay = one_way;
+    oneWay = false;
     k = shingle_len;
-
+    //cycleNum = -1;
 }
 kshinglingSync::~kshinglingSync() = default;
 
+
 bool kshinglingSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
     try {
+        bool success = true;
+
         Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncClient");
 
-        GenSync GenSyncClient = GenSync::Builder().
-                setProtocol(GenSync::SyncProtocol::IBLTSync).
-                setComm(GenSync::SyncComm::socket).
-                setNumPartitions(2). // hard code to 2 partition, change later
-                setBits(bits).
-                build();
+        SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf);
 
-        return true;
-    } catch (SyncFailureException s) {
+
+        GenSync::Builder builder = GenSync::Builder();
+        switch (setSyncProtocol) {
+            case GenSync::SyncProtocol::OneWayCPISync:
+                builder.
+                        setBits(pow(bits, 2)).
+                        setMbar(mBar);
+                break;
+            case GenSync::SyncProtocol::OneWayIBLTSync:
+                builder.
+                        setBits(bits).
+                        setNumExpectedElements(myKShingle.get_size());
+                break;
+            default:
+                throw invalid_argument("I don't know how to handle this base protocol in string recon yet");
+        }
+        return success;
+    }catch (SyncFailureException s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
         throw (s);
-    } // might not need the try-catch
+    }
 }
-
-bool kshinglingSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+bool kshinglingSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
     try {
-        Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncClient");
-        GenSync GenSyncServer = GenSync::Builder().
-                setProtocol(GenSync::SyncProtocol::IBLTSync).
-                setComm(GenSync::SyncComm::socket).
-                setNumPartitions(2). // hard code to 2 partition, change later
-                setBits(bits).
-                build();
+        bool success = true;
 
-        return true;
-    } catch (SyncFailureException s) {
+        Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncClient");
+
+        SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf);
+
+
+        GenSync::Builder builder = GenSync::Builder();
+        switch (setSyncProtocol) {
+            case GenSync::SyncProtocol::OneWayCPISync:
+                builder.
+                        setBits(pow(bits, 2)).
+                        setMbar(mBar);
+                break;
+            case GenSync::SyncProtocol::OneWayIBLTSync:
+                builder.
+                        setBits(bits).
+                        setNumExpectedElements(myKShingle.get_size());
+                break;
+            default:
+                throw invalid_argument("I don't know how to handle this base protocol in string recon yet");
+        }
+        return success;
+    }catch (SyncFailureException s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
         throw (s);
     }
 }
 
-
-bool kshinglingSync::addElem(DataObject* datum) {
-    auto set = K_Shingle(datum->to_string(),k).getShingleSet();
-
-    for (int i = 0; i < set.size(); ++i) {
-
-    }
-
+bool kshinglingSync::addElem(DataObject* datum){
+    SyncMethod::addElem(datum);
+    myKShingle.add(*datum);
+    return true;
 }
 
+bool kshinglingSync::delElem(DataObject* datum){
+    SyncMethod::delElem(datum);
+    myKShingle.del(*datum);
+    return true;
+}
 
+vector<pair<string,int>> kshinglingSync::getShingles(string str){
+    myKShingle.create(str);
+    cycleNum = myKShingle.reconstructStringBacktracking().second;
+    return myKShingle.getShingleSet();
+}
 
 string kshinglingSync::getName(){ return "This is a kshinglingSync of string reconciliation";}

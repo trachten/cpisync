@@ -7,14 +7,17 @@
 
 #include "kshingling.h"
 
+
 K_Shingle::K_Shingle() = default;
 K_Shingle::~K_Shingle() = default;
 
-K_Shingle::K_Shingle(const string str, const size_t shingle_size) {
-    orig_string = stopword + str + stopword;
+K_Shingle::K_Shingle(const size_t shingle_size) {
     k = shingle_size;
+}
 
+void K_Shingle::create(const string str) {
     //  Sanity check
+    orig_string = stopword + str + stopword;
     for (int i = 0; i < str.size(); ++i) {
         if(str.substr(i,1)==stopword){
             throw invalid_argument("Input string includes Stopword");
@@ -25,12 +28,7 @@ K_Shingle::K_Shingle(const string str, const size_t shingle_size) {
     }else if(k<2){
         throw invalid_argument("Minimum shingle size has to be bigger than 2");
     }
-
-    _create();
-}
-
-void K_Shingle::_create() {
-    if (k > 0 && orig_string.size() >0) {
+    else if (k > 0 && orig_string.size() >0) {
         const string str = orig_string;
         //create a set of shingle in shingleSet
         for (int i = 0; i < str.size() - k + 1; ++i) {
@@ -56,6 +54,13 @@ bool K_Shingle::get(const string ver, pair<string,int>& edge){
     }
 }
 
+void K_Shingle::add(DataObject shingle) {
+    //shingleSet.push_back();
+}
+
+void K_Shingle::del(DataObject shingle) {
+    //shingleSet.erase(lower_bound (shingleSet.begin(), shingleSet.end(), shingle));
+}
 
 
 void K_Shingle::incrementEdgeCount(const string ver) {
@@ -67,7 +72,7 @@ void K_Shingle::incrementEdgeCount(const string ver) {
             }
         }
         shingleSet.push_back(make_pair(ver, 1));
-        sort(shingleSet.begin(), shingleSet.end());
+
         return;
     } else {
         throw invalid_argument("No vertex string for searching");
@@ -92,6 +97,9 @@ pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
     vector<string> str_collect;
     vector<pair<string,int>> changed_shingleSet = shingleSet;
     string startString;
+    //sort it in lexicographic order
+    sort(shingleSet.begin(), shingleSet.end());
+    // find the head
     for (auto it = changed_shingleSet.begin(); it != changed_shingleSet.end(); ++it) {
         if (it->first.substr(0,1)==stopword){
             startString = it->first;
@@ -99,7 +107,7 @@ pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
             break;
         }
     }
-
+// Get the string or string cycle number
     if (startString.size()>0) {
 //        // Delete the first edge by value
 //        changed_shingleSet.erase(remove(changed_shingleSet.begin(), changed_shingleSet.end(), startedge[0]), changed_shingleSet.end());

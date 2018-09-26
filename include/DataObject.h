@@ -64,7 +64,7 @@ public:
      * @return A ZZ encoding of the string
      */
     ZZ to_ZZ() const;
-    
+
     /**
      * @return The string version of a copy of the contents this data object.
      *         The string could have null bytes and non-printable characters.

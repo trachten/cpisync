@@ -20,22 +20,22 @@ public:
      * @param bits_symbol Bits per symbol (default is ascii symbols which are 8 bits)
      * @param k shingle size; Using CPI sync, m_bar equals edit_distance_bar*k since each edit_distance_bar gets repeated at most k times
      */
-    kshinglingSync(const GenSync::SyncProtocol sync_protocol, const long edit_distance, const long symbol_size,const size_t shingle_len, const bool one_way = false);
+    kshinglingSync(size_t shingle_len,GenSync::SyncProtocol sync_protocol, long edit_distance, long symbol_size=8);
 
     ~kshinglingSync();
 
     bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
     bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
 
-    /**
-     * Add a string in to a host
-     * @param datum string
-     * @return add success, which should always be the case unless it contains stop words
-     */
-    bool addElem(DataObject* datum) override;
 
+    string getString(int cycle_num){
+        return myKShingle.reconstructStringBacktracking(cycle_num).first;
+    };
 
+    vector<pair<string,int>> getShingles(string str);
 
+    bool addElem(DataObject* datum) override ;
+    bool delElem(DataObject* datum) override ;
 //    /**
 //     * @return print a string that is reconstructed from object's current set of shingles
 //     */
@@ -48,12 +48,12 @@ protected:
     bool oneWay;
 
 private:
-//    K_Shingle myK_Shingle; //K_Shingle(const string str, const size_t k);
-//    int k;  //shingle size
-    GenSync::SyncProtocol set_sync_protocol;
+    GenSync::SyncProtocol setSyncProtocol;
     long bits;
-    long m_bar;
-    size_t k;
+    long mBar;
+    size_t k;  //shingle size
+    K_Shingle myKShingle;
+    int cycleNum;
 };
 
 #endif //CPISYNCLIB_KSHINGLINGSYNC_H

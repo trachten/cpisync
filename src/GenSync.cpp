@@ -348,8 +348,9 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::OneWayIBLTSync:
             myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
             break;
-//        case SyncProtocol::KShingleSync:
-//            myMeth = make_shared<kshinglingSync>(edit_distance_bar,k, bits, errorProb);
+        case SyncProtocol::kshinglingSync:
+            myMeth = make_shared<kshinglingSync>(shingle_len, base_set_proto, edit_distance, bits);
+            break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }

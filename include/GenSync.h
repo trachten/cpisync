@@ -262,7 +262,7 @@ public:
         FullSync,
         IBLTSync,
         OneWayIBLTSync,
-//        KShingleSync,
+        kshinglingSync,
         END     // one after the end of iterable options
     };
 
@@ -314,6 +314,8 @@ public:
     mbar(DFT_MBAR),
     bits(DFT_BITS),
     numParts(DFT_PARTS),
+    base_set_proto(DFT_PROTO),
+    edit_distance(DFT_MBAR),
     numExpElem(DFT_EXPELEMS){
         myComm = nullptr;
         myMeth = nullptr;
@@ -332,7 +334,15 @@ public:
         this->proto = theProto;
         return *this;
     }
+    Builder& setBaseProtocol(SyncProtocol baseSetProto) {
+        this->base_set_proto = baseSetProto;
+        return *this;
+        }
 
+    Builder& setEditDistance(long editDistance) {
+        this->edit_distance = editDistance;
+        return *this;
+    }
     /**
      * Sets the host to which to connect for synchronization in a socket-based sync.
      */
@@ -424,6 +434,9 @@ private:
     long bits; /** the number of bits per element of data */
     int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
     size_t numExpElem; /** the number of expected elements to be stored in an IBLT */
+    size_t shingle_len; /** each of k-shingle length */
+    SyncProtocol base_set_proto; /** basic set recon protocol */
+    long edit_distance; /** edit distnace upper bound, can be used as mbar */
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;

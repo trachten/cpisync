@@ -12,6 +12,7 @@
 #include <NTL/ZZ.h>
 #include <sstream>
 #include "Auxiliary.h"
+#include "DataObject.h"
 
 using std::vector;
 using std::hash;
@@ -31,7 +32,7 @@ public:
      * Construct a K_Shingle set object with k as each shingle size
      * @param k fixing shingle size to be k
      */
-    K_Shingle(const string str, const size_t k);
+    K_Shingle(const size_t k);
 
     // Default deconstructor
     ~K_Shingle();
@@ -41,7 +42,7 @@ public:
      * This operation always succeed
      * @param str Original string
      */
-    void _create();
+    void create(const string str);
 
     /**
      * Produces the value s.t. (key, value) is in the shingle set.
@@ -92,20 +93,20 @@ public:
      * -= is destructive and assign
      * @require Shingles have trhe same size k or edge can match
      */
-    K_Shingle& operator+=(const K_Shingle& other) const;
-    K_Shingle& operator-=(const K_Shingle& other);
+//    K_Shingle& operator-(const K_Shingle& other) const;
+//    K_Shingle& operator-=(const K_Shingle& other);
 
     /**
      * @return The number of element in she shingle set
      */
-    size_t set_size() const{
+    size_t get_size() const{
         return shingleSet.size();
     }
 
     /**
      * @return The bit size of shingle set
      */
-    size_t set_bit_size() const{
+    size_t get_bit_size() const{
         return sizeof(std::vector<int>) + (sizeof(int) * shingleSet.size());
     }
 
@@ -116,6 +117,21 @@ public:
     vector<pair<string,int>> getShingleSet() {
         return shingleSet;
     }
+    /**
+     * parse into a vector of strings
+     * @return a vector of string
+     */
+    vector<string> getStrShingleSet() {
+        vector<string> result;
+        for (auto tmp : shingleSet){
+            result.push_back(tmp.first+":"+to_string(tmp.second));
+        }
+        return result;
+    }
+    void add(DataObject shingle);
+
+
+    void del(DataObject shingle);
 
 
 private:
@@ -131,9 +147,6 @@ private:
     string orig_string;  // original string
 
     const string stopword = "$";  // default stop word is "$"
-
-
-
 
 };
 

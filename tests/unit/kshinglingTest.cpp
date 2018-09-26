@@ -23,7 +23,10 @@ void kshinglingTest::testAll() {
     // init a string of random byte (shortest,longest) possible string len
     string Alicetxt = genRandString(100);  // generate a string
     string Bobtxt = randStringEdit(Alicetxt,10);  // Generate a edited string
-    K_Shingle Alice = K_Shingle(Alicetxt, 3);  // Init k shingling on Alice
+
+    K_Shingle Alice = K_Shingle(3);
+    Alice.create(Alicetxt);  // Init k shingling on Alice
+
     auto AliceStringNOrder = Alice.reconstructStringBacktracking();  // Get order of the cycle
 
     //test functions

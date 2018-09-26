@@ -3,7 +3,7 @@ project(cpisynclib)
 set(CMAKE_CXX_STANDARD 11)
 
 # some flags
-set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST")
+set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST") # -fsanitize=address -fno-omit-frame-pointer")
 
 # Set project directory strucuture
 set(SRC_DIR src)

@@ -10,8 +10,9 @@
 #include "SyncMethod.h"
 #include "Auxiliary.h"
 #include "kshingling.h"
+#include "ForkHandle.h"
 
-class kshinglingSync : public SyncMethod {
+class kshinglingSync{
 public:
     // Constructors and destructors
     /**
@@ -20,29 +21,31 @@ public:
      * @param bits_symbol Bits per symbol (default is ascii symbols which are 8 bits)
      * @param k shingle size; Using CPI sync, m_bar equals edit_distance_bar*k since each edit_distance_bar gets repeated at most k times
      */
-    kshinglingSync(size_t shingle_len,GenSync::SyncProtocol sync_protocol, long edit_distance, long symbol_size=8);
+    kshinglingSync(size_t shingle_len,GenSync::SyncProtocol base_sync_protocol, long edit_distance, long symbol_size=8);
 
     ~kshinglingSync();
 
-    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
-    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+    GenSync SyncHost(string str);
+    forkHandleReport SyncServer(GenSync & server, GenSync & client);
 
+    GenSync usingCPISync();
 
-    string getString(int cycle_num){
-        return myKShingle.reconstructStringBacktracking(cycle_num).first;
+    string getString(K_Shingle host_content, int cycle_num){
+        return host_content.reconstructStringBacktracking(cycle_num).first;
     };
 
-    vector<pair<string,int>> getShingles(string str);
+    vector<pair<string,int>> getShingles(K_Shingle host_content){
+        return host_content.getShingleSet();
+    };
 
-    bool addElem(DataObject* datum) override ;
-    bool delElem(DataObject* datum) override ;
+    string getHostStr(GenSync host);
 //    /**
 //     * @return print a string that is reconstructed from object's current set of shingles
 //     */
 //    string printString();
 
     // Get the name of the sync method
-    string getName() override;
+    string getName();
 
 protected:
     bool oneWay;
@@ -50,9 +53,8 @@ protected:
 private:
     GenSync::SyncProtocol setSyncProtocol;
     long bits;
-    long mBar;
+    long mbar;
     size_t k;  //shingle size
-    K_Shingle myKShingle;
     int cycleNum;
 };
 

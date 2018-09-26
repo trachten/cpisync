@@ -21,7 +21,7 @@
 #include "IBLTSync_HalfRound.h"
 #include "CPISync_HalfRound.h"
 #include "FullSync.h"
-#include "kshinglingSync.h"
+//#include "kshinglingSync.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
@@ -91,7 +91,7 @@ GenSync::~GenSync() {
 
 // listen, receive data and conduct synchronization
 
-bool GenSync::listenSync(int method_num) {
+bool GenSync::listenSync(int method_num,bool isRecon) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::listenSync");
     // find the right syncAgent	
     auto syncAgent = mySyncVec.begin();
@@ -101,7 +101,7 @@ bool GenSync::listenSync(int method_num) {
 
     // ask each communicant to listen, one by one
     vector<shared_ptr<Communicant>>::iterator itComm;
-    list<DataObject*> selfMinusOther, otherMinusSelf;
+    list<DataObject *> selfMinusOther, otherMinusSelf;
     for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
         // initialize variables
         selfMinusOther.clear();
@@ -115,17 +115,22 @@ bool GenSync::listenSync(int method_num) {
         }
 
         // add any items that were found in the reconciliation
-        list<DataObject*>::iterator itDO;
+        list<DataObject *>::iterator itDO;
         for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++) {
             addElem(*itDO);
         }
+
+
+        // newly added --- need testing
+        delElemGroup(selfMinusOther);
+
     }
 
     return syncSuccess;
 }
 
 // request connection, send data and get the result
-bool GenSync::startSync(int method_num) {
+bool GenSync::startSync(int method_num,bool isRecon) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::startSync");
     // find the right syncAgent	
     auto syncAgentIt = mySyncVec.begin();
@@ -133,7 +138,7 @@ bool GenSync::startSync(int method_num) {
 
     bool syncSuccess = true; // true if all syncs so far were successful
     vector<shared_ptr<Communicant>>::iterator itComm;
-    list<DataObject*> selfMinusOther, otherMinusSelf;
+    list<DataObject *> selfMinusOther, otherMinusSelf;
 
     for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
         // initialize variables
@@ -152,9 +157,13 @@ bool GenSync::startSync(int method_num) {
         }
 
         // add any items that were found in the reconciliation
-        list<DataObject*>::iterator itDO;
+        list<DataObject *>::iterator itDO;
         for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
             addElem(*itDO);
+
+        // newly added --- need testing
+        delElemGroup(selfMinusOther);
+
     }
 
     Logger::gLog(Logger::METHOD, "Sync succeeded:  " + toStr(syncSuccess));
@@ -183,8 +192,49 @@ void GenSync::addElem(DataObject* newDatum) {
 
 // delete element
 
-void GenSync::delElem(DataObject* newDatum) {
-    throw new UnimplementedMethodException("GenSync::delElem");
+void GenSync::delElemGroup(list<DataObject *> newDatumList) {
+    //throw new UnimplementedMethodException("GenSync::delElem");
+    // There are only 2 types, numbes of strings (check fact) handle both
+    Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
+
+    vector<string> delList;
+    for (auto item : newDatumList) {
+        delList.push_back(item->to_string());
+    }
+    sort(delList.begin(), delList.end());
+
+
+    for (auto item : myData) {
+        if (binary_search(delList.begin(), delList.end(), item->to_string())) {
+
+            for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
+                if (!(*itAgt)->delElem(item)) {
+                    Logger::error_and_quit("Could not del item . check if item is first inserted.");
+                }
+            }
+        }
+    }
+    for (auto item = myData.begin(); item != myData.end();++item) {
+        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {
+            myData.erase(item);
+        }
+    }
+//
+//    for (auto )
+    // store locally
+//    for (auto newDatum : newDatumList) {
+//        // update synch methods' metadata
+//        vector<shared_ptr<SyncMethod>>::iterator itAgt;
+//        for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
+//            if (!(*itAgt)->delElem(newDatum))
+//                Logger::error_and_quit("Could not del item " + newDatum->to_string() +
+//                                       ".  check if item is first inserted.");
+//        }
+//
+//        // update file
+//        if (outFile != nullptr)
+//            (*outFile) << newDatum->to_string() << endl;
+//    }
 }
 
 
@@ -348,9 +398,9 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::OneWayIBLTSync:
             myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
             break;
-        case SyncProtocol::kshinglingSync:
-            myMeth = make_shared<kshinglingSync>(shingle_len, base_set_proto, edit_distance, bits);
-            break;
+//        case SyncProtocol::kshinglingSync:
+//            myMeth = make_shared<kshinglingSync>(shingle_len, base_set_proto, edit_distance, bits);
+//            break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }

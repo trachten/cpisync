@@ -46,6 +46,7 @@ struct forkHandleReport {
  * client is modified to reflect reconciliation, whereas server is not.
  * @param client The GenSync object that plays the role of client in the sync.
  * @param server The GenSync object that plays the role of server in the sync.
+ * @param isRecon is add element only, or del elemenet as well
  * @return Synchronization statistics as reported by the client.
  */
 inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
@@ -90,6 +91,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
  * server is modified to reflect reconciliation, whereas client is not.
  * @param server The GenSync object that plays the role of server in the sync.
  * @param client The GenSync object that plays the role of client in the sync.
+ * @param isRecon is add element only, or del elemenet as well
  * @return Synchronization statistics as reported by the server.
  */
 

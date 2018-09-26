@@ -101,7 +101,7 @@ public:
      * Not currently implemented.
      * @unimplemented
      */
-    void delElem(DataObject* newDatum);
+    void delElemGroup(list<DataObject*> newDatumList);
 
     /**
      * @return a list of pointers to the elements stored in the data structure
@@ -186,7 +186,7 @@ public:
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return true iff all synchronizations were completed successfully
      */
-    bool listenSync(int sync_num = 0);
+    bool listenSync(int sync_num = 0, bool isRecon= true);
 
     /**
      * Sequentially sends a specific synchronization request to each communicant.  If sync is successful,
@@ -196,7 +196,7 @@ public:
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return  true iff all synchronizations were completed successfully
      */
-    bool startSync(int sync_num);
+    bool startSync(int sync_num, bool isRecon= true);
 
 
 
@@ -262,7 +262,7 @@ public:
         FullSync,
         IBLTSync,
         OneWayIBLTSync,
-        kshinglingSync,
+//        kshinglingSync,
         END     // one after the end of iterable options
     };
 

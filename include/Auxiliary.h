@@ -327,6 +327,10 @@ inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
 
 inline string base64_decode(std::string const& encoded_string) {
     int in_len = encoded_string.length();
+
+    if (in_len<=0){
+        return "";
+    } // edit
     char tmp[in_len];
     strncpy(tmp, encoded_string.data(), in_len);
 

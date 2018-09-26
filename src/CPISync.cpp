@@ -720,6 +720,7 @@ bool CPISync::delElem(DataObject * newDatum) {
         if(iter->second == newDatum) {
             hashID = to_ZZ_p(iter->first);
             CPI_hash.erase(iter);
+            break; // edit we are deleting one thing anyway
         }
     }
 
@@ -729,6 +730,7 @@ bool CPISync::delElem(DataObject * newDatum) {
     }
 
     Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) removed item " + newDatum->print() + ".");
+    return true; //edit You never returned anything
 }
 
 // for debugging

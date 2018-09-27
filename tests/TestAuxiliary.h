@@ -418,6 +418,8 @@ inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 
             if(!probSync) {
                 // check that expected and resultant reconciled sets match up in both size and contents
+                auto tmp = reconciled.size();
+                auto b = resServer.size();
                 CPPUNIT_ASSERT_EQUAL(reconciled.size(), resServer.size());
                 CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).empty());
             } else {

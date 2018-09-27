@@ -20,85 +20,45 @@ void kshinglingSyncTest::setUp() {}
 
 void kshinglingSyncTest::tearDown() {}
 
-void kshinglingSyncTest::testAll(){
+void kshinglingSyncTest::testAll() {
 
-    int editDistance_bar = 1;
-    int shingle_len = 2;
-    GenSync::SyncProtocol base_set_proto= GenSync::SyncProtocol::CPISync;
+    int string_len = 100;
+    int editDistance_bar = 40;
+    int shingle_len = 3;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
+    GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 
-//    string Alicetxt = "Bowen";//genRandString(20);
-//    auto Alice = K_Shingle(shingle_len);
-//    Alice.create(Alicetxt);
-//    auto Alice_Set = Alice.getStrShingleSet();
-//
-//
-//
-//    kshinglingSync(shingle_len,GenSync::SyncProtocol::OneWayIBLTSync,editDistance_bar);
-//
-//    const int EXP_ELEM = UCHAR_MAX * 40;
-//
-//    GenSync AliceServer = GenSync::Builder().
-//            setProtocol(base_set_proto).
-//            setMbar(editDistance_bar+4).
-//            setComm(GenSync::SyncComm::socket).
-//            setBits(80).
-//            setNumExpectedElements(EXP_ELEM).
-//            build();
-//
-//    for (auto tmp : Alice_Set) {
-//        AliceServer.addElem(&tmp);
-//    }
-//
-//
-//
-//
-//    string Bobtxt = "owen";//randStringEdit(Alicetxt,editDistance_bar);
-//    auto Bob = K_Shingle(shingle_len);
-//    Bob.create(Bobtxt);
-//    auto Bob_Set  = Bob.getStrShingleSet();
-//
-//    GenSync BobClient = GenSync::Builder().
-//            setProtocol(base_set_proto).
-//            setMbar(editDistance_bar+4).
-//            setComm(GenSync::SyncComm::socket).
-//            setBits(80).
-//            setNumExpectedElements(EXP_ELEM).
-//            build();
-//
-//
-//
-//
-//    for (auto tmp : Bob_Set) {
-//        BobClient.addElem(&tmp);
-//    }
-//
-//
-//    forkHandleReport resultServer = forkHandleServer(AliceServer,BobClient);
-//
-//
-//    CPPUNIT_ASSERT(resultServer.success);
-//    auto NewAlice = AliceServer.dumpElements();
-//    multiset<string> resA;
-//    for (auto dop : NewAlice){
-//        resA.insert(dop->to_string());
-//    }
-//
-//    auto NewBob = BobClient.dumpElements();
-//    multiset<string> resB;
-//    for (auto dop : NewBob){
-//        resB.insert(dop->to_string());
-//    }
+    string Alicetxt = genRandString(string_len);
+    K_Shingle Alice_content = K_Shingle(shingle_len);
+    string Bobtxt = randStringEdit(Alicetxt, editDistance_bar);
+    K_Shingle Bob_content = K_Shingle(shingle_len);
 
-    kshinglingSync shingSync = kshinglingSync(shingle_len, base_set_proto,editDistance_bar,8);
+    //see the actual num of diff
+    auto Alice_set = Alice_content.getShingleSet_str(Alicetxt);
+    auto Bob_set = Bob_content.getShingleSet_str(Bobtxt);
+    int numDif = multisetDiff(Alice_set, Bob_set).size();
 
-    GenSync Alice = shingSync.SyncHost("Bowen");
+    CPPUNIT_ASSERT(editDistance_bar*(shingle_len-1)+4>= numDif);
 
-    GenSync Bob = shingSync.SyncHost("owen");
+//number of difference between should alwasy be editDistance_bar*(shingle_len-1)
+    kshinglingSync kshingling = kshinglingSync(shingle_len, base_set_proto, base_comm, editDistance_bar*(shingle_len-1), 8);
 
-    forkHandleReport report = shingSync.SyncServer(Alice,Bob);
 
-    CPPUNIT_ASSERT(report.bytes>0);
-    CPPUNIT_ASSERT(shingSync.getHostStr(Alice)==shingSync.getHostStr(Bob));
+    GenSync Alice = kshingling.SyncHost(Alicetxt, Alice_content);
+
+
+    GenSync Bob = kshingling.SyncHost(Bobtxt, Bob_content);
+
+
+    forkHandleReport report = kshingling.SyncNreport(Alice, Bob);
+
+    auto a = Alice_content.getShingleSet_str();
+    auto b = Bob_content.getShingleSet_str();
+    auto c = multisetDiff(Alice_set, Bob_set).size();
+
+    CPPUNIT_ASSERT(report.bytes > 0);
+    CPPUNIT_ASSERT(report.success);
+    CPPUNIT_ASSERT(kshingling.getString(Alice, Alice_content) == kshingling.getString(Bob, Bob_content));
 //    syncTest(GenSyncServer, GenSyncClient);
 
 }

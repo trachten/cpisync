@@ -54,13 +54,13 @@ bool K_Shingle::get(const string ver, pair<string,int>& edge){
     }
 }
 
-void K_Shingle::add(DataObject shingle) {
-    //shingleSet.push_back();
-}
-
-void K_Shingle::del(DataObject shingle) {
-    //shingleSet.erase(lower_bound (shingleSet.begin(), shingleSet.end(), shingle));
-}
+//void K_Shingle::add(DataObject shingle) {
+//    //shingleSet.push_back();
+//}
+//
+//void K_Shingle::del(DataObject shingle) {
+//    //shingleSet.erase(lower_bound (shingleSet.begin(), shingleSet.end(), shingle));
+//}
 
 
 void K_Shingle::incrementEdgeCount(const string ver) {
@@ -95,10 +95,10 @@ vector<pair<string,int>>  K_Shingle::getEdges(const string verStart, vector<pair
 
 pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
     vector<string> str_collect;
-    vector<pair<string,int>> changed_shingleSet = shingleSet;
     string startString;
+    vector<pair<string,int>> changed_shingleSet = shingleSet;
     //sort it in lexicographic order
-    sort(shingleSet.begin(), shingleSet.end());
+    sort(changed_shingleSet.begin(), changed_shingleSet.end());
     // find the head
     for (auto it = changed_shingleSet.begin(); it != changed_shingleSet.end(); ++it) {
         if (it->first.substr(0,1)==stopword){

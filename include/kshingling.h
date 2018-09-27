@@ -86,7 +86,7 @@ public:
      * @param Input int,
      * @return String if input int, int if input string
      */
-    pair<string,int> reconstructStringBacktracking(int strOrder=-1);
+    pair<string,int> reconstructStringBacktracking( int strOrder=-1);
 
     /**
      * Subtracts two K_Shingles.
@@ -103,12 +103,12 @@ public:
         return shingleSet.size();
     }
 
-    /**
-     * @return The bit size of shingle set
-     */
-    size_t get_bit_size() const{
-        return sizeof(std::vector<int>) + (sizeof(int) * shingleSet.size());
-    }
+//    /**
+//     * @return The bit size of shingle set
+//     */
+//    size_t get_shingle_bit_size() const{
+//        return sizeof("ab:1");
+//    }
 
     string getOriginString() {
         return orig_string;
@@ -117,21 +117,35 @@ public:
     vector<pair<string,int>> getShingleSet() {
         return shingleSet;
     }
+
     /**
-     * parse into a vector of strings
-     * @return a vector of string
+     * input string and give a estimate of multiset size and content in string type
+     * @return a multiset of string
      */
-    vector<string> getStrShingleSet() {
-        vector<string> result;
+    multiset<string> getShingleSet_str(string estimate_str = "") {
+        multiset<string> result;
+        if(estimate_str.size()>0){
+            create(estimate_str);
+        }
         for (auto tmp : shingleSet){
-            result.push_back(tmp.first+":"+to_string(tmp.second));
+            string item = (tmp.first+":"+to_string(tmp.second));
+            result.insert(item);
+        }
+        if(estimate_str.size()>0){
+            clear_ShingleSet();
         }
         return result;
     }
-    void add(DataObject shingle);
-
-
-    void del(DataObject shingle);
+    void clear_ShingleSet(){
+        shingleSet.clear();
+    };
+    void append_ShingleSet(string shingle){
+        shingleSet.push_back(make_pair(shingle.substr(0, shingle.find_last_of(":")), stoi(shingle.substr(shingle.find_last_of(":") + 1))));
+    };
+//    void add(DataObject shingle);
+//
+//
+//    void del(DataObject shingle);
 
 
 private:

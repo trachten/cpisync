@@ -200,7 +200,7 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/probCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/StringRecon/KshingleTest.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/PerformaceTest/KshingleSyncPerf.h">
 			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/sys/long/GenericSyncTests.cpp">

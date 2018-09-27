@@ -21,24 +21,21 @@ public:
      * @param bits_symbol Bits per symbol (default is ascii symbols which are 8 bits)
      * @param k shingle size; Using CPI sync, m_bar equals edit_distance_bar*k since each edit_distance_bar gets repeated at most k times
      */
-    kshinglingSync(size_t shingle_len,GenSync::SyncProtocol base_sync_protocol, long edit_distance, long symbol_size=8);
+    kshinglingSync(size_t shingle_len,GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm, long edit_distance, long symbol_size=8);
 
     ~kshinglingSync();
 
-    GenSync SyncHost(string str);
-    forkHandleReport SyncServer(GenSync & server, GenSync & client);
+    GenSync SyncHost(string str,K_Shingle& host_content);
+    forkHandleReport SyncNreport(GenSync & server, GenSync & client);
 
-    GenSync usingCPISync();
-
-    string getString(K_Shingle host_content, int cycle_num){
-        return host_content.reconstructStringBacktracking(cycle_num).first;
+    multiset<pair<string,int>> getShingles(K_Shingle& host_content){
+        multiset<pair<string,int>> res;
+        for(auto item : host_content.getShingleSet())
+            res.insert(item);
+        return res;
     };
 
-    vector<pair<string,int>> getShingles(K_Shingle host_content){
-        return host_content.getShingleSet();
-    };
-
-    string getHostStr(GenSync host);
+    string getString(GenSync host,K_Shingle& host_content);
 //    /**
 //     * @return print a string that is reconstructed from object's current set of shingles
 //     */
@@ -52,10 +49,12 @@ protected:
 
 private:
     GenSync::SyncProtocol setSyncProtocol;
+    GenSync::SyncComm setSyncComm;
     long bits;
     long mbar;
     size_t k;  //shingle size
     int cycleNum;
+    //K_Shingle host_content;
 };
 
 #endif //CPISYNCLIB_KSHINGLINGSYNC_H

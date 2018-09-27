@@ -6,81 +6,61 @@
 #include "kshinglingSync.h"
 
 
-kshinglingSync::kshinglingSync(size_t shingle_len,GenSync::SyncProtocol sync_protocol, long edit_distance, long symbol_size){
+kshinglingSync::kshinglingSync(size_t shingle_len,GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm, long edit_distance, long symbol_size) {
     setSyncProtocol = sync_protocol;
-    mbar = edit_distance+4; // 4 is constant if front or/and back is modified
-    bits = symbol_size;  // ascii symbol size is 8
-    oneWay = false; // not necessary
+    setSyncComm = sync_comm;
     k = shingle_len;
+    mbar = (edit_distance+5)*1.7; // 4 is constant if front or/and back is modified
+    bits = symbol_size;//*(k+2);  // ascii symbol size is 8
+    oneWay = false; // not necessary
+    cycleNum = -1;
 }
 kshinglingSync::~kshinglingSync() = default;
 
 
-GenSync kshinglingSync::SyncHost(string str) {
-    auto host_content = K_Shingle(k);
+GenSync kshinglingSync::SyncHost(string str,K_Shingle& host_content) {
+
     host_content.create(str);
-    auto Set = host_content.getStrShingleSet();
+    auto Set = host_content.getShingleSet_str();
+    int cyc = host_content.reconstructStringBacktracking().second;
 
-
-//    switch (setSyncProtocol) {
-//        case GenSync::SyncProtocol::CPISync:
-            GenSync host = usingCPISync();
-            for (auto tmp : Set) {
-                host.addElem(&tmp);
-            }
-            int *tmp;
-            int a = host_content.reconstructStringBacktracking().second;
-            tmp=&a;
-            host.addElem(tmp);
-            return host;
-
-//        case SyncProtocol::InteractiveCPISync:
-
-//            break;
-//        case SyncProtocol::OneWayCPISync:
-
-//            break;
-//        case SyncProtocol::FullSync:
-
-//            break;
-//        case SyncProtocol::IBLTSync:
-
-//            break;
-//        case SyncProtocol::OneWayIBLTSync:
-//
-//            break;
-//        default:
-//            throw invalid_argument("I don't know how to synchronize with this protocol.");
-//    }
-
-}
-
-
-GenSync kshinglingSync::usingCPISync(){
     GenSync host = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::CPISync).
+            setProtocol(setSyncProtocol).
             setMbar(mbar).
-            setComm(GenSync::SyncComm::socket).
-            setBits(bits*(k+2)).
+            setNumPartitions(3).
+            setComm(setSyncComm).
+            setBits(pow(bits, 2)).
+            setNumPartitions(3).
             build();
+
+    for (auto tmp : Set) {
+        host.addElem(&tmp);
+    }
+    host.addElem(&cyc);
     return host;
 }
 
-forkHandleReport kshinglingSync::SyncServer(GenSync & server, GenSync & client){
+
+forkHandleReport kshinglingSync::SyncNreport(GenSync & server, GenSync & client){
     return forkHandleServer(server,client);
 }
 
-string kshinglingSync::getHostStr(GenSync host){
+string kshinglingSync::getString(GenSync host,K_Shingle& host_content){
     auto content = host.dumpElements();
-    vector<pair<string,int>> set;
+    auto tmpnum = -1;
+    host_content.clear_ShingleSet();
     for (auto dop : content){
-        if(dop->RepIsInt){
+        tmpnum = dop->to_string().find_last_of(":");
+        if(tmpnum<0){
             cycleNum = stoi(dop->to_string());
+        }else {
+            host_content.append_ShingleSet(dop->to_string());
         }
-        auto tmp = dop->to_string();
-
-        set.push_back(make_pair(tmp.substr(0,k),stoi(tmp.substr(k+1))));
     }
+    if(cycleNum<0){
+        return "";
+    }
+    return host_content.reconstructStringBacktracking(cycleNum).first;
 }
 
 string kshinglingSync::getName(){ return "This is a kshinglingSync of string reconciliation";}

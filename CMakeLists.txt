@@ -32,7 +32,7 @@ set(SOURCE_FILES
         ${SRC_DIR}/CommDummy.cpp
         ${SRC_DIR}/IBLT.cpp
         ${SRC_DIR}/IBLTSync.cpp
-        ${SRC_DIR}/FullSync.cpp include/kshingling.h tests/StringRecon/KshingleTest.h tests/unit/kshinglingTest.h tests/unit/kshinglingTest.cpp src/kshingling.cpp include/kshinglingSync.h src/kshinglingSync.cpp tests/unit/kshinglingSyncTest.cpp tests/unit/kshinglingSyncTest.h)
+        ${SRC_DIR}/FullSync.cpp include/kshingling.h tests/PerformaceTest/KshingleSyncPerf.h tests/unit/kshinglingTest.h tests/unit/kshinglingTest.cpp src/kshingling.cpp include/kshinglingSync.h src/kshinglingSync.cpp tests/unit/kshinglingSyncTest.cpp tests/unit/kshinglingSyncTest.h)
 
 #cppunit
 include_directories(include)

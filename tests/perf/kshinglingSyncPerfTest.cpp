@@ -52,7 +52,9 @@ void KshingleSyncPerf::testAll() {
             editDistance_bar++;
             success = res.first;
         }
+        // successful sync data record
         G_commCost.push_back(res.second);
+        G_editDistance.push_back(editDistance_bar);
     }
 
 }

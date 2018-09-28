@@ -26,7 +26,7 @@ public:
     ~kshinglingSync();
 
     GenSync SyncHost(string str,K_Shingle& host_content);
-    forkHandleReport SyncNreport(GenSync & server, GenSync & client);
+    forkHandleReport SyncNreport(GenSync server, GenSync client);
 
     multiset<pair<string,int>> getShingles(K_Shingle& host_content){
         multiset<pair<string,int>> res;

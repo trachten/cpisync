@@ -393,7 +393,7 @@ inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
                     CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).empty());
                 } else {
                     // True iff the reconciled set contains at least one more element than it did before reconciliation
-                    CPPUNIT_ASSERT(resClient.size() > SIMILAR + CLIENT_MINUS_SERVER);
+                    CPPUNIT_ASSERT(resClient.size() == SIMILAR + CLIENT_MINUS_SERVER);
 
                     // True iff the elements added during reconciliation were elements that the client was lacking that the server had
                     CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).size() < CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);

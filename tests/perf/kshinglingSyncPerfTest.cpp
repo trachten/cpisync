@@ -47,7 +47,7 @@ void KshingleSyncPerf::testAll() {
         pair<bool, long> res;
         while (!success) {
 
-            res = findCosts(inputPackage, string_len, editDistance_bar, shingle_len,
+            res = findCosts(inputPackage, string_len, editDistance_bar,
                             base_set_proto, base_comm);
             editDistance_bar++;
             success = res.first;
@@ -57,7 +57,7 @@ void KshingleSyncPerf::testAll() {
 
 }
 
-pair<bool,long> KshingleSyncPerf::findCosts(vector<pair<string,K_Shingle>> inputPackage, int string_len, int editDistance_bar,int shingle_len,
+pair<bool,long> KshingleSyncPerf::findCosts(vector<pair<string,K_Shingle>> inputPackage, int editDistance_bar,int shingle_len,
                                   GenSync::SyncProtocol base_set_proto,GenSync::SyncComm base_comm){
 
     auto Alicetxt = inputPackage[0].first;
@@ -73,22 +73,37 @@ pair<bool,long> KshingleSyncPerf::findCosts(vector<pair<string,K_Shingle>> input
 //number of difference between should alwasy be editDistance_bar*(shingle_len-1)
     kshinglingSync kshingling = kshinglingSync(shingle_len, base_set_proto, base_comm, editDistance_bar*(shingle_len-1), 8);
 
-
+//    GenSync GenSyncClient = GenSync::Builder().
+//            setProtocol(GenSync::SyncProtocol::IBLTSync).
+//            setComm(GenSync::SyncComm::socket).
+//            setBits(BITS).
+//            setNumExpectedElements(EXP_ELEM).
+//            build();
     GenSync Alice = kshingling.SyncHost(Alicetxt, Alice_content);
 
 
     GenSync Bob = kshingling.SyncHost(Bobtxt, Bob_content);
 
+    pair<bool,long> result;
 
-    forkHandleReport report = kshingling.SyncNreport(Alice, Bob);
+    int chld_state;
+    int my_opt = 0;
+    pid_t pID = fork();
+    if (pID == 0) {
+        signal(SIGCHLD, SIG_IGN);
+        forkHandleReport report = kshingling.SyncNreport(Alice, Bob);
+        result =  make_pair(kshingling.getString(Alice, Alice_content)
+                                 == kshingling.getString(Bob, Bob_content),report.bytes);
+        exit(0);
 
-    system("kill -kill $(lsof -t -i :8001)");
-
-   auto result =  make_pair(kshingling.getString(Alice, Alice_content)
-              == kshingling.getString(Bob, Bob_content),report.bytes);
-//   delete(kshingling);
-
+    } else{
+        waitpid(pID, &chld_state, my_opt);
+        forkHandleReport report = forkHandle(Alice, Bob);
+        result =  make_pair(kshingling.getString(Alice, Alice_content)
+                            == kshingling.getString(Bob, Bob_content),report.bytes);
+    }
     return result;
+
 }
 
 void generateCSV(string title){

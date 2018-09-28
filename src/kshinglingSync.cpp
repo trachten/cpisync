@@ -41,20 +41,11 @@ GenSync kshinglingSync::SyncHost(string str,K_Shingle& host_content) {
 }
 
 
-forkHandleReport kshinglingSync::SyncNreport(GenSync & server, GenSync & client){
+forkHandleReport kshinglingSync::SyncNreport(GenSync server, GenSync client){
     //client.delComm(0);
    // server.delComm(0);
-    auto res= forkHandleServer(server,client);
+    return forkHandleServer(server,client);
 
-//    for (int i = 0; i <server.numComm() ; ++i) {
-//        server.delComm(i);
-//    }
-//    for (int i = 0; i <client.numComm() ; ++i) {
-//        client.delComm(i);
-//    }
-//    client.delComm(0);
-//    server.delComm(0);
-    return res;
 
 }
 

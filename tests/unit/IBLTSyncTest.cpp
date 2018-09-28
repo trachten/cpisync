@@ -39,6 +39,7 @@ void IBLTSyncTest::justSyncTest() {
             build();
 
     syncTestProb(GenSyncServer, GenSyncClient);
+
 }
 
 void IBLTSyncTest::testAddDelElem() {

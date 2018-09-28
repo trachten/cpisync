@@ -24,7 +24,6 @@ public:
 
     pair<bool, long> findCosts(vector<pair<string,K_Shingle>> inputPackage,
                                int string_len, int editDistance_bar,
-                               int shingle_len,
                                GenSync::SyncProtocol base_set_proto,
                                GenSync::SyncComm base_comm);
 

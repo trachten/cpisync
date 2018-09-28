@@ -11,7 +11,7 @@ set(TEST_DIR tests)
 set(UNIT_TEST_DIR ${TEST_DIR}/unit)
 #set(SYSSHORT_TEST_DIR ${TEST_DIR}/sys/short)
 set(SYSLONG_TEST_DIR ${TEST_DIR}/sys/long)
-
+set(PERF_DIR ${TEST_DIR}/perf)
 # Set location of the test runner
 set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
 
@@ -32,7 +32,9 @@ set(SOURCE_FILES
         ${SRC_DIR}/CommDummy.cpp
         ${SRC_DIR}/IBLT.cpp
         ${SRC_DIR}/IBLTSync.cpp
-        ${SRC_DIR}/FullSync.cpp include/kshingling.h tests/PerformaceTest/KshingleSyncPerf.h tests/unit/kshinglingTest.h tests/unit/kshinglingTest.cpp src/kshingling.cpp include/kshinglingSync.h src/kshinglingSync.cpp tests/unit/kshinglingSyncTest.cpp tests/unit/kshinglingSyncTest.h)
+        ${SRC_DIR}/FullSync.cpp
+        ${SRC_DIR}/kshingling.cpp
+        ${SRC_DIR}/kshinglingSync.cpp tests/perf/kshinglingSyncPerfTest.cpp)
 
 #cppunit
 include_directories(include)
@@ -59,3 +61,4 @@ endmacro()
 add_group_test(${UNIT_TEST_DIR} UnitTest)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
 add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)
+add_group_test(${PERF_DIR} Performance)

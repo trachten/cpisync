@@ -71,6 +71,40 @@
 					<DistClean command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="Performance">
+				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/Performance" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 Performance"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Performance/fast">
+				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/Performance" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include"/>
+					<Add directory="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 Performance/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/bowensong/Google\ Drive/BU/StringReconResearch/cpisync/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="SystemLongTest">
 				<Option output="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/SystemLongTest" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync"/>
@@ -140,12 +174,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include/kshingling.h">
-			<Option target="cpisynclib"/>
-		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include/kshinglingSync.h">
-			<Option target="cpisynclib"/>
-		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/CPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -200,7 +228,12 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/probCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/PerformaceTest/KshingleSyncPerf.h">
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/kshinglingSyncPerfTest.cpp">
+			<Option target="Performance"/>
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/kshinglingSyncPerfTest.h">
+			<Option target="Performance"/>
 			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/sys/long/GenericSyncTests.cpp">
@@ -211,6 +244,7 @@
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/testRunner.cpp">
 			<Option target="UnitTest"/>
+			<Option target="Performance"/>
 			<Option target="SystemLongTest"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AuxiliaryTest.cpp">
@@ -263,17 +297,15 @@
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/kshinglingSyncTest.cpp">
 			<Option target="UnitTest"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/kshinglingSyncTest.h">
-			<Option target="cpisynclib"/>
+			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/kshinglingTest.cpp">
 			<Option target="UnitTest"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/kshinglingTest.h">
-			<Option target="cpisynclib"/>
+			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>

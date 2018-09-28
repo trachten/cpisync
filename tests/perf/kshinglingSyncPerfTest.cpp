@@ -82,7 +82,7 @@ pair<bool,long> KshingleSyncPerf::findCosts(vector<pair<string,K_Shingle>> input
 
     forkHandleReport report = kshingling.SyncNreport(Alice, Bob);
 
-
+//~kshingling();
     return make_pair(kshingling.getString(Alice, Alice_content)
                      == kshingling.getString(Bob, Bob_content),report.bytes);
 }

@@ -121,7 +121,7 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
         }
 
 
-        // newly added --- need testing
+//        // newly added --- need testing
         delElemGroup(selfMinusOther);
 
     }
@@ -219,6 +219,19 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
             myData.erase(item);
         }
     }
+
+//    for (auto item = myData.begin(); item != myData.end();++item) {
+//        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {
+//            for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
+//                if (!(*itAgt)->delElem(*item)) {
+//                    Logger::error_and_quit("Could not del item . check if item is first inserted.");
+//                }
+//            }
+//            myData.erase(item);
+//        }
+//    }
+
+
 //
 //    for (auto )
     // store locally

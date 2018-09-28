@@ -85,6 +85,54 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="Performance">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/Performance" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 Performance"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Performance/fast">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/Performance" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 Performance/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="SystemLongTest">
 				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/SystemLongTest" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
@@ -182,12 +230,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/bowen/Documents/cpisync/include/kshingling.h">
-			<Option target="cpisynclib"/>
-		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/include/kshinglingSync.h">
-			<Option target="cpisynclib"/>
-		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/src/CPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -242,8 +284,11 @@
 		<Unit filename="/Users/bowen/Documents/cpisync/src/probCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/tests/StringRecon/KshingleTest.h">
-			<Option target="cpisynclib"/>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/perf/kshinglingSyncPerfTest.cpp">
+			<Option target="Performance"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/perf/kshinglingSyncPerfTest.h">
+			<Option target="Performance"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/sys/long/GenericSyncTests.cpp">
 			<Option target="SystemLongTest"/>
@@ -253,6 +298,7 @@
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/testRunner.cpp">
 			<Option target="UnitTest"/>
+			<Option target="Performance"/>
 			<Option target="SystemLongTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AuxiliaryTest.cpp">
@@ -305,17 +351,15 @@
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingSyncTest.cpp">
 			<Option target="UnitTest"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingSyncTest.h">
-			<Option target="cpisynclib"/>
+			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingTest.cpp">
 			<Option target="UnitTest"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingTest.h">
-			<Option target="cpisynclib"/>
+			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>

@@ -497,7 +497,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
     if (!keepAlive) {
         // Set up listening on the port
         Logger::gLog(Logger::METHOD, "Server: Started listening to: " + commSync->getName());
-
+//        commSync->state==Listern
         commSync->commListen();
 
         // ... verify sync parameters

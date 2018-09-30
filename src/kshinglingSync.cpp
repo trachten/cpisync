@@ -6,14 +6,16 @@
 #include "kshinglingSync.h"
 
 
-kshinglingSync::kshinglingSync(size_t shingle_len,GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm, long edit_distance, long symbol_size) {
+kshinglingSync::kshinglingSync(GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm,
+                               size_t symbol_size , int m_bar, int num_Parts, int num_ExpElem) {
     setSyncProtocol = sync_protocol;
     setSyncComm = sync_comm;
-    k = shingle_len;
-    mbar = (edit_distance+5)*1.7; // 4 is constant if front or/and back is modified
+    mbar = m_bar; // 4 is constant if front or/and back is modified
     bits = symbol_size;//*(k+2);  // ascii symbol size is 8
     oneWay = false; // not necessary
     cycleNum = -1;
+    numParts = num_Parts;
+    numExpElem = num_ExpElem;
 }
 kshinglingSync::~kshinglingSync() = default;
 
@@ -22,15 +24,15 @@ GenSync kshinglingSync::SyncHost(string str,K_Shingle& host_content) {
 
     host_content.create(str);
     auto Set = host_content.getShingleSet_str();
-    int cyc = host_content.reconstructStringBacktracking().second;
+    auto cyc = to_string(host_content.reconstructStringBacktracking().second);
 
     GenSync host = GenSync::Builder().
             setProtocol(setSyncProtocol).
-            setMbar(mbar).
-            setNumPartitions(3).
             setComm(setSyncComm).
-            setBits(pow(bits, 2)).
-            setNumPartitions(3).
+            setMbar(mbar).
+            setNumPartitions(numParts).
+            setBits(bits).
+            setNumExpectedElements(numExpElem).
             build();
 
     for (auto tmp : Set) {

@@ -23,9 +23,9 @@ void kshinglingSyncTest::tearDown() {}
 void kshinglingSyncTest::testAll() {
 
     int string_len = 100;
-    int editDistance_bar = 40;
+    int editDistance_bar = 1;
     int shingle_len = 3;
-    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 
     string Alicetxt = genRandString(string_len);
@@ -41,16 +41,15 @@ void kshinglingSyncTest::testAll() {
     CPPUNIT_ASSERT(editDistance_bar*(shingle_len-1)+4>= numDif);
 
 //number of difference between should alwasy be editDistance_bar*(shingle_len-1)
-    kshinglingSync kshingling = kshinglingSync(shingle_len, base_set_proto, base_comm, editDistance_bar*(shingle_len-1), 8);
-
+    kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 8,numDif, 0,numDif*3);
 
     GenSync Alice = kshingling.SyncHost(Alicetxt, Alice_content);
 
 
     GenSync Bob = kshingling.SyncHost(Bobtxt, Bob_content);
 
+    forkHandleReport report = forkHandle(Alice, Bob);
 
-    forkHandleReport report = kshingling.SyncNreport(Alice, Bob);
 
     auto a = Alice_content.getShingleSet_str();
     auto b = Bob_content.getShingleSet_str();
@@ -59,6 +58,9 @@ void kshinglingSyncTest::testAll() {
     CPPUNIT_ASSERT(report.bytes > 0);
     CPPUNIT_ASSERT(report.success);
     CPPUNIT_ASSERT(kshingling.getString(Alice, Alice_content) == kshingling.getString(Bob, Bob_content));
+    auto resa = kshingling.getString(Alice, Alice_content);
+    auto resb = kshingling.getString(Bob, Bob_content);
+
 //    syncTest(GenSyncServer, GenSyncClient);
 
 }

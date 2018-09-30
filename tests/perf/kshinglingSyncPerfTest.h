@@ -20,19 +20,19 @@ public:
 
     void testAll();
 
-    void generateCSV(string title);
+    void generateCSV();
 
-    pair<bool, long> findCosts(vector<pair<string,K_Shingle>> inputPackage,
-                               int string_len, int editDistance_bar,
-                               GenSync::SyncProtocol base_set_proto,
-                               GenSync::SyncComm base_comm);
+    pair<bool, long> calculateCosts(vector<pair<string,K_Shingle>> inputPackage,
+                                    GenSync::SyncProtocol base_set_proto,GenSync::SyncComm base_comm,
+                                    size_t bits , int mbar, int numParti, int numExpElem);
 
 private:
     // file parameters
-    vector<long> F_editDistance;  // X
-    vector<long> F_commCost;  // Y
+    vector<vector<long>> F_editDistance;  // X
+    vector<vector<long>> F_commCost;  // Y
     vector<string> F_legend;
     string F_title;
+    long String_Size;
 
 };
 #endif //CPISYNCLIB_KSHINGLINGSYNCPERFTEST_H

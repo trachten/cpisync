@@ -21,7 +21,8 @@ public:
      * @param bits_symbol Bits per symbol (default is ascii symbols which are 8 bits)
      * @param k shingle size; Using CPI sync, m_bar equals edit_distance_bar*k since each edit_distance_bar gets repeated at most k times
      */
-    kshinglingSync(size_t shingle_len,GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm, long edit_distance, long symbol_size=8);
+    kshinglingSync(GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm,
+                   size_t symbol_size , int m_bar, int num_Parts, int num_ExpElem);
 
     ~kshinglingSync();
 
@@ -52,8 +53,9 @@ private:
     GenSync::SyncComm setSyncComm;
     long bits;
     long mbar;
-    size_t k;  //shingle size
     int cycleNum;
+    int numParts;
+    int numExpElem;
     //K_Shingle host_content;
 };
 

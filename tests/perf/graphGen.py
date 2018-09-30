@@ -1,6 +1,11 @@
 import matplotlib.pyplot as plt
+import csv
+import glob
+
 class PerformacePlots:
     def __init__(self,file):
+        for row in csv.reader(file, delimiter=';', quotechar='|'):
+            print(', '.join(row))
         #load a file
         self.x
         self.y
@@ -16,3 +21,8 @@ class PerformacePlots:
         plt.title("200 length random string with k = "+str(3))
         plt.grid()
         plt.show()
+
+if __name__=="__main__":
+    for filename in glob.glob('*.txt'):
+        with open(filename) as csvfile:
+            PerformacePlots(filename)

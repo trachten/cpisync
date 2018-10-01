@@ -54,8 +54,8 @@ void InterCPISync::deleteTree(pTree *treeNode) {
 }
 
 bool InterCPISync::delElem(DataObject* datum) {
-  SyncMethod::delElem(datum); // run the parent's version first
-  throw new UnimplementedMethodException("InterCPISync delete element");
+    return SyncMethod::delElem(datum); // run the parent's version first
+  //throw new UnimplementedMethodException("InterCPISync delete element");
 }
 
 bool InterCPISync::addElem(DataObject* newDatum) {

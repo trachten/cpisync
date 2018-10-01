@@ -108,13 +108,16 @@ pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
         }
     }
 // Get the string or string cycle number
-    if (str_collect.size()>strOrder) {
+    if (startString.size()>0) {
 //        // Delete the first edge by value
 //        changed_shingleSet.erase(remove(changed_shingleSet.begin(), changed_shingleSet.end(), startedge[0]), changed_shingleSet.end());
         shingle2string(changed_shingleSet, startString, str_collect,strOrder, startString);
+        if(str_collect.size()==0 ||str_collect.size()<=strOrder){ // failed to recover a string
+            return make_pair("",-1);  // return -1 for fail
+        }
         return make_pair(str_collect[strOrder],strOrder);
     } else {
-        return make_pair("",-1);
+        throw invalid_argument("Shingle Set does not have a start point");
     }
 }
 

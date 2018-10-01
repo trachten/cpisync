@@ -85,6 +85,7 @@ public:
      * input order of string to retreive that
      * @param Input int,
      * @return String if input int, int if input string
+     * Fail to return a string, second would be -1
      */
     pair<string,int> reconstructStringBacktracking( int strOrder=-1);
 

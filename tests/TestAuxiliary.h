@@ -355,10 +355,7 @@ inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 
         // create the expected reconciled multiset
         multiset<string> reconciled;
-        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT ;
-             iter != objectsPtr.end() ; iter++) {
-            auto dop = *iter;
-//        for(auto dop:objectsPtr) {
+        for (auto dop : objectsPtr) {
             reconciled.insert(dop->print());
         }
 
@@ -387,13 +384,11 @@ inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 
                 if(!probSync) {
                     // check that expected and resultant reconciled sets match up in both size and contents
-                    auto tmp = reconciled.size();
-                    auto b = resClient.size();
                     CPPUNIT_ASSERT_EQUAL(reconciled.size(), resClient.size());
                     CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).empty());
                 } else {
                     // True iff the reconciled set contains at least one more element than it did before reconciliation
-                    CPPUNIT_ASSERT(resClient.size() == SIMILAR + CLIENT_MINUS_SERVER);
+                    CPPUNIT_ASSERT(resClient.size() > SIMILAR + CLIENT_MINUS_SERVER);
 
                     // True iff the elements added during reconciliation were elements that the client was lacking that the server had
                     CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).size() < CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
@@ -423,7 +418,6 @@ inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 
             if(!probSync) {
                 // check that expected and resultant reconciled sets match up in both size and contents
-
                 CPPUNIT_ASSERT_EQUAL(reconciled.size(), resServer.size());
                 CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).empty());
             } else {

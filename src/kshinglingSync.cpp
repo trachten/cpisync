@@ -12,7 +12,6 @@ kshinglingSync::kshinglingSync(GenSync::SyncProtocol sync_protocol,GenSync::Sync
     setSyncComm = sync_comm;
     mbar = m_bar; // 4 is constant if front or/and back is modified
     bits = symbol_size;//*(k+2);  // ascii symbol size is 8
-    oneWay = false; // not necessary
     cycleNum = -1;
     numParts = num_Parts;
     numExpElem = num_ExpElem;
@@ -43,12 +42,8 @@ GenSync kshinglingSync::SyncHost(string str,K_Shingle& host_content) {
 }
 
 
-forkHandleReport kshinglingSync::SyncNreport(GenSync server, GenSync client){
-    //client.delComm(0);
-   // server.delComm(0);
-    return forkHandleServer(server,client);
-
-
+forkHandleReport kshinglingSync::SyncNreport(GenSync &server, GenSync client){
+    return forkHandle(server,client, false); // by default we want to get rid of Extra elements : flag false
 }
 
 string kshinglingSync::getString(GenSync host,K_Shingle& host_content){

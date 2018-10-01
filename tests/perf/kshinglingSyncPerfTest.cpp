@@ -9,9 +9,13 @@ KshingleSyncPerf::~KshingleSyncPerf() = default;
 void KshingleSyncPerf::testAll() {
 
     // K_shingle packages
-    int string_len = 200;
-    pair<int, int> editDistance_bar_range = make_pair(2, 50);
-    int shingle_len = 3;
+    int string_len = 1000;
+    int shingle_len = 10;
+    pair<int, int> editDistance_bar_range = make_pair(2, string_len/(shingle_len+2));
+
+    //graph sample parameters
+    int Datappts = 1;
+    int interval = floor((editDistance_bar_range.second-editDistance_bar_range.first)/Datappts);
 
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 
@@ -19,7 +23,8 @@ void KshingleSyncPerf::testAll() {
     F_title = "Comm_vs_Edit_Dist_Str_Len=" + to_string(string_len) + "_&_K=" + to_string(shingle_len);
     //labels - order has to be the same as GenSync::SyncProtocol
     F_legend.push_back("CPISync");//G_legend
-    F_legend.push_back("IBLTSync");//G_legend
+    F_legend.push_back("InteractiveCPISync mbar=5,numParts=3");//G_legend
+    //F_legend.push_back("IBLTSync");//G_legend
 
     for (auto base_set_proto = GenSync::SyncProtocol::BEGIN;
          base_set_proto != GenSync::SyncProtocol::END; ++base_set_proto) {
@@ -31,7 +36,7 @@ void KshingleSyncPerf::testAll() {
 
         for (int editDistance_bar = editDistance_bar_range.first;
              editDistance_bar < editDistance_bar_range.second;
-             editDistance_bar += 2) {
+             editDistance_bar += interval) {
 
             // Create K-shingleing packages
             string Alicetxt = genRandString(string_len);
@@ -50,12 +55,13 @@ void KshingleSyncPerf::testAll() {
             int mbar = multisetDiff(Alice_set, Bob_set).size(); //see the actual num of diff
             size_t bits = 8;
             int numParts = 3;
-            int numExpElem = Alice_set.size();
+            int numExpElem = mbar;
 
             // Adjust parameters based on
             switch (base_set_proto) {
                 case GenSync::SyncProtocol::CPISync: // not used
-                    bits = pow(bits, 2);//sqaure bits
+                    bits = 14+(shingle_len+2)*8;//sqaure bits
+                    mbar = mbar+mbar+ceil(mbar*0.3);
                     break;
 //            G_legend.push_back("CPISync");//G_legend
 //            //sqaure bits
@@ -66,20 +72,22 @@ void KshingleSyncPerf::testAll() {
 //                    bits = pow(bits,2);//sqaure bits
 //                    //need mbar
 //                    break;
-//                case GenSync::SyncProtocol::InteractiveCPISync:
-//                    G_legend.push_back("InteractiveCPISync mbar,numParts="+to_string(numParts));//G_legend
-//                    bits = pow(bits,2);//sqaure bits
-//                    mbar = numParts;//need mbar
-//                    //setNumPartitions
-//                    break;
+                case GenSync::SyncProtocol::InteractiveCPISync:
+                    bits = 14+(shingle_len+2)*8;//sqaure bits
+                    mbar =5;
+                    numParts=3;//need mbar
+                    //setNumPartitions
+                    break;
 //                case GenSync::SyncProtocol::FullSync:
 //                    G_legend.push_back("FullSync");//G_legend
 //                    break;
-                case GenSync::SyncProtocol::IBLTSync:// not used
 
-                    //bits
-                    //numExpElem
-                    break;
+//                case GenSync::SyncProtocol::IBLTSync:
+//                    numExpElem = mbar;
+//                    //bits
+//                    //numExpElem
+//                    break;
+
 //                case GenSync::SyncProtocol::OneWayIBLTSync:
 //                    G_legend.push_back("OneWayIBLTSync");//G_legend
 //                    //bits
@@ -94,7 +102,7 @@ void KshingleSyncPerf::testAll() {
             pair<bool, long> res;
             while (!success) {
 
-                res = calculateCosts(inputPackage,
+                  res = calculateCosts(inputPackage,
                                      base_set_proto, base_comm,
                                      bits, mbar, numParts, numExpElem);
                 mbar += mbar;
@@ -144,8 +152,8 @@ pair<bool,long> KshingleSyncPerf::calculateCosts(vector<pair<string,K_Shingle>> 
 //        exit(0);
 //
 //    } else if (pID > 0) {
-    forkHandleReport report = forkHandle(Alice, Bob);
-    String_Size = Bobtxt.length() * sizeof(char);
+    forkHandleReport report = kshingling.SyncNreport(Alice, Bob);
+    String_Size = Bobtxt.length() * 8; // 8 bits per character
 //        auto a = kshingling.getString(Alice, Alice_content);
 //        auto b = kshingling.getString(Bob, Bob_content);
     result = make_pair(kshingling.getString(Alice, Alice_content)
@@ -183,6 +191,8 @@ void KshingleSyncPerf::generateCSV(){
         }
         myfile << "\n";
     }
-    myfile << "String Size; "+ to_string(String_Size);
+    myfile << "String Size; "+ to_string(String_Size); // has to be placed at the end to work with other plots
     myfile.close();
+
+    //system("python ./tests/perf/graphGen.py");
 }

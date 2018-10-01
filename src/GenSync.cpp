@@ -120,9 +120,10 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
             addElem(*itDO);
         }
 
-
-//        // newly added --- need testing
-        delElemGroup(selfMinusOther);
+        if (!isRecon) {
+//        // newly added --- worked for general test
+            delElemGroup(selfMinusOther);
+        }
 
     }
 
@@ -161,8 +162,11 @@ bool GenSync::startSync(int method_num,bool isRecon) {
         for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
             addElem(*itDO);
 
-        // newly added --- need testing
-        delElemGroup(selfMinusOther);
+        if (!isRecon) {
+            // newly added --- worked for general test
+            delElemGroup(selfMinusOther);
+        }
+
 
     }
 

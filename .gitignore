@@ -66,5 +66,3 @@ nbactions.xml
 # Ignore Mac folder files
 *Icon?
 
-# not upload graphic results
-*.png

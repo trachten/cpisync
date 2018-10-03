@@ -14,6 +14,7 @@ class IBLTSyncTest : public CPPUNIT_NS::TestFixture {
         CPPUNIT_TEST(justSyncTest);
         CPPUNIT_TEST(testAddDelElem);
         CPPUNIT_TEST(testGetStrings);
+        CPPUNIT_TEST(stringReconFullTest);
 
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -31,6 +32,9 @@ public:
 
     // Test that printElem() and getName() return some nonempty string
     void testGetStrings();
+
+    // FULL Test designed for strin recon k-shinling
+    void stringReconFullTest();
 };
 
 #endif //CPISYNCLIB_IBLTSYNCTEST_H

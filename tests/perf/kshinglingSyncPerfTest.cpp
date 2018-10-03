@@ -14,7 +14,7 @@ void KshingleSyncPerf::testAll() {
     pair<int, int> editDistance_bar_range = make_pair(2, string_len/(shingle_len+2));
 
     //graph sample parameters
-    int Datappts = 1;
+    int Datappts = 2;
     int interval = floor((editDistance_bar_range.second-editDistance_bar_range.first)/Datappts);
 
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
@@ -63,15 +63,7 @@ void KshingleSyncPerf::testAll() {
                     bits = 14+(shingle_len+2)*8;//sqaure bits
                     mbar = mbar+mbar+ceil(mbar*0.3);
                     break;
-//            G_legend.push_back("CPISync");//G_legend
-//            //sqaure bits
-//            //need mbar
-//            break;
-//                case GenSync::SyncProtocol::OneWayCPISync:
-//                    G_legend.push_back("OneWayCPISync");//G_legend
-//                    bits = pow(bits,2);//sqaure bits
-//                    //need mbar
-//                    break;
+
                 case GenSync::SyncProtocol::InteractiveCPISync:
                     bits = 14+(shingle_len+2)*8;//sqaure bits
                     mbar =5;
@@ -88,11 +80,6 @@ void KshingleSyncPerf::testAll() {
 //                    //numExpElem
 //                    break;
 
-//                case GenSync::SyncProtocol::OneWayIBLTSync:
-//                    G_legend.push_back("OneWayIBLTSync");//G_legend
-//                    //bits
-//                    //numExpElem
-//                    break;
                 default:
                     continue;
             }

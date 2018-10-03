@@ -36,7 +36,7 @@ set(SOURCE_FILES
         ${SRC_DIR}/IBLTSync.cpp
         ${SRC_DIR}/FullSync.cpp
         ${SRC_DIR}/kshingling.cpp
-        ${SRC_DIR}/kshinglingSync.cpp)
+        ${SRC_DIR}/kshinglingSync.cpp src/UniqueDecode.cpp include/UniqueDecode.h include/AdjMtx.h src/AdjMtx.cpp tests/unit/AdjMtxTest.cpp tests/unit/AdjMtxTest.h)
 
 #cppunit
 include_directories(include)

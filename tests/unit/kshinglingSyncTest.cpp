@@ -27,12 +27,12 @@ void kshinglingSyncTest::testAll() {
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     int shingle_len = 3;
     int editDistance_bar = 1;
-    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::InteractiveCPISync;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 
-    string Alicetxt = "Bowen";//genRandString(string_len);
+    string Alicetxt = "owen";//genRandString(string_len);
     K_Shingle Alice_content = K_Shingle(shingle_len);
-    string Bobtxt = "Sfasfowen";//randStringEdit(Alicetxt, editDistance_bar);
+    string Bobtxt = "Bowen";//randStringEdit(Alicetxt, editDistance_bar);
     K_Shingle Bob_content = K_Shingle(shingle_len);
 
     //see the actual num of diff
@@ -48,10 +48,10 @@ void kshinglingSyncTest::testAll() {
     //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*8,ceil(numDif*2.3), 0,0);
 
     //InteractiveCPISync Set up
-    kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*8, 2, 3, 0);
+    //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*8, 2, 3, 0);
 
     //IBLTSync Setup
-    //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 8, 0, 0, 6);
+    kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 8, 0, 0, 80);
 
 
     GenSync Alice = kshingling.SyncHost(Alicetxt, Alice_content);

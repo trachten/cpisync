@@ -34,16 +34,10 @@ public:
      * @return
      */
     bool addNewVex(ZZ shingle);
-
-    /**
-     * append to vertex list
-     * @param shingle <string>
-     * @return
-     */
-    bool addNewVex(string shingle);
+//    bool addNewVex(string shingle);
 
     void create(vector<ZZ> _ver);
-    void create(vector<string> _ver);
+//    void create(vector<string> _ver);
 
     vector<ZZ> getGraphVex(){
         return vertex;
@@ -78,9 +72,6 @@ public:
      * @return
      */
     bool delWeigth(ZZ vfrom, ZZ vto, int del_weight=1);
-
-protected:
-    bool _exist(pair<ZZ,ZZ> vexpair);
 
 private:
     map<pair<ZZ, ZZ >, int > graph;  // if two vex tex is not connected, it would not be in the graph.

@@ -4,15 +4,18 @@
 
 #include "AdjMtx.h"
 
+AdjMtx::AdjMtx() = default;
+AdjMtx::~AdjMtx() = default;
+
 void AdjMtx::create(vector<ZZ> _ver) {
     vertex = _ver;
 }
 
-void AdjMtx::create(vector<string> _ver) {
-    for (string vex : _ver) {
-        vertex.push_back(to_ZZ(vex.data()));
-    }
-}
+//void AdjMtx::create(vector<string> _ver) {
+//    for (string vex : _ver) {
+//        vertex.push_back(to_ZZ(vex.data()));
+//    }
+//}
 
 bool AdjMtx::addNewVex(ZZ shingle) {
     for (auto item :vertex) {
@@ -24,9 +27,9 @@ bool AdjMtx::addNewVex(ZZ shingle) {
     return true;
 }
 
-bool AdjMtx::addNewVex(string shingle) {
-    return addNewVex(to_ZZ(shingle.data()));
-}
+//bool AdjMtx::addNewVex(string shingle) {
+//    return addNewVex(conv<ZZ>(shingle.c_str()));
+//}
 
 bool AdjMtx::addWeigth(ZZ vfrom, ZZ vto, int add_weight){
     if (contains(vto) and contains(vfrom)) {
@@ -70,24 +73,17 @@ bool AdjMtx::delWeigth(ZZ vfrom, ZZ vto, int del_weight){
     return false;
 }
 
-bool AdjMtx::_exist(pair<ZZ,ZZ> vexpair){
-    auto temp = graph.find(vexpair);
-    if (temp != graph.end()){
-        return true;
-    }
-    return false;
-}
 
 void AdjMtx::printGraph(vector<ZZ> print_vertex){
     cout << "   ";
     for (auto vex: print_vertex) {
-        cout << toStr(vex);
+        cout << toStr(vex) << "|";
     }
     cout << "\n";
     for (auto vexi: print_vertex){
-        cout << toStr(vexi);
+        cout << toStr(vexi)<< "|";
         for (auto vexj: print_vertex){
-            cout << getWeight(vexi,vexj);
+            cout << getWeight(vexi,vexj)<< "|";
         }
         cout << "\n";
     }

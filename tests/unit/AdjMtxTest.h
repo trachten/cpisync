@@ -15,13 +15,10 @@ CPPUNIT_TEST_SUITE(AdjMtxTest);
     CPPUNIT_TEST_SUITE_END();
 public:
     AdjMtxTest();
-
     virtual ~AdjMtxTest();
 
     void creatGraph();
-
     void editGraph();
-
 };
 
 #endif //CPISYNCLIB_ADJMTXTEST_H

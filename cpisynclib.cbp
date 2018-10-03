@@ -174,6 +174,15 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include/AdjMtx.h">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include/UniqueDecode.h">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/AdjMtx.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/CPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -219,6 +228,9 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/UID.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/UniqueDecode.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/kshingling.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -230,11 +242,9 @@
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/kshinglingSyncPerfTest.cpp">
 			<Option target="Performance"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/kshinglingSyncPerfTest.h">
 			<Option target="Performance"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/sys/long/GenericSyncTests.cpp">
 			<Option target="SystemLongTest"/>
@@ -246,6 +256,13 @@
 			<Option target="UnitTest"/>
 			<Option target="Performance"/>
 			<Option target="SystemLongTest"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AdjMtxTest.cpp">
+			<Option target="UnitTest"/>
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AdjMtxTest.h">
+			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AuxiliaryTest.cpp">
 			<Option target="UnitTest"/>

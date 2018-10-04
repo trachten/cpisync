@@ -19,9 +19,13 @@ bool UniqueDecode::isUD(const string str, const size_t k){
     AdjMtx adjMatrix;
     for (int i = 0; i < str.size(); ++i) {
         auto tmpvex = str.substr(i,i+k-1);
-        //if (adjMatrix.contains())
+        if (adjMatrix.contains(StrtoZZ(tmpvex))){
+            adjMatrix.addNewVex(StrtoZZ(tmpvex));
+        }
     }
 
+    // sort for binary search
+    adjMatrix.sortVex();
 
     //Init visited and cycle
     vector<bool> isCycle;
@@ -29,6 +33,24 @@ bool UniqueDecode::isUD(const string str, const size_t k){
     vector<bool> isVisited;
     isVisited.assign(adjMatrix.getGraphSize(), false);
 
+    isVisited[0] = true;
+
+    for (int j = 0; j < str.size(); ++j) {
+
+    }
 
 
+
+}
+
+int UniqueDecode::longgestShingle(int str_i, vector<ZZ> shingleset, string str){
+    auto nxt = str.substr(str_i,str_i+shingleLen-1);
+    string res = "";
+    for (auto shingle : shingleset){
+        string s = ZZtoStr(shingle);
+        if (s.substr(str_i,str_i+shingleLen-1) == nxt and s == str.substr(str_i,str_i+s.length()) and s.size()>res.size()){
+            res = s;
+        }
+    }
+    return binary_search(shingleset.begin(),shingleset.end(),StrtoZZ(res)).
 }

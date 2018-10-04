@@ -16,7 +16,7 @@ void AdjMtx::create(vector<ZZ> _ver) {
 
 void AdjMtx::create(vector<string> _ver) {
     for (auto vex : _ver) {
-        addNewVex(vex);
+        addNewVex(StrtoZZ(vex));
     }
 }
 
@@ -48,6 +48,10 @@ bool AdjMtx::addWeigth(ZZ vfrom, ZZ vto, int add_weight){
         }
     }
     return false;
+}
+
+void AdjMtx::sortVex(){
+    sort(vertex.begin(),vertex.end());
 }
 
 bool AdjMtx::setWeight(ZZ vfrom, ZZ vto, int set_weight){

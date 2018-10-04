@@ -40,10 +40,10 @@ void AdjMtxTest::editGraph(){
 }
 
 void AdjMtxTest::allTest() {
-    int GraphSize = 5;
+    int GraphSize = 50;
     AdjMtx mtx = AdjMtx();
     for (int i = 0; i < GraphSize; ++i) {
-        mtx.addNewVex("abc");
+        mtx.addNewVex(genRandString(5));
     }
     auto V = mtx.getGraphVex();
 
@@ -57,8 +57,7 @@ void AdjMtxTest::allTest() {
     mtx.setWeight(V[mtx.getGraphSize()-1],V[0],5);
     mtx.setWeight(V[0],V[0],5);
     mtx.printGraph();
-    string s = "abcl";
-    CPPUNIT_ASSERT(ZZtoStr(StrtoZZ(s))==s);
+
 }
 
 

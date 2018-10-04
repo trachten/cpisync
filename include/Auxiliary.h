@@ -65,7 +65,7 @@ inline vector<byte> StrToVec(const string& data) {
 
 inline string ZZtoStr(const ZZ& zz){
     string str;
-    str.resize(NumBits(zz),0);
+    str.resize(NumBytes(zz),0);
     BytesFromZZ((uint8_t *) &str[0],zz,str.size());
     return str;
 }

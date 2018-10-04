@@ -60,6 +60,8 @@ public:
         return vertex.size();
     }
 
+    void sortVex();
+
     /**
      * check if vex is one of the Vertices
      * @param vex
@@ -72,11 +74,12 @@ public:
 
     int getWeight(ZZ vfrom, ZZ vto);
 
-
+    ZZ StrtotheZZ(const string& str);
+    string ZZtotheStr(const ZZ& zz);
 
     /**
      * print the graph of concerned vertex
-     * @param print_vertex
+     * @param print_vertex ONLY applicable to string input
      */
     void printGraph(vector<ZZ> print_vertex);
     void printGraph();

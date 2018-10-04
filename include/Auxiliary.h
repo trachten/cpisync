@@ -63,6 +63,17 @@ inline vector<byte> StrToVec(const string& data) {
     return result;
 }
 
+inline string ZZtoStr(const ZZ& zz){
+    string str;
+    str.resize(NumBits(zz),0);
+    BytesFromZZ((uint8_t *) &str[0],zz,str.size());
+    return str;
+}
+
+inline ZZ StrtoZZ(const string& str) {
+    return ZZFromBytes((const uint8_t *) str.data(), str.size());
+}
+
 /**
  * Converts a vector of bytes into a string.  The opposite of StrToVec.
  * @param data The vector of bytes to be converted

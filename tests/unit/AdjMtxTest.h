@@ -12,6 +12,7 @@ class AdjMtxTest : public CPPUNIT_NS::TestFixture {
 CPPUNIT_TEST_SUITE(AdjMtxTest);
         CPPUNIT_TEST(creatGraph);
         CPPUNIT_TEST(editGraph);
+        CPPUNIT_TEST(allTest);
     CPPUNIT_TEST_SUITE_END();
 public:
     AdjMtxTest();
@@ -19,6 +20,7 @@ public:
 
     void creatGraph();
     void editGraph();
+    void allTest();
 };
 
 #endif //CPISYNCLIB_ADJMTXTEST_H

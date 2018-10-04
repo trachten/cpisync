@@ -8,6 +8,7 @@
 #ifndef CPISYNCLIB_ADJMTX_H
 #define CPISYNCLIB_ADJMTX_H
 
+
 #include <NTL/ZZ.h>
 #include <vector>
 #include <utility>
@@ -34,20 +35,33 @@ public:
      * @return
      */
     bool addNewVex(ZZ shingle);
-//    bool addNewVex(string shingle);
 
+    bool addNewVex(string shingle);
+    /**
+     * Add a list of vertex at once
+     * @param _ver list of shingles
+     */
     void create(vector<ZZ> _ver);
-//    void create(vector<string> _ver);
+    void create(vector<string> _ver);
 
+    /**
+     * list of shingles
+     * @return list of vertices
+     */
     vector<ZZ> getGraphVex(){
         return vertex;
     }
 
+    /**
+     * number pf verticies in the graph
+     * @return
+     */
     int getGraphSize(){
         return vertex.size();
     }
+
     /**
-     * check if vex is part of Vertex
+     * check if vex is one of the Vertices
      * @param vex
      * @return
      */
@@ -58,19 +72,23 @@ public:
 
     int getWeight(ZZ vfrom, ZZ vto);
 
-    bool addWeigth(ZZ vfrom, ZZ vto, int add_weight=1);
 
-    bool setWeight(ZZ vfrom, ZZ vto, int set_weight);
 
+    /**
+     * print the graph of concerned vertex
+     * @param print_vertex
+     */
     void printGraph(vector<ZZ> print_vertex);
     void printGraph();
     /**
-     * change the weight of
+     * change the weight of graph, allow negative
      * @param vfrom
      * @param vto
      * @param del_weight
      * @return
      */
+    bool addWeigth(ZZ vfrom, ZZ vto, int add_weight=1);
+    bool setWeight(ZZ vfrom, ZZ vto, int set_weight);
     bool delWeigth(ZZ vfrom, ZZ vto, int del_weight=1);
 
 private:

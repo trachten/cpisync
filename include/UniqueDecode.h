@@ -31,13 +31,11 @@ public:
     // Default deconstructor
     ~UniqueDecode();
 
-
+    bool isUD(const string str, const size_t k);
 private:
     char stopWord;
-    size_t k;
-    string origString;
-    vector<string> shingles;
-    AdjMtx graph;
+    size_t shingleLen;
+    string origStr;
 };
 
 #endif //CPISYNCLIB_UNIQUEDECODE_H

@@ -47,12 +47,12 @@ public:
     /**
      * Close the existing connection.
      * @require listen or connect must have been called to establish a connection.
-     *          */
+     */
     virtual void commClose() = 0;
 
 
     // Data communication
-    
+
     /**
      * Establishes a common modulus size (for ZZ_p operations) with another connect Communicant.
      * @require an active connection via commListen
@@ -63,7 +63,7 @@ public:
     /**
      * Establishes a common modulus size (for ZZ_p operations) with another connect Communicant.
      * @param oneWay If true, the common modulus establishment is only one way (i.e. the modulus
-     *    is sent to the other communicant, but no response is awaited).
+     *  is sent to the other communicant, but no response is awaited).
      * @require an active connection via commConnect
      * @return true iff the ZZ_p modulus was properly established
      */
@@ -74,11 +74,11 @@ public:
      * @param size The size of the IBLTs to be communicated
      * @param eltSize The size of values of the IBLTs to be communicated
      * @param oneWay If true, only the IBLT parameters are sent to the other communicant,
-     * but no response is awaited.
+     *  but no response is awaited.
      * @require an active connection via commConnect
      * @return true iff common parameters were verified (i.e. other size and eltSize == our size and eltSize) or oneWay is true
      */
-     bool establishIBLTSend(const size_t size, const size_t eltSize, bool oneWay = false);
+    bool establishIBLTSend(const size_t size, const size_t eltSize, bool oneWay = false);
 
     /**
     * Establishes common IBLT parameters with another connected Communicant.
@@ -90,16 +90,16 @@ public:
     */
     bool establishIBLTRecv(const size_t size, const size_t eltSize, bool oneWay = false);
 
-      /**
-     * Primitive for sending data over an existing connection.  All other sending methods
-       * eventually call this.
-     * @param str The string to be transmitted.
-     * @param numBytes The number of characters in the string.  If set to 0, then this length is computed.
-     * @require listen or connect must have been called to establish a connection.
-     * @modify updates xferBytes buffer with the amount of data actually transmitted.
-     */  
-    virtual void commSend(const char* toSend, int numBytes)=0;
-    
+    /**
+    * Primitive for sending data over an existing connection.  All other sending methods
+    * eventually call this.
+    * @param str The string to be transmitted.
+    * @param numBytes The number of characters in the string.  If set to 0, then this length is computed.
+    * @require listen or connect must have been called to establish a connection.
+    * @modify updates xferBytes buffer with the amount of data actually transmitted.
+    */
+    virtual void commSend(const char *toSend, int numBytes) = 0;
+
     /**
      * Send data over an existing connection.
      * @param str The string to be transmitted.
@@ -114,52 +114,54 @@ public:
      * Sends a data object over the line
      * @param do The data object to send
      */
-    void commSend(DataObject& dob);
-    void commSend(list<DataObject *>&dob);
-    void commSend(DataPriorityObject& dob);
-    
+    void commSend(DataObject &dob);
+
+    void commSend(list<DataObject *> &dob);
+
+    void commSend(DataPriorityObject &dob);
+
     /**
      * Sends a list of data object pointers over the line.
      * @param lst The list to be transmitted.
      */
-    void commSend(const list<DataObject*> &lst);
-    
+    void commSend(const list<DataObject *> &lst);
+
     /**
      * Sends a string over the line.
      * @param str The string to send.
      */
     void commSend(string str);
-    
-        /**
-     * Sends a ustring over the line.
-     * @param str The ustring to send.
-     */
+
+    /**
+ * Sends a ustring over the line.
+ * @param str The ustring to send.
+ */
     void commSend(ustring ustr);
-    
+
     /**
      * Sends a double over the line.  The recipient must have the same representation of floats.
      * @param num The double to send
      */
     void commSend(double num);
-    
+
     /**
      * Sends a long integer over the line
      * @param num The number to send
      */
     void commSend(long num);
-    
+
     /**
      * Sends an integer over the line
      * @param num The number to send
      */
     void commSend(int num);
-    
+
     /**
      * Sends out a single byte over the line
      * @param num
      */
     void commSend(byte bt);
-    
+
     // Specialized send functions for specific data types
     /**
      * Sends a ZZ over the line
@@ -168,7 +170,7 @@ public:
      * computed and sent first.
      * @see commSend(const char *str) for more details
      */
-    void commSend(const ZZ& num, int size=NOT_SET);
+    void commSend(const ZZ &num, int size = NOT_SET);
 
     // Specialized send functions for specific data types
     /**
@@ -179,7 +181,7 @@ public:
       * @see commSend(const char *str) for more details
      * @note Does not work for negative numbers.
      */
-    void commSend(const ZZ_p& num);
+    void commSend(const ZZ_p &num);
 
     /**
      * Sends a vec_ZZ_p.
@@ -187,29 +189,29 @@ public:
      * @param vec A vector of non-negative ZZ_p's
      * @see commSend(const char *str) for more details.
      *         */
-    void commSend(const vec_ZZ_p& vec);
+    void commSend(const vec_ZZ_p &vec);
 
     /**
      * Sends an IBLT.
      * @param iblt The IBLT to send.
      * @param sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the IBLT's size and eltSize
      */
-    void commSend(const IBLT& iblt, bool sync=false);
+    void commSend(const IBLT &iblt, bool sync = false);
 
-        /**
+    /**
      * Receives up to MAX_BUF_SIZE characters from the socket.
      * This is the primitive receive method that all other methods call.
-     * %R: Must have called either commListen or commConnect already.
+     * @require: Must have called either commListen or commConnect already.
      * @return The string of characters received.
      * @see Communicant.h for more explanations, please.
      */
     virtual string commRecv(unsigned long numBytes) = 0;
-    
+
     /**
      * Receive data over an existing connection.  This is the primitive for receiving data.
      * @param numBytes The number of characters to receive.
      * @return The data received from the connection
-     * %M: adds to recvBytes the number of bytes received.
+     * @modify: adds to recvBytes the number of bytes received.
      */
     ustring commRecv_ustring(unsigned int numBytes);
 
@@ -220,42 +222,50 @@ public:
      * @return The string received.
      */
     string commRecv_string();
-    
-     /**
-     * Receive a ustring object over an existing connection.  Note,
-     * this is different from the virtual primitive commRecv method in that the ustring
-     * size is encoded in the received bits.
-     * @return The string received.
-     */
+
+    /**
+    * Receive a ustring object over an existing connection.  Note,
+    * this is different from the virtual primitive commRecv method in that the ustring
+    * size is encoded in the received bits.
+    * @return The string received.
+    */
     ustring commRecv_ustring();
-    
+
     /**
      * Receives and creates DataObject, returning a pointer to it.
      * @return A pointer to the received DataObject.
      */
     DataObject *commRecv_DataObject();
+
     list<DataObject *> commRecv_DataObject_List();
-    DataPriorityObject * commRecv_DataObject_Priority();
-    
+
+    DataPriorityObject *commRecv_DataObject_Priority();
+
     /**
      * Receives a list of Data Objects and transforms this into a list of pointers to DataObjects.
      * @return A pointer to the transformed list.
      */
-    list<DataObject*> commRecv_DoList();
-    
+    list<DataObject *> commRecv_DoList();
+
     /**
      *  Specialized receive functions for specific data types.
      */
-    ZZ commRecv_ZZ(int size=0); /** If size==0 (default) , the ZZ's size is first received and decoded, followed by the ZZ. */
+    ZZ commRecv_ZZ(
+            int size = 0); /** If size==0 (default) , the ZZ's size is first received and decoded, followed by the ZZ. */
     /**
      * Specialized receive functions for specific data types.
      * @require must have called EstablishMod before any of these functions will work.
       */
     ZZ_p commRecv_ZZ_p();
-    vec_ZZ_p commRecv_vec_ZZ_p(); /** @require must have called EstablishModSend/EstablishModRecv before any of these functions will work. */
+
+    vec_ZZ_p
+    commRecv_vec_ZZ_p(); /** @require must have called EstablishModSend/EstablishModRecv before any of these functions will work. */
     long commRecv_long();
+
     int commRecv_int();
+
     double commRecv_double();
+
     byte commRecv_byte();
 
     /**
@@ -264,7 +274,7 @@ public:
      * @param eltSize The size of values of the IBLTs to be received.
      * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLT, false) was used to send the IBLT
      */
-    IBLT commRecv_IBLT(size_t size=NOT_SET, size_t eltSize=NOT_SET);
+    IBLT commRecv_IBLT(size_t size = NOT_SET, size_t eltSize = NOT_SET);
 
     // Informational
 
@@ -277,17 +287,17 @@ public:
      * @return The number of bytes transmitted with this Communicant (using this object) since the last communication counter reset (with {@link #resetCommCounters}).
      */
     long getXmitBytes() const;
-    
+
     /**
      * @return The number of bytes received with this Communicant (using this object) since the last reset (with {@link #resetCommCounters}).
      */
     long getRecvBytes();
-    
+
     /**
      * @return The total number of bytes transmitted with this Communicant (using this object) since its creation.
      */
     long getXmitBytesTot();
-    
+
     /**
      * @return The total number of bytes received with this Communicant (using this object) since its creation.
      */
@@ -297,7 +307,7 @@ public:
      * @return The count of CPU seconds when {@link #resetCounters} was called.
      */
     clock_t getResetTime();
-    
+
     /**
      * @return The count of CPU seconds when this object was created.
      */
@@ -306,7 +316,7 @@ public:
     /**
      * @return A name for this communicant.
      */
-    virtual string getName()=0;
+    virtual string getName() = 0;
 
 
 protected:
@@ -316,7 +326,7 @@ protected:
      * Sends an IBLT::HashTableEntry
      * @param hte The HashTableEntry to send
      */
-    void commSend(const IBLT::HashTableEntry& hte, size_t eltSize);
+    void commSend(const IBLT::HashTableEntry &hte, size_t eltSize);
 
     /**
      * Receives an IBLT::HashTableEntry
@@ -346,12 +356,12 @@ protected:
     clock_t createTime; /** CPU seconds at the creation of this communicant. */
 
     int MOD_SIZE;    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/
-    
+
     // CONSTANTS
     const static int NOT_SET = -1; /** An integer value that has not yet been set. */
     const static int unsigned XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
     const static int unsigned XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
     const static int unsigned XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */
- };
+};
 
 #endif

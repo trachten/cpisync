@@ -22,13 +22,14 @@
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/AdjMtx.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/AdjMtx.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/Auxiliary.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Auxiliary.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/UniqueDecode.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/UniqueDecode.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AdjMtx.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdjMtx.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/UniqueDecode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/UniqueDecode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/AdjMtxTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/AdjMtxTest.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/AuxiliaryTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/AuxiliaryTest.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/IBLTSyncTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/IBLTSyncTest.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -56,9 +57,9 @@
           <entry key="__string" value="1" />
           <entry key="__tree" value="3" />
           <entry key="algorithm" value="1" />
-          <entry key="cpp" value="108" />
+          <entry key="cpp" value="109" />
           <entry key="functional" value="1" />
-          <entry key="h" value="116" />
+          <entry key="h" value="117" />
           <entry key="iterator" value="5" />
           <entry key="memory" value="1" />
           <entry key="new" value="1" />
@@ -70,13 +71,13 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CMakeLists.txt" value="3" />
-          <entry key="ObjectiveC" value="246" />
+          <entry key="ObjectiveC" value="248" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="7902" />
-          <entry key="h" value="5570" />
+          <entry key="cpp" value="7910" />
+          <entry key="h" value="5593" />
           <entry key="mm" value="115" />
           <entry key="txt" value="133" />
         </counts>
@@ -85,7 +86,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="117" />
           <entry key="Doxygen file" value="20" />
-          <entry key="ObjectiveC" value="13567" />
+          <entry key="ObjectiveC" value="13598" />
           <entry key="PLAIN_TEXT" value="16" />
         </counts>
       </usages-collector>
@@ -149,10 +150,22 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/UniqueDecode.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="48" column="36" lean-forward="true" selection-start-line="48" selection-start-column="36" selection-end-line="48" selection-end-column="36" />
+            <state relative-caret-position="690">
+              <caret line="46" column="52" lean-forward="true" selection-start-line="46" selection-start-column="52" selection-end-line="46" selection-end-column="52" />
               <folding>
                 <element signature="e#39#64#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="513">
+              <caret line="436" column="26" selection-start-line="436" selection-start-column="26" selection-end-line="436" selection-end-column="26" />
+              <folding>
+                <element signature="e#329#347#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -168,15 +181,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/DataObjC.h">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/AdjMtx.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="5">
               <caret line="25" column="12" selection-start-line="25" selection-start-column="6" selection-end-line="25" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/unit/AdjMtxTest.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="870">
+              <caret line="58" column="6" selection-start-line="58" selection-start-column="6" selection-end-line="58" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -194,8 +211,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>file_Communicant.cpp</find>
-      <find>commListen</find>
       <find>Address already in use</find>
       <find>Could not bind to a Communicant!</find>
       <find>element</find>
@@ -224,6 +239,8 @@
       <find>genran</find>
       <find>getWeight</find>
       <find>sort</find>
+      <find>numDif</find>
+      <find>binary_search</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -261,12 +278,12 @@
         <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" />
         <option value="$PROJECT_DIR$/include/adjMtx.h" />
         <option value="$PROJECT_DIR$/tests/unit/AdjMtxTest.h" />
-        <option value="$PROJECT_DIR$/include/Auxiliary.h" />
-        <option value="$PROJECT_DIR$/tests/unit/AdjMtxTest.cpp" />
         <option value="$PROJECT_DIR$/tests/unit/AuxiliaryTest.cpp" />
         <option value="$PROJECT_DIR$/include/AdjMtx.h" />
         <option value="$PROJECT_DIR$/src/AdjMtx.cpp" />
         <option value="$PROJECT_DIR$/include/UniqueDecode.h" />
+        <option value="$PROJECT_DIR$/include/Auxiliary.h" />
+        <option value="$PROJECT_DIR$/tests/unit/AdjMtxTest.cpp" />
         <option value="$PROJECT_DIR$/src/UniqueDecode.cpp" />
       </list>
     </option>
@@ -419,7 +436,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="223389000" />
+    <option name="totallyTimeSpent" value="225016000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -438,7 +455,7 @@
       <window_info id="Structure" order="1" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32969698" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32919708" />
       <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4992057" visible="true" weight="0.3270073" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.36934307" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -845,27 +862,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/AdjMtxTest.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="696">
-          <caret line="59" selection-start-line="59" selection-end-line="59" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/ForkHandle.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="744">
           <caret line="101" column="24" selection-start-line="101" selection-start-column="24" selection-end-line="101" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="431" column="55" lean-forward="true" selection-start-line="431" selection-start-column="55" selection-end-line="431" selection-end-column="55" />
-          <folding>
-            <element signature="e#329#347#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -876,13 +876,6 @@
           <folding>
             <element signature="e#104#148#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/AdjMtx.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5">
-          <caret line="25" column="12" selection-start-line="25" selection-start-column="6" selection-end-line="25" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -906,10 +899,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests/unit/AdjMtxTest.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="870">
+          <caret line="58" column="6" selection-start-line="58" selection-start-column="6" selection-end-line="58" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/AdjMtx.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5">
+          <caret line="25" column="12" selection-start-line="25" selection-start-column="6" selection-end-line="25" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/unit/AuxiliaryTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="363">
           <caret line="56" column="31" selection-start-line="56" selection-start-column="31" selection-end-line="56" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="436" column="26" selection-start-line="436" selection-start-column="26" selection-end-line="436" selection-end-column="26" />
+          <folding>
+            <element signature="e#329#347#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -925,8 +942,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/UniqueDecode.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="48" column="36" lean-forward="true" selection-start-line="48" selection-start-column="36" selection-end-line="48" selection-end-column="36" />
+        <state relative-caret-position="690">
+          <caret line="46" column="52" lean-forward="true" selection-start-line="46" selection-start-column="52" selection-end-line="46" selection-end-column="52" />
           <folding>
             <element signature="e#39#64#0" expanded="true" />
           </folding>

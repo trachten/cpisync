@@ -30,7 +30,7 @@ void kshinglingSyncTest::testAll() {
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 
-    string Alicetxt = "owen";//genRandString(string_len);
+    string Alicetxt = "owen";//randAsciiStr(string_len);
     K_Shingle Alice_content = K_Shingle(shingle_len);
     string Bobtxt = "Bowen";//randStringEdit(Alicetxt, editDistance_bar);
     K_Shingle Bob_content = K_Shingle(shingle_len);

@@ -39,7 +39,7 @@ void KshingleSyncPerf::testAll() {
              editDistance_bar += interval) {
 
             // Create K-shingleing packages
-            string Alicetxt = genRandString(string_len);
+            string Alicetxt = randAsciiStr(string_len);
             K_Shingle Alice_content = K_Shingle(shingle_len);
             string Bobtxt = randStringEdit(Alicetxt, editDistance_bar);
             K_Shingle Bob_content = K_Shingle(shingle_len);

@@ -43,7 +43,7 @@ bool UniqueDecode::isUD(const string str, const size_t k){
 
 }
 
-int UniqueDecode::longgestShingle(int str_i, vector<ZZ> shingleset, string str){
+vector<ZZ>::iterator UniqueDecode::longgestShingle(int str_i, vector<ZZ> shingleset, string str){
     auto nxt = str.substr(str_i,str_i+shingleLen-1);
     string res = "";
     for (auto shingle : shingleset){
@@ -52,5 +52,5 @@ int UniqueDecode::longgestShingle(int str_i, vector<ZZ> shingleset, string str){
             res = s;
         }
     }
-    return binary_search(shingleset.begin(),shingleset.end(),StrtoZZ(res)).
+    return binary_search(shingleset.begin(),shingleset.end(),StrtoZZ(res))
 }

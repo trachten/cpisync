@@ -434,7 +434,7 @@ inline string randString(int lower=0, int upper=10) {
     return str.str();
 }
 
-inline string genRandString(int len=10){
+inline string randAsciiStr(int len = 10){
     string str;
 
     for(int jj = 0; jj < len; ++jj) {
@@ -456,7 +456,7 @@ inline string randStringInsert(string str, int upperI) {
     for(int jj = 0; jj < upperI; jj++) {
         //pick a place to edit
         int pos = randLenBetween(0, str.size()-1);
-        str = str.substr (0,pos) + genRandString(1) + str.substr (pos,str.size());
+        str = str.substr (0,pos) + randAsciiStr(1) + str.substr (pos,str.size());
     }
     return str;
 }

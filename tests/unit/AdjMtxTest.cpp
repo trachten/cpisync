@@ -43,7 +43,7 @@ void AdjMtxTest::allTest() {
     int GraphSize = 50;
     AdjMtx mtx = AdjMtx();
     for (int i = 0; i < GraphSize; ++i) {
-        mtx.addNewVex(genRandString(5));
+        mtx.addNewVex(randAsciiStr(5));
     }
     auto V = mtx.getGraphVex();
 
@@ -56,7 +56,7 @@ void AdjMtxTest::allTest() {
     mtx.delWeigth(deli,deli,1);
     mtx.setWeight(V[mtx.getGraphSize()-1],V[0],5);
     mtx.setWeight(V[0],V[0],5);
-    mtx.printGraph();
+    //mtx.printGraph();
 
 }
 

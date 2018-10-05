@@ -101,7 +101,7 @@ void IBLTSyncTest::stringReconFullTest() {
 
     // check that add works
     for(int ii = 0; ii < ITEMS; ii++) {
-        DataObject* item = new DataObject(genRandString(4));
+        DataObject* item = new DataObject(randAsciiStr(4));
         elts.insert(item);
         CPPUNIT_ASSERT(ibltSync.addElem(item));
     }

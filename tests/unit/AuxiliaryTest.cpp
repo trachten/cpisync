@@ -52,13 +52,13 @@ void AuxiliaryTest::testToStr() {
     std::string resultZZpStr = toStr(static_cast<ZZ_p>(12));
     CPPUNIT_ASSERT(resultZZpStr.compare(expectedZZpStr) == 0);
 
-    string s = genRandString(5);
+    string s = randAsciiStr(5);
     CPPUNIT_ASSERT(ZZtoStr(StrtoZZ(s))==s);
     CPPUNIT_ASSERT(StrtoZZ(s)==StrtoZZ(s));
 }
 
 void AuxiliaryTest::testStringEditing() {
-    std::string origI= genRandString(5);
+    std::string origI= randAsciiStr(5);
     std::string inserted = randStringInsert(origI,3);
     CPPUNIT_ASSERT(origI.size()+3==inserted.size());
 

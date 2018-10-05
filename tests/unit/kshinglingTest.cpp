@@ -21,7 +21,7 @@ void kshinglingTest::tearDown() {
 
 void kshinglingTest::testAll() {
     // init a string of random byte (shortest,longest) possible string len
-    string Alicetxt = genRandString(100);  // generate a string
+    string Alicetxt = randAsciiStr(100);  // generate a string
     string Bobtxt = randStringEdit(Alicetxt,10);  // Generate a edited string
 
     K_Shingle Alice = K_Shingle(3);

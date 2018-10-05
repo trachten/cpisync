@@ -32,17 +32,17 @@ set(SOURCE_FILES
         ${SRC_DIR}/CommDummy.cpp
         ${SRC_DIR}/IBLT.cpp
         ${SRC_DIR}/IBLTSync.cpp
-        ${SRC_DIR}/FullSync.cpp)
+        ${SRC_DIR}/FullSync.cpp src/main.cpp)
 
 #cppunit
 include_directories(include)
 include_directories(tests)
 
 # Add libs and executables
-add_library(cpisynclib ${SOURCE_FILES} )
+add_library(cpisynclib ${SOURCE_FILES} src/main.cpp)
 
 # Add the TryMe executable
-add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
+add_executable(TryMe ${SRC_DIR}/main.cpp)
 target_link_libraries(TryMe cpisynclib ntl)
 
 # Define a macro for adding executables testing multiple files

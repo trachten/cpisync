@@ -324,17 +324,21 @@ GenSync GenSync::Builder::build() {
     invalid_argument noMbar("Must define <mbar> explicitly for this sync.");
     switch (proto) {
         case SyncProtocol::CPISync:
-            if (mbar == Builder::UNDEFINED)
+            if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb);
             break;
+        case SyncProtocol::ProbCPISync:
+            if (mbar == Builder::UNDEF_NUM)
+                throw noMbar;
+
         case SyncProtocol::InteractiveCPISync:
-            if (mbar == Builder::UNDEFINED)
+            if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts);
             break;
         case SyncProtocol::OneWayCPISync:
-            if (mbar == Builder::UNDEFINED)
+            if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
             break;
@@ -352,7 +356,10 @@ GenSync GenSync::Builder::build() {
     }
     theMeths.push_back(myMeth);
 
-    return GenSync(theComms, theMeths);
+    if (fileName.empty()) // is data to be drawn from a file?
+        return GenSync(theComms, theMeths);
+    else
+        return GenSync(theComms, theMeths, fileName);
 }
 
 // static consts

@@ -32,7 +32,7 @@ public:
     ~UniqueDecode();
 
     bool isUD(const string str, const size_t k);
-    int longgestShingle(int str_i, vector<ZZ> shingleset, string str);
+    int longgestShingle(int str_i, vector<ZZ> shingle_set, string str);
 private:
     char stopWord;
     size_t shingleLen;

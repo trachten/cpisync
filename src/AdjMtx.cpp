@@ -42,10 +42,10 @@ bool AdjMtx::addWeigth(ZZ vfrom, ZZ vto, int add_weight){
         auto temp = graph.find(vexpair);
         if (temp != graph.end()) {
             temp->second += add_weight;
-            return true;
         }else{
             graph.insert(make_pair(vexpair,add_weight));
         }
+        return true;
     }
     return false;
 }
@@ -60,10 +60,10 @@ bool AdjMtx::setWeight(ZZ vfrom, ZZ vto, int set_weight){
         auto temp = graph.find(vexpair);
         if (temp != graph.end()) {
             temp->second = set_weight;
-            return true;
         } else{
             graph.insert(make_pair(vexpair,set_weight));
         }
+        return true;
     }
     return false;
 }
@@ -74,10 +74,10 @@ bool AdjMtx::delWeigth(ZZ vfrom, ZZ vto, int del_weight){
         auto temp = graph.find(vexpair);
         if (temp != graph.end()) {
             temp->second -= del_weight;
-            return true;
         } else{
             graph.insert(make_pair(vexpair,-del_weight));
         }
+        return true;
     }
     return false;
 }

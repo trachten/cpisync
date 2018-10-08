@@ -31,8 +31,13 @@ public:
     // Default deconstructor
     ~UniqueDecode();
 
-    bool isUD(const string str, const size_t k);
-    int longgestShingle(int str_i, vector<ZZ> shingle_set, string str);
+    bool isUD(const string str);
+    string reconstructDFS(vector<ZZ> shingle_set);
+    int longgestNxtShingle(int str_i, vector<ZZ> shingle_set, string str);
+    int longgestPrevShingle(int str_i, vector<ZZ> shingle_set, string str);
+
+    vector<string> potNxtLst(string nxt,const map<string,bool> &isVisited);
+    void shingle2str(string& str, map<string,bool> &isVisited);
 private:
     char stopWord;
     size_t shingleLen;

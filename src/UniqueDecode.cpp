@@ -41,7 +41,7 @@ bool UniqueDecode::isUD(const string str) {
             isVisited[vex_i] = true;  // marked it visited
         } else {
             if (adjMatrix.getWeight(prev, cur) == 0) {  // does edge w[i-1] -> w[i] not already exist in G?
-                if (isCycle[vex_i]) {  //does w[i] already belongs to a cycle
+                if (isCycle[vex_i]) {  //does w[i] already belongs  to a cycle
                     return false;
                 } else {
                     // find the last place of vex occurrence and label all cycles
@@ -113,11 +113,11 @@ int UniqueDecode::longgestPrevShingle(int str_i, vector<ZZ> shingle_set, string 
 
 string UniqueDecode::reconstructDFS(vector<ZZ> shingle_set_ZZ){
     // init visited vector
-    map<string,bool> isVisited;
+    vector<pair<string,bool>> isVisited_pair;
     if (shingle_set_ZZ.size()>0){
         // convert ZZ back to string
         for (auto shingle : shingle_set_ZZ){
-            isVisited[ZZtoStr(shingle)] = false;
+            isVisited_pair.push_back(make_pair(ZZtoStr(shingle),false));
         }
     }else{
         throw invalid_argument("reconstructDFS - Input shingle_set is empty");
@@ -125,31 +125,63 @@ string UniqueDecode::reconstructDFS(vector<ZZ> shingle_set_ZZ){
 
     //find the head
     string str;
-    for (auto shingle : isVisited) {
+    for (auto shingle : isVisited_pair) {
         if (shingle.first.at(0) == stopWord) {
             str = shingle.first;
         }
     }
-    shingle2str(str,isVisited);
+    shingle2str(str,isVisited_pair);
     return str;
 }
 
-vector<string> UniqueDecode::potNxtLst(string nxt,const map<string,bool> &isVisited){
-    vector<string> res;
-    for (auto shingle :isVisited){
-        if(not shingle.second and shingle.first.substr(0,nxt.size()) == nxt){ // if not visited
-            res.push_back(shingle.first);
+vector<vector<pair<string,bool>>::iterator> UniqueDecode::potNxtLst(const string nxt,vector<pair<string,bool>> &isVisited_pair){
+    vector<vector<pair<string,bool>>::iterator>  res;
+    for (vector<pair<string,bool>>::iterator shingle =isVisited_pair.begin();shingle!=isVisited_pair.end();++shingle){
+        if(not shingle->second and shingle->first.substr(0,nxt.size()) == nxt){ // if not visited
+            res.push_back(shingle);
         }
     }
     return res;
 }
 
-void UniqueDecode::shingle2str(string& str, map<string,bool> &isVisited){
-    if (find(isVisited.begin(),isVisited.end(),false)==isVisited.end()){
+void UniqueDecode::shingle2str(string& str, vector<pair<string,bool>> &isVisited_pair){
+    for (auto shingle : potNxtLst(str.substr(str.size()-shingleLen),isVisited_pair)) {
+        shingle->second = true; // set an vex/shingle read
+        str += shingle->first.substr(shingle->first.size() - 1);
+        shingle2str(str, isVisited_pair);
+
+        // if not all vex is visited
+        if (!isAllVisited(isVisited_pair)) {
+            str = str.substr(0,str.size()-shingle->first.size());
+        }
+        //else
         return;
     }
-    for (auto shingle : potNxtLst(str.substr(str.size()-shingleLen),isVisited)){
-        isVisited[shingle] = true;
-        str+=shingle.substr(shingle.size()-1);
+}
+
+bool UniqueDecode::isAllVisited(vector<pair<string,bool>> isVisited_pair){
+    for (auto it = isVisited_pair.begin(); it!=isVisited_pair.end();++it){
+        if (!it->second){
+            return false;
+        }
     }
+    return true;
+}
+
+vector<ZZ> UniqueDecode::getShingleSet(const string str){
+    vector<ZZ> res;
+    for (int i = 0; i < str.size(); ++i) {
+        ZZ shingle = StrtoZZ(str.substr(i, shingleLen));
+        auto it = find(res.begin(),res.end(),shingle);
+        if (it == res.end()) { // not exist in the res set
+            res.push_back(shingle);
+        }
+    }
+    return res;
+}
+
+vector<ZZ> UniqueDecode::getMergeInd(const string str){
+    vector<ZZ> res;
+
+    return res;
 }

@@ -16,4 +16,5 @@ void UniqueDecodeTest::UDTest() {
         cout<< "This is UD"<<endl;
     else
         cout<< "THis is not UD" <<endl;
+    //host.reconstructDFS(host.getShingleSet(txt));
 }

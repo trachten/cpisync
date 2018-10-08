@@ -28,16 +28,34 @@ public:
      * @param k fixing shingle size to be k
      */
     UniqueDecode(const size_t shingle_len, const char stop_word);
+
     // Default deconstructor
     ~UniqueDecode();
 
     bool isUD(const string str);
-    string reconstructDFS(vector<ZZ> shingle_set);
+
+    string reconstructDFS(vector<ZZ> shingle_set_ZZ);
+
+    /**
+     * Get shingle set with size k
+     * @param str
+     * @return
+     */
+    vector<ZZ> getShingleSet(const string str);
+
+    vector<ZZ> getMergeInd(const string str);
+
+protected:
     int longgestNxtShingle(int str_i, vector<ZZ> shingle_set, string str);
+
     int longgestPrevShingle(int str_i, vector<ZZ> shingle_set, string str);
 
-    vector<string> potNxtLst(string nxt,const map<string,bool> &isVisited);
-    void shingle2str(string& str, map<string,bool> &isVisited);
+    vector<vector<pair<string,bool>>::iterator> potNxtLst(const string nxt, vector<pair<string, bool>> &isVisited);
+
+    void shingle2str(string &str, vector<pair<string, bool>> &isVisited);
+
+    bool isAllVisited(vector<pair<string, bool>> isVisited_pair);
+
 private:
     char stopWord;
     size_t shingleLen;

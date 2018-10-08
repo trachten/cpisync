@@ -3,9 +3,9 @@
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
     <generated>
       <config projectName="cpisynclib" targetName="SystemLongTest" />
+      <config projectName="cpisynclib" targetName="cpisynclib" />
       <config projectName="cpisynclib" targetName="Performance" />
       <config projectName="cpisynclib" targetName="UnitTest" />
-      <config projectName="cpisynclib" targetName="cpisynclib" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -21,14 +21,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change afterPath="$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/unit/UniqueDecodeTest.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpisynclib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cpisynclib.cbp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/UniqueDecode.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/UniqueDecode.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AdjMtx.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/AdjMtx.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/UniqueDecode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/UniqueDecode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -100,34 +96,35 @@
     <session id="-1919019994">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
-          <entry key="project.open.time.6" value="1" />
+          <entry key="project.closed" value="2" />
+          <entry key="project.open.time.6" value="2" />
           <entry key="project.open.time.8" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="4634" />
-          <entry key="h" value="965" />
+          <entry key="cpp" value="5443" />
+          <entry key="h" value="1119" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Doxygen file" value="5" />
-          <entry key="ObjectiveC" value="5594" />
+          <entry key="Doxygen file" value="6" />
+          <entry key="ObjectiveC" value="6556" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="__bit_reference" value="1" />
+          <entry key="algorithm" value="2" />
           <entry key="cpp" value="29" />
-          <entry key="h" value="19" />
+          <entry key="h" value="20" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="ObjectiveC" value="49" />
+          <entry key="ObjectiveC" value="52" />
         </counts>
       </usages-collector>
     </session>
@@ -140,7 +137,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/AdjMtx.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
+            <state relative-caret-position="-146">
               <caret line="69" column="9" selection-start-line="69" selection-start-column="9" selection-end-line="69" selection-end-column="9" />
               <folding>
                 <element signature="e#177#196#0" expanded="true" />
@@ -158,23 +155,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/UniqueDecode.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="156" column="20" selection-start-line="156" selection-start-column="20" selection-end-line="156" selection-end-column="20" />
-              <folding>
-                <element signature="e#39#64#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="11" column="33" selection-start-line="11" selection-start-column="33" selection-end-line="11" selection-end-column="33" />
+            <state relative-caret-position="324">
+              <caret line="18" column="6" selection-start-line="18" selection-start-column="6" selection-end-line="18" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -203,11 +188,23 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/UniqueDecode.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="122" column="10" selection-start-line="122" selection-start-column="10" selection-end-line="122" selection-end-column="10" />
+              <folding>
+                <element signature="e#39#64#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/UniqueDecode.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="349">
-              <caret line="39" column="63" selection-start-line="39" selection-start-column="63" selection-end-line="39" selection-end-column="63" />
+            <state relative-caret-position="199">
+              <caret line="46" selection-start-line="46" selection-end-line="46" />
               <folding>
                 <element signature="e#156#175#0" expanded="true" />
               </folding>
@@ -219,8 +216,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>testCommByte()</find>
-      <find>Communicant::commSend(</find>
       <find>Communicant::commSend</find>
       <find>delelemg</find>
       <find>IBLTSYNC</find>
@@ -249,6 +244,8 @@
       <find>:</find>
       <find>str &lt;&lt;</find>
       <find>?</find>
+      <find>find</find>
+      <find>isVisited</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -292,9 +289,9 @@
         <option value="$PROJECT_DIR$/tests/unit/AdjMtxTest.cpp" />
         <option value="$PROJECT_DIR$/tests/unit/UniqueDecodeTest.h" />
         <option value="$PROJECT_DIR$/src/AdjMtx.cpp" />
-        <option value="$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp" />
         <option value="$PROJECT_DIR$/include/UniqueDecode.h" />
         <option value="$PROJECT_DIR$/src/UniqueDecode.cpp" />
+        <option value="$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp" />
       </list>
     </option>
   </component>
@@ -434,7 +431,8 @@
       <workItem from="1538403950278" duration="6791000" />
       <workItem from="1538575870819" duration="12313000" />
       <workItem from="1538600475531" duration="15870000" />
-      <workItem from="1538937366207" duration="20911000" />
+      <workItem from="1538937366207" duration="21042000" />
+      <workItem from="1539012693191" duration="13379000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -447,7 +445,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="251493000" />
+    <option name="totallyTimeSpent" value="265003000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -462,17 +460,17 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49945593" weight="0.21387696" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.1988555" />
       <window_info id="Structure" order="1" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32919708" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4992057" weight="0.32650602" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.3686747" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4992057" visible="true" weight="0.32650602" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.2060241" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
-      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.28674698" />
+      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" weight="0.28674698" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50039715" side_tool="true" weight="0.32846716" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.329927" />
@@ -534,6 +532,11 @@
           <line>103</line>
           <option name="timeStamp" value="121" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp</url>
+          <line>18</line>
+          <option name="timeStamp" value="122" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
@@ -592,13 +595,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tests/TestAuxiliary.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="406" column="12" selection-start-line="406" selection-start-column="12" selection-end-line="406" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/InterCPISync.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="503">
@@ -789,10 +785,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="151" selection-start-line="151" selection-end-line="151" />
-          <folding>
-            <element signature="e#242#257#0" expanded="true" />
-            <element signature="e#3751#3763#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -866,9 +858,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="513">
           <caret line="436" column="26" selection-start-line="436" selection-start-column="26" selection-end-line="436" selection-end-column="26" />
-          <folding>
-            <element signature="e#329#347#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -886,16 +875,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/AdjMtx.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="69" column="9" selection-start-line="69" selection-start-column="9" selection-end-line="69" selection-end-column="9" />
-          <folding>
-            <element signature="e#177#196#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/include/NTL/ZZ.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="193">
@@ -903,19 +882,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/AdjMtx.cpp">
+    <entry file="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/algorithm">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="356">
-          <caret line="68" selection-start-line="68" selection-end-line="68" />
+        <state relative-caret-position="176">
+          <caret line="996" column="21" selection-start-line="996" selection-start-column="21" selection-end-line="996" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/UniqueDecodeTest.h">
+    <entry file="file://$PROJECT_DIR$/include/UniqueDecode.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="18" column="18" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="18" />
+        <state relative-caret-position="199">
+          <caret line="46" selection-start-line="46" selection-end-line="46" />
           <folding>
-            <element signature="e#121#165#0" expanded="true" />
+            <element signature="e#156#175#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/AdjMtx.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-146">
+          <caret line="69" column="9" selection-start-line="69" selection-start-column="9" selection-end-line="69" selection-end-column="9" />
+          <folding>
+            <element signature="e#177#196#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -930,27 +919,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp">
+    <entry file="file://$PROJECT_DIR$/tests/unit/UniqueDecodeTest.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="33" selection-start-line="11" selection-start-column="33" selection-end-line="11" selection-end-column="33" />
+        <state relative-caret-position="324">
+          <caret line="18" column="18" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="18" />
+          <folding>
+            <element signature="e#121#165#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/UniqueDecode.h">
+    <entry file="file://$PROJECT_DIR$/tests/unit/UniqueDecodeTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="39" column="63" selection-start-line="39" selection-start-column="63" selection-end-line="39" selection-end-column="63" />
-          <folding>
-            <element signature="e#156#175#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="324">
+          <caret line="18" column="6" selection-start-line="18" selection-start-column="6" selection-end-line="18" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/AdjMtx.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="68" selection-start-line="68" selection-end-line="68" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/UniqueDecode.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="156" column="20" selection-start-line="156" selection-start-column="20" selection-end-line="156" selection-end-column="20" />
+        <state relative-caret-position="270">
+          <caret line="122" column="10" selection-start-line="122" selection-start-column="10" selection-end-line="122" selection-end-column="10" />
           <folding>
             <element signature="e#39#64#0" expanded="true" />
           </folding>

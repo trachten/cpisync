@@ -10,13 +10,15 @@
 
 class KshingleSyncPerf : public CPPUNIT_NS::TestFixture {
 CPPUNIT_TEST_SUITE(KshingleSyncPerf);
-        CPPUNIT_TEST(testAll);
+        CPPUNIT_TEST(testperf);
     CPPUNIT_TEST_SUITE_END();
 
 public:
     KshingleSyncPerf();
 
     ~KshingleSyncPerf();
+
+    void testperf();
 
     void testAll();
 

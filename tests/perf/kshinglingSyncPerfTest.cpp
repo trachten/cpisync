@@ -2,11 +2,19 @@
 // Created by Bowen Song on 9/27/18.
 //
 #include "kshinglingSyncPerfTest.h"
-//#include "GenPlot.h"
+#include "PerformanceData.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KshingleSyncPerf);
 KshingleSyncPerf::KshingleSyncPerf() = default;
 KshingleSyncPerf::~KshingleSyncPerf() = default;
+
+
+void KshingleSyncPerf::testperf(){
+    PerformanceData test;
+    test.
+}
+
+
 void KshingleSyncPerf::testAll() {
 
     // K_shingle packages

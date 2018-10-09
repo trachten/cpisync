@@ -262,7 +262,6 @@ public:
         FullSync,
         IBLTSync,
         OneWayIBLTSync,
-//        kshinglingSync,
         END     // one after the end of iterable options
     };
 

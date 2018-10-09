@@ -31,61 +31,33 @@ public:
      */
     ~GenPlot();
 
-    void plot2D(string label, long X, long Y){
-        if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
-            vector<long [2]> *tmp;
-            tmp->push_back({X,Y});
-            data2D.insert(make_pair(label,*tmp));
-        } else{
-            (data2D[label]).push_back({X,Y});
-        }
+    /**
+     * Store Values in Genplot class - for 2D plots
+     * Find the right label and add the data
+     * @param label
+     * @param X
+     * @param Y
+     */
+    void plot2D(string label, long X, long Y);
+    /**
+     * Store Values in Genplot class - for 3D plots
+     * Find the right label and add the data
+     * @param label
+     * @param X
+     * @param Y
+     * @param Z
+     */
+    void plot3D(string label, long X, long Y, long Z);
 
-    };
-    void plot3D(string label, long X, long Y, long Z){
-
-        if (data3D.find(label)==data3D.end()) { // if no label of such kind is in there
-            vector<long [3]> *tmp;
-            tmp->push_back({X,Y,Z});
-            data3D.insert(make_pair(label,*tmp));
-        } else{
-            (data3D[label]).push_back({X,Y});
-        }
-    };
-
-    void write2file(){
-        ofstream myfile;
-        myfile.open("./tests/perf/"+fileName+".txt");
-
-        for (auto item : data3D){
-            myfile << "Label:"+item.first+"\n";
-            string tmpx, tmpy, tmpz;
-            for (auto item : item.second){
-                tmpx += item[0];
-                tmpy += item[1];
-                tmpz += item[2];
-            }
-            myfile << "X:"+tmpx+"\n";
-            myfile << "Y:"+tmpy+"\n";
-            myfile << "Z:"+tmpz+"\n";
-        }
-
-        for (auto item : data2D){
-            myfile << "Label:"+item.first+"\n";
-            string tmpx, tmpy;
-            for (auto item : item.second){
-                tmpx += item[0];
-                tmpy += item[1];
-            }
-            myfile << "X:"+tmpx+"\n";
-            myfile << "Y:"+tmpy+"\n";
-        }
-
-        myfile.close();
-    }
+    /**
+     * Export Data into a txt file for python code to process
+     * Every instance of a class is one data file
+     */
+    void write2file();
 
 private:
-    map<string,vector<long [3]>> data3D; // map<label,content>
-    map<string,vector<long [2]>> data2D; // map<label,content>
+    map<string,vector<vector<long>>> data3D; // map<label,content(X,Y,Z)>
+    map<string,vector<vector<long>>> data2D; // map<label,content(X,Y)>
     string fileName;
 };
 

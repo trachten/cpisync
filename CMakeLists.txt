@@ -36,7 +36,9 @@ set(SOURCE_FILES
         ${SRC_DIR}/IBLTSync.cpp
         ${SRC_DIR}/FullSync.cpp
         ${SRC_DIR}/kshingling.cpp
-        ${SRC_DIR}/kshinglingSync.cpp src/UniqueDecode.cpp include/UniqueDecode.h include/AdjMtx.h src/AdjMtx.cpp tests/unit/AdjMtxTest.cpp tests/unit/AdjMtxTest.h tests/unit/UniqueDecodeTest.cpp tests/unit/UniqueDecodeTest.h tests/perf/GenPlot.h tests/perf/GenPlot.cpp)
+        ${SRC_DIR}/kshinglingSync.cpp
+        ${SRC_DIR}/UniqueDecode.cpp
+        ${SRC_DIR}/AdjMtx.cpp)
 
 #cppunit
 include_directories(include)
@@ -54,7 +56,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit gmp)
+        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit gmp pthread)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

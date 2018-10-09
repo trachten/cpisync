@@ -230,12 +230,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/bowen/Documents/cpisync/include/AdjMtx.h">
-			<Option target="cpisynclib"/>
-		</Unit>
-		<Unit filename="/Users/bowen/Documents/cpisync/include/UniqueDecode.h">
-			<Option target="cpisynclib"/>
-		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/src/AdjMtx.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -315,10 +309,9 @@
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AdjMtxTest.cpp">
 			<Option target="UnitTest"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AdjMtxTest.h">
-			<Option target="cpisynclib"/>
+			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AuxiliaryTest.cpp">
 			<Option target="UnitTest"/>
@@ -366,6 +359,12 @@
 			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/UniqueDecodeTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/UniqueDecodeTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingSyncTest.cpp">

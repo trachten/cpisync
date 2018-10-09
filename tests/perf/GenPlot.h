@@ -42,7 +42,14 @@ public:
 
     };
     void plot3D(string label, long X, long Y, long Z){
-        data3D[label].push_back({X,Y,Z});
+
+        if (data3D.find(label)==data3D.end()) { // if no label of such kind is in there
+            vector<long [3]> *tmp;
+            tmp->push_back({X,Y,Z});
+            data3D.insert(make_pair(label,*tmp));
+        } else{
+            (data3D[label]).push_back({X,Y});
+        }
     };
 
     void write2file(){

@@ -131,30 +131,14 @@ pair<bool,long> KshingleSyncPerf::calculateCosts(vector<pair<string,K_Shingle>> 
     GenSync Bob = kshingling.SyncHost(Bobtxt, Bob_content);
 
     pair<bool, long> result;
-//    int err = 0;
-//    int chld_state;
-//    int my_opt = 0;
-//    pid_t pID = fork();
-//    if (pID == 0) {
-//        signal(SIGCHLD, SIG_IGN);
-//        forkHandleReport report = forkHandle(Bob, Alice);
-//        result = make_pair(kshingling.getString(Alice, Alice_content)
-//                           == kshingling.getString(Bob, Bob_content), report.bytes);
-//        err++;
-//        exit(0);
-//
-//    } else if (pID > 0) {
+
     forkHandleReport report = kshingling.SyncNreport(Alice, Bob);
     String_Size = Bobtxt.length() * 8; // 8 bits per character
 //        auto a = kshingling.getString(Alice, Alice_content);
 //        auto b = kshingling.getString(Bob, Bob_content);
     result = make_pair(kshingling.getString(Alice, Alice_content)
                        == kshingling.getString(Bob, Bob_content), report.bytes);
-//        waitpid(pID, &chld_state, my_opt);
-//    } else {
-//        cout << "throw out err = " << err << endl;
-//        throw err;
-//    }
+
     return result;
 
 }

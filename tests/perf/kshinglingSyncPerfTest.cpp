@@ -2,6 +2,7 @@
 // Created by Bowen Song on 9/27/18.
 //
 #include "kshinglingSyncPerfTest.h"
+//#include "GenPlot.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(KshingleSyncPerf);
 KshingleSyncPerf::KshingleSyncPerf() = default;
@@ -9,17 +10,19 @@ KshingleSyncPerf::~KshingleSyncPerf() = default;
 void KshingleSyncPerf::testAll() {
 
     // K_shingle packages
-    int string_len = 1000;
-    int shingle_len = 10;
+    int string_len = 500;
+
+    int shingle_len = ceil(log2(string_len));
     pair<int, int> editDistance_bar_range = make_pair(2, string_len/(shingle_len+2));
 
     //graph sample parameters
-    int Datappts = 2;
+    int Datappts = 20;
     int interval = floor((editDistance_bar_range.second-editDistance_bar_range.first)/Datappts);
 
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 
     //file name
+    //GenPlot plot = GenPlot("Comm_vs_Edit_Dist_Str_Len=" + to_string(string_len) + "_&_K=" + to_string(shingle_len));
     F_title = "Comm_vs_Edit_Dist_Str_Len=" + to_string(string_len) + "_&_K=" + to_string(shingle_len);
     //labels - order has to be the same as GenSync::SyncProtocol
     F_legend.push_back("CPISync");//G_legend
@@ -37,7 +40,7 @@ void KshingleSyncPerf::testAll() {
         for (int editDistance_bar = editDistance_bar_range.first;
              editDistance_bar < editDistance_bar_range.second;
              editDistance_bar += interval) {
-
+            for (int prep = 0 ; prep < 1000; ++prep){
             // Create K-shingleing packages
             string Alicetxt = randAsciiStr(string_len);
             K_Shingle Alice_content = K_Shingle(shingle_len);
@@ -60,14 +63,14 @@ void KshingleSyncPerf::testAll() {
             // Adjust parameters based on
             switch (base_set_proto) {
                 case GenSync::SyncProtocol::CPISync: // not used
-                    bits = 14+(shingle_len+2)*8;//sqaure bits
-                    mbar = mbar+mbar+ceil(mbar*0.3);
+                    bits = 14 + (shingle_len + 2) * 8;//sqaure bits
+                    mbar = mbar + mbar + ceil(mbar * 0.3);
                     break;
 
                 case GenSync::SyncProtocol::InteractiveCPISync:
-                    bits = 14+(shingle_len+2)*8;//sqaure bits
-                    mbar =5;
-                    numParts=3;//need mbar
+                    bits = 14 + (shingle_len + 2) * 8;//sqaure bits
+                    mbar = 5;
+                    numParts = 3;//need mbar
                     //setNumPartitions
                     break;
 //                case GenSync::SyncProtocol::FullSync:
@@ -89,7 +92,7 @@ void KshingleSyncPerf::testAll() {
             pair<bool, long> res;
             while (!success) {
 
-                  res = calculateCosts(inputPackage,
+                res = calculateCosts(inputPackage,
                                      base_set_proto, base_comm,
                                      bits, mbar, numParts, numExpElem);
                 mbar += mbar;
@@ -99,12 +102,14 @@ void KshingleSyncPerf::testAll() {
             G_commCost.push_back(res.second);
             G_editDistance.push_back(editDistance_bar);
         }
+        }
         if (G_commCost.size()!=0 && G_editDistance.size()!=0) {
             F_commCost.push_back(G_commCost);
             F_editDistance.push_back(G_editDistance);
         }
     }
     generateCSV();
+    //plot.write2file();
 }
 
 pair<bool,long> KshingleSyncPerf::calculateCosts(vector<pair<string,K_Shingle>> inputPackage,

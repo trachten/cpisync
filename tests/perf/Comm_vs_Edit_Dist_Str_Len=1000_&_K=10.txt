@@ -1,3 +1,3 @@
-CPISync;2,;3098480160367925251,
-InteractiveCPISync mbar=5,numParts=3;2,;8148269590006220434,
+CPISync;2,42,82,;695,9731,17037,
+InteractiveCPISync mbar=5,numParts=3;2,42,82,;406,406,460,
 String Size; 8000

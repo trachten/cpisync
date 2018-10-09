@@ -1,0 +1,3 @@
+CPISync;2,5,;526,1400,
+InteractiveCPISync mbar=5,numParts=3;2,5,;406,415,
+String Size; 800

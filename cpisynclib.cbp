@@ -240,6 +240,12 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/probCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/GenPlot.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/GenPlot.h">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/kshinglingSyncPerfTest.cpp">
 			<Option target="Performance"/>
 		</Unit>

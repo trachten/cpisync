@@ -174,12 +174,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include/AdjMtx.h">
-			<Option target="cpisynclib"/>
-		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include/UniqueDecode.h">
-			<Option target="cpisynclib"/>
-		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/AdjMtx.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -204,6 +198,9 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/FullSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/GenPlot.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/GenSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -222,6 +219,9 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/Logger.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/PerformanceData.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/SyncMethod.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -238,12 +238,6 @@
 			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/probCPISync.cpp">
-			<Option target="cpisynclib"/>
-		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/GenPlot.cpp">
-			<Option target="cpisynclib"/>
-		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/GenPlot.h">
 			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/perf/kshinglingSyncPerfTest.cpp">
@@ -265,10 +259,9 @@
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AdjMtxTest.cpp">
 			<Option target="UnitTest"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AdjMtxTest.h">
-			<Option target="cpisynclib"/>
+			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AuxiliaryTest.cpp">
 			<Option target="UnitTest"/>
@@ -320,10 +313,9 @@
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/UniqueDecodeTest.cpp">
 			<Option target="UnitTest"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/UniqueDecodeTest.h">
-			<Option target="cpisynclib"/>
+			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/kshinglingSyncTest.cpp">
 			<Option target="UnitTest"/>

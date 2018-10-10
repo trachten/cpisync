@@ -47,9 +47,9 @@ void GenPlot::write2file(){
         myfile << "Label:"+item.first+"\n";
         string tmpx, tmpy, tmpz;
         for (auto item : item.second){
-            tmpx += item[0]+",";
-            tmpy += item[1]+",";
-            tmpz += item[2]+",";
+            tmpx += to_string(item[0])+",";
+            tmpy += to_string(item[1])+",";
+            tmpz += to_string(item[2])+",";
         }
         myfile << "X:"+tmpx+"\n";
         myfile << "Y:"+tmpy+"\n";
@@ -60,8 +60,8 @@ void GenPlot::write2file(){
         myfile << "Label:"+item.first+"\n";
         string tmpx, tmpy;
         for (auto item : item.second){
-            tmpx += item[0]+",";
-            tmpy += item[1]+",";
+            tmpx += to_string(item[0])+",";
+            tmpy += to_string(item[1])+",";
         }
         myfile << "X:"+tmpx+"\n";
         myfile << "Y:"+tmpy+"\n";

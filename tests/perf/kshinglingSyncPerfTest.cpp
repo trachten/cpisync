@@ -11,7 +11,13 @@ KshingleSyncPerf::~KshingleSyncPerf() = default;
 
 void KshingleSyncPerf::testperf(){
     PerformanceData test;
-    test.
+    test.prepareStringRecon(100,5,3);
+    test.prepareSetComm(PerformanceData::StringReconProtocol::KshinglingSync,
+                            GenSync::SyncProtocol::CPISync);
+
+    test.calCostReport();
+
+    test.genReport();
 }
 
 

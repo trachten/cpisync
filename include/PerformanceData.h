@@ -52,8 +52,6 @@ private:
 //    vector<ZZ> Bob_shingleSet;// final form will all be in ZZ for each shingle
 //    // assume configurations are the same, else put them in the set
 
-    GenSync Alice;
-    GenSync Bob;
 
     GenPlot plot;
 

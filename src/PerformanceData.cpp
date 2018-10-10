@@ -31,26 +31,27 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 
     // random input
     if (Alice_txt=="" and Bob_txt==""){
-         Alice_txt = randAsciiStr(string_len);
-         Bobtxt = randStringEdit(Alice_txt, editDistance_bar);
+         Alice_txt = randAsciiStr(stringSize);
+         Bob_txt = randStringEdit(Alice_txt, editDist);
     }
     switch(stringReconProto) {
         case StringReconProtocol::KshinglingSync:
-            K_Shingle Alice_content = K_Shingle(shingle_len);
-            K_Shingle Bob_content = K_Shingle(shingle_len);
+            K_Shingle Alice_content = K_Shingle(shingleLen);
+            K_Shingle Bob_content = K_Shingle(shingleLen);
 
             auto Alice_set = Alice_content.getShingleSet_str(Alice_txt);
             auto Bob_set = Bob_content.getShingleSet_str(Bob_txt);
             int mbar = multisetDiff(Alice_set, Bob_set).size();
             break;
         default:
+            break;
     }
 
 
     switch (baseSetProto) {
         case GenSync::SyncProtocol::CPISync: // not used
             setReconProtoName = "CPI";
-            bits = 14 + (shingle_len + 2) * 8;//sqaure bits
+            bits = 14 + (shingleLen + 2) * 8;//sqaure bits
             mbar = mbar + mbar + ceil(mbar * 0.3);
             break;
 
@@ -72,7 +73,7 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 //                    break;
 
         default:
-
+            break;
     }
 }
 
@@ -100,6 +101,7 @@ void PerformanceData::calCostReport(bool check_outcome) {
             }
             break;
         default:
+            break;
     }
     // time plot
     plot.plot2D("Time" + stringReconProtoName + "-" + setReconProtoName, editDist, res.totalTime);

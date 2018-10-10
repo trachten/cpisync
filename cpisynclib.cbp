@@ -198,9 +198,6 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/FullSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/GenPlot.cpp">
-			<Option target="cpisynclib"/>
-		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/GenSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>

@@ -188,10 +188,10 @@ void PerformanceData::write2file(string file_name) {
     for (auto item : data3D) {
         myfile << "Label:" + item.first + "\n";
         string tmpx, tmpy, tmpz;
-        for (auto item : item.second) {
-            tmpx += to_string(item[0]) + ",";
-            tmpy += to_string(item[1]) + ",";
-            tmpz += to_string(item[2]) + ",";
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + ",";
+            tmpy += to_string(num[1]) + ",";
+            tmpz += to_string(num[2]) + ",";
         }
         myfile << "X:" + tmpx + "\n";
         myfile << "Y:" + tmpy + "\n";
@@ -201,9 +201,9 @@ void PerformanceData::write2file(string file_name) {
     for (auto item : data2D) {
         myfile << "Label:" + item.first + "\n";
         string tmpx, tmpy;
-        for (auto item : item.second) {
-            tmpx += to_string(item[0]) + ",";
-            tmpy += to_string(item[1]) + ",";
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + ",";
+            tmpy += to_string(num[1]) + ",";
         }
         myfile << "X:" + tmpx + "\n";
         myfile << "Y:" + tmpy + "\n";

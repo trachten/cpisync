@@ -17,7 +17,7 @@ K_Shingle::K_Shingle(const size_t shingle_size) {
 
 void K_Shingle::create(const string str) {
     //  Sanity check
-    orig_string = stopword + str + stopword;
+    orig_string = stopword + str + stopword; // GetString fxn need to remove the stopwords
     for (int i = 0; i < str.size(); ++i) {
         if(str.substr(i,1)==stopword){
             throw invalid_argument("Input string includes Stopword");
@@ -53,14 +53,6 @@ bool K_Shingle::get(const string ver, pair<string,int>& edge){
         throw invalid_argument("No vertex string for searching");
     }
 }
-
-//void K_Shingle::add(DataObject shingle) {
-//    //shingleSet.push_back();
-//}
-//
-//void K_Shingle::del(DataObject shingle) {
-//    //shingleSet.erase(lower_bound (shingleSet.begin(), shingleSet.end(), shingle));
-//}
 
 
 void K_Shingle::incrementEdgeCount(const string ver) {
@@ -139,7 +131,7 @@ void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, stri
         }
         if (tempedge.first.substr(k - 1) == stopword) {
             if (changed_shingleSet.size() == 0) {
-                strCollect.push_back(str);
+                strCollect.push_back(str.substr(1,str.size()-2));
                 if (str == orig_string || strCollect.size() - 1 == str_order) {
                     str_order = strCollect.size() - 1;
                 }
@@ -163,11 +155,3 @@ void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, stri
     }
 
 }
-
-//string K_Shingle::getOriginString() {
-//    return
-//}
-//
-//vector<pair<string,int>> K_Shingle::getShingleSet() {
-//
-//}

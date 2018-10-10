@@ -272,6 +272,9 @@
 		<Unit filename="/Users/bowen/Documents/cpisync/src/Logger.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/PerformanceData.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/src/SyncMethod.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>

@@ -39,8 +39,7 @@ set(SOURCE_FILES
         ${SRC_DIR}/kshinglingSync.cpp
         ${SRC_DIR}/UniqueDecode.cpp
         ${SRC_DIR}/AdjMtx.cpp
-        ${SRC_DIR}/PerformanceData.cpp
-        ${SRC_DIR}/GenPlot.cpp)
+        ${SRC_DIR}/PerformanceData.cpp)
 
 #cppunit
 include_directories(include)

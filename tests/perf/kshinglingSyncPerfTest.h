@@ -10,7 +10,8 @@
 
 class KshingleSyncPerf : public CPPUNIT_NS::TestFixture {
 CPPUNIT_TEST_SUITE(KshingleSyncPerf);
-        CPPUNIT_TEST(testperf);
+        CPPUNIT_TEST(testklgperf);
+        CPPUNIT_TEST(testFixedKperf);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -18,15 +19,12 @@ public:
 
     ~KshingleSyncPerf();
 
-    void testperf();
+    // k = lg(string len)
+    void testklgperf();
 
-    void testAll();
+    // k = fixed constant
+    void testFixedKperf();
 
-    void generateCSV();
-
-    pair<bool, long> calculateCosts(vector<pair<string,K_Shingle>> inputPackage,
-                                    GenSync::SyncProtocol base_set_proto,GenSync::SyncComm base_comm,
-                                    size_t bits , int mbar, int numParti, int numExpElem);
 
 private:
     // file parameters

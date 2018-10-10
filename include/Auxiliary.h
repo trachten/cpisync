@@ -485,6 +485,9 @@ inline string randStringDel(string str, int upperD) {
  * @return Edited string upperE edit distance away from the original string
  */
 inline string randStringEdit(string str, int upperE) {
+    if (str ==""){
+        return "";
+    }
     for(int jj = 0; jj < upperE; jj++) {
         int choice = rand() % 2;
         str = (choice==0) ? randStringDel(str, 1) : randStringInsert(str, 1);

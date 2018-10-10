@@ -8,6 +8,7 @@ PerformanceData::PerformanceData() = default;
 
 PerformanceData::~PerformanceData() = default;
 
+// Parameters setting
 void PerformanceData::prepareStringRecon(int string_size, int shingle_len, int edit_distance){
     //init Parameters
     editDist = edit_distance;
@@ -16,13 +17,13 @@ void PerformanceData::prepareStringRecon(int string_size, int shingle_len, int e
     stringSize = string_size;
     shingleLen = shingle_len;
 
-    plot.GenPlot("Comm_vs_Edit_Dist_Str_Len=" + to_string(string_len) + "_&_K=" + to_string(shingle_len));
 
 //    shingleLen = ceil(log2(string_size));
 //
 //    plot.GenPlot("Comm_vs_Edit_Dist_Str_Len=" + to_string(string_len) + "_&_K=lg(str_len)");
 }
 
+// Prepare oarameters for specific set recon and genrate strings
 void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, GenSync::SyncProtocol base_set_proto, string Alice_txt, string Bob_txt){
     baseSetProto = base_set_proto;
     stringReconProto = string_recon_proto;
@@ -31,11 +32,17 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 
     // random input
     if (Alice_txt=="" and Bob_txt==""){
-         Alice_txt = randAsciiStr(stringSize);
-         Bob_txt = randStringEdit(Alice_txt, editDist);
+        AliceTxt = randAsciiStr(stringSize);
+        BobTxt = randStringEdit(AliceTxt, editDist);
+    }else{
+        AliceTxt = Alice_txt;
+        BobTxt = Bob_txt;
     }
+
+
+    // quote a mbar, else to try and double method
     switch(stringReconProto) {
-        case StringReconProtocol::KshinglingSync:
+        case StringReconProtocol::KshinglingSync: {
             K_Shingle Alice_content = K_Shingle(shingleLen);
             K_Shingle Bob_content = K_Shingle(shingleLen);
 
@@ -43,8 +50,9 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
             auto Bob_set = Bob_content.getShingleSet_str(Bob_txt);
             int mbar = multisetDiff(Alice_set, Bob_set).size();
             break;
+        }
         default:
-            break;
+            throw invalid_argument("Not Implemented string recon Protocol");
     }
 
 
@@ -56,11 +64,10 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
             break;
 
         case GenSync::SyncProtocol::InteractiveCPISync:
-            setReconProtoName = "InterCPI"
+            setReconProtoName = "InterCPI";
             bits = 14 + (shingleLen + 2) * 8;//sqaure bits
             mbar = 5;  //need mbar -- fixed
             numParts = 3;  //setNumPartitions -- fixed
-
             break;
 //                case GenSync::SyncProtocol::FullSync:
 //                    G_legend.push_back("FullSync");//G_legend
@@ -73,7 +80,7 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 //                    break;
 
         default:
-            break;
+            throw invalid_argument("Not Implemented set recon Protocol");
     }
 }
 
@@ -85,16 +92,36 @@ void PerformanceData::calCostReport(bool check_outcome) {
     // while not success, we increase the edit distance
 
 
+    clock_t time = clock(); // init clock
+
+
+
     switch (stringReconProto) {
         case StringReconProtocol::KshinglingSync:
-            stringReconProtoName = "KS";
+            stringReconProtoName = "Kshingle";
             while (!success) { // adjust mbar if recon not success
+
+                // Prepare to Sync Alice
+                // TODO: Enable IBLT and fill up the last parameter
+                kshinglingSync kshingling = kshinglingSync(baseSetProto, GenSync::SyncComm::socket, bits, mbar, numParts, 0);
+
+                K_Shingle Alice_content = K_Shingle(shingleLen);
+                GenSync Alice = kshingling.SyncHost(AliceTxt, Alice_content);
+                time = clock()-time; // One side get shingles ready time
+
+                // Prepare Bob
+                K_Shingle Bob_content = K_Shingle(shingleLen);
+                GenSync Bob = kshingling.SyncHost(BobTxt, Bob_content);
 
                 res = kshingling.SyncNreport(Alice, Bob);
 
                 mbar += mbar;  // expected mbar may not be enough, therefore adding 1 or doubling
+                time += clock(); // adding the time to piece info back together
+                string tmpstr = kshingling.getString(Alice, Alice_content);
+                time = time - clock();
+
                 if (check_outcome) {
-                    success = (kshingling.getString(Alice, Alice_content) == kshingling.getString(Bob, Bob_content))
+                    success = ( tmpstr== BobTxt);
                 } else {
                     success = check_outcome;
                 }
@@ -103,11 +130,85 @@ void PerformanceData::calCostReport(bool check_outcome) {
         default:
             break;
     }
-    // time plot
-    plot.plot2D("Time" + stringReconProtoName + "-" + setReconProtoName, editDist, res.totalTime);
+
     // cpu time plot
-    plot.plot2D("CPU Time" + stringReconProtoName + "-" + setReconProtoName, editDist, res.CPUtime);
+    plot2D("CPU Time:" + stringReconProtoName + "-" + setReconProtoName+"-str="+to_string(stringSize), editDist, res.CPUtime + ((double)time));
     // comm plot
-    plot.plot2D("Comm Cost" + stringReconProtoName + "-" + setReconProtoName, editDist, res.bytes);
+    plot2D("Comm Cost:" + stringReconProtoName + "-" + setReconProtoName+"-str="+to_string(stringSize), editDist, res.bytes);
+
+    //
+    plot3D("Comm3D:" + stringReconProtoName + "-" + setReconProtoName, editDist,stringSize,res.bytes);
+
+    plot3D("CPUTime3D:" + stringReconProtoName + "-" + setReconProtoName, editDist,stringSize,res.CPUtime + ((double)time));
+}
+
+
+
+void PerformanceData::plot2D(string label, long X, long Y){
+    if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
+        vector<long> tmp(2);
+        tmp[0] = X;
+        tmp[1] = Y;
+        vector<vector<long>> init;
+        init.push_back(tmp);
+        data2D.insert(make_pair(label,init));
+    } else{
+        vector<long> tmp(2);
+        tmp[0] = X;
+        tmp[1] = Y;
+        data2D[label].push_back(tmp);
+    }
 
 }
+
+void PerformanceData::plot3D(string label, long X, long Y, long Z){
+    if (data3D.find(label)==data3D.end()) { // if no label of such kind is in there
+        vector<long> tmp(3);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[3] = Z;
+        vector<vector<long>> init;
+        init.push_back(tmp);
+        data3D.insert(make_pair(label,init));
+    } else{
+        vector<long> tmp(3);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[3] = Z;
+        data3D[label].push_back(tmp);
+    }
+}
+
+void PerformanceData::write2file(string file_name) {
+    ofstream myfile;
+    //TODO: do soemthing about the directories, this hard coding is not a long term solution
+    myfile.open("../tests/perf/" + file_name + ".txt");
+
+    myfile << "hey god, its me Bowen\n";
+    for (auto item : data3D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy, tmpz;
+        for (auto item : item.second) {
+            tmpx += to_string(item[0]) + ",";
+            tmpy += to_string(item[1]) + ",";
+            tmpz += to_string(item[2]) + ",";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+        myfile << "Z:" + tmpz + "\n";
+    }
+
+    for (auto item : data2D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy;
+        for (auto item : item.second) {
+            tmpx += to_string(item[0]) + ",";
+            tmpy += to_string(item[1]) + ",";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+    }
+
+    myfile.close();
+}
+

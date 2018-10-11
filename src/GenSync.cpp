@@ -201,25 +201,25 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
     // There are only 2 types, numbes of strings (check fact) handle both
     Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
 
-    vector<string> delList;
-    for (auto it = newDatumList.begin(); it != newDatumList.end(); ++it) {
-        delList.push_back((*it)->to_string());
+    vector<ZZ> delList;
+    for (auto it : newDatumList) {
+        delList.push_back(it->to_ZZ());
     }
     sort(delList.begin(), delList.end());
 
 
-    for (auto item = myData.begin(); item != myData.end(); ++item) {
-        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {
+    for (auto item : myData) {
+        if (binary_search(delList.begin(), delList.end(), item->to_ZZ())) {
 
             for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
-                if (!(*itAgt)->delElem(*item)) {
+                if (!(*itAgt)->delElem(item)) {
                     Logger::error_and_quit("Could not del item . check if item is first inserted.");
                 }
             }
         }
     }
     for (auto item = myData.begin(); item != myData.end(); ++item) {
-        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {
+        if (binary_search(delList.begin(), delList.end(), (*item)->to_ZZ())) {
             myData.erase(item);
         }
     }

@@ -166,7 +166,7 @@ void PerformanceData::plot3D(string label, long X, long Y, long Z){
         vector<long> tmp(3);
         tmp[0] = X;
         tmp[1] = Y;
-        tmp[3] = Z;
+        tmp[2] = Z;
         vector<vector<long>> init;
         init.push_back(tmp);
         data3D.insert(make_pair(label,init));
@@ -174,7 +174,7 @@ void PerformanceData::plot3D(string label, long X, long Y, long Z){
         vector<long> tmp(3);
         tmp[0] = X;
         tmp[1] = Y;
-        tmp[3] = Z;
+        tmp[2] = Z;
         data3D[label].push_back(tmp);
     }
 }
@@ -182,9 +182,7 @@ void PerformanceData::plot3D(string label, long X, long Y, long Z){
 void PerformanceData::write2file(string file_name) {
     ofstream myfile;
     //TODO: do soemthing about the directories, this hard coding is not a long term solution
-    myfile.open("../tests/perf/" + file_name + ".txt");
-
-    myfile << "hey god, its me Bowen\n";
+    myfile.open(file_name + ".txt");
     for (auto item : data3D) {
         myfile << "Label:" + item.first + "\n";
         string tmpx, tmpy, tmpz;
@@ -210,5 +208,6 @@ void PerformanceData::write2file(string file_name) {
     }
 
     myfile.close();
+    perror("why");
 }
 

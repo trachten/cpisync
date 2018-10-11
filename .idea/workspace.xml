@@ -21,9 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/Performance" beforeDir="false" afterPath="$PROJECT_DIR$/Performance" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GenSync.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/GenSync.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testklgperf.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testklgperf.txt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -166,8 +164,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="205" selection-start-line="205" selection-end-line="205" />
+            <state relative-caret-position="193">
+              <caret line="220" lean-forward="true" selection-start-line="220" selection-end-line="220" />
               <folding>
                 <element signature="e#127#146#0" expanded="true" />
               </folding>
@@ -232,9 +230,7 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>chld_state</find>
       <find>randZZ</find>
-      <find>to_ZZ</find>
       <find>ZZ</find>
       <find>myIBLT</find>
       <find>zz</find>
@@ -262,6 +258,8 @@
       <find>delElemGroup</find>
       <find>to_string</find>
       <find>interval</find>
+      <find>to_ZZ()</find>
+      <find>to_ZZ</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -469,7 +467,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="263735000" />
+    <option name="totallyTimeSpent" value="263990000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -941,8 +939,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="205" selection-start-line="205" selection-end-line="205" />
+        <state relative-caret-position="193">
+          <caret line="220" lean-forward="true" selection-start-line="220" selection-end-line="220" />
           <folding>
             <element signature="e#127#146#0" expanded="true" />
           </folding>

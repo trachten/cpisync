@@ -218,11 +218,7 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
             }
         }
     }
-    for (auto item = myData.begin(); item != myData.end(); ++item) {
-        if (binary_search(delList.begin(), delList.end(), (*item)->to_ZZ())) {
-            myData.erase(item);
-        }
-    }
+
 
 //    for (auto item = myData.begin(); item != myData.end();++item) {
 //        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {

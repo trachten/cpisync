@@ -17,7 +17,7 @@ void KshingleSyncPerf::testklgperf() {
     // Confidence interval
     int confidence = 2;
 
-    auto strSizeRange = make_pair(500, 1000);
+    auto strSizeRange = make_pair(500, 600);
     int strSizeinterval = floor((strSizeRange.second - strSizeRange.first) / tesPts);
 
     // Increment string size

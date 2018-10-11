@@ -203,7 +203,7 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
 
     vector<string> delList;
     for (auto item : newDatumList) {
-        delList.push_back(item->to_string());
+        delList.push_back((*item).to_string());
     }
     sort(delList.begin(), delList.end());
 

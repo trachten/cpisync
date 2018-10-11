@@ -202,8 +202,8 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
 
     vector<string> delList;
-    for (auto item : newDatumList) {
-        delList.push_back((*item).to_string());
+    for (auto it = newDatumList.begin(); it != newDatumList.end(); ++it) {
+        delList.push_back((*it)->to_string());
     }
     sort(delList.begin(), delList.end());
 

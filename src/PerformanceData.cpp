@@ -208,6 +208,5 @@ void PerformanceData::write2file(string file_name) {
     }
 
     myfile.close();
-    perror("why");
 }
 

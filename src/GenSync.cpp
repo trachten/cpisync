@@ -207,10 +207,10 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
     }
     sort(delList.begin(), delList.end());
 
-
+    list<DataObject*> lst;
     for (auto item : myData) {
         if (binary_search(delList.begin(), delList.end(), item->to_ZZ())) {
-
+            lst.push_back(item);
             for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
                 if (!(*itAgt)->delElem(item)) {
                     Logger::error_and_quit("Could not del item . check if item is first inserted.");
@@ -218,14 +218,15 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
             }
         }
     }
-    auto item = myData.begin();
-    auto end = myData.end();
-    while (item != end) {
-        if (binary_search(delList.begin(), delList.end(), (*item)->to_ZZ())) {
-            myData.erase(item);
-        }
-        item++;
-    }
+
+for (auto it = lst.begin(); it!=lst.end(); ++it){
+    myData.erase(it);
+}
+//    for (auto item = myData.begin(); item != myData.end(); ++item) {
+//        if (binary_search(lst.begin(), lst.end(), *item)) {
+//            myData.erase(item);
+//        }
+//    }
 
 //    for (auto item = myData.begin(); item != myData.end();++item) {
 //        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {

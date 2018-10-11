@@ -21,10 +21,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Performance" beforeDir="false" afterPath="$PROJECT_DIR$/Performance" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GenSync.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/GenSync.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PerformanceData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/PerformanceData.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testklgperf.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/testklgperf.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testklgperf.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testklgperf.txt" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -106,7 +106,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="1262" />
+          <entry key="cpp" value="1341" />
           <entry key="h" value="735" />
           <entry key="txt" value="65" />
         </counts>
@@ -115,13 +115,13 @@
         <counts>
           <entry key="CMakeLists.txt" value="65" />
           <entry key="Doxygen file" value="5" />
-          <entry key="ObjectiveC" value="1992" />
+          <entry key="ObjectiveC" value="2071" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="cpp" value="41" />
-          <entry key="h" value="23" />
+          <entry key="h" value="25" />
           <entry key="make" value="1" />
           <entry key="py" value="1" />
           <entry key="txt" value="8" />
@@ -130,7 +130,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CMakeLists.txt" value="2" />
-          <entry key="ObjectiveC" value="64" />
+          <entry key="ObjectiveC" value="66" />
           <entry key="PLAIN_TEXT" value="7" />
           <entry key="Python" value="1" />
         </counts>
@@ -166,8 +166,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="212" lean-forward="true" selection-start-line="212" selection-end-line="212" />
+            <state relative-caret-position="358">
+              <caret line="214" column="40" selection-start-line="214" selection-start-column="40" selection-end-line="214" selection-end-column="40" />
               <folding>
                 <element signature="e#127#146#0" expanded="true" />
               </folding>
@@ -176,10 +176,35 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/include/GenSync.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="199">
+              <caret line="285" column="22" selection-start-line="285" selection-start-column="22" selection-end-line="285" selection-end-column="22" />
+              <folding>
+                <element signature="e#242#257#0" expanded="true" />
+                <element signature="e#3751#3763#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="294">
+              <caret line="114" column="19" selection-start-line="114" selection-start-column="14" selection-end-line="114" selection-end-column="19" />
+              <folding>
+                <element signature="e#329#347#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/DataObject.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="217">
-              <caret line="46" selection-start-line="46" selection-end-line="46" />
+            <state relative-caret-position="101">
+              <caret line="46" column="25" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -425,7 +450,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="262025000" />
+    <option name="totallyTimeSpent" value="263045000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -445,12 +470,12 @@
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32919708" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4992057" weight="0.32650602" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.3686747" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4992057" visible="true" weight="0.32650602" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.3421687" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
-      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.22168675" />
+      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" weight="0.22168675" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50039715" side_tool="true" weight="0.32846716" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.329927" />
@@ -514,8 +539,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/GenSync.cpp</url>
-          <line>211</line>
-          <option name="timeStamp" value="163" />
+          <line>213</line>
+          <option name="timeStamp" value="165" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -687,17 +712,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cmake-build-default/CMakeFiles/cpisynclib.dir/build.make" />
-    <entry file="file://$PROJECT_DIR$/include/GenSync.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1108">
-          <caret line="280" column="4" selection-start-line="280" selection-start-column="4" selection-end-line="280" selection-end-column="4" />
-          <folding>
-            <element signature="e#242#257#0" expanded="true" />
-            <element signature="e#3751#3763#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="481">
@@ -840,39 +854,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="492" column="5" selection-start-line="492" selection-start-column="5" selection-end-line="492" selection-end-column="5" />
-          <folding>
-            <element signature="e#329#347#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="636">
           <caret line="36" column="1" selection-start-line="36" selection-start-column="1" selection-end-line="36" selection-end-column="1" />
           <folding>
             <element signature="e#133#177#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="130">
-          <caret line="28" column="40" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/PerformanceData.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="45" column="16" selection-start-line="45" selection-start-column="6" selection-end-line="45" selection-end-column="16" />
-          <folding>
-            <element signature="e#114#134#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -896,15 +883,53 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/DataObject.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="217">
-          <caret line="46" selection-start-line="46" selection-end-line="46" />
+        <state relative-caret-position="101">
+          <caret line="46" column="25" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="114" column="19" selection-start-line="114" selection-start-column="14" selection-end-line="114" selection-end-column="19" />
+          <folding>
+            <element signature="e#329#347#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="28" column="40" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/PerformanceData.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="45" column="16" selection-start-line="45" selection-start-column="6" selection-end-line="45" selection-end-column="16" />
+          <folding>
+            <element signature="e#114#134#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/GenSync.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="285" column="22" selection-start-line="285" selection-start-column="22" selection-end-line="285" selection-end-column="22" />
+          <folding>
+            <element signature="e#242#257#0" expanded="true" />
+            <element signature="e#3751#3763#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="212" lean-forward="true" selection-start-line="212" selection-end-line="212" />
+        <state relative-caret-position="358">
+          <caret line="214" column="40" selection-start-line="214" selection-start-column="40" selection-end-line="214" selection-end-column="40" />
           <folding>
             <element signature="e#127#146#0" expanded="true" />
           </folding>

@@ -203,23 +203,23 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
 
     vector<string> delList;
     for (auto it = newDatumList.begin(); it != newDatumList.end(); ++it) {
-        delList.push_back((*it)->print());
+        delList.push_back((*it)->to_string());
     }
     sort(delList.begin(), delList.end());
 
 
-    for (auto item : myData) {
-        if (binary_search(delList.begin(), delList.end(), item->print())) {
+    for (auto item = myData.begin(); item != myData.end(); ++item) {
+        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {
 
             for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
-                if (!(*itAgt)->delElem(item)) {
+                if (!(*itAgt)->delElem(*item)) {
                     Logger::error_and_quit("Could not del item . check if item is first inserted.");
                 }
             }
         }
     }
     for (auto item = myData.begin(); item != myData.end(); ++item) {
-        if (binary_search(delList.begin(), delList.end(), (*item)->print())) {
+        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {
             myData.erase(item);
         }
     }

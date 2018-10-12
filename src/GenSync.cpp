@@ -207,7 +207,7 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
     }
     sort(delList.begin(), delList.end());
 
-    vector<DataObject*> lst;
+    list<DataObject *> lst;
     for (auto item : myData) {
         if (binary_search(delList.begin(), delList.end(), item->to_ZZ())) {
             lst.push_back(item);
@@ -219,9 +219,9 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
         }
     }
 
-for (auto it = lst.begin(); it!=lst.end(); ++it){
-    myData.remove(*it);
-}
+    for (auto it = lst.begin(); it != lst.end(); ++it) {
+        myData.remove(*it);
+    }
 //    for (auto item = myData.begin(); item != myData.end(); ++item) {
 //        if (binary_search(lst.begin(), lst.end(), *item)) {
 //            myData.erase(item);

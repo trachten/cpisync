@@ -7,6 +7,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "kshinglingSync.h"
+#include "PerformanceData.h"
 
 class KshingleSyncPerf : public CPPUNIT_NS::TestFixture {
 CPPUNIT_TEST_SUITE(KshingleSyncPerf);

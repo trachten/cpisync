@@ -22,8 +22,7 @@
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
       <change beforePath="$PROJECT_DIR$/Performance" beforeDir="false" afterPath="$PROJECT_DIR$/Performance" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GenSync.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/GenSync.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testklgperf.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testklgperf.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -105,8 +104,8 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="1731" />
-          <entry key="h" value="735" />
+          <entry key="cpp" value="1773" />
+          <entry key="h" value="744" />
           <entry key="txt" value="65" />
         </counts>
       </usages-collector>
@@ -114,13 +113,13 @@
         <counts>
           <entry key="CMakeLists.txt" value="65" />
           <entry key="Doxygen file" value="5" />
-          <entry key="ObjectiveC" value="2461" />
+          <entry key="ObjectiveC" value="2512" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="cpp" value="44" />
-          <entry key="h" value="30" />
+          <entry key="h" value="31" />
           <entry key="list" value="1" />
           <entry key="make" value="1" />
           <entry key="new" value="1" />
@@ -131,7 +130,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CMakeLists.txt" value="2" />
-          <entry key="ObjectiveC" value="76" />
+          <entry key="ObjectiveC" value="77" />
           <entry key="PLAIN_TEXT" value="8" />
           <entry key="Python" value="1" />
         </counts>
@@ -146,8 +145,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="483">
-              <caret line="39" column="21" selection-start-line="39" selection-start-column="21" selection-end-line="39" selection-end-column="21" />
+            <state relative-caret-position="403">
+              <caret line="34" column="88" selection-start-line="34" selection-start-column="88" selection-end-line="34" selection-end-column="88" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="288">
+              <caret line="16" selection-start-line="16" selection-end-line="16" />
+              <folding>
+                <element signature="e#133#177#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -211,7 +222,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>randZZ</find>
       <find>ZZ</find>
       <find>myIBLT</find>
       <find>zz</find>
@@ -233,7 +243,6 @@
       <find>Gensync::</find>
       <find>&quot;GenPlot.h&quot;</find>
       <find>Alice_txt</find>
-      <find>prepareStringRecon</find>
       <find>FirstTest.txt</find>
       <find>string</find>
       <find>delElemGroup</find>
@@ -241,6 +250,8 @@
       <find>interval</find>
       <find>to_ZZ()</find>
       <find>to_ZZ</find>
+      <find>GenuineIntel</find>
+      <find>prepareStringRecon</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -289,11 +300,11 @@
         <option value="$PROJECT_DIR$/include/Auxiliary.h" />
         <option value="$PROJECT_DIR$/src/kshingling.cpp" />
         <option value="$PROJECT_DIR$/include/PerformanceData.h" />
-        <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h" />
         <option value="$PROJECT_DIR$/src/PerformanceData.cpp" />
-        <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/GenSync.cpp" />
+        <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h" />
+        <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" />
       </list>
     </option>
   </component>
@@ -436,7 +447,7 @@
       <workItem from="1538575870819" duration="12313000" />
       <workItem from="1538600475531" duration="15870000" />
       <workItem from="1539135345064" duration="4190000" />
-      <workItem from="1539300651329" duration="2525000" />
+      <workItem from="1539300651329" duration="2802000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -449,7 +460,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="267121000" />
+    <option name="totallyTimeSpent" value="267398000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -469,12 +480,12 @@
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32919708" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4992057" visible="true" weight="0.32650602" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4992057" weight="0.32650602" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.3421687" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
-      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" weight="0.22168675" />
+      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.22168675" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50039715" side_tool="true" weight="0.32846716" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.329927" />
@@ -789,16 +800,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="636">
-          <caret line="36" column="1" selection-start-line="36" selection-start-column="1" selection-end-line="36" selection-end-column="1" />
-          <folding>
-            <element signature="e#133#177#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/perf/graphGen.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -908,10 +909,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="e#133#177#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="483">
-          <caret line="39" column="21" selection-start-line="39" selection-start-column="21" selection-end-line="39" selection-end-column="21" />
+        <state relative-caret-position="403">
+          <caret line="34" column="88" selection-start-line="34" selection-start-column="88" selection-end-line="34" selection-end-column="88" />
         </state>
       </provider>
     </entry>

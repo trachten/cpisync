@@ -12,11 +12,11 @@ void KshingleSyncPerf::testklgperf() {
     PerformanceData test;
 
     // Test Pts per graph
-    int tesPts = 2;
+    int tesPts = 20;
     // Confidence interval
-    int confidence = 2;
+    int confidence = 1000;
 
-    auto strSizeRange = make_pair(50, 100);
+    auto strSizeRange = make_pair(500, 1000);
     int strSizeinterval = floor((strSizeRange.second - strSizeRange.first) / tesPts);
 
     // Increment string size

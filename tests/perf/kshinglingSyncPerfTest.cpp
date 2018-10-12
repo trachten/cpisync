@@ -14,7 +14,7 @@ void KshingleSyncPerf::testklgperf() {
     // Test Pts per graph
     int tesPts = 20;
     // Confidence interval
-    int confidence = 1000;
+    int confidence = 1;
 
     auto strSizeRange = make_pair(500, 1000);
     int strSizeinterval = floor((strSizeRange.second - strSizeRange.first) / tesPts);

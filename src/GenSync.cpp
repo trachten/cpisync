@@ -343,6 +343,14 @@ const long GenSync::getRecvBytes(int commIndex) const {
     return myCommVec[commIndex]->getRecvBytes();
 }
 
+const long GenSync::getXmitBytesTot(int commIndex) const {
+    return myCommVec[commIndex]->getXmitBytesTot();
+}
+
+const long GenSync::getRecvBytesTot(int commIndex) const {
+    return myCommVec[commIndex]->getRecvBytesTot();
+}
+
 const double GenSync::getSyncTime(int commIndex) const {
     shared_ptr<Communicant> comm = myCommVec[commIndex];
 

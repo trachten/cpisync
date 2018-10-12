@@ -36,6 +36,8 @@
 struct forkHandleReport {
     forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
     long bytes;       // the number of bytes communicated
+    long bytesRTot;    // the number of bytes from total comm
+    long bytesTot;      // the total number of bytes communicated
     double CPUtime;   // the amount of CPU time used
     double totalTime; // total time used
     bool success;     // true iff the sync completed successfully
@@ -46,7 +48,7 @@ struct forkHandleReport {
  * client is modified to reflect reconciliation, whereas server is not.
  * @param client The GenSync object that plays the role of client in the sync.
  * @param server The GenSync object that plays the role of server in the sync.
- * @param isRecon is add element only, or del elemenet as well
+ * @param isRecon is adding element only, flag false for deleting element as well
  * @return Synchronization statistics as reported by the client.
  */
 inline forkHandleReport forkHandle(GenSync& client, GenSync server, bool isRecon= true) {
@@ -72,6 +74,9 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server, bool isRecon
             client.startSync(method_num,isRecon);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
             result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            result.bytesRTot = client.getRecvBytesTot(method_num);
+
+            result.bytesTot = client.getXmitBytesTot(method_num);
             result.bytes = client.getXmitBytes(method_num);
             waitpid(pID, &chld_state, my_opt);
             result.success=true;
@@ -91,7 +96,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server, bool isRecon
  * server is modified to reflect reconciliation, whereas client is not.
  * @param server The GenSync object that plays the role of server in the sync.
  * @param client The GenSync object that plays the role of client in the sync.
- * @param isRecon is add element only, or del elemenet as well
+ * @param isRecon is adding element only, flag false for deleting element as well
  * @return Synchronization statistics as reported by the server.
  */
 

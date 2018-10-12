@@ -216,6 +216,18 @@ public:
 
     /**
      * @param commIndex The index of the Communicant to query (in the order that they were added)
+     * @return The number of bytes transmitted by the Communicant and index #commIndex.
+     */
+    const long getXmitBytesTot(int commIndex) const;
+
+    /**
+     * @param commIndex The index of the Communicant to query (in the order that they were added)
+     * @return The number of bytes received by the Communicant and index #commIndex.
+     */
+    const long getRecvBytesTot(int commIndex) const;
+
+    /**
+     * @param commIndex The index of the Communicant to query (in the order that they were added)
      * @return The amount of CPU time (in seconds) since the last sync request by the Communicant and index #commIndex.
      *          if there was no sync request, the creation time is used.
      */

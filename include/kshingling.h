@@ -112,7 +112,8 @@ public:
 //    }
 
     string getOriginString() {
-        return orig_string;
+        if(orig_string=="" || orig_string == "$$") return "";
+        return orig_string.substr(1,orig_string.size()-2);
     }
 
     vector<pair<string,int>> getShingleSet() {

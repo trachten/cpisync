@@ -22,7 +22,7 @@ public:
      * @param k shingle size; Using CPI sync, m_bar equals edit_distance_bar*k since each edit_distance_bar gets repeated at most k times
      */
     kshinglingSync(GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm,
-                   size_t symbol_size , int m_bar, int num_Parts, int num_ExpElem);
+                   size_t symbol_size , int m_bar, int num_Parts, int num_ExpElem, int port_num=8001);
 
     ~kshinglingSync();
 
@@ -54,6 +54,7 @@ private:
     int cycleNum;
     int numParts;
     int numExpElem;
+    int portNum;
     //K_Shingle host_content;
 };
 

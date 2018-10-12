@@ -7,7 +7,7 @@
 
 
 kshinglingSync::kshinglingSync(GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm,
-                               size_t symbol_size , int m_bar, int num_Parts, int num_ExpElem) {
+                               size_t symbol_size , int m_bar, int num_Parts, int num_ExpElem, int port_num) {
     setSyncProtocol = sync_protocol;
     setSyncComm = sync_comm;
     mbar = m_bar; // 4 is constant if front or/and back is modified
@@ -15,6 +15,7 @@ kshinglingSync::kshinglingSync(GenSync::SyncProtocol sync_protocol,GenSync::Sync
     cycleNum = -1;
     numParts = num_Parts;
     numExpElem = num_ExpElem;
+    portNum = port_num;
 }
 kshinglingSync::~kshinglingSync() = default;
 
@@ -31,6 +32,7 @@ GenSync kshinglingSync::SyncHost(string str,K_Shingle& host_content) {
             setMbar(mbar).
             setNumPartitions(numParts).
             setBits(bits).
+            setPort(portNum).
             setNumExpectedElements(numExpElem).
             build();
 

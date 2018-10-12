@@ -22,17 +22,17 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 5;
+    int string_len = 1000;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
-    int shingle_len = 3;
-    int editDistance_bar = 1;
-    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
+    int shingle_len = 4;
+    int editDistance_bar = 10;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 
-    string Alicetxt = "owen";//randAsciiStr(string_len);
+    string Alicetxt = randAsciiStr(string_len);
     K_Shingle Alice_content = K_Shingle(shingle_len);
-    string Bobtxt = "Bowen";//randStringEdit(Alicetxt, editDistance_bar);
+    string Bobtxt = randStringEdit(Alicetxt, editDistance_bar);
     K_Shingle Bob_content = K_Shingle(shingle_len);
 
     //see the actual num of diff
@@ -45,13 +45,13 @@ void kshinglingSyncTest::testAll() {
     //number of difference between should alwasy be editDistance_bar*(shingle_len-1)
 
     //CPISync Setup
-    //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*8,ceil(numDif*2.3), 0,0);
+    kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*8,ceil(numDif*2.3), 0,0);
 
     //InteractiveCPISync Set up
-    //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*8, 2, 3, 0);
+    //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*8, 7, 7, 0);
 
     //IBLTSync Setup
-    kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 8, 0, 0, 80);
+    //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 8, 0, 0, numDif*10);
 
 
     GenSync Alice = kshingling.SyncHost(Alicetxt, Alice_content);
@@ -61,10 +61,11 @@ void kshinglingSyncTest::testAll() {
     forkHandleReport report = kshingling.SyncNreport(Alice, Bob);
 
 
-    CPPUNIT_ASSERT(report.bytes > 0);
+    CPPUNIT_ASSERT(report.bytesRTot > 0);
     CPPUNIT_ASSERT(report.success);
     cout << "numDif: " + to_string(numDif) << endl;
     cout << "bits: " + to_string(report.bytes) << endl;
+    cout << "bitsT: " + to_string(report.bytesTot) << endl;
     auto resa = kshingling.getString(Alice, Alice_content);
     auto resb = kshingling.getString(Bob, Bob_content);
 

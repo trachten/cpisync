@@ -21,7 +21,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Performance" beforeDir="false" afterPath="$PROJECT_DIR$/Performance" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GenSync.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/GenSync.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testklgperf.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testklgperf.txt" afterDir="false" />
@@ -106,7 +105,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="1710" />
+          <entry key="cpp" value="1726" />
           <entry key="h" value="735" />
           <entry key="txt" value="65" />
         </counts>
@@ -115,7 +114,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="65" />
           <entry key="Doxygen file" value="5" />
-          <entry key="ObjectiveC" value="2440" />
+          <entry key="ObjectiveC" value="2456" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -147,7 +146,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/PerformanceData.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="810">
+            <state relative-caret-position="183">
               <caret line="45" column="16" selection-start-line="45" selection-start-column="6" selection-end-line="45" selection-end-column="16" />
               <folding>
                 <element signature="e#114#134#0" expanded="true" />
@@ -159,8 +158,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="293">
-              <caret line="220" lean-forward="true" selection-start-line="220" selection-end-line="220" />
+            <state relative-caret-position="383">
+              <caret line="222" column="19" selection-start-line="222" selection-start-column="19" selection-end-line="222" selection-end-column="19" />
               <folding>
                 <element signature="e#127#146#0" expanded="true" />
               </folding>
@@ -182,21 +181,9 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/new">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4230">
-              <caret line="235" selection-start-line="235" selection-end-line="235" />
-              <folding>
-                <element signature="e#9988#10021#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2052">
+            <state relative-caret-position="294">
               <caret line="114" column="19" selection-start-line="114" selection-start-column="14" selection-end-line="114" selection-end-column="19" />
               <folding>
                 <element signature="e#329#347#0" expanded="true" />
@@ -208,40 +195,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/DataObject.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1026">
+            <state relative-caret-position="449">
               <caret line="57" column="17" selection-start-line="57" selection-start-column="17" selection-end-line="57" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file:///usr/local/include/NTL/ZZ.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1188">
-              <caret line="66" selection-start-line="66" selection-end-line="66" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Documents/GitHub/ntl-10.5.0/src/lip.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="26820">
-              <caret line="1490" selection-start-line="1490" selection-end-line="1490" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Documents/GitHub/ntl-10.5.0/include/NTL/tools.h">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file:///usr/local/include/NTL/tools.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8622">
-              <caret line="479" selection-start-line="479" selection-end-line="479" />
             </state>
           </provider>
         </entry>
@@ -475,7 +430,7 @@
       <workItem from="1538575870819" duration="12313000" />
       <workItem from="1538600475531" duration="15870000" />
       <workItem from="1539135345064" duration="4190000" />
-      <workItem from="1539300651329" duration="1627000" />
+      <workItem from="1539300651329" duration="1917000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -488,7 +443,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="266223000" />
+    <option name="totallyTimeSpent" value="266513000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -878,16 +833,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/PerformanceData.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="810">
-          <caret line="45" column="16" selection-start-line="45" selection-start-column="6" selection-end-line="45" selection-end-column="16" />
-          <folding>
-            <element signature="e#114#134#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/new">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4230">
@@ -898,34 +843,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2052">
-          <caret line="114" column="19" selection-start-line="114" selection-start-column="14" selection-end-line="114" selection-end-column="19" />
-          <folding>
-            <element signature="e#329#347#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/DataObject.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1026">
-          <caret line="57" column="17" selection-start-line="57" selection-start-column="17" selection-end-line="57" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/include/NTL/ZZ.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1188">
           <caret line="66" selection-start-line="66" selection-end-line="66" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Documents/GitHub/ntl-10.5.0/src/lip.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="26820">
-          <caret line="1490" selection-start-line="1490" selection-end-line="1490" />
         </state>
       </provider>
     </entry>
@@ -950,10 +871,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/Documents/GitHub/ntl-10.5.0/src/lip.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="1490" selection-start-line="1490" selection-end-line="1490" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DataObject.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="449">
+          <caret line="57" column="17" selection-start-line="57" selection-start-column="17" selection-end-line="57" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Auxiliary.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="114" column="19" selection-start-line="114" selection-start-column="14" selection-end-line="114" selection-end-column="19" />
+          <folding>
+            <element signature="e#329#347#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/PerformanceData.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="45" column="16" selection-start-line="45" selection-start-column="6" selection-end-line="45" selection-end-column="16" />
+          <folding>
+            <element signature="e#114#134#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="220" lean-forward="true" selection-start-line="220" selection-end-line="220" />
+        <state relative-caret-position="383">
+          <caret line="222" column="19" selection-start-line="222" selection-start-column="19" selection-end-line="222" selection-end-column="19" />
           <folding>
             <element signature="e#127#146#0" expanded="true" />
           </folding>

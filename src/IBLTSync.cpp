@@ -90,6 +90,7 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
             selfMinusOther.push_back(new DataObject(pair.first));
         }
 
+
         if(!oneWay) {
             commSync->commSend(selfMinusOther);
             commSync->commSend(otherMinusSelf);

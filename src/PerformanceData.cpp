@@ -48,7 +48,7 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 
             auto Alice_set = Alice_content.getShingleSet_str(Alice_txt);
             auto Bob_set = Bob_content.getShingleSet_str(Bob_txt);
-            int mbar = multisetDiff(Alice_set, Bob_set).size();
+            mbar = multisetDiff(Alice_set, Bob_set).size();
             break;
         }
         default:
@@ -86,7 +86,7 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 
 
 // can start timing
-void PerformanceData::calCostReport(bool check_outcome) {
+void PerformanceData::calCostReport(PlotType plot_type,bool check_outcome) {
     forkHandleReport res;
     bool success = false;
     // while not success, we increase the edit distance
@@ -103,11 +103,12 @@ void PerformanceData::calCostReport(bool check_outcome) {
 
                 // Prepare to Sync Alice
                 // TODO: Enable IBLT and fill up the last parameter
-                kshinglingSync kshingling = kshinglingSync(baseSetProto, GenSync::SyncComm::socket, bits, mbar, numParts, 0);
+                kshinglingSync kshingling = kshinglingSync(baseSetProto, GenSync::SyncComm::socket, bits, mbar,
+                                                           numParts, 0);
 
                 K_Shingle Alice_content = K_Shingle(shingleLen);
                 GenSync Alice = kshingling.SyncHost(AliceTxt, Alice_content);
-                time = clock()-time; // One side get shingles ready time
+                time = clock() - time; // One side get shingles ready time
 
                 // Prepare Bob
                 K_Shingle Bob_content = K_Shingle(shingleLen);
@@ -121,7 +122,7 @@ void PerformanceData::calCostReport(bool check_outcome) {
                 time = time - clock();
 
                 if (check_outcome) {
-                    success = ( tmpstr== BobTxt);
+                    success = (tmpstr == BobTxt);
                 } else {
                     success = check_outcome;
                 }
@@ -131,15 +132,26 @@ void PerformanceData::calCostReport(bool check_outcome) {
             break;
     }
 
-    // cpu time plot
-    plot2D("CPU Time:" + stringReconProtoName + "-" + setReconProtoName+"-str="+to_string(stringSize), editDist, res.CPUtime + ((double)time));
-    // comm plot
-    plot2D("Comm Cost:" + stringReconProtoName + "-" + setReconProtoName+"-str="+to_string(stringSize), editDist, res.bytes);
+    if (plot_type == PlotType::PLOT2D || plot_type == PlotType::BOTH) {
+        // cpu time plot
+        plot2D("CPU Time:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize), editDist,
+               res.CPUtime + ((double) time));
+        // comm plot
+        plot2D("Comm Cost:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize),
+               editDist, res.bytes);
 
-    //
-    plot3D("Comm3D:" + stringReconProtoName + "-" + setReconProtoName, editDist,stringSize,res.bytes);
+        plot2D("Comm Cost:FullSync-str="+ to_string(stringSize),editDist, 14 + (stringSize + 2) * 8);
+    }
 
-    plot3D("CPUTime3D:" + stringReconProtoName + "-" + setReconProtoName, editDist,stringSize,res.CPUtime + ((double)time));
+    if (plot_type == PlotType::PLOT3D || plot_type == PlotType::BOTH) {
+        //
+        plot3D("Comm3D:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize, res.bytes);
+
+        plot3D("CPUTime3D:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize,
+               res.CPUtime + ((double) time));
+
+        plot3D("Comm3D:FullSync-str="+ to_string(stringSize), editDist, stringSize, 14 + (stringSize + 2) * 8);
+    }
 }
 
 

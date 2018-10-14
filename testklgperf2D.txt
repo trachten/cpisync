@@ -1,0 +1,18 @@
+Label:CPU Time:Kshingle-InterCPI-str=1000
+X:1,100,199,
+Y:36574,37184,32091,
+Label:CPU Time:Kshingle-InterCPI-str=500
+X:1,50,99,
+Y:11829,12429,9382,
+Label:Comm Cost:FullSync-str=1000
+X:1,100,199,
+Y:8030,8030,8030,
+Label:Comm Cost:FullSync-str=500
+X:1,50,99,
+Y:4030,4030,4030,
+Label:Comm Cost:Kshingle-InterCPI-str=1000
+X:1,100,199,
+Y:361,370,425,
+Label:Comm Cost:Kshingle-InterCPI-str=500
+X:1,50,99,
+Y:335,371,371,

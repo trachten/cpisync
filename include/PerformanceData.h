@@ -21,6 +21,12 @@ public:
         END
     };
 
+    enum class PlotType {
+        PLOT2D,
+        PLOT3D,
+        BOTH
+    };
+
     /**
      * Perpare a shing recon method for random string and random edits testing
      * @param string_size size of the string
@@ -40,7 +46,7 @@ public:
      * @param check_outcome check if reconciliation is successful
      * @return cost report
      */
-    void calCostReport(bool check_outcome=true);
+    void calCostReport(PlotType plot_type, bool check_outcome=true);
 
     void genReport(string file_name){
       write2file(file_name);

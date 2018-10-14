@@ -86,19 +86,19 @@ void IBLTSyncTest::stringReconFullTest() {
             setProtocol(GenSync::SyncProtocol::IBLTSync).
             setComm(GenSync::SyncComm::socket).
             setBits(BITS).
-            setNumExpectedElements(EXP_Diff).
+            setNumExpectedElements(EXP_NumE).
             build();
 
     GenSync Bob = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::IBLTSync).
             setComm(GenSync::SyncComm::socket).
             setBits(BITS).
-            setNumExpectedElements(EXP_Diff).
+            setNumExpectedElements(EXP_NumE).
             build();
 
     vector<ZZ> ALL_ELEM;
     for (int i = 0; i < EXP_NumE; ++i) {
-        ALL_ELEM.push_back(StrtoZZ(randAsciiStr(8)));
+        ALL_ELEM.push_back(StrtoZZ(randAsciiStr(4)));
     }
 
     for (int j = 0; j < EXP_NumE; ++j) {
@@ -108,7 +108,7 @@ void IBLTSyncTest::stringReconFullTest() {
     for (int j = 0; j < EXP_Diff; ++j) {
         Bob.addElem(new DataObject(ALL_ELEM[j]));
     }
-    forkHandleReport res = forkHandle(Alice,Bob, false);
+    forkHandleReport res = forkHandle(Alice,Bob, true);
     auto a = Alice.dumpElements();
 cout << "Comm:" + to_string(res.bytes)<<endl;
 cout << "Comm Tot:" + to_string(res.bytesTot)<<endl;

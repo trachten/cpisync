@@ -23,14 +23,14 @@ void KshingleSyncPerf::testklgperf() {
     for (int strSize = strSizeRange.first; strSize <= strSizeRange.second; strSize += strSizeinterval) {
 
 
-        int shingleLen = ceil(log2(strSize));
+        int shingleLen = 5;
 
         auto editDistRange = make_pair(1, floor(strSize / shingleLen));
         int editDistinterval = floor((editDistRange.second - editDistRange.first) / tesPts);
         for (int editDist = editDistRange.first; editDist <= editDistRange.second; editDist += editDistinterval) {
 
             // Declear what set reconciliation we are testing
-            auto setReconProto = {GenSync::SyncProtocol::CPISync, GenSync::SyncProtocol::InteractiveCPISync};
+            auto setReconProto = {GenSync::SyncProtocol::InteractiveCPISync};
             // Declear what string reconciliation we are testing
             auto strReconProto = {PerformanceData::StringReconProtocol::KshinglingSync};
 

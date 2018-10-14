@@ -222,40 +222,7 @@ void GenSync::delElemGroup(list<DataObject *> newDatumList) {
     for (auto it = lst.begin(); it != lst.end(); ++it) {
         myData.remove(*it);
     }
-//    for (auto item = myData.begin(); item != myData.end(); ++item) {
-//        if (binary_search(lst.begin(), lst.end(), *item)) {
-//            myData.erase(item);
-//        }
-//    }
 
-//    for (auto item = myData.begin(); item != myData.end();++item) {
-//        if (binary_search(delList.begin(), delList.end(), (*item)->to_string())) {
-//            for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
-//                if (!(*itAgt)->delElem(*item)) {
-//                    Logger::error_and_quit("Could not del item . check if item is first inserted.");
-//                }
-//            }
-//            myData.erase(item);
-//        }
-//    }
-
-
-//
-//    for (auto )
-    // store locally
-//    for (auto newDatum : newDatumList) {
-//        // update synch methods' metadata
-//        vector<shared_ptr<SyncMethod>>::iterator itAgt;
-//        for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
-//            if (!(*itAgt)->delElem(newDatum))
-//                Logger::error_and_quit("Could not del item " + newDatum->to_string() +
-//                                       ".  check if item is first inserted.");
-//        }
-//
-//        // update file
-//        if (outFile != nullptr)
-//            (*outFile) << newDatum->to_string() << endl;
-//    }
 }
 
 

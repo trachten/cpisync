@@ -14,6 +14,7 @@
 class IBLTTest : public CPPUNIT_NS::TestFixture{
     CPPUNIT_TEST_SUITE(IBLTTest);
     CPPUNIT_TEST(testAll);
+    CPPUNIT_TEST(difTest);
     CPPUNIT_TEST_SUITE_END();
 public:
     IBLTTest();
@@ -23,6 +24,8 @@ public:
 
     // Tests every function in IBLT together, except for size
     void testAll();
+    // test if IBLT can recover differences
+    void difTest();
 };
 
 

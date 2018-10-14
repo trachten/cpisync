@@ -78,48 +78,40 @@ void IBLTSyncTest::testGetStrings() {
 }
 
 void IBLTSyncTest::stringReconFullTest() {
-    const int BITS = sizeof(DataObject*);
-    const int EXP_ELEM = UCHAR_MAX * 2;
+    const int BITS = 8;
+    const int EXP_NumE = 500;
+    const int EXP_Diff = 40;
 
-    GenSync GenSyncServer = GenSync::Builder().
+    GenSync Alice = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::IBLTSync).
             setComm(GenSync::SyncComm::socket).
             setBits(BITS).
-            setNumExpectedElements(EXP_ELEM).
+            setNumExpectedElements(EXP_Diff).
             build();
 
-    GenSync GenSyncClient = GenSync::Builder().
+    GenSync Bob = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::IBLTSync).
             setComm(GenSync::SyncComm::socket).
             setBits(BITS).
-            setNumExpectedElements(EXP_ELEM).
+            setNumExpectedElements(EXP_Diff).
             build();
 
-    const int ITEMS = 50;
-    IBLTSync ibltSync(ITEMS, BITS);
-    multiset<DataObject *, cmp<DataObject*>> elts;
-
-    // check that add works
-    for(int ii = 0; ii < ITEMS; ii++) {
-        DataObject* item = new DataObject(randAsciiStr(4));
-        elts.insert(item);
-        CPPUNIT_ASSERT(ibltSync.addElem(item));
+    vector<ZZ> ALL_ELEM;
+    for (int i = 0; i < EXP_NumE; ++i) {
+        ALL_ELEM.push_back(StrtoZZ(randAsciiStr(8)));
     }
 
-    // check that elements can be recovered correctly through iterators
-    multiset<DataObject *, cmp<DataObject*>> resultingElts;
-    for(auto iter = ibltSync.beginElements(); iter != ibltSync.endElements(); ++iter) {
-        resultingElts.insert(*iter);
+    for (int j = 0; j < EXP_NumE; ++j) {
+        Alice.addElem(new DataObject(ALL_ELEM[j]));
     }
 
-    vector<DataObject *> diff;
-    rangeDiff(resultingElts.begin(), resultingElts.end(), elts.begin(), elts.end(), back_inserter(diff));
-    CPPUNIT_ASSERT(diff.empty());
-
-    // check that delete works
-    for(auto dop : elts) {
-        CPPUNIT_ASSERT(ibltSync.delElem(dop));
+    for (int j = 0; j < EXP_Diff; ++j) {
+        Bob.addElem(new DataObject(ALL_ELEM[j]));
     }
+    forkHandleReport res = forkHandle(Alice,Bob, false);
+    auto a = Alice.dumpElements();
+cout << "Comm:" + to_string(res.bytes)<<endl;
+cout << "Comm Tot:" + to_string(res.bytesTot)<<endl;
+cout << "Time:" + to_string(res.totalTime)<<endl;
 
-    syncTestProb(GenSyncServer, GenSyncClient);
 }

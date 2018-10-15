@@ -21,6 +21,7 @@
 #include "IBLTSync_HalfRound.h"
 #include "CPISync_HalfRound.h"
 #include "FullSync.h"
+#include "IBLTSync_SetDiff.h"
 //#include "kshinglingSync.h"
 
 /**
@@ -394,8 +395,11 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::OneWayIBLTSync:
             myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
             break;
+        case SyncProtocol ::IBLTSyncSetDiff:
+            myMeth = make_shared<IBLTSync_SetDiff>(mbar,bits);
+            break;
 //        case SyncProtocol::kshinglingSync:
-//            myMeth = make_shared<kshinglingSync>(shingle_len, base_set_proto, edit_distance, bits);
+//            myMeth = make_shared<kshinglingSync>(shingleLen, baseSetProto, editDistance, bits);
 //            break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");

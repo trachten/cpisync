@@ -81,7 +81,7 @@ bool Communicant::establishModSend(bool oneWay /* = false */) {
     commSend(ZZ_p::modulus());
     MOD_SIZE = NumBytes(ZZ_p::modulus());
     if (oneWay)
-        return true;  // i.e. don't want for a response
+        return true;  // i.e. don't wait for a response
     else
         return (commRecv_byte() != SYNC_FAIL_FLAG);
 }

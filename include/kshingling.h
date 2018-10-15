@@ -77,7 +77,7 @@ public:
      * @param strColl a vector of strings that is returnable from the shingle set, Returnable object
      * @param str current string
      */
-    void shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, vector<string>& strCollect, int & str_order, string str="" );
+    void shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, int & strCollect_ind, int & str_order, string &final_str,string str="" );
 
     /**
      * Reconstruct a string from object's shingle set

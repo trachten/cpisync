@@ -39,7 +39,8 @@ set(SOURCE_FILES
         ${SRC_DIR}/kshinglingSync.cpp
         ${SRC_DIR}/UniqueDecode.cpp
         ${SRC_DIR}/AdjMtx.cpp
-        ${SRC_DIR}/PerformanceData.cpp)
+        ${SRC_DIR}/PerformanceData.cpp
+        ${SRC_DIR}/IBLTSync_SetDiff.cpp tests/unit/IBLTSyncDiffTest.h tests/unit/IBLTSyncDiffTest.cpp)
 
 #cppunit
 include_directories(include)

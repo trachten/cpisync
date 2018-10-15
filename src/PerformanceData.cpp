@@ -46,8 +46,8 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
             K_Shingle Alice_content = K_Shingle(shingleLen);
             K_Shingle Bob_content = K_Shingle(shingleLen);
 
-            auto Alice_set = Alice_content.getShingleSet_str(Alice_txt);
-            auto Bob_set = Bob_content.getShingleSet_str(Bob_txt);
+            auto Alice_set = Alice_content.getShingleSet_str(AliceTxt);
+            auto Bob_set = Bob_content.getShingleSet_str(BobTxt);
             mbar = multisetDiff(Alice_set, Bob_set).size();
             break;
         }
@@ -92,7 +92,7 @@ void PerformanceData::calCostReport(PlotType plot_type,bool check_outcome) {
     // while not success, we increase the edit distance
 
 
-    clock_t time = clock(); // init clock
+    long time = clock(); // init clock
 
 
 
@@ -131,30 +131,39 @@ void PerformanceData::calCostReport(PlotType plot_type,bool check_outcome) {
         default:
             break;
     }
+    long comm_cost = res.bytesTot;
+    //for Interactive CPI we care bout the total comm cost
+    if (baseSetProto==GenSync::SyncProtocol::InteractiveCPISync) comm_cost +=res.bytesRTot;
 
     if (plot_type == PlotType::PLOT2D || plot_type == PlotType::BOTH) {
         // cpu time plot
-        plot2D("CPU Time:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize), editDist,
-               res.CPUtime + ((double) time));
+        plot2D("CPUTime:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize), editDist,
+               res.CPUtime);
         // comm plot
-        plot2D("Comm Cost:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize),
-               editDist, res.bytes);
+        plot2D("CommCost:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize),
+               editDist, comm_cost);
 
-        plot2D("Comm Cost:FullSync-str="+ to_string(stringSize),editDist, 14 + (stringSize + 2) * 8);
+        plot2D("CommCost(setDiff):" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize),
+               mbar, comm_cost);
+
+        plot2D("EditDistNSetDiff:str=" + to_string(stringSize), editDist, mbar); // mbar is actual set difference
+
+        plot2D("CommCost:FullSync-str=" + to_string(stringSize), editDist, 14 + (stringSize) * 8);
     }
 
     if (plot_type == PlotType::PLOT3D || plot_type == PlotType::BOTH) {
         //
-        plot3D("Comm3D:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize, res.bytes);
+        plot3D("CommCost:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize, comm_cost);
+        plot3D("CommCost(setDiff):" + stringReconProtoName + "-" + setReconProtoName, mbar, stringSize, comm_cost);
 
-        plot3D("CPUTime3D:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize,
-               res.CPUtime + ((double) time));
+        plot3D("CPUTime:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize,
+               res.CPUtime);
 
-        plot3D("Comm3D:FullSync-str="+ to_string(stringSize), editDist, stringSize, 14 + (stringSize + 2) * 8);
+        plot3D("EditDistNSetDiff:", editDist, stringSize, mbar); // mbar is actual set difference
+
+        plot3D("CommCost:FullSync", editDist, stringSize, 14 + (stringSize) * 8);
     }
 }
-
-
 
 void PerformanceData::plot2D(string label, long X, long Y){
     if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there

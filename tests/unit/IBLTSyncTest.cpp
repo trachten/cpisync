@@ -5,6 +5,7 @@
 #include "IBLTSyncTest.h"
 #include "GenSync.h"
 #include "IBLTSync.h"
+#include "IBLTSync_SetDiff.h"
 #include "TestAuxiliary.h"
 CPPUNIT_TEST_SUITE_REGISTRATION(IBLTSyncTest);
 

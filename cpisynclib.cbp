@@ -210,6 +210,9 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/IBLTSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/IBLTSync_SetDiff.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/InterCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -295,6 +298,13 @@
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/FullSyncTest.h">
 			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTSyncDiffTest.cpp">
+			<Option target="UnitTest"/>
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTSyncDiffTest.h">
+			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTSyncTest.cpp">
 			<Option target="UnitTest"/>

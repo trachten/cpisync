@@ -13,6 +13,7 @@
 #include "GenSync.h"
 #include "FullSync.h"
 #include "ForkHandle.h"
+#include "IBLTSync_SetDiff.h"
 
 #ifndef CPISYNCLIB_GENERIC_SYNC_TESTS_H
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
@@ -30,7 +31,6 @@ const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
-
 // helpers
 
 /**
@@ -71,6 +71,11 @@ inline vector<GenSync> builderCombos() {
                     builder.
                             setBits(eltSize).
                             setNumExpectedElements(numExpElem);
+                    break;
+                case GenSync::SyncProtocol::IBLTSyncSetDiff:
+                    builder.
+                            setBits(eltSize).
+                            setNumExpectedDifference(mBar);
                     break;
                 default:
                     continue;
@@ -127,6 +132,9 @@ inline vector<GenSync> constructorCombos(bool useFile) {
                     break;
                 case GenSync::SyncProtocol::OneWayIBLTSync:
                     methods = {make_shared<IBLTSync_HalfRound>(numExpElem, eltSize)};
+                    break;
+                case GenSync::SyncProtocol::IBLTSyncSetDiff:
+                    methods = {make_shared<IBLTSync_SetDiff>(mBar,eltSize)};
                     break;
                 default:
                     continue;

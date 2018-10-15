@@ -86,7 +86,7 @@ vector<pair<string,int>>  K_Shingle::getEdges(const string verStart, vector<pair
 }
 
 pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
-    vector<string> str_collect;
+    int strCollect_ind = 0;
     string startString;
     vector<pair<string,int>> changed_shingleSet = shingleSet;
     //sort it in lexicographic order
@@ -102,12 +102,12 @@ pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
 // Get the string or string cycle number
     if (startString.size()>0) {
 //        // Delete the first edge by value
-//        changed_shingleSet.erase(remove(changed_shingleSet.begin(), changed_shingleSet.end(), startedge[0]), changed_shingleSet.end());
-        shingle2string(changed_shingleSet, startString, str_collect,strOrder, startString);
-        if(str_collect.size()==0 ||str_collect.size()<=strOrder){ // failed to recover a string
+        string final_str;
+        shingle2string(changed_shingleSet, startString, strCollect_ind,strOrder, final_str, startString);
+        if(strCollect_ind==0 || strCollect_ind<=strOrder){ // failed to recover a string
             return make_pair("",-1);  // return -1 for fail
         }
-        return make_pair(str_collect[strOrder],strOrder);
+        return make_pair(final_str,strOrder);
     } else {
         throw invalid_argument("Shingle Set does not have a start point");
     }
@@ -115,7 +115,7 @@ pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
 
 
 
-void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, vector<string>& strCollect,int &str_order, string str) {
+void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, int &strCollect_ind,int &str_order,string &finalstr, string str) {
 
     auto lst = getEdges(curEdge.substr(1), changed_shingleSet);
     for (auto it = lst.begin(); it != lst.end(); ++it) {
@@ -131,15 +131,16 @@ void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, stri
         }
         if (tempedge.first.substr(k - 1) == stopword) {
             if (changed_shingleSet.size() == 0) {
-                strCollect.push_back(str.substr(1,str.size()-2));
-                if (str == orig_string || strCollect.size() - 1 == str_order) {
-                    str_order = strCollect.size() - 1;
+                strCollect_ind++;
+                if (str == orig_string || strCollect_ind - 1 == str_order) {
+                    str_order = strCollect_ind - 1;
+                    finalstr = str.substr(1,str.size()-2);
                 }
             }
 
         }
-        shingle2string(changed_shingleSet, tempedge.first, strCollect, str_order, str);
-        if (strCollect.size()-1==str_order && str_order!=-1){
+        shingle2string(changed_shingleSet, tempedge.first, strCollect_ind, str_order, finalstr, str);
+        if (strCollect_ind-1==str_order && str_order!=-1){
             return;
         }
         if (tempedge.second > 1) {

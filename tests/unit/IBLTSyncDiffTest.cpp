@@ -96,7 +96,7 @@ void IBLTSyncDiffTest::stringReconFullTest() {
         ALL_ELEM.push_back(StrtoZZ(randAsciiStr(4)));
     }
 
-    for (int j = EXP_Diff; j < EXP_NumE; ++j) {
+    for (int j = EXP_Diff+1; j < EXP_NumE; ++j) {
         Alice.addElem(new DataObject(ALL_ELEM[j]));
     }
 

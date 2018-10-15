@@ -63,11 +63,11 @@ void IBLTTest::difTest(){
 
     IBLT ibltA(SIZE/20, ITEM_SIZE);
     IBLT ibltB(SIZE/20, ITEM_SIZE);
-    for(int ii=0; ii < SIZE; ii++) {
+    for(int ii =SIZE/20; ii < SIZE; ii++) {
         ibltA.insert(items.at(ii).first, items.at(ii).second);
     }
 
-    for(int ii=SIZE/20; ii < SIZE; ii++) {
+    for(int ii=0; ii < SIZE; ii++) {
         ibltB.insert(items.at(ii).first, items.at(ii).second);
     }
     vector<pair<ZZ, ZZ>> plus={}, minus={};

@@ -81,14 +81,14 @@ void IBLTSyncDiffTest::stringReconFullTest() {
             setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
             setComm(GenSync::SyncComm::socket).
             setBits(BITS).
-            setNumExpectedDifference(EXP_NumE).
+            setNumExpectedDifference(EXP_Diff).
             build();
 
     GenSync Bob = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
             setComm(GenSync::SyncComm::socket).
             setBits(BITS).
-            setNumExpectedDifference(EXP_NumE).
+            setNumExpectedDifference(EXP_Diff).
             build();
 
     vector<ZZ> ALL_ELEM;
@@ -96,17 +96,18 @@ void IBLTSyncDiffTest::stringReconFullTest() {
         ALL_ELEM.push_back(StrtoZZ(randAsciiStr(4)));
     }
 
-    for (int j = 0; j < EXP_NumE; ++j) {
+    for (int j = EXP_Diff; j < EXP_NumE; ++j) {
         Alice.addElem(new DataObject(ALL_ELEM[j]));
     }
 
-    for (int j = 0; j < EXP_Diff; ++j) {
+    for (int j = 0; j < EXP_NumE; ++j) {
         Bob.addElem(new DataObject(ALL_ELEM[j]));
     }
     forkHandleReport res = forkHandle(Alice,Bob, true);
-    //CPPUNIT_ASSERT(Bob.dumpElements().size()== Alice.dumpElements().size());
+    CPPUNIT_ASSERT(Bob.dumpElements().size()== Alice.dumpElements().size());
     cout << "Comm:" + to_string(res.bytes)<<endl;
     cout << "Comm Tot:" + to_string(res.bytesTot)<<endl;
     cout << "Time:" + to_string(res.totalTime)<<endl;
+
 
 }

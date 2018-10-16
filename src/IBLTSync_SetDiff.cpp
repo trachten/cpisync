@@ -21,7 +21,6 @@ bool IBLTSync_SetDiff::SyncClient(const shared_ptr<Communicant> &commSync, list<
 
     // connect to server
     commSync->commConnect();
-
     // ensure that the IBLT size and eltSize equal those of the server
     if(!commSync->establishIBLTSend(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
         Logger::gLog(Logger::METHOD_DETAILS,
@@ -70,12 +69,14 @@ bool IBLTSync_SetDiff::SyncServer(const shared_ptr<Communicant> &commSync, list<
 
     // more efficient than - and modifies theirs, which we don't care about
     vector<pair<ZZ, ZZ>> positive, negative;
-    if(!(theirs -= myIBLT).listEntries(positive, negative)) {
+
+    if(!(theirs-=myIBLT).listEntries(positive, negative)) {
         Logger::gLog(Logger::METHOD_DETAILS,
                      "Unable to completely reconcile, returning a partial list of differences");
         success = false;
     }
-
+    cout<<"pos:"+to_string(positive.size())<<endl;
+    cout<<"neg:"+to_string(negative.size())<<endl;
     // store values because they're what we care about
     for(auto pair : positive) {
         otherMinusSelf.push_back(new DataObject(pair.second));
@@ -85,7 +86,7 @@ bool IBLTSync_SetDiff::SyncServer(const shared_ptr<Communicant> &commSync, list<
         selfMinusOther.push_back(new DataObject(pair.first));
     }
 
-
+    // send the difference
     if(!oneWay) {
         commSync->commSend(selfMinusOther);
         commSync->commSend(otherMinusSelf);

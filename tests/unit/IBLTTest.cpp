@@ -53,28 +53,29 @@ void IBLTTest::testAll() {
 }
 
 void IBLTTest::difTest(){
-    vector<pair<ZZ, ZZ>> items;
+    vector<ZZ> items;
     const int SIZE = 500; // should be even
-
+    const int diff = 35;
     const size_t ITEM_SIZE = sizeof(randZZ());
     for(int ii = 0; ii < SIZE; ii++) {
-        items.push_back({randZZ(), randZZ()});
+        auto tmp = randZZ();
+        items.push_back(tmp);
     }
 
-    IBLT ibltA(SIZE/20, ITEM_SIZE);
-    IBLT ibltB(SIZE/20, ITEM_SIZE);
-    for(int ii =SIZE/20; ii < SIZE; ii++) {
-        ibltA.insert(items.at(ii).first, items.at(ii).second);
+    IBLT ibltA(diff, ITEM_SIZE);
+    IBLT ibltB(diff, ITEM_SIZE);
+    for(int ii =diff; ii < SIZE; ii++) {
+        ibltA.insert(items.at(ii), items.at(ii));
     }
 
     for(int ii=0; ii < SIZE; ii++) {
-        ibltB.insert(items.at(ii).first, items.at(ii).second);
+        ibltB.insert(items.at(ii), items.at(ii));
     }
     vector<pair<ZZ, ZZ>> plus={}, minus={};
     CPPUNIT_ASSERT(not ibltA.listEntries(plus,minus));
-    ibltA-=ibltB;
+//    ibltA-=ibltB;
     plus.clear();
     minus.clear();
-    CPPUNIT_ASSERT(ibltA.listEntries(plus,minus));
+    CPPUNIT_ASSERT((ibltA-=ibltB).listEntries(plus,minus));
 
 }

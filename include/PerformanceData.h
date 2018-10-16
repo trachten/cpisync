@@ -72,8 +72,8 @@ private:
 
 
     //GenPlot
-    map<string,vector<vector<long>>> data3D; // map<label,content(X,Y,Z)>
-    map<string,vector<vector<long>>> data2D; // map<label,content(X,Y)>
+    map<string,vector<vector<double>>> data3D; // map<label,content(X,Y,Z)>
+    map<string,vector<vector<double>>> data2D; // map<label,content(X,Y)>
     string fileName;
 
 
@@ -84,7 +84,7 @@ private:
   * @param X
   * @param Y
   */
-    void plot2D(string label, long X, long Y);
+    void plot2D(string label, double X, double Y);
     /**
      * Store Values in Genplot class - for 3D plots
      * Find the right label and add the data
@@ -93,7 +93,7 @@ private:
      * @param Y
      * @param Z
      */
-    void plot3D(string label, long X, long Y, long Z);
+    void plot3D(string label, double X, double Y, double Z);
 
     /**
      * Export Data into a txt file for python code to process

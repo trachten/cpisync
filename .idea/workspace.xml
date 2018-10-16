@@ -21,17 +21,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Performance" beforeDir="false" afterPath="$PROJECT_DIR$/Performance" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/PerformanceData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/PerformanceData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/IBLTSync_SetDiff.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/IBLTSync_SetDiff.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PerformanceData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/PerformanceData.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testklgperf2D.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/testklgperf2D.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testklgperf3D.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/testklgperf3D.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphGen.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphGen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testklgperf2D.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testklgperf2D.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testklgperf3D.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testklgperf3D.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/IBLTSyncDiffTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/IBLTSyncDiffTest.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/IBLTTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/IBLTTest.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -115,7 +109,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="4792" />
+          <entry key="cpp" value="5068" />
           <entry key="h" value="1511" />
           <entry key="txt" value="108" />
         </counts>
@@ -124,7 +118,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="108" />
           <entry key="Doxygen file" value="5" />
-          <entry key="ObjectiveC" value="6298" />
+          <entry key="ObjectiveC" value="6574" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -165,8 +159,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="50" lean-forward="true" selection-start-line="50" selection-end-line="50" />
+            <state relative-caret-position="398">
+              <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
             </state>
           </provider>
         </entry>
@@ -186,8 +180,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2255">
-              <caret line="183" column="19" selection-start-line="183" selection-start-column="19" selection-end-line="183" selection-end-column="19" />
+            <state relative-caret-position="649">
+              <caret line="160" selection-start-line="160" selection-end-line="160" />
             </state>
           </provider>
         </entry>
@@ -495,7 +489,7 @@
       <workItem from="1539390859058" duration="14849000" />
       <workItem from="1539481003404" duration="7393000" />
       <workItem from="1539537413956" duration="20547000" />
-      <workItem from="1539641165991" duration="18613000" />
+      <workItem from="1539641165991" duration="22224000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -508,7 +502,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="338410000" />
+    <option name="totallyTimeSpent" value="342021000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -528,12 +522,12 @@
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4992057" weight="0.2626506" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4992057" visible="true" weight="0.2626506" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.33975902" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
-      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.28674698" />
+      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" weight="0.28674698" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50039715" side_tool="true" weight="0.32846716" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.329927" />
@@ -572,11 +566,6 @@
           <url>file://$PROJECT_DIR$/src/IBLTSync.cpp</url>
           <line>18</line>
           <option name="timeStamp" value="78" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/PerformanceData.cpp</url>
-          <line>160</line>
-          <option name="timeStamp" value="95" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -940,13 +929,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/IBLTSync_SetDiff.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="67" column="33" selection-start-line="67" selection-start-column="33" selection-end-line="67" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/PerformanceData.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="154">
@@ -954,13 +936,6 @@
           <folding>
             <element signature="e#114#134#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2255">
-          <caret line="183" column="19" selection-start-line="183" selection-start-column="19" selection-end-line="183" selection-end-column="19" />
         </state>
       </provider>
     </entry>
@@ -980,10 +955,24 @@
     <entry file="file://$PROJECT_DIR$/testklgperf2D.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/IBLTSync_SetDiff.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="67" column="33" selection-start-line="67" selection-start-column="33" selection-end-line="67" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="649">
+          <caret line="160" selection-start-line="160" selection-end-line="160" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="50" lean-forward="true" selection-start-line="50" selection-end-line="50" />
+        <state relative-caret-position="398">
+          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
         </state>
       </provider>
     </entry>

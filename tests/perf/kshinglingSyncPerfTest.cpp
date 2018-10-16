@@ -10,7 +10,8 @@ KshingleSyncPerf::~KshingleSyncPerf() = default;
 const int shingleLen = 4;
 const pair<int,int> strSizeRange = make_pair(500, 1000);
 const int tesPts = 20;// Test Pts per graph
-const int target_confidence = 100;// Confidence interval
+const int target_confidence = 5;// Confidence interval
+const int confidenceCap = 40; // after edit distance exceed confidenceCap, confidence go to 1.
 const pair<int,int> editDistRange = make_pair(1, 100); // range of edit distance
 // Declear what set reconciliation we are testing
 auto setReconProto = {GenSync::SyncProtocol::CPISync,GenSync::SyncProtocol::InteractiveCPISync};
@@ -58,9 +59,22 @@ void KshingleSyncPerf::testFixedKperf() {
         int editDistinterval = floor((editDistRange.second - editDistRange.first) / tesPts);
         for (int editDist = editDistRange.first; editDist <= editDistRange.second; editDist += editDistinterval) {
 
+
             int confidence = target_confidence;
 
-            if (editDist > 40) confidence = 1;
+            if (editDist > confidenceCap) {
+                confidence = 1;
+            }
+//            else{
+//                int editPercent = (editDist/editDistinterval+1)/(confidenceCap/editDistinterval
+//                        +confidenceCap%editDistinterval);
+//
+//                int strPercent = (strSize/strSizeinterval+1)/((strSizeRange.second-strSizeRange.first)/strSizeinterval
+//                        +(strSizeRange.second-strSizeRange.first)%strSizeinterval);
+//
+//                cout<<to_string(100*strPercent*editPercent)
+//                +"% finished"<<endl;
+//            }
 
             for (auto conf = 0; conf < confidence; ++conf) {
                 // string length , shingle length, edit distance

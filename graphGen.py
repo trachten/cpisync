@@ -27,11 +27,11 @@ class PerformacePlots:
                 self.y.append([])
                 self.z.append([])
             elif row[0]=="X":
-                self.x[ind].extend([long(num) for num in row[1].split(',')[:-1]])
+                self.x[ind].extend([float(num) for num in row[1].split(',')[:-1]])
             elif row[0]=="Y":
-                self.y[ind].extend([long(num) for num in row[1].split(',')[:-1]])
+                self.y[ind].extend([float(num) for num in row[1].split(',')[:-1]])
             elif row[0]=="Z":
-                self.z[ind].extend([long(num) for num in row[1].split(',')[:-1]])
+                self.z[ind].extend([float(num) for num in row[1].split(',')[:-1]])
 
     def CommVsEdist(self):
         for t_name in set(self.title):

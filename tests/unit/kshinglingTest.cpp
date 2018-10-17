@@ -21,10 +21,10 @@ void kshinglingTest::tearDown() {
 
 void kshinglingTest::testAll() {
     // init a string of random byte (shortest,longest) possible string len
-    string Alicetxt = randAsciiStr(100);  // generate a string
+    string Alicetxt = randAsciiStr(1000);  // generate a string
     string Bobtxt = randStringEdit(Alicetxt,10);  // Generate a edited string
 
-    K_Shingle Alice = K_Shingle(3);
+    K_Shingle Alice = K_Shingle(log2(Alicetxt.size()));
     Alice.create(Alicetxt);  // Init k shingling on Alice
 
     auto AliceStringNOrder = Alice.reconstructStringBacktracking();  // Get order of the cycle

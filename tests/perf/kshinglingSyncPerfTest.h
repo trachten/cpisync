@@ -9,10 +9,13 @@
 #include "kshinglingSync.h"
 #include "PerformanceData.h"
 
+//TODO: Later write a abstract class for this
 class KshingleSyncPerf : public CPPUNIT_NS::TestFixture {
 CPPUNIT_TEST_SUITE(KshingleSyncPerf);
-        CPPUNIT_TEST(testklgperf);
-        CPPUNIT_TEST(testFixedKperf);
+        CPPUNIT_TEST(setDiffTest3D);
+        CPPUNIT_TEST(testperf3D);
+        CPPUNIT_TEST(setDiffTest2D);
+        CPPUNIT_TEST(testperf2D);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -20,11 +23,15 @@ public:
 
     ~KshingleSyncPerf();
 
-    // k = lg(string len)
-    void testklgperf();
+    /**
+     * explore the edit distance and resulting set difference
+     */
+    void setDiffTest2D();
+    void setDiffTest3D();
 
-    // k = fixed constant
-    void testFixedKperf();
+    void testperf2D();
+
+    void testperf3D();
 
 
 private:
@@ -34,6 +41,7 @@ private:
     vector<string> F_legend;
     string F_title;
     long String_Size;
+
 
 };
 #endif //CPISYNCLIB_KSHINGLINGSYNCPERFTEST_H

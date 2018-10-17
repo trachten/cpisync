@@ -4,9 +4,85 @@
 
 #include "PerformanceData.h"
 
-PerformanceData::PerformanceData() = default;
 
 PerformanceData::~PerformanceData() = default;
+
+
+
+int PerformanceData::setdiff(int shingle_len, int str_size, int edit_dist){
+    K_Shingle Alice = K_Shingle(shingle_len),Bob = K_Shingle(shingle_len);
+
+    auto Alice_txt = randAsciiStr(str_size);
+    auto Bob_txt = randStringEdit(Alice_txt, edit_dist);
+    return multisetDiff(Alice.getShingleSet_str(Alice_txt), Bob.getShingleSet_str(Bob_txt)).size();
+}
+
+void PerformanceData::StrKDif3D(pair<int,int> str_sizeRange,pair<int,int> shingle_lenRange, int edit_dist) {
+    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+    int shingle_leninterval = floor((shingle_lenRange.second - shingle_lenRange.first) / tesPts);
+
+    for (int str_size = str_sizeRange.first; str_size < str_sizeRange.second; str_size+=str_sizeinterval) {
+        for (int shingle_len = shingle_lenRange.first; shingle_len < shingle_lenRange.second; shingle_len+=shingle_leninterval) {
+            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+            plot3D("SetDiff3D:Kshingle:Str Len:Shingle Len:Set Diff",str_size,shingle_len,set_diff);
+        }
+    }
+}
+void PerformanceData::StrEDDif3D(pair<int,int> str_sizeRange,pair<int,int> edit_distRange, int shingle_len) {
+    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+
+    for (int str_size = str_sizeRange.first; str_size < str_sizeRange.second; str_size+=str_sizeinterval) {
+        for (int edit_dist = edit_distRange.first; edit_dist < edit_distRange.second; edit_dist+=edit_distinterval) {
+            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+            plot3D("SetDiff3D:Kshingle:Str Len:Edit Dist:Set Diff",str_size,edit_dist,set_diff);
+        }
+    }
+}
+void PerformanceData::EDKDif3D(pair<int,int> edit_distRange,pair<int,int> shingle_lenRange, int str_size) {
+    int shingle_leninterval = floor((shingle_lenRange.second - shingle_lenRange.first) / tesPts);
+    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+
+    for (int edit_dist = edit_distRange.first; edit_dist < edit_distRange.second; edit_dist+=edit_distinterval) {
+        for (int shingle_len = shingle_lenRange.first; shingle_len < shingle_lenRange.second; shingle_len+=shingle_leninterval) {
+            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+            plot3D("SetDiff3D:Kshingle:Edit Dist:Shingle Len:Set Diff",edit_dist,shingle_len,set_diff);
+        }
+    }
+}
+
+void PerformanceData::KDif2D(pair<int, int> shingle_lenRange, int str_size, int edit_dist, int confidence) {
+    int shingle_leninterval = floor((shingle_lenRange.second - shingle_lenRange.first) / tesPts);
+
+    for (int shingle_len = shingle_lenRange.first; shingle_len < shingle_lenRange.second; shingle_len+=shingle_leninterval){
+        for (int conf = 0; conf < confidence; ++conf) {
+            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+            plot2D("SetDiff2D:Kshingle:Shingle Len:Set Diff",shingle_len,set_diff);
+        }
+    }
+}
+
+void PerformanceData::EDDif2D(pair<int, int> edit_distRange, int str_size, int shingle_len, int confidence) {
+    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+
+    for (int edit_dist = edit_distRange.first; edit_dist < edit_distRange.second; edit_dist+=edit_distinterval){
+        for (int conf = 0; conf < confidence; ++conf) {
+            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+            plot2D("SetDiff2D:Kshingle:Edit Dist:Set Diff",edit_dist,set_diff);
+        }
+    }
+}
+
+void PerformanceData::StrDif2D(pair<int, int> str_sizeRange, int shingle_len, int edit_dist, int confidence) {
+    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+
+    for (int str_size = str_sizeRange.first; str_size < str_sizeRange.second; str_size+=str_sizeinterval){
+        for (int conf = 0; conf < confidence; ++conf) {
+            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+            plot2D("SetDiff2D:Kshingle:Str Size:Set Diff",str_size,set_diff);
+        }
+    }
+}
 
 // Parameters setting
 void PerformanceData::prepareStringRecon(int string_size, int shingle_len, int edit_distance){
@@ -16,39 +92,34 @@ void PerformanceData::prepareStringRecon(int string_size, int shingle_len, int e
     bits = 8;
     stringSize = string_size;
     shingleLen = shingle_len;
-
-
-//    shingleLen = ceil(log2(string_size));
-//
-//    plot.GenPlot("Comm_vs_Edit_Dist_Str_Len=" + to_string(string_len) + "_&_K=lg(str_len)");
 }
 
 // Prepare oarameters for specific set recon and genrate strings
-void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, GenSync::SyncProtocol base_set_proto, string Alice_txt, string Bob_txt){
+void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, GenSync::SyncProtocol base_set_proto, string Alice_txt, string Bob_txt) {
     baseSetProto = base_set_proto;
     stringReconProto = string_recon_proto;
 
 
 
     // random input
-    if (Alice_txt=="" and Bob_txt==""){
+    if (Alice_txt == "" and Bob_txt == "") {
         AliceTxt = randAsciiStr(stringSize);
         BobTxt = randStringEdit(AliceTxt, editDist);
-    }else{
+    } else {
         AliceTxt = Alice_txt;
         BobTxt = Bob_txt;
     }
 
 
     // quote a mbar, else to try and double method
-    switch(stringReconProto) {
+    switch (stringReconProto) {
         case StringReconProtocol::KshinglingSync: {
             K_Shingle Alice_content = K_Shingle(shingleLen);
             K_Shingle Bob_content = K_Shingle(shingleLen);
 
             auto Alice_set = Alice_content.getShingleSet_str(AliceTxt);
             auto Bob_set = Bob_content.getShingleSet_str(BobTxt);
-            mbar = multisetDiff(Alice_set, Bob_set).size();
+            mbar = multisetDiff(Alice_set, Bob_set).size(); // Still need the actual set difference for set recon
             break;
         }
         default:
@@ -73,12 +144,11 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 //                    G_legend.push_back("FullSync");//G_legend
 //                    break;
 
-//                case GenSync::SyncProtocol::IBLTSync:
-//                    numExpElem = mbar;
-//                    //bits
-//                    //numExpElem
-//                    break;
-
+        case GenSync::SyncProtocol::IBLTSyncSetDiff:
+            setReconProtoName = "IBLT";
+            //mbar; // can be exactly like the number of set difference
+            bits = sizeof(DataObject*);
+            break;
         default:
             throw invalid_argument("Not Implemented set recon Protocol");
     }
@@ -86,7 +156,7 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 
 
 // can start timing
-void PerformanceData::calCostReport(PlotType plot_type,bool check_outcome) {
+forkHandleReport PerformanceData::calCostReport(PlotType plot_type,bool check_outcome) {
     forkHandleReport res;
     bool success = false;
     // while not success, we increase the edit distance
@@ -130,45 +200,79 @@ void PerformanceData::calCostReport(PlotType plot_type,bool check_outcome) {
         default:
             break;
     }
-    long comm_cost = res.bytesTot;
-    //for Interactive CPI we care bout the total comm cost
-    if (baseSetProto==GenSync::SyncProtocol::InteractiveCPISync) comm_cost +=res.bytesRTot;
+    res.CPUtime+=time_final;
+    return res;
+//    long comm_cost = res.bytesTot;
+//    //for Interactive CPI we care bout the total comm cost
+//    if (baseSetProto==GenSync::SyncProtocol::InteractiveCPISync) comm_cost +=res.bytesRTot;
+//
+//    if (plot_type == PlotType::PLOT2D || plot_type == PlotType::BOTH) {
+//        // cpu time plot
+//        plot2D("CPUTime:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize)
+//                , editDist, res.CPUtime+time_final);
+//        // comm plot
+//        plot2D("CommCost:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize),
+//               editDist, comm_cost);
+//
+//        if (baseSetProto!=GenSync::SyncProtocol::InteractiveCPISync) {
+//            plot2D("CommCost(ED=setDiff):" + stringReconProtoName + "-" + setReconProtoName + "-str=" +
+//                   to_string(stringSize),
+//                   mbar, comm_cost);
+//
+//            plot2D("EditDistNSetDiff:str=" + to_string(stringSize), editDist, mbar); // mbar is actual set difference
+//        }
+//
+//        plot2D("CommCost:FullSync-str=" + to_string(stringSize), editDist, 14 + (stringSize) * 8);
+//    }
+//
+//    if (plot_type == PlotType::PLOT3D || plot_type == PlotType::BOTH) {
+//        //
+//        plot3D("CommCost:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize, comm_cost);
+//
+//
+//        plot3D("CPUTime:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize,
+//               res.CPUtime+time_final);
+//        if (baseSetProto!=GenSync::SyncProtocol::InteractiveCPISync){
+//            plot3D("CommCost(ED=setDiff):" + stringReconProtoName + "-" + setReconProtoName, mbar, stringSize, comm_cost);
+//
+//            plot3D("EditDistNSetDiff:", editDist, stringSize, mbar); // mbar is actual set difference
+//        }
+//
+//        plot3D("CommCost:FullSync", editDist, stringSize, 14 + (stringSize) * 8);
+//    }
+}
 
-    if (plot_type == PlotType::PLOT2D || plot_type == PlotType::BOTH) {
-        // cpu time plot
-        plot2D("CPUTime:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize), editDist,
-               res.CPUtime+time_final);
-        // comm plot
-        plot2D("CommCost:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize),
-               editDist, comm_cost);
+void PerformanceData::kshingle2D(list<GenSync::SyncProtocol> setReconProto,pair<int,int> edit_distRange,
+        int shingle_len,int str_size,int target_confidence) {
+    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
 
-        if (baseSetProto!=GenSync::SyncProtocol::InteractiveCPISync) {
-            plot2D("CommCost(ED=setDiff):" + stringReconProtoName + "-" + setReconProtoName + "-str=" +
-                   to_string(stringSize),
-                   mbar, comm_cost);
+    for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+        for (auto setRecon:setReconProto) {
+            int confidence = target_confidence;
+            if (edit_dist > 40) {
+                confidence = 1;
+            }
+            for (int conf = 0; conf < confidence; ++conf) {
 
-            plot2D("EditDistNSetDiff:str=" + to_string(stringSize), editDist, mbar); // mbar is actual set difference
+
+                prepareStringRecon(str_size, shingle_len, edit_dist);
+                prepareSetComm(StringReconProtocol::KshinglingSync, setRecon);
+                forkHandleReport res = calCostReport(PerformanceData::PlotType::PLOT3D);
+                long comm_cost = res.bytesTot;
+                //for Interactive CPI we care bout the total comm cost
+                if (baseSetProto == GenSync::SyncProtocol::InteractiveCPISync) comm_cost += res.bytesRTot;
+
+                plot3D("Comm Cost of Kshingle Str=" + to_string(str_size) + ":" + setReconProtoName +
+                       ":Edit Dist:Comm Cost(Bytes):Set Diff",
+                       edit_dist, comm_cost, mbar);
+                plot3D("CPU Time of Kshingle Str=" + to_string(str_size) + ":" + setReconProtoName +
+                       ":Edit Dist:Comm Cost(Bytes):Set Diff",
+                       edit_dist, res.CPUtime, mbar);
+            }
         }
-
-        plot2D("CommCost:FullSync-str=" + to_string(stringSize), editDist, 14 + (stringSize) * 8);
-    }
-
-    if (plot_type == PlotType::PLOT3D || plot_type == PlotType::BOTH) {
-        //
-        plot3D("CommCost:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize, comm_cost);
-
-
-        plot3D("CPUTime:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize,
-               res.CPUtime+time_final);
-        if (baseSetProto!=GenSync::SyncProtocol::InteractiveCPISync){
-            plot3D("CommCost(ED=setDiff):" + stringReconProtoName + "-" + setReconProtoName, mbar, stringSize, comm_cost);
-
-            plot3D("EditDistNSetDiff:", editDist, stringSize, mbar); // mbar is actual set difference
-        }
-
-        plot3D("CommCost:FullSync", editDist, stringSize, 14 + (stringSize) * 8);
     }
 }
+
 
 void PerformanceData::plot2D(string label, double X, double Y){
     if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there

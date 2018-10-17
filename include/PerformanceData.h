@@ -11,7 +11,9 @@
 
 class PerformanceData {
 public:
-    PerformanceData();
+    PerformanceData(int tes_pts){
+        tesPts = tes_pts;
+    };
     ~PerformanceData();
 
     enum class StringReconProtocol {
@@ -26,6 +28,15 @@ public:
         PLOT3D,
         BOTH
     };
+
+    void StrKDif3D(pair<int,int> str_sizeRange,pair<int,int> shingle_lenRange, int edit_dist);
+    void StrEDDif3D(pair<int,int> str_sizeRange,pair<int,int> edit_distRange, int shingle_len);
+    void EDKDif3D(pair<int,int> edit_distRange,pair<int,int> shingle_lenRange, int str_size);
+
+
+    void KDif2D(pair<int,int> shingle_lenRange,int str_size, int edit_dist, int confidence);
+    void EDDif2D(pair<int,int> edit_distRange,int str_size, int shingle_len, int confidence);
+    void StrDif2D(pair<int,int> str_sizeRange,int shingle_len, int edit_dist, int confidence);
 
     /**
      * Perpare a shing recon method for random string and random edits testing
@@ -46,11 +57,14 @@ public:
      * @param check_outcome check if reconciliation is successful
      * @return cost report
      */
-    void calCostReport(PlotType plot_type, bool check_outcome=true);
+    forkHandleReport calCostReport(PlotType plot_type, bool check_outcome=true);
 
     void genReport(string file_name){
       write2file(file_name);
     };
+
+    void kshingle2D(list<GenSync::SyncProtocol> setReconProto,pair<int,int> edit_distRange,
+                                     int shingle_len,int str_size,int target_confidence);
 
 private:
 //    vector<ZZ> Alice_shingleSet;// final form will all be in ZZ for each shingle
@@ -64,26 +78,23 @@ private:
     string stringReconProtoName;
     string setReconProtoName;
     // parameters
-    int stringSize, shingleLen, mbar, editDist, numParts;
+    int stringSize, shingleLen, mbar, editDist, numParts, tesPts;
     size_t bits;
 
     string AliceTxt, BobTxt;
 
 
-
     //GenPlot
     map<string,vector<vector<double>>> data3D; // map<label,content(X,Y,Z)>
     map<string,vector<vector<double>>> data2D; // map<label,content(X,Y)>
-    string fileName;
-
 
     /**
-  * Store Values in Genplot class - for 2D plots
-  * Find the right label and add the data
-  * @param label
-  * @param X
-  * @param Y
-  */
+    * Store Values in Genplot class - for 2D plots
+    * Find the right label and add the data
+    * @param label
+    * @param X
+    * @param Y
+    */
     void plot2D(string label, double X, double Y);
     /**
      * Store Values in Genplot class - for 3D plots
@@ -100,6 +111,15 @@ private:
      * Every instance of a class is one data file
      */
     void write2file(string file_name);
+    /**
+     * explore relation of edit distance and set difference in kshingling
+     * @param shingle_len
+     * @param str_size
+     * @param edit_dist
+     */
+    int setdiff(int shingle_len, int str_size, int edit_dist);
+
+
 };
 
 #endif //CPISYNCLIB_PERFORMANCEDATA_H

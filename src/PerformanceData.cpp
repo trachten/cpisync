@@ -363,7 +363,7 @@ void PerformanceData::plot4D(string label, double X, double Y, double Z, double 
         tmp[0] = X;
         tmp[1] = Y;
         tmp[2] = Z;
-        tmp[4] = A;
+        tmp[3] = A;
         data4D[label].push_back(tmp);
     }
 }

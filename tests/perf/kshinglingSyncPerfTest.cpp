@@ -16,7 +16,7 @@ const pair<int,int> strSizeRange = make_pair(500, 1000);
 const pair<int,int> shingleLenRange = make_pair(2,ceil(log2(strSizeRange.second)));
 
 const int tesPts = 20;// Test Pts per graph
-const int target_confidence = 50;// Confidence interval
+const int target_confidence = 2;// Confidence interval
 const int confidenceCap = 40; // after edit distance exceed confidenceCap, confidence go to 1.
 
 const pair<int,int> editDistRange = make_pair(1, 100); // range of edit distance
@@ -43,64 +43,16 @@ void KshingleSyncPerf::setDiffTest2D(){
 }
 
 void KshingleSyncPerf::testperf3D() {
-//    PerformanceData test = PerformanceData(tesPts);
-//
-//    int strSizeinterval = floor((strSizeRange.second - strSizeRange.first) / tesPts);
-//
-//    // Increment string size
-//    for (int strSize = strSizeRange.first; strSize <= strSizeRange.second; strSize += strSizeinterval) {
-//
-//        int editDistinterval = floor((editDistRange.second - editDistRange.first) / tesPts);
-//        for (int editDist = editDistRange.first; editDist <= editDistRange.second; editDist += editDistinterval) {
-//
-//            // string length , shingle length, edit distance
-//            test.prepareStringRecon(strSize, shingleLen, editDist);
-//
-//            for (auto setRecon: setReconProto) { // go through all set Recon methods mentioned above
-//
-////                        for (auto conf = 0; conf < target_confidence; ++conf) {
-//                test.prepareSetComm(strRecon, setRecon);
-//                test.calCostReport(PerformanceData::PlotType::PLOT3D);
-////                    }
-//
-//            }
-//        }
-//    }
-//    test.genReport("testklgperf3D");
+    PerformanceData test = PerformanceData(tesPts);
+
+    test.kshingle3D(setReconProto, editDistRange, strSizeRange, shingleLen);
+    test.genReport("testperf3D");
 }
 
 
 void KshingleSyncPerf::testperf2D() {
     PerformanceData test = PerformanceData(tesPts);
 
-//
-//    int strSizeinterval = 500;
-//
-//    // Increment string size
-//    for (int strSize = strSizeRange.first; strSize <= strSizeRange.second; strSize += strSizeinterval) {
-//
-//        int editDistinterval = floor((editDistRange.second - editDistRange.first) / tesPts);
-//        for (int editDist = editDistRange.first; editDist <= editDistRange.second; editDist += editDistinterval) {
-//
-//
-//            int confidence = target_confidence;
-//
-//            if (editDist > confidenceCap) {
-//                confidence = 1;
-//            }
-//
-//            for (auto conf = 0; conf < confidence; ++conf) {
-//                // string length , shingle length, edit distance
-//                test.prepareStringRecon(strSize, shingleLen, editDist);
-//
-//                for (auto setRecon: setReconProto) { // go through all set Recon methods mentioned above
-//                    test.prepareSetComm(strRecon, setRecon);
-//                    test.calCostReport(PerformanceData::PlotType::PLOT2D);
-//
-//                }
-//            }
-//        }
-//    }
     test.kshingle2D(setReconProto, editDistRange, shingleLen, strSizeRange.first, target_confidence);
     test.kshingle2D(setReconProto, editDistRange, shingleLen, strSizeRange.second, target_confidence);
 

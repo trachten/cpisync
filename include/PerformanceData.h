@@ -66,6 +66,9 @@ public:
     void kshingle2D(list<GenSync::SyncProtocol> setReconProto,pair<int,int> edit_distRange,
                                      int shingle_len,int str_size,int target_confidence);
 
+    void kshingle3D(list<GenSync::SyncProtocol> setReconProto,pair<int,int> edit_distRange,
+                    pair<int,int> str_sizeRange,int shingle_len);
+
 private:
 //    vector<ZZ> Alice_shingleSet;// final form will all be in ZZ for each shingle
 //    vector<ZZ> Bob_shingleSet;// final form will all be in ZZ for each shingle
@@ -85,8 +88,7 @@ private:
 
 
     //GenPlot
-    map<string,vector<vector<double>>> data3D; // map<label,content(X,Y,Z)>
-    map<string,vector<vector<double>>> data2D; // map<label,content(X,Y)>
+    map<string,vector<vector<double>>> data3D, data2D, data4D; // map<label,content(X,Y,Z)> // map<label,content(X,Y)>
 
     /**
     * Store Values in Genplot class - for 2D plots
@@ -105,6 +107,8 @@ private:
      * @param Z
      */
     void plot3D(string label, double X, double Y, double Z);
+
+    void plot4D(string label, double X, double Y, double Z, double A);
 
     /**
      * Export Data into a txt file for python code to process

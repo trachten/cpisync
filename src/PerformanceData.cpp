@@ -272,7 +272,7 @@ void PerformanceData::kshingle2D(list<GenSync::SyncProtocol> setReconProto,pair<
                 prepareStringRecon(str_size, shingle_len, edit_dist);
                 prepareSetComm(StringReconProtocol::KshinglingSync, setRecon);
                 forkHandleReport res = calCostReport(PerformanceData::PlotType::PLOT3D);
-                long comm_cost = res.bytesTot;
+                double comm_cost = res.bytesTot;
                 //for Interactive CPI we care bout the total comm cost
                 if (baseSetProto == GenSync::SyncProtocol::InteractiveCPISync) comm_cost += res.bytesRTot;
 
@@ -280,13 +280,38 @@ void PerformanceData::kshingle2D(list<GenSync::SyncProtocol> setReconProto,pair<
                        ":Edit Dist:Comm Cost(Bytes):Set Diff",
                        edit_dist, comm_cost, mbar/2);
                 plot3D("CPU Time of Kshingle Str=" + to_string(str_size) + ":" + setReconProtoName +
-                       ":Edit Dist:Comm Cost(Bytes):Set Diff",
+                       ":Edit Dist:CPU Time(s):Set Diff",
                        edit_dist, res.CPUtime, mbar/2);
             }
         }
     }
 }
 
+void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
+                                 pair<int,int> str_sizeRange, int shingle_len) {
+    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+
+    for (int str_size = str_sizeRange.first; str_size <= str_sizeRange.second; str_size += str_sizeinterval) {
+        cout << to_string(str_size) << endl;
+        for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+
+            for (auto setRecon:setReconProto) {
+                prepareStringRecon(str_size, shingle_len, edit_dist);
+                prepareSetComm(StringReconProtocol::KshinglingSync, setRecon);
+                forkHandleReport res = calCostReport(PerformanceData::PlotType::PLOT3D);
+                double comm_cost = res.bytesTot;
+                //for Interactive CPI we care bout the total comm cost
+                if (baseSetProto == GenSync::SyncProtocol::InteractiveCPISync) comm_cost += res.bytesRTot;
+
+                plot4D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes):Set Diff",
+                       str_size, edit_dist, comm_cost, mbar / 2);
+                plot4D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s):Set Diff",
+                       str_size, edit_dist, res.CPUtime, mbar / 2);
+            }
+        }
+    }
+}
 
 void PerformanceData::plot2D(string label, double X, double Y){
     if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
@@ -323,10 +348,46 @@ void PerformanceData::plot3D(string label, double X, double Y, double Z){
     }
 }
 
+void PerformanceData::plot4D(string label, double X, double Y, double Z, double A){
+    if (data4D.find(label)==data4D.end()) { // if no label of such kind is in there
+        vector<double> tmp(4);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        tmp[3] = A;
+        vector<vector<double>> init;
+        init.push_back(tmp);
+        data4D.insert(make_pair(label,init));
+    } else{
+        vector<double> tmp(4);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        tmp[4] = A;
+        data4D[label].push_back(tmp);
+    }
+}
+
 void PerformanceData::write2file(string file_name) {
     ofstream myfile;
     //TODO: do soemthing about the directories, this hard coding is not a long term solution
     myfile.open(file_name + ".txt");
+
+    for (auto item : data4D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy, tmpz, tmpa;
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + ",";
+            tmpy += to_string(num[1]) + ",";
+            tmpz += to_string(num[2]) + ",";
+            tmpa += to_string(num[3]) + ",";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+        myfile << "Z:" + tmpz + "\n";
+        myfile << "A:" + tmpa + "\n";
+    }
+
     for (auto item : data3D) {
         myfile << "Label:" + item.first + "\n";
         string tmpx, tmpy, tmpz;

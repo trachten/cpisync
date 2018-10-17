@@ -74,7 +74,7 @@ void IBLTSyncDiffTest::testAddDelElem() {
 
 void IBLTSyncDiffTest::stringReconFullTest() {
     const int BITS = sizeof(randZZ());
-    const int EXP_NumE = 20000;
+    const int EXP_NumE = 200;
     const int EXP_Diff = 49;
 
 

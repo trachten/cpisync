@@ -136,7 +136,7 @@ void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, Gen
 
         case GenSync::SyncProtocol::InteractiveCPISync:
             setReconProtoName = "InterCPI";
-            bits = 14 + (shingleLen + 2) * 8;//sqaure bits
+            bits = 14 + (shingleLen + 2) * 6;//sqaure bits
             mbar = 7;  //need mbar -- fixed
             numParts = 3;  //setNumPartitions -- fixed
             break;
@@ -186,12 +186,25 @@ forkHandleReport PerformanceData::calCostReport(PlotType plot_type,bool check_ou
                 res = kshingling.SyncNreport(Alice, Bob);
 
                 mbar += mbar;  // expected mbar may not be enough, therefore adding 1 or doubling
-                time = clock(); // adding the time to piece info back together
-                string tmpstr = kshingling.getString(Alice, Alice_content);
-                time_final += (double) (clock() - time) / CLOCKS_PER_SEC;
+
+
+
 
                 if (check_outcome) {
-                    success = (tmpstr == BobTxt);
+                    time = clock(); // adding the time to piece info back together
+                    try {
+                        string tmpstr = kshingling.getString(Alice, Alice_content);
+                        success = (tmpstr == BobTxt);
+                    }catch(exception&s){
+                        success = check_outcome;
+                        res.CPUtime = 0;
+                        res.bytesTot = 0;
+                        res.bytesRTot = 0;
+                        cout<<"failed at:"+to_string(editDist)+":"+ to_string(mbar/2)+":"+to_string(stringSize)<<endl;
+                    }
+                    time_final += (double) (clock() - time) / CLOCKS_PER_SEC;
+
+
                 } else {
                     success = check_outcome;
                 }
@@ -264,10 +277,10 @@ void PerformanceData::kshingle2D(list<GenSync::SyncProtocol> setReconProto,pair<
 
                 plot3D("Comm Cost of Kshingle Str=" + to_string(str_size) + ":" + setReconProtoName +
                        ":Edit Dist:Comm Cost(Bytes):Set Diff",
-                       edit_dist, comm_cost, mbar);
+                       edit_dist, comm_cost, mbar/2);
                 plot3D("CPU Time of Kshingle Str=" + to_string(str_size) + ":" + setReconProtoName +
                        ":Edit Dist:Comm Cost(Bytes):Set Diff",
-                       edit_dist, res.CPUtime, mbar);
+                       edit_dist, res.CPUtime, mbar/2);
             }
         }
     }

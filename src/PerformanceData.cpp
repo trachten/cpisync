@@ -260,6 +260,7 @@ void PerformanceData::kshingle2D(list<GenSync::SyncProtocol> setReconProto,pair<
     int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
 
     for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+        cout<<to_string(edit_dist)+":"+to_string(str_size)<<endl;
         for (auto setRecon:setReconProto) {
             int confidence = target_confidence;
             if (edit_dist > 40) {

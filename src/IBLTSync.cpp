@@ -69,7 +69,6 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
                          "IBLT parameters do not match up between client and server!");
             success = false;
         }
-
         // verified that our size and eltSize == theirs
         IBLT theirs = commSync->commRecv_IBLT(myIBLT.size(), myIBLT.eltSize());
 

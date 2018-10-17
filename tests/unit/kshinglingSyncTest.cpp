@@ -26,7 +26,7 @@ void kshinglingSyncTest::testAll() {
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     int shingle_len = 4;
-    int editDistance_bar = 100;
+    int editDistance_bar = 1;
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 

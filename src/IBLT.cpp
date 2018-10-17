@@ -12,7 +12,7 @@ IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize)
 : valueSize(_valueSize)
 {
     // 1.5x expectedNumEntries gives very low probability of decoding failure
-    size_t nEntries = expectedNumEntries + expectedNumEntries/2;
+    size_t nEntries = expectedNumEntries + expectedNumEntries;
     // ... make nEntries exactly divisible by N_HASH
     while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;
     hashTable.resize(nEntries);

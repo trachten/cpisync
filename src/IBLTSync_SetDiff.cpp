@@ -75,6 +75,7 @@ bool IBLTSync_SetDiff::SyncServer(const shared_ptr<Communicant> &commSync, list<
                      "Unable to completely reconcile, returning a partial list of differences");
         success = false;
     }
+
     cout<<"pos:"+to_string(positive.size())<<endl;
     cout<<"neg:"+to_string(negative.size())<<endl;
     // store values because they're what we care about

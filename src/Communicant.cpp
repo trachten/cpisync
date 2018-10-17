@@ -189,6 +189,13 @@ void Communicant::commSend(const long num) {
     Logger::gLog(Logger::COMM, "... attempting to send: long " + toStr(num));
     commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
 }
+void Communicant::commSend(const hashVal num) {
+
+    unsigned char toSend[XMIT_LONG];
+    BytesFromZZ(toSend, to_ZZ(num), XMIT_LONG);
+    Logger::gLog(Logger::COMM, "... attempting to send: long " + toStr(num));
+    commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
+}
 
 void Communicant::commSend(const byte bt) {
 
@@ -260,7 +267,7 @@ void Communicant::commSend(const IBLT& iblt, bool sync) {
 
 void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
     commSend(hte.count);
-    commSend((long) hte.keyCheck);
+    commSend((unsigned long) hte.keyCheck);
     commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
     commSend(hte.valueSum, (unsigned int) eltSize);
 }

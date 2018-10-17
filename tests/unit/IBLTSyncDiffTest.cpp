@@ -14,7 +14,7 @@ IBLTSyncDiffTest::IBLTSyncDiffTest() = default;
 IBLTSyncDiffTest::~IBLTSyncDiffTest() = default;
 
 void IBLTSyncDiffTest::setUp() {
-    const int SEED = 1;
+    const int SEED = 617;
     srand(SEED);
 }
 
@@ -74,21 +74,21 @@ void IBLTSyncDiffTest::testAddDelElem() {
 
 void IBLTSyncDiffTest::stringReconFullTest() {
     const int BITS = sizeof(randZZ());
-    const int EXP_NumE = 500;
-    const int EXP_Diff = 35;
+    const int EXP_NumE = 10;
+    const int EXP_Diff = 5;
 
     GenSync Alice = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+            setProtocol(GenSync::SyncProtocol::IBLTSync).
             setComm(GenSync::SyncComm::socket).
             setBits(BITS).
-            setNumExpectedDifference(EXP_Diff).
+            setNumExpectedElements(EXP_Diff).
             build();
 
     GenSync Bob = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+            setProtocol(GenSync::SyncProtocol::IBLTSync).
             setComm(GenSync::SyncComm::socket).
             setBits(BITS).
-            setNumExpectedDifference(EXP_Diff).
+            setNumExpectedElements(EXP_Diff).
             build();
 
     vector<ZZ> ALL_ELEM;
@@ -104,11 +104,9 @@ void IBLTSyncDiffTest::stringReconFullTest() {
         Bob.addElem(new DataObject(ALL_ELEM[j]));
     }
 
-    forkHandleReport res = forkHandle(Alice,Bob, true);
-    cout << "Comm:" + to_string(res.bytes)<<endl;
-    cout << "Comm Tot:" + to_string(res.bytesTot)<<endl;
-    cout << "Time:" + to_string(res.totalTime)<<endl;
-    CPPUNIT_ASSERT(Bob.dumpElements().size()== Alice.dumpElements().size());
-
-
+    forkHandleReport res = forkHandle(Alice, Bob, true);
+    cout << "Comm:" + to_string(res.bytes) << endl;
+    cout << "Comm Tot:" + to_string(res.bytesTot) << endl;
+    cout << "Time:" + to_string(res.totalTime) << endl;
+    CPPUNIT_ASSERT(Bob.dumpElements().size() == Alice.dumpElements().size());
 }

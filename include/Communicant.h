@@ -147,7 +147,7 @@ public:
      * @param num The number to send
      */
     void commSend(long num);
-    
+    void commSend(hashVal num);
     /**
      * Sends an integer over the line
      * @param num The number to send

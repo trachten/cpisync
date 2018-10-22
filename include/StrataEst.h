@@ -51,7 +51,7 @@ public:
      * @param num_cells default value 40 / 80
      * @param value_size default value 8
      */
-    StrataEst( size_t value_size, size_t num_strata = 16, size_t num_cells=40);
+    StrataEst(size_t value_size, size_t num_strata = 16, size_t num_cells=40);
 
     ~StrataEst();
 
@@ -71,10 +71,9 @@ public:
 
     /**
      * Subtracts two StrataEst.
-     * -= is destructive and assigns the resulting StrataEst to the value, whereas - isn't. -= is more efficient than -
+     * -= is destructive and assigns the resulting StrataEst to the value
      * @require StrataEst must have the same number of Stratas, entries, and the values must be of the same size
      */
-    StrataEst operator-(const StrataEst& other) const;
     StrataEst& operator-=(const StrataEst& other);
 
     /**
@@ -107,7 +106,7 @@ private:
      */
     int get_Assign_Ind(ZZ& Elem);
 
-    size_t numStrata, numCells, bits;
+    size_t numStrata, numCells, bits, space;
 
     vector<IBLT> Strata;
 

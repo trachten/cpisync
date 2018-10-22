@@ -7,19 +7,20 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(StrataEstTest);
 
-StrataEstTest::StrataEstTest() = default;
-StrataEstTest::~StrataEstTest() = default;
+StrataEstTest::StrataEstTest() {};
+StrataEstTest::~StrataEstTest() {};
+
 void StrataEstTest::setUp() {
     const int seed = 1;
-    srand(time());
+    srand(time(NULL));
 }
 
 void StrataEstTest::tearDown() {}
 
 void StrataEstTest::creatStrata() {
-    const size_t SET_SIZE = 500;
-    const size_t SET_DIFF = 50;
-    const size_t ELEM_SIZE = sizeof(DataObject*);
+    const size_t SET_SIZE = 50000;
+    const size_t SET_DIFF = 100;
+    const size_t ELEM_SIZE = sizeof(DataObject *);
     // A - B = 50 items
 
 
@@ -32,15 +33,18 @@ void StrataEstTest::creatStrata() {
     }
 
     for (int j = 0; j < SET_SIZE; ++j) {
-        Alice.insert(new *DataObject(Items[j]));
+        Alice.insert(new DataObject(Items[j]));
     }
 
     for (int k = SET_DIFF; k < SET_SIZE; ++k) {
-        Bob.insert(new *DataObject(Items[k]));
+        Bob.insert(new DataObject(Items[k]));
     }
-    auto est = (Alice-=Bob).estimate();
+    Alice.exportStrata();
+    Bob.exportStrata();
+
+    auto est = (Alice -= Bob).estimate();
     CPPUNIT_ASSERT(est > SET_DIFF);
-    CPPUNIT_ASSERT(est < SET_DIFF*2);
+    CPPUNIT_ASSERT(est < SET_DIFF + SET_DIFF);
 
 
 }

@@ -266,6 +266,9 @@
 		<Unit filename="/Users/bowen/Documents/cpisync/src/IBLTSync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/IBLTSync_SetDiff.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/src/InterCPISync.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -273,6 +276,9 @@
 			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/src/PerformanceData.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/StrataEst.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/src/SyncMethod.cpp">
@@ -350,6 +356,12 @@
 			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/FullSyncTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncDiffTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncDiffTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncTest.cpp">

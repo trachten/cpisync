@@ -10,7 +10,7 @@ KshingleSyncPerf::~KshingleSyncPerf() = default;
 // DEFAULT SETTINGS
 const int shingleLen = 4;
 const int editDist = 20;
-const int strSize = 1000;
+const int strSize = 5;
 
 const pair<int,int> strSizeRange = make_pair(500, 1000);
 const pair<int,int> shingleLenRange = make_pair(2,ceil(log2(strSizeRange.second)));
@@ -21,8 +21,9 @@ const int confidenceCap = 40; // after edit distance exceed confidenceCap, confi
 
 const pair<int,int> editDistRange = make_pair(1, 100); // range of edit distance
 // Declear what set reconciliation we are testing
-auto setReconProto = {GenSync::SyncProtocol::CPISync,GenSync::SyncProtocol::InteractiveCPISync
-                      ,GenSync::SyncProtocol::IBLTSyncSetDiff};
+//auto setReconProto = {GenSync::SyncProtocol::CPISync,GenSync::SyncProtocol::InteractiveCPISync
+//                      ,GenSync::SyncProtocol::IBLTSyncSetDiff};
+auto setReconProto = {GenSync::SyncProtocol::IBLTSyncSetDiff};
 // Declear what string reconciliation we are testing
 auto strRecon = PerformanceData::StringReconProtocol::KshinglingSync;
 

@@ -67,6 +67,10 @@ void AuxiliaryTest::testStringEditing() {
 
     std::string edited = randStringEdit(origI,4);
     CPPUNIT_ASSERT(origI != edited);
+
+    std::string burstEdited = randStringEditBurst(origI,4,2);
+    cout<<burstEdited<<endl;
+    CPPUNIT_ASSERT(origI != burstEdited);
 }
 
 void AuxiliaryTest::testBase64_encode() {

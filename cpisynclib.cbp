@@ -222,6 +222,9 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/PerformanceData.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/StrataEst.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/SyncMethod.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -301,10 +304,9 @@
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTSyncDiffTest.cpp">
 			<Option target="UnitTest"/>
-			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTSyncDiffTest.h">
-			<Option target="cpisynclib"/>
+			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTSyncTest.cpp">
 			<Option target="UnitTest"/>

@@ -434,14 +434,13 @@ inline string randString(int lower=0, int upper=10) {
     return str.str();
 }
 
-inline string randAsciiStr(int len = 10){
+inline string randAsciiStr(int len = 10) {
     string str;
 
-    for(int jj = 0; jj < len; ++jj) {
+    for (int jj = 0; jj < len; ++jj) {
         auto intchar = rand() % 127;  // avoid random string to be "$" changed to "%"
-        if (intchar==36)
-            intchar++;
-        str +=  toascii(intchar);
+        if (intchar == 36)intchar++;
+        str += toascii(intchar);
 
     }
     return str;
@@ -453,10 +452,13 @@ inline string randAsciiStr(int len = 10){
  * @return Edited string with upperI insertions away from the original string
  */
 inline string randStringInsert(string str, int upperI) {
-    for(int jj = 0; jj < upperI; jj++) {
+    for (int jj = 0; jj < upperI; jj++) {
         //pick a place to edit
-        int pos = randLenBetween(0, str.size()-1);
-        str = str.substr (0,pos) + randAsciiStr(1) + str.substr (pos,str.size());
+        int pos;
+        if (str == "")pos = 0;
+        else pos = randLenBetween(0, str.size() - 1);
+
+        str = str.substr(0, pos) + randAsciiStr(1) + str.substr(pos);
     }
     return str;
 }
@@ -471,10 +473,11 @@ inline string randStringDel(string str, int upperD) {
         return "";
     }
 
-    for(int jj = 0; jj < upperD; jj++) {
+    for (int jj = 0; jj < upperD; jj++) {
         //pick a place to edit
-        int pos = randLenBetween(0, str.size()-1);
-        str = str.substr (0,pos) + str.substr (pos+1,str.size());
+        int pos = randLenBetween(0, str.size() - 1);
+
+        str = str.substr(0, pos) + str.substr(pos + 1);
     }
     return str;
 }
@@ -485,12 +488,24 @@ inline string randStringDel(string str, int upperD) {
  * @return Edited string upperE edit distance away from the original string
  */
 inline string randStringEdit(string str, int upperE) {
-    if (str ==""){
-        return "";
+    for (int jj = 0; jj < upperE; jj++) {
+        str = (rand() % 2 == 0) ? randStringDel(str, 1) : randStringInsert(str, 1);
     }
-    for(int jj = 0; jj < upperE; jj++) {
-        int choice = rand() % 2;
-        str = (choice==0) ? randStringDel(str, 1) : randStringInsert(str, 1);
+    return str;
+}
+
+/**
+ * Generate a string with upperE number of random edits at random numLoc places of the original string
+ * @param numLoc number of locations to have the edit burst
+ * @param upperE Edit upper bound
+ * @return Edited string upperE edit distance away from the original string
+ */
+inline string randStringEditBurst(string str, int burstE, int numLoc) {
+    for (int ii = 0; ii < numLoc; ++ii) {
+        int tmpBurst = (burstE>str.size()) ? str.size() : burstE;
+        int pos = randLenBetween(0, str.size() - tmpBurst);
+
+        str = str.substr(0,pos)+randStringEdit(str.substr(pos,tmpBurst),burstE)+str.substr(pos+tmpBurst);
     }
     return str;
 }

@@ -26,8 +26,8 @@ void kshinglingSyncTest::testAll() {
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     int shingle_len = 4;
-    int editDistance_bar = 73;
-    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::InteractiveCPISync;
+    int editDistance_bar = 7;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     GenSync::SyncComm base_comm = GenSync::SyncComm::socket;
 
     string Alicetxt = randAsciiStr(string_len);
@@ -45,10 +45,10 @@ void kshinglingSyncTest::testAll() {
     //number of difference between should alwasy be editDistance_bar*(shingleLen-1)
 
     //CPISync Setup
-    //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*8,ceil(numDif*2.3), 0,0);
+    kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*6,ceil(numDif*2.3), 0,0);
 
     //InteractiveCPISync Set up
-    kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*6, 7, 3, 0);
+    //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*6, 7, 3, 0);
 
     //IBLTSync Setup
     //kshinglingSync kshingling = kshinglingSync(baseSetProto, base_comm, 8, 0, 0, numDif*10);

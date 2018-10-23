@@ -34,17 +34,17 @@ void StrataEstTest::createStrata() {
 
     for (int j = 0; j < SET_SIZE; ++j) {
         Alice.insert(new DataObject(Items[j]));
+        if (j >= SET_DIFF){
+            Bob.insert(new DataObject(Items[j]));
+        }
     }
 
-    for (int k = SET_DIFF; k < SET_SIZE; ++k) {
-        Bob.insert(new DataObject(Items[k]));
-    }
     Alice.exportStrata();
     Bob.exportStrata();
 
     auto est = (Alice -= Bob).estimate();
 
-    CPPUNIT_ASSERT(est > SET_DIFF);
+    CPPUNIT_ASSERT(est*1.5 > SET_DIFF);
     CPPUNIT_ASSERT(est < SET_DIFF + SET_DIFF);
 
 

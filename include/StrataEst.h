@@ -35,7 +35,7 @@ using namespace NTL;
 typedef unsigned long int hashVal;
 
 // Preset IBF Parameters
-const size_t idSumByteSize = 4, hashSumByteSize = 4, countByteSize = 4;
+//const size_t idSumByteSize = 4, hashSumByteSize = 4, countByteSize = 4;
 
 
 // use H_z to hash each set element as we sample

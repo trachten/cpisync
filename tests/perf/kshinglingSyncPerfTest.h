@@ -15,7 +15,8 @@ CPPUNIT_TEST_SUITE(KshingleSyncPerf);
 //        CPPUNIT_TEST(setDiffTest3D);
 //        CPPUNIT_TEST(testperf3D);
 //        CPPUNIT_TEST(setDiffTest2D);
-        CPPUNIT_TEST(testperf2D);
+//        CPPUNIT_TEST(testperf2D);
+        CPPUNIT_TEST(testStrataEst3D);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -27,12 +28,14 @@ public:
      * explore the edit distance and resulting set difference
      */
     void setDiffTest2D();
+
     void setDiffTest3D();
 
     void testperf2D();
 
     void testperf3D();
 
+    void testStrataEst3D();
 
 private:
     // file parameters
@@ -44,4 +47,5 @@ private:
 
 
 };
+
 #endif //CPISYNCLIB_KSHINGLINGSYNCPERFTEST_H

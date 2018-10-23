@@ -7,6 +7,7 @@
 
 #include "GenSync.h"
 #include "kshinglingSync.h"
+#include "StrataEst.h"
 #include <fstream>
 
 class PerformanceData {
@@ -77,6 +78,8 @@ public:
 
     void kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
                     pair<int, int> str_sizeRange, int shingle_len);
+
+    void strataEst3D(pair<size_t,size_t> set_sizeRange, int confidence);
 
 private:
 //    vector<ZZ> Alice_shingleSet;// final form will all be in ZZ for each shingle

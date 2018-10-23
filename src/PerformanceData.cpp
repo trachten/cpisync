@@ -344,6 +344,33 @@ void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair
     }
 }
 
+
+void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
+    int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / tesPts);
+    int top_set_diff = set_sizeRange.second/10;
+    int set_diffinterval = floor((top_set_diff) / tesPts);
+
+    for (int set_size = set_sizeRange.first; set_size < set_sizeRange.second; set_size+=set_sizeinterval) {
+        for (int set_diff = 0; set_diff < top_set_diff; set_diff+=set_diffinterval) {
+
+            for (int conf = 0; conf < confidence; ++conf) {
+
+                StrataEst Alice = StrataEst(sizeof(DataObject *));
+                StrataEst Bob = StrataEst(sizeof(DataObject *));
+                for (int j = 0; j < set_size; ++j) {
+                    auto tmp = randZZ();
+                    Alice.insert(new DataObject(tmp));
+                    if (j >= set_diff) {
+                        Bob.insert(new DataObject(tmp));
+                    }
+                }
+                plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate());
+
+            }
+        }
+    }
+}
+
 void PerformanceData::plot2D(string label, double X, double Y){
     if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
         vector<double> tmp(2);

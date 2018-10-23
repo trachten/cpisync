@@ -20,15 +20,12 @@ void StrataEst::insert(DataObject *datum) {
 }
 
 void StrataEst::_insert(ZZ Elem) {
-    setElems.push_back(Elem);
+    //feed all element rough a hash function get their designated IBF
+    //put the element into the designated IBF
+    _inject(Elem, get_Assign_Ind(Elem));
 }
 
-vector<IBLT> StrataEst::exportStrata() {
-    // feed all element rough a hash function get their designated IBF
-    for (ZZ &elem : setElems) {
-        //put the element into the designated IBF
-        _inject(elem, get_Assign_Ind(elem));
-    }
+vector<IBLT> StrataEst::getStrata() {
     return Strata;
 }
 

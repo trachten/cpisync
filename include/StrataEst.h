@@ -67,7 +67,7 @@ public:
      * Sample from set and pour into Strata Estimator
      * @return Strata Estimator
      */
-    vector<IBLT> exportStrata();
+    vector<IBLT> getStrata();
 
     /**
      * Subtracts two StrataEst.

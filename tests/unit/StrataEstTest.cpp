@@ -39,9 +39,6 @@ void StrataEstTest::createStrata() {
         }
     }
 
-    Alice.exportStrata();
-    Bob.exportStrata();
-
     auto est = (Alice -= Bob).estimate();
 
     CPPUNIT_ASSERT(est*1.5 > SET_DIFF);

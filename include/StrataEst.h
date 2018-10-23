@@ -97,7 +97,7 @@ private:
     void _insert(ZZ item);
 
     // inject the element into the strata for a specific IBLT
-    void _inject(ZZ item, int index);
+    void _inject(ZZ& item, int index);
 
     /**
      * Get the index of the IBF what this Elem is assigned to. The bigger the number less the chance

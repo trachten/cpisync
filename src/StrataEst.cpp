@@ -25,7 +25,7 @@ void StrataEst::_insert(ZZ Elem) {
 
 vector<IBLT> StrataEst::exportStrata() {
     // feed all element rough a hash function get their designated IBF
-    for (ZZ elem : setElems) {
+    for (ZZ &elem : setElems) {
         //put the element into the designated IBF
         _inject(elem, get_Assign_Ind(elem));
     }
@@ -34,13 +34,18 @@ vector<IBLT> StrataEst::exportStrata() {
 
 int StrataEst::get_Assign_Ind(ZZ& Elem) {
     std::hash<std::string> shash;
-
-    return floor(log2(shash(toStr(Elem)) % space));
+    auto hashMod = shash(toStr(Elem)) % space;
+    if (hashMod==0) return 0;
+    return floor(log2(hashMod));
+    // Core part: more chance to return higher int with highest int at 1/2 sample rate
+    // hash fxn -> every time sample the same thing
+    // Consider hash function spread out set elements evenly in the universe
+    // biggest index returned is going to be the subspace from (space+1)/2 to (space)
 }
 
-void StrataEst::_inject(ZZ item, int index) {
-    IBLT &iblt = Strata.at(index);
-    iblt.insert(item, item);
+void StrataEst::_inject(ZZ &item, int index) {
+        IBLT &iblt = Strata[index];
+        iblt.insert(item, item);
 }
 
 size_t StrataEst::estimate() {

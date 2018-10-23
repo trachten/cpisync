@@ -17,7 +17,7 @@ void StrataEstTest::setUp() {
 
 void StrataEstTest::tearDown() {}
 
-void StrataEstTest::creatStrata() {
+void StrataEstTest::createStrata() {
     const size_t SET_SIZE = 50000;
     const size_t SET_DIFF = 100;
     const size_t ELEM_SIZE = sizeof(DataObject *);
@@ -43,6 +43,7 @@ void StrataEstTest::creatStrata() {
     Bob.exportStrata();
 
     auto est = (Alice -= Bob).estimate();
+
     CPPUNIT_ASSERT(est > SET_DIFF);
     CPPUNIT_ASSERT(est < SET_DIFF + SET_DIFF);
 

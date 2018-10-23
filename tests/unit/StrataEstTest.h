@@ -13,7 +13,7 @@
 
 class StrataEstTest : public CPPUNIT_NS::TestFixture{
     CPPUNIT_TEST_SUITE(StrataEstTest);
-    CPPUNIT_TEST(creatStrata);
+    CPPUNIT_TEST(createStrata);
     CPPUNIT_TEST_SUITE_END();
 public:
     StrataEstTest();
@@ -22,7 +22,7 @@ public:
     void tearDown();
 
     // testing to create strata in different presettings
-    void creatStrata();
+    void createStrata();
 };
 
 #endif //CPISYNCLIB_STRATAESTTEST_H

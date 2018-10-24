@@ -110,8 +110,6 @@ private:
 
     vector<IBLT> Strata;
 
-    vector<ZZ> setElems;
-
 };
 
 

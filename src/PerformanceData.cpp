@@ -364,7 +364,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
                         Bob.insert(new DataObject(tmp));
                     }
                 }
-                plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate());
+                plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate()-set_diff);
 
             }
         }

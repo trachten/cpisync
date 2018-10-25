@@ -113,6 +113,21 @@ pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
     }
 }
 
+multiset<string> K_Shingle::getShingleSet_str(string estimate_str) {
+
+    multiset<string> result;
+    if (estimate_str.size() > 0) {
+        create(estimate_str);
+    }
+    for (auto tmp : shingleSet) {
+        string item = (tmp.first + ":" + to_string(tmp.second));
+        result.insert(item);
+    }
+    if (estimate_str.size() > 0) {
+        clear_ShingleSet();
+    }
+    return result;
+}
 
 
 void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, int &strCollect_ind,int &str_order,string &finalstr, string str) {

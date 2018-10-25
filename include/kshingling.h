@@ -124,20 +124,8 @@ public:
      * input string and give a estimate of multiset size and content in string type
      * @return a multiset of string
      */
-    multiset<string> getShingleSet_str(string estimate_str = "") {
-        multiset<string> result;
-        if(estimate_str.size()>0){
-            create(estimate_str);
-        }
-        for (auto tmp : shingleSet){
-            string item = (tmp.first+":"+to_string(tmp.second));
-            result.insert(item);
-        }
-        if(estimate_str.size()>0){
-            clear_ShingleSet();
-        }
-        return result;
-    }
+    multiset<string> getShingleSet_str(string estimate_str = "");
+
     void clear_ShingleSet(){
         shingleSet.clear();
     };

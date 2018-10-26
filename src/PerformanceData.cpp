@@ -346,12 +346,12 @@ void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair
 
 
 void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
-    int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / tesPts);
+    int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / 2);
     int top_set_diff = set_sizeRange.second/10;
     int set_diffinterval = floor((top_set_diff) / tesPts);
 
-    for (int set_size = set_sizeRange.first; set_size < set_sizeRange.second; set_size+=set_sizeinterval) {
-        for (int set_diff = 0; set_diff < top_set_diff; set_diff+=set_diffinterval) {
+    for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size+=set_sizeinterval) {
+        for (int set_diff = 0; set_diff <= top_set_diff; set_diff+=set_diffinterval) {
 
             for (int conf = 0; conf < confidence; ++conf) {
 
@@ -435,10 +435,10 @@ void PerformanceData::write2file(string file_name) {
         myfile << "Label:" + item.first + "\n";
         string tmpx, tmpy, tmpz, tmpa;
         for (auto num : item.second) {
-            tmpx += to_string(num[0]) + ",";
-            tmpy += to_string(num[1]) + ",";
-            tmpz += to_string(num[2]) + ",";
-            tmpa += to_string(num[3]) + ",";
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
+            tmpz += to_string(num[2]) + " ";
+            tmpa += to_string(num[3]) + " ";
         }
         myfile << "X:" + tmpx + "\n";
         myfile << "Y:" + tmpy + "\n";
@@ -450,9 +450,9 @@ void PerformanceData::write2file(string file_name) {
         myfile << "Label:" + item.first + "\n";
         string tmpx, tmpy, tmpz;
         for (auto num : item.second) {
-            tmpx += to_string(num[0]) + ",";
-            tmpy += to_string(num[1]) + ",";
-            tmpz += to_string(num[2]) + ",";
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
+            tmpz += to_string(num[2]) + " ";
         }
         myfile << "X:" + tmpx + "\n";
         myfile << "Y:" + tmpy + "\n";
@@ -463,8 +463,8 @@ void PerformanceData::write2file(string file_name) {
         myfile << "Label:" + item.first + "\n";
         string tmpx, tmpy;
         for (auto num : item.second) {
-            tmpx += to_string(num[0]) + ",";
-            tmpy += to_string(num[1]) + ",";
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
         }
         myfile << "X:" + tmpx + "\n";
         myfile << "Y:" + tmpy + "\n";

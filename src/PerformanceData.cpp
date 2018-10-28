@@ -347,10 +347,13 @@ void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair
 
 void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
     int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / 2);
-    int top_set_diff = set_sizeRange.second/10;
-    int set_diffinterval = floor((top_set_diff) / tesPts);
+
 
     for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size+=set_sizeinterval) {
+
+        int top_set_diff = set_size/10;
+        int set_diffinterval = floor((top_set_diff) / tesPts);
+
         for (int set_diff = 0; set_diff <= top_set_diff; set_diff+=set_diffinterval) {
 
             for (int conf = 0; conf < confidence; ++conf) {
@@ -364,7 +367,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
                         Bob.insert(new DataObject(tmp));
                     }
                 }
-                plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate()-set_diff);
+                plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate());
 
             }
         }

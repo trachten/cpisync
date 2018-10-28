@@ -16,6 +16,11 @@
 #include "CPISync_HalfRound_Hashed.h"
 #include "CPISync_ExistingConnection.h"
 
+class StrataEst_CPI {
+public:
 
+private:
+
+};
 
 #endif //CPISYNCLIB_STRATAEST_CPI_H

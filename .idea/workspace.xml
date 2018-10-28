@@ -3,9 +3,9 @@
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
     <generated>
       <config projectName="cpisynclib" targetName="SystemLongTest" />
-      <config projectName="cpisynclib" targetName="cpisynclib" />
       <config projectName="cpisynclib" targetName="Performance" />
       <config projectName="cpisynclib" targetName="UnitTest" />
+      <config projectName="cpisynclib" targetName="cpisynclib" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -20,7 +20,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added" />
+    <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
+      <change afterPath="$PROJECT_DIR$/include/StrataEst_CPI.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/StrataEst_CPI.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StrataReport3D.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpisynclib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cpisynclib.cbp" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -95,51 +102,51 @@
     <session id="-1919019994">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="19" />
+          <entry key="project.closed" value="20" />
           <entry key="project.open.time.2" value="3" />
           <entry key="project.open.time.5" value="1" />
           <entry key="project.open.time.6" value="2" />
-          <entry key="project.open.time.7" value="5" />
-          <entry key="project.open.time.8" value="8" />
+          <entry key="project.open.time.7" value="6" />
+          <entry key="project.open.time.8" value="9" />
           <entry key="project.open.time.9" value="2" />
-          <entry key="project.opened" value="21" />
+          <entry key="project.opened" value="23" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="10203" />
-          <entry key="h" value="3454" />
-          <entry key="txt" value="113" />
+          <entry key="cpp" value="10221" />
+          <entry key="h" value="3459" />
+          <entry key="txt" value="218" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="CMakeLists.txt" value="113" />
+          <entry key="CMakeLists.txt" value="218" />
           <entry key="Doxygen file" value="14" />
-          <entry key="ObjectiveC" value="13643" />
+          <entry key="ObjectiveC" value="13666" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="__functional_base" value="1" />
           <entry key="cbp" value="1" />
-          <entry key="cpp" value="165" />
-          <entry key="h" value="132" />
+          <entry key="cpp" value="167" />
+          <entry key="h" value="135" />
           <entry key="iterator" value="1" />
           <entry key="list" value="1" />
           <entry key="make" value="1" />
           <entry key="memory" value="1" />
           <entry key="new" value="1" />
           <entry key="py" value="2" />
-          <entry key="txt" value="51" />
+          <entry key="txt" value="53" />
           <entry key="utility" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CMakeCache.txt" value="1" />
-          <entry key="CMakeLists.txt" value="7" />
-          <entry key="ObjectiveC" value="303" />
+          <entry key="CMakeLists.txt" value="9" />
+          <entry key="ObjectiveC" value="308" />
           <entry key="PLAIN_TEXT" value="45" />
           <entry key="Python" value="2" />
         </counts>
@@ -155,65 +162,129 @@
     <favorites_list name="cpisynclib" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/kshingling.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="387">
-              <caret line="127" selection-start-line="127" selection-end-line="127" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-279">
-              <caret line="105" column="22" selection-start-line="105" selection-start-column="8" selection-end-line="105" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="3" column="32" selection-start-line="3" selection-start-column="10" selection-end-line="3" selection-end-column="32" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/StrataEst.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="756">
-              <caret line="42" column="16" selection-start-line="42" selection-start-column="16" selection-end-line="42" selection-end-column="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/unit/StrataEstTest.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="738">
-              <caret line="41" column="15" selection-start-line="41" selection-start-column="15" selection-end-line="41" selection-end-column="41" />
-              <folding>
-                <element signature="e#40#58#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/DataObject.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="756">
-              <caret line="42" selection-start-line="42" selection-end-line="42" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="2052">
+                  <caret line="114" selection-start-line="114" selection-end-line="114" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/include/StrataEst_CPI.h">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="378">
+                  <caret line="21" selection-start-line="21" selection-end-line="21" />
+                  <folding>
+                    <element signature="e#116#138#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/InterCPISync.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="162">
+                  <caret line="9" selection-start-line="9" selection-end-line="17" selection-end-column="37" />
+                  <folding>
+                    <element signature="e#222#244#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/include/InterCPISync.h">
+              <provider selected="true" editor-type-id="text-editor">
+                <state>
+                  <folding>
+                    <element signature="e#233#248#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/StrataEst_CPI.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state>
+                  <caret column="2" selection-start-column="2" selection-end-column="2" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="54">
+                  <caret line="3" column="32" selection-start-line="3" selection-start-column="10" selection-end-line="3" selection-end-column="32" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/StrataEst.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="756">
+                  <caret line="42" column="16" selection-start-line="42" selection-start-column="16" selection-end-line="42" selection-end-column="16" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/tests/unit/StrataEstTest.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="738">
+                  <caret line="41" column="15" selection-start-line="41" selection-start-column="15" selection-end-line="41" selection-end-column="41" />
+                  <folding>
+                    <element signature="e#40#58#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/DataObject.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="756">
+                  <caret line="42" selection-start-line="42" selection-end-line="42" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/include/InterCPISync.h">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="18">
+                  <caret line="6" selection-start-line="6" selection-end-line="10" selection-end-column="39" />
+                  <folding>
+                    <element signature="e#233#248#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="334">
+                  <caret line="31" column="17" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -255,8 +326,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/include/CommSocket.h" />
-        <option value="$PROJECT_DIR$/src/DataObject.cpp" />
         <option value="$PROJECT_DIR$/include/DataObject.h" />
         <option value="$PROJECT_DIR$/src/CPISync.cpp" />
         <option value="$PROJECT_DIR$/tests/unit/IBLTSyncTest.h" />
@@ -296,7 +365,6 @@
         <option value="$PROJECT_DIR$/src/GenSync.cpp" />
         <option value="$PROJECT_DIR$/include/GenSync.h" />
         <option value="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/StrataEst.cpp" />
         <option value="$PROJECT_DIR$/tests/unit/StrataEstTest.cpp" />
         <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h" />
@@ -306,6 +374,9 @@
         <option value="$PROJECT_DIR$/src/PerformanceData.cpp" />
         <option value="$PROJECT_DIR$/include/kshingling.h" />
         <option value="$PROJECT_DIR$/src/kshingling.cpp" />
+        <option value="$PROJECT_DIR$/src/StrataEst_CPI.cpp" />
+        <option value="$PROJECT_DIR$/include/StrataEst_CPI.h" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
       </list>
     </option>
   </component>
@@ -496,6 +567,8 @@
       <workItem from="1540422264655" duration="433000" />
       <workItem from="1540510107503" duration="246000" />
       <workItem from="1540552321311" duration="2537000" />
+      <workItem from="1540573787890" duration="847000" />
+      <workItem from="1540685362879" duration="310000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -508,7 +581,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="408484000" />
+    <option name="totallyTimeSpent" value="409641000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -533,7 +606,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
-      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" weight="0.18674698" />
+      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.18674698" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50143063" side_tool="true" weight="0.3421687" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.329927" />
@@ -655,30 +728,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tests/perf/testklgperf3D.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="91" selection-start-line="11" selection-start-column="91" selection-end-line="11" selection-end-column="91" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/IBLTSyncDiffTest.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1368">
-          <caret line="76" column="28" selection-start-line="76" selection-start-column="28" selection-end-line="76" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/IBLTSyncDiffTest.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="31" column="29" selection-start-line="31" selection-start-column="29" selection-end-line="31" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/graphGen.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/testklgperf3D.txt" />
     <entry file="file:///Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/utility">
       <provider selected="true" editor-type-id="text-editor">
@@ -817,13 +866,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="67" column="30" selection-start-line="67" selection-start-column="17" selection-end-line="67" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/testRunner.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-476" />
@@ -871,9 +913,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/StrataReport3D.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/StrataReport3D.txt" />
     <entry file="file://$PROJECT_DIR$/tests/unit/kshinglingTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="607">
@@ -899,6 +939,65 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
           <caret line="8" column="24" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/IBLTSync.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-15">
+          <caret line="83" column="21" selection-start-line="83" selection-start-column="17" selection-end-line="83" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/kshinglingSync.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-168">
+          <caret line="22" column="24" selection-start-line="22" selection-start-column="24" selection-end-line="22" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/kshinglingSync.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="41" column="9" lean-forward="true" selection-start-line="41" selection-start-column="9" selection-end-line="41" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/unit/IBLTSyncTest.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4">
+          <caret line="35" column="57" lean-forward="true" selection-start-line="35" selection-start-column="57" selection-end-line="35" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/kshingling.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2286">
+          <caret line="127" selection-start-line="127" selection-end-line="127" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2052">
+          <caret line="114" selection-start-line="114" selection-end-line="114" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/InterCPISync.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="9" selection-start-line="9" selection-end-line="17" selection-end-column="37" />
+          <folding>
+            <element signature="e#222#244#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/StrataEst_CPI.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="2" selection-start-column="2" selection-end-column="2" />
         </state>
       </provider>
     </entry>
@@ -933,48 +1032,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/IBLTSync.cpp">
+    <entry file="file://$PROJECT_DIR$/include/StrataEst_CPI.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-15">
-          <caret line="83" column="21" selection-start-line="83" selection-start-column="17" selection-end-line="83" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/kshinglingSync.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-168">
-          <caret line="22" column="24" selection-start-line="22" selection-start-column="24" selection-end-line="22" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/kshinglingSync.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="41" column="9" lean-forward="true" selection-start-line="41" selection-start-column="9" selection-end-line="41" selection-end-column="9" />
+        <state relative-caret-position="378">
+          <caret line="21" selection-start-line="21" selection-end-line="21" />
           <folding>
-            <element signature="e#153#173#0" expanded="true" />
+            <element signature="e#116#138#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/IBLTSyncTest.cpp">
+    <entry file="file://$PROJECT_DIR$/include/InterCPISync.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4">
-          <caret line="35" column="57" lean-forward="true" selection-start-line="35" selection-start-column="57" selection-end-line="35" selection-end-column="57" />
+        <state relative-caret-position="18">
+          <caret line="6" selection-start-line="6" selection-end-line="10" selection-end-column="39" />
+          <folding>
+            <element signature="e#233#248#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/kshingling.h">
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="387">
-          <caret line="127" selection-start-line="127" selection-end-line="127" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-279">
-          <caret line="105" column="22" selection-start-line="105" selection-start-column="8" selection-end-line="105" selection-end-column="22" />
+        <state relative-caret-position="334">
+          <caret line="31" column="17" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
         </state>
       </provider>
     </entry>

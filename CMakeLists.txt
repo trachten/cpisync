@@ -17,6 +17,18 @@ set(PERF_DIR ${TEST_DIR}/perf)
 # Set location of the test runner
 set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
 
+find_library(NTL_LIB ntl)
+if(NOT NTL_LIB)
+    message(FATAL_ERROR "NTL lib not found")
+endif()
+find_library(CPP_LIB cppunit)
+if(NOT CPP_LIB)
+    message(FATAL_ERROR "cppunit lib not found")
+endif()
+find_library(GMP_LIB gmp)
+if(NOT GMP_LIB)
+    message(FATAL_ERROR "GMP lib not found")
+endif()
 # Set file config
 set(SOURCE_FILES
         ${SRC_DIR}/CommSocket.cpp
@@ -41,7 +53,8 @@ set(SOURCE_FILES
         ${SRC_DIR}/AdjMtx.cpp
         ${SRC_DIR}/PerformanceData.cpp
         ${SRC_DIR}/IBLTSync_SetDiff.cpp
-        ${SRC_DIR}/StrataEst.cpp)
+        ${SRC_DIR}/StrataEst.cpp
+        ${SRC_DIR}/StrataEst_CPI.cpp)
 
 #cppunit
 include_directories(include)

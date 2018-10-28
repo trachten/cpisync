@@ -225,6 +225,9 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/StrataEst.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/StrataEst_CPI.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/SyncMethod.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>

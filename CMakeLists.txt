@@ -54,7 +54,7 @@ set(SOURCE_FILES
         ${SRC_DIR}/PerformanceData.cpp
         ${SRC_DIR}/IBLTSync_SetDiff.cpp
         ${SRC_DIR}/StrataEst.cpp
-        ${SRC_DIR}/StrataEst_CPI.cpp)
+        ${SRC_DIR}/StrataEst_CPI.cpp src/CPI.cpp)
 
 #cppunit
 include_directories(include)

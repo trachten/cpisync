@@ -29,6 +29,7 @@ find_library(GMP_LIB gmp)
 if(NOT GMP_LIB)
     message(FATAL_ERROR "GMP lib not found")
 endif()
+
 # Set file config
 set(SOURCE_FILES
         ${SRC_DIR}/CommSocket.cpp
@@ -54,11 +55,13 @@ set(SOURCE_FILES
         ${SRC_DIR}/PerformanceData.cpp
         ${SRC_DIR}/IBLTSync_SetDiff.cpp
         ${SRC_DIR}/StrataEst.cpp
-        ${SRC_DIR}/StrataEst_CPI.cpp src/CPI.cpp)
+        ${SRC_DIR}/StrataEst_CPI.cpp
+        ${SRC_DIR}/CPI.cpp)
 
 #cppunit
 include_directories(include)
 include_directories(tests)
+
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} )

@@ -19,14 +19,13 @@ public:
     CPI(size_t value_size, size_t num_evals);
 
     ~CPI();
-
-    bool set_reconcile(long otherSetSize, const vec_ZZ_p& otherEvals, vec_ZZ_P &delta_self, vhec_ZZ_p &delta_other);
+    bool set_reconcile(long otherSetSize, const vec_ZZ_p& otherEvals, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
 
 private:
     size_t bits, numEvals, redundant_k;
 
-    ZZ fieldSize;
+   ZZ fieldSize;
 
-    ZZ_p makeData(ZZ_p num) const;
+   ZZ_p makeData(ZZ_p num) const;
 };
 #endif //CPISYNCLIB_CPI_H

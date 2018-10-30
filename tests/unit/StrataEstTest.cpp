@@ -18,8 +18,8 @@ void StrataEstTest::setUp() {
 void StrataEstTest::tearDown() {}
 
 void StrataEstTest::createStrata() {
-    const size_t SET_SIZE = 50000;
-    const size_t SET_DIFF = 100;
+    const size_t SET_SIZE = 500;
+    const size_t SET_DIFF = 10;
     const size_t ELEM_SIZE = sizeof(DataObject *);
     // A - B = 50 items
 

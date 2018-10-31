@@ -11,18 +11,17 @@
 K_Shingle::K_Shingle() = default;
 K_Shingle::~K_Shingle() = default;
 
-K_Shingle::K_Shingle(const size_t shingle_size) {
-    k = shingle_size;
-}
+K_Shingle::K_Shingle(const size_t shingle_size, const string stop_word) 
+: k(shingle_size), stopword(stop_word) {}
 
 void K_Shingle::create(const string str) {
     //  Sanity check
     orig_string = stopword + str + stopword; // GetString fxn need to remove the stopwords
-    for (int i = 0; i < str.size(); ++i) {
-        if(str.substr(i,1)==stopword){
+    //for (int i = 0; i < str.size(); ++i) {
+        if(str.find(stopword)==string::npos){
             throw invalid_argument("Input string includes Stopword");
         }
-    }
+    //}
     if(k>orig_string.size()){
         throw invalid_argument("Shingle size has to be smaller than the string length");
     }else if(k<2){
@@ -85,12 +84,11 @@ vector<pair<string,int>>  K_Shingle::getEdges(const string verStart, vector<pair
     }
 }
 
-vector<idx_t>  K_Shingle::getEdgeIdx(const string verStart, vector<pair<idx_t,idx_t>> changed_shingleSet) {
-    if (verStart.size() > 0) {
+vector<idx_t>  K_Shingle::getEdgeIdx(const string verStart, vector<idx_t> changed_shingleOccur) {
+    if (verStart.size() > 0) { // verStart not empty
         vector<idx_t> templst;
-        for (long i = 0; i != changed_shingleSet.size(); ++i) {
-            if (shingleSet[i])
-            if (edge->first.substr(0,k-1) == verStart) {
+        for (idx_t i = 0; i < shingleSet.size(); ++i) {
+            if (shingleSet[i].substr(0,verStart.size()) == verStart && changed_shingleOccur[i]>0){
                 templst.push_back(i);
             }
         }
@@ -144,17 +142,33 @@ multiset<string> K_Shingle::getShingleSet_str(string estimate_str) {
     return result;
 }
 
-void K_Shingle::shingle2string(vector<pair<string, int>> changed_shingleSet, string curEdge, int &strCollect_ind,
+void K_Shingle::shingle2string(vector<idx_t> changed_shingleOccur, string curEdge, int &strCollect_ind,
                                int &str_order, string &final_str, string str) {
-long stateNum;
+idx_t stateNum;
 
 /**
- * nxtEdgeStack: [[idx of nxt edges];[];...]
- * stateStack: [[idx of edge ];[];...]
+ * nxtEdgeStack: [[idx of nxt edges];[];...] Register the state of nxt possible edges 
+ * stateStack: [[occr of shingles ];[];...] Register the state of shigle set occurrences
  */
-vector<vector<long>> nxtEdgeStack, stateStack;
+vector<vector<idx_t>> nxtEdgeStack, stateStack; // check and can not be negative
 
+while (stateStack.size()>0){ // while state stack is not empty
+auto nxtEdges = getEdgeIdx(curEdge.substr(1), changed_shingleOccur);
+if (nxtEdges.size()>0){ // if we can and should continue this route
+auto nxt_idx = nxtEdges.pop_back();
+str += shingleSet[nxt_idx];
+changed_shingleOccur[nxt_idx] -= 1;
 
+// register our state for shingle occurrence and nxt edges
+stateStack.push_back(changed_shingleOccur);
+nxtEdgeStack.push_back(nxtEdges);
+
+// if we reached a stop point
+if (shingleSet[nxt_idx].back() and find(0, in changed_shingleOccur))
+}else {// if this route is dead and we should look back
+
+}
+}
 }
 
 void K_Shingle::shingle2string_recursion(vector<pair<string,int>> changed_shingleSet, string curEdge, int &strCollect_ind,int &str_order,string &finalstr, string str) {

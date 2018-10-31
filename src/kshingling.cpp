@@ -85,6 +85,20 @@ vector<pair<string,int>>  K_Shingle::getEdges(const string verStart, vector<pair
     }
 }
 
+vector<pair<string,int>>  K_Shingle::getEdgeIdx(const string verStart, vector<pair<string,int>> changed_shingleSet) {
+    if (verStart.size() > 0) {
+        vector<pair<string,int>> templst;
+        for (vector<pair<string,int>>::iterator edge = changed_shingleSet.begin(); edge != changed_shingleSet.end(); ++edge) {
+            if (edge->first.substr(0,k-1) == verStart) {
+                templst.push_back(*edge);
+            }
+        }
+        return templst;
+    } else {
+        throw invalid_argument("No vertex start string for searching");
+    }
+}
+
 pair<string,int> K_Shingle::reconstructStringBacktracking(int strOrder) {
     int strCollect_ind = 0;
     string startString;
@@ -129,8 +143,20 @@ multiset<string> K_Shingle::getShingleSet_str(string estimate_str) {
     return result;
 }
 
+void K_Shingle::shingle2string(vector<pair<string, int>> changed_shingleSet, string curEdge, int &strCollect_ind,
+                               int &str_order, string &final_str, string str) {
+long stateNum;
 
-void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, int &strCollect_ind,int &str_order,string &finalstr, string str) {
+/**
+ * nxtEdgeStack: [[idx of nxt edges];[];...]
+ * stateStack: [[idx of edge ];[];...]
+ */
+vector<vector<long>> nxtEdgeStack, stateStack;
+
+
+}
+
+void K_Shingle::shingle2string_recursion(vector<pair<string,int>> changed_shingleSet, string curEdge, int &strCollect_ind,int &str_order,string &finalstr, string str) {
 
     auto lst = getEdges(curEdge.substr(1), changed_shingleSet);
     for (auto it = lst.begin(); it != lst.end(); ++it) {
@@ -166,8 +192,5 @@ void K_Shingle::shingle2string(vector<pair<string,int>> changed_shingleSet, stri
             changed_shingleSet.push_back(tempedge);
         }
         str.pop_back();
-
-
     }
-
 }

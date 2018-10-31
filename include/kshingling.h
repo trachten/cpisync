@@ -69,15 +69,6 @@ public:
      */
     vector<pair<string,int>> getEdges(const string verStart, vector<pair<string,int>> changed_shingleSet);
 
-    /**
-     * Recursive function reconstructing string from a shingle set
-     * Operation returns multiple strings if Eulerian Cycle exists in the modified De Brujin Graph representation of the shingle set
-     * @param changed_shingleSet a set of shingles available at a recursive stage
-     * @param curEdge current edge vertex sting
-     * @param strColl a vector of strings that is returnable from the shingle set, Returnable object
-     * @param str current string
-     */
-    void shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, int & strCollect_ind, int & str_order, string &final_str,string str="" );
 
     /**
      * Reconstruct a string from object's shingle set
@@ -152,6 +143,29 @@ private:
 
     const string stopword = "$";  // default stop word is "$"
 
+    vector<long>  K_Shingle::getEdgeIdx(const string verStart, vector<pair<string,int>> changed_shingleSet);
+
+    /**
+     * Recursive function reconstructing string from a shingle set
+     * Operation returns multiple strings if Eulerian Cycle exists in the modified De Brujin Graph representation of the shingle set
+     * @param changed_shingleSet a set of shingles available at a recursive stage
+     * @param curEdge current edge vertex sting
+     * @param strColl a vector of strings that is returnable from the shingle set, Returnable object
+     * @param str current string
+     */
+    void shingle2string_recursion(vector<pair<string,int>> changed_shingleSet,
+            string curEdge, int & strCollect_ind, int & str_order, string &final_str,string str="" );
+
+    /**
+     * Iterative function reconstructing string from a shingle set
+     * Operation returns multiple strings if Eulerian Cycle exists in the modified De Brujin Graph representation of the shingle set
+     * @param changed_shingleSet a set of shingles available at a recursive stage
+     * @param curEdge current edge vertex sting
+     * @param strColl a vector of strings that is returnable from the shingle set, Returnable object
+     * @param str current string
+     */
+    void shingle2string(vector<pair<string,int>> changed_shingleSet, string curEdge, int & strCollect_ind,
+            int & str_order, string &final_str,string str="" );
 };
 
 #endif //CPISYNCLIB_KSHINGLING_H

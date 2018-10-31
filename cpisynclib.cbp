@@ -278,6 +278,12 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/AuxiliaryTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/CPITest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/CPITest.h">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/CommStringTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>

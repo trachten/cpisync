@@ -218,7 +218,7 @@ bool CPI::set_reconcile(const long otherSetSize, const vec_ZZ_p &otherEvals, vec
 
         // compute rational function evals
         vec_ZZ_p ratFuncEvals;
-        long metalength = min(otherEvals.length(), currDiff);
+        long metalength = min(otherEvals.length(), numEvals);
         for (long ii = 0; ii < metalength; ii++)
             append(ratFuncEvals, otherEvals[ii] / CPI_evals[ii]);
 

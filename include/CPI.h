@@ -51,7 +51,7 @@ private:
 
     ZZ_p makeData(ZZ_p num) const;
 
-    size_t bits, numEvals, redundant_k, probEps;
+    long bits, numEvals, redundant_k, probEps;
 
     ZZ fieldSize, DATA_MAX;
 

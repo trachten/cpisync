@@ -22,6 +22,7 @@ using std::pair;
 using namespace NTL;
 
 const string stopword = "$";
+typedef unsigned long idx_t;
 
 class K_Shingle {
 public:
@@ -137,13 +138,20 @@ private:
 
     int k;  //shingle size
 
-    vector<pair<string,int>> shingleSet;  // shingle set
+    vector<pair<idx_t,int>> edgeSet;  // shingle set
+
+    vector<string> shingleSet;
 
     string orig_string;  // original string
 
     const string stopword = "$";  // default stop word is "$"
 
-    vector<long>  K_Shingle::getEdgeIdx(const string verStart, vector<pair<string,int>> changed_shingleSet);
+    /**
+     * GET THE NEXT POSSIBLE EDGES 
+     * @param changed_shingleSet pair<edge idx,edge occurrence>
+     * @return index of next edges to look at
+     */
+    vector<idx_t>  K_Shingle::getEdgeIdx(const string verStart, vector<pair<idx_t,idx_t>> changed_shingleSet);
 
     /**
      * Recursive function reconstructing string from a shingle set

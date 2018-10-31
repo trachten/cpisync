@@ -85,12 +85,13 @@ vector<pair<string,int>>  K_Shingle::getEdges(const string verStart, vector<pair
     }
 }
 
-vector<pair<string,int>>  K_Shingle::getEdgeIdx(const string verStart, vector<pair<string,int>> changed_shingleSet) {
+vector<idx_t>  K_Shingle::getEdgeIdx(const string verStart, vector<pair<idx_t,idx_t>> changed_shingleSet) {
     if (verStart.size() > 0) {
-        vector<pair<string,int>> templst;
-        for (vector<pair<string,int>>::iterator edge = changed_shingleSet.begin(); edge != changed_shingleSet.end(); ++edge) {
+        vector<idx_t> templst;
+        for (long i = 0; i != changed_shingleSet.size(); ++i) {
+            if (shingleSet[i])
             if (edge->first.substr(0,k-1) == verStart) {
-                templst.push_back(*edge);
+                templst.push_back(i);
             }
         }
         return templst;

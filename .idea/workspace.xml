@@ -21,9 +21,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/include/kshingling.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/kshingling.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/kshingling.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/kshingling.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/StrataEstTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/StrataEstTest.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/kshinglingTest.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -115,7 +112,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="13755" />
+          <entry key="cpp" value="13905" />
           <entry key="h" value="5862" />
           <entry key="txt" value="218" />
         </counts>
@@ -124,7 +121,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="218" />
           <entry key="Doxygen file" value="20" />
-          <entry key="ObjectiveC" value="19597" />
+          <entry key="ObjectiveC" value="19747" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -169,8 +166,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="178" selection-start-line="178" selection-end-line="178" />
+            <state relative-caret-position="149">
+              <caret line="13" selection-start-line="13" selection-end-line="13" />
               <folding>
                 <element signature="e#7913#8083#0" />
               </folding>
@@ -199,8 +196,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/unit/kshinglingTest.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="29" column="64" selection-start-line="29" selection-start-column="35" selection-end-line="29" selection-end-column="64" />
+            <state relative-caret-position="101">
+              <caret line="24" column="39" selection-start-line="24" selection-start-column="39" selection-end-line="24" selection-end-column="39" />
+              <folding>
+                <element signature="e#44#62#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -505,7 +505,7 @@
       <workItem from="1540837213238" duration="369000" />
       <workItem from="1540853246440" duration="20886000" />
       <workItem from="1540993810627" duration="3925000" />
-      <workItem from="1541031229912" duration="32517000" />
+      <workItem from="1541031229912" duration="33036000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -518,7 +518,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="480612000" />
+    <option name="totallyTimeSpent" value="481131000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -612,8 +612,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/tests/unit/kshinglingTest.cpp</url>
-          <line>32</line>
+          <line>34</line>
           <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/tests/unit/kshinglingTest.cpp</url>
+          <line>27</line>
+          <option name="timeStamp" value="112" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -987,16 +992,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="178" selection-start-line="178" selection-end-line="178" />
-          <folding>
-            <element signature="e#7913#8083#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/kshinglingSync.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="18">
@@ -1004,10 +999,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+          <folding>
+            <element signature="e#7913#8083#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/unit/kshinglingTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="29" column="64" selection-start-line="29" selection-start-column="35" selection-end-line="29" selection-end-column="64" />
+        <state relative-caret-position="101">
+          <caret line="24" column="39" selection-start-line="24" selection-start-column="39" selection-end-line="24" selection-end-column="39" />
+          <folding>
+            <element signature="e#44#62#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

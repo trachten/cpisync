@@ -28,10 +28,13 @@ void K_Shingle::create(const string str) {
         throw invalid_argument("Minimum shingle size has to be bigger than 2");
     } else if (!orig_string.empty()) {
         //create a set of shingle in shingleSet
+        // first do it in map, then vector
+        map<string, idx_t> tmpShingleMap;
         for (int i = 0; i < orig_string.size() - k + 1; ++i) {
             string nxt_Shingle = orig_string.substr(i, k);
-            incrementEdgeCount(nxt_Shingle);
+            incrementEdgeCount(nxt_Shingle, tmpShingleMap);
         }
+        for (auto item : tmpShingleMap)shingleSet.emplace_back(item.first, item.second);
     } else {
         throw invalid_argument("No input string");
     }
@@ -39,19 +42,15 @@ void K_Shingle::create(const string str) {
 
 
 
-void K_Shingle::incrementEdgeCount(const string ver) {
+void K_Shingle::incrementEdgeCount(const string ver, map<string,idx_t> & shingle_map) {
     if (!ver.empty()) {
-        for (auto edge = shingleSet.begin(); edge != shingleSet.end(); ++edge) {
-            if (edge->first == ver) {
-                edge->second++;
-                return;
-            }
-        }
-        shingleSet.emplace_back(ver, 1);
+
+        auto it = shingle_map.find(ver);
+        (it != shingle_map.end()) ? it->second++ : shingle_map[ver] = 1;
 
         return;
     } else {
-        throw invalid_argument("No vertex string for searching");
+        throw invalid_argument("No string in vertex");
     }
 }
 
@@ -59,12 +58,17 @@ void K_Shingle::incrementEdgeCount(const string ver) {
 vector<idx_t>  K_Shingle::getEdgeIdx(const string verStart, vector<idx_t> changed_shingleOccur) {
     if (!verStart.empty()) { // verStart not empty
         vector<idx_t> templst;
+        // sorted list, start to find it then, as soon as the next is not starting with the substring, bail.
+        bool find_can_end = false;
         for (idx_t i = 0; i < shingleSet.size(); ++i) {
             if (shingleSet[i].first.substr(0,verStart.size()) == verStart && changed_shingleOccur[i]>0){
+                find_can_end = true;
                 templst.push_back(i);
+            }else if (find_can_end){
+                return templst;
             }
         }
-        return templst;
+        return templst; // no hit unless last element is included in the list
     } else {
         throw invalid_argument("No vertex start string for searching");
     }
@@ -111,8 +115,11 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
  */
     vector<vector<idx_t>> nxtEdgeStack, stateStack; // check and can not be negative
 
-    vector<idx_t> origiState; // compose the original state
-    for (auto item : changed_shingleOccur) origiState.push_back(item.second);
+    vector<idx_t> origiState(changed_shingleOccur.size()); // compose the original state
+    for (idx_t i = 0; i < changed_shingleOccur.size(); ++i) {
+        origiState[i] = changed_shingleOccur[i].second;
+    }
+
 
     // Init Original state
     stateStack.push_back(origiState);

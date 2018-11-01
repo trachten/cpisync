@@ -43,7 +43,7 @@ public:
      * Works on object
      * @param ver shingle
      */
-    void incrementEdgeCount(const string ver);
+    void incrementEdgeCount(const string ver, map<string,idx_t> & shingle_map);
 
 
     /**
@@ -130,8 +130,8 @@ private:
     void create(const string str);
 
     inline bool emptyState(vector<idx_t> state) {
-        for (auto s : state) {
-            if (s > 0) return false;
+        for (idx_t i = 0; i < state.size(); ++i) {
+            if (state[i]>0) return false;
         }
         return true;
     }

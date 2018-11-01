@@ -12,7 +12,7 @@ StrataEstTest::~StrataEstTest() {};
 
 void StrataEstTest::setUp() {
     const int seed = 1;
-    srand(time(NULL));
+    srand(seed);
 }
 
 void StrataEstTest::tearDown() {}

@@ -81,9 +81,13 @@ public:
         return shingleSet;
     }
 
-
+    // Delete and reinsert
     void clear_shingleSet() {
         shingleSet.clear();
+    };
+
+    void insert(pair<string,idx_t> Elem) {
+        shingleSet.push_back(Elem);
     };
 
 

@@ -90,6 +90,25 @@ public:
     */
     bool establishIBLTRecv(const size_t size, const size_t eltSize, bool oneWay = false);
 
+    /**
+     * Establishes common Kshingling parameters with another connected Communicant.
+     * @param kshingle_size the length of a shingle
+     * @param stop_word stopword of Kshingling class
+     * @param oneWay If true, verification of common parameters is sent to the other communicant.
+     * @require an active connection via commConnect
+     * @return true iff common parameters were verified
+     */
+    bool establishKshingleSend(const size_t kshingle_size, const char stop_word, bool oneWay = false);
+
+    /**
+     * Establishes common Kshingling parameters with another connected Communicant.
+     * @param kshingle_size the length of a shingle
+     * @param stop_word stopword of Kshingling class
+     * @param oneWay If true, verification of common parameters is sent to the other communicant.
+     * @require an active connection via commConnect
+     * @return true iff common parameters were verified
+     */
+    bool establishKshingleRecv(const size_t kshingle_size, const char stop_word, bool oneWay = false);
       /**
      * Primitive for sending data over an existing connection.  All other sending methods
        * eventually call this.

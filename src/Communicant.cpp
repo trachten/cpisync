@@ -95,6 +95,7 @@ bool Communicant::establishIBLTSend(size_t size, size_t eltSize, bool oneWay /* 
         return (commRecv_byte() != SYNC_FAIL_FLAG);
 }
 
+
 bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* = false */) {
     // receive other size and eltSize. both must be read, even if the first parameter is wrong
     long otherSize = commRecv_long();
@@ -107,6 +108,34 @@ bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* 
     } else {
         Logger::gLog(Logger::COMM, "IBLT params do not match: mine(size=" + toStr(size) + ", eltSize="
         + toStr(eltSize) + ") vs other(size=" + toStr(otherSize) + ", eltSize=" + toStr(otherEltSize) + ").");
+        if(!oneWay)
+            commSend(SYNC_FAIL_FLAG);
+        return false;
+    }
+}
+
+
+bool Communicant::establishKshingleSend(size_t kshingle_size, char stop_word, bool oneWay /* = false */) {
+    commSend((long) kshingle_size);
+    commSend(string(1, stop_word));
+    if (oneWay)
+        return true;  // i.e. don't wait for a response
+    else
+        return (commRecv_byte() != SYNC_FAIL_FLAG);
+}
+
+bool Communicant::establishKshingleRecv(size_t kshingle_size, char stop_word, bool oneWay /* = false */) {
+    // receive other size and eltSize. both must be read, even if the first parameter is wrong
+    long otherKshingleSize = commRecv_long();
+    string otherStopWord = commRecv_long();
+
+    if(otherSize == size && otherEltSize == eltSize) {
+        if(!oneWay)
+            commSend(SYNC_OK_FLAG);
+        return true;
+    } else {
+        Logger::gLog(Logger::COMM, "IBLT params do not match: mine(size=" + toStr(size) + ", eltSize="
+                                   + toStr(eltSize) + ") vs other(size=" + toStr(otherSize) + ", eltSize=" + toStr(otherEltSize) + ").");
         if(!oneWay)
             commSend(SYNC_FAIL_FLAG);
         return false;

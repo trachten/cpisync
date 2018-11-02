@@ -32,11 +32,16 @@ public:
      * Construct a K_Shingle set object with k as each shingle size
      * @param k fixing shingle size to be k
      */
-    K_Shingle(const size_t k, const string str, const char stop_word = '$');
+    K_Shingle(const size_t shingle_size, const char stop_word = '$');
 
     // Default deconstructor
     ~K_Shingle();
 
+    bool inject(const string str){
+        clear_shingleSet();
+        orig_string = stopword + str + stopword;
+        return create(str);
+    };
 
     /**
      * Increment the edge count of the ShingleSet, Creates no copy
@@ -86,11 +91,6 @@ public:
         shingleSet.clear();
     };
 
-    void insert(pair<string,idx_t> Elem) {
-        shingleSet.push_back(Elem);
-    };
-
-
 private:
     // local data
 
@@ -103,6 +103,7 @@ private:
 
     const char stopword;  // default stop word is "$"
 
+    // resetable parameters
     vector<pair<string, idx_t>> shingleSet; // transfer shingleSet to other host
 
     string orig_string;  // original string with stopwords on both ends
@@ -131,7 +132,7 @@ private:
      * This operation always succeed
      * @param str Original string
      */
-    void create(const string str);
+    bool create(const string str);
 
     inline bool emptyState(vector<idx_t> state) {
         for (idx_t i = 0; i < state.size(); ++i) {
@@ -140,6 +141,9 @@ private:
         return true;
     }
 
+    void insert(pair<string,idx_t> Elem) {
+        shingleSet.push_back(Elem);
+    };
 };
 
 #endif //CPISYNCLIB_KSHINGLING_H

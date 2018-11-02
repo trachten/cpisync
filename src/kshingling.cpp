@@ -10,22 +10,23 @@
 
 K_Shingle::~K_Shingle() = default;
 
-K_Shingle::K_Shingle(const size_t shingle_size, const string str, const char stop_word)
-: k(shingle_size), stopword(stop_word), orig_string(stop_word + str + stop_word) {
-    create(str);
-}
+K_Shingle::K_Shingle(const size_t shingle_size, const char stop_word)
+: k(shingle_size), stopword(stop_word) {}
 
-void K_Shingle::create(const string str) {
+bool K_Shingle::create(const string str) {
     //  Sanity check
     //for (int i = 0; i < str.size(); ++i) {
     if (str.find(stopword) != string::npos) {
         throw invalid_argument("Input string includes Stopword");
+        return false; // either log or invalid
     }
     //}
     if (k > orig_string.size()) {
         throw invalid_argument("Shingle size has to be smaller than the string length");
+        return false;
     } else if (k < 2) {
         throw invalid_argument("Minimum shingle size has to be bigger than 2");
+        return false;
     } else if (!orig_string.empty()) {
         //create a set of shingle in shingleSet
         // first do it in map, then vector
@@ -37,7 +38,9 @@ void K_Shingle::create(const string str) {
         for (auto item : tmpShingleMap)shingleSet.emplace_back(item.first, item.second);
     } else {
         throw invalid_argument("No input string");
+        return false;
     }
+    return true;
 }
 
 

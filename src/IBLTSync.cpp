@@ -114,8 +114,6 @@ bool IBLTSync::addElem(DataObject* datum){
 }
 bool IBLTSync::delElem(DataObject* datum){
     // call parent delete
-    // TODO: uncomment when parent delete method is implemented
-    // now it is implemented
     SyncMethod::delElem(datum);
     myIBLT.erase(datum->to_ZZ(), datum->to_ZZ());
     return true;

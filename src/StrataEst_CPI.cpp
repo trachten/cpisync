@@ -6,9 +6,9 @@
 
 StrataEst_CPI::StrataEst_CPI(size_t value_size, size_t num_strata, size_t num_Eval_Pts)
 : bits(value_size), numStrata(num_strata), numEvalPts(num_Eval_Pts) {
-    space = pow(2,numStrata);
+    space = pow(2, numStrata);
     for (int i = 0; i < numStrata; ++i) {
-        CPISync cpi = CPISync(numEvalPts,bits,0,1.5);
+        CPISync cpi = CPISync(numEvalPts, bits, 0, 1);
         Strata.push_back(cpi);
     }
 }

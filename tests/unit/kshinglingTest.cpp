@@ -26,7 +26,9 @@ void kshinglingTest::testAll() {
     //string Bobtxt = randStringEdit(Alicetxt,10);  // Generate a edited string
 
     clock_t t1 = clock();
-    K_Shingle Alice = K_Shingle(log2(Alicetxt.size()),Alicetxt);
+    K_Shingle Alice = K_Shingle(log2(Alicetxt.size()));
+
+    Alice.inject(Alicetxt);
 
     auto AliceStringNOrder = Alice.reconstructStringBacktracking();  // Get order of the cycle
     clock_t t2 = clock();

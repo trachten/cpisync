@@ -58,6 +58,36 @@ public:
         return true;
     }
 
+    // String Sync
+    /**
+     * Connect as a client to a specific communicant and computes differences between the two (without actually updating them).
+     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
+     * %R:  Sync_Server must have been called at that communicant.
+     *
+     * @param commSync The communicant to whom to connect.
+     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
+     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
+     * @return true iff the connection and subsequent synchronization appear to be successful.
+     */
+    virtual bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString) {
+        commSync->resetCommCounters();
+        return true;
+    }
+
+    /**
+     * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
+     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
+     *      *
+     * @param commSync The communicant to whom to connect.
+     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
+     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
+     * @return true iff the connection and subsequent synchronization appear to be successful.
+     */
+    virtual bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString) {
+        commSync->resetCommCounters();
+        return true;
+    }
+
     // MANIPULATE DATA
     /**
      * Add an element to the data structure that will be performing the synchronization.
@@ -77,6 +107,16 @@ public:
         elements.erase(std::remove(elements.begin(), elements.end(), datum), elements.end());
         return before > elements.size(); // true iff there were more elements before removal than after
     };
+
+    /**
+     * Update string from the data structure
+     * @param str
+     * @return
+     */
+    virtual bool update(DataObject* str) {
+        originStr = str;
+        return true;
+    }
 
     // INFORMATIONAL
     /**
@@ -124,6 +164,8 @@ protected:
     
 private:
     vector<DataObject *> elements; /** Pointers to the elements stored in the data structure. */
+
+    DataObject * originStr; /** Pointers to the string stored in the data structure. */
 };
 
 

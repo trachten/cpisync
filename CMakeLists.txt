@@ -21,6 +21,7 @@ find_library(NTL_LIB_INIT_SEARCH ntl)
 find_library(GMP_LIB gmp)
 find_library(CPP_LIB cppunit)
 if(NOT NTL_LIB_INIT_SEARCH)
+    include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
     ExternalProject_Add(NTL_LIB
             URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
             PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
@@ -30,6 +31,10 @@ if(NOT NTL_LIB_INIT_SEARCH)
             PREFIX=${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
             )
     ExternalProject_Get_Property(NTL_LIB ntl_dir)
+    add_library(ntl STATIC IMPORTED)
+    set_property(TARGET cpisynclib PROPERTY IMPORTED_LOCATION ${ntl_dir}/lib/libntl.a)
+    add_dependencies(ntl NTL_LIB)
+    include_directories(${install_dir}/include)
 endif()
 
 
@@ -68,12 +73,6 @@ include_directories(tests)
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} )
-
-# Add dependencies if necessary
-if(NOT NTL_LIB_INIT_SEARCH)
-    set_property(TARGET cpisynclib PROPERTY IMPORTED_LOCATION ${ntl_dir}/lib/libntl.a)
-    add_dependencies(cpisynclib NTL_LIB)
-endif()
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add

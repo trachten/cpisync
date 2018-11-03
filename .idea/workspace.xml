@@ -116,12 +116,12 @@
         <counts>
           <entry key="cpp" value="14191" />
           <entry key="h" value="5965" />
-          <entry key="txt" value="345" />
+          <entry key="txt" value="365" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="CMakeLists.txt" value="345" />
+          <entry key="CMakeLists.txt" value="365" />
           <entry key="Doxygen file" value="20" />
           <entry key="ObjectiveC" value="20136" />
         </counts>
@@ -168,8 +168,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-508">
-              <caret line="23" column="56" selection-start-line="23" selection-start-column="56" selection-end-line="23" selection-end-column="56" />
+            <state relative-caret-position="277">
+              <caret line="32" column="8" selection-start-line="32" selection-start-column="8" selection-end-line="32" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -468,7 +468,7 @@
       <workItem from="1541031229912" duration="35878000" />
       <workItem from="1541169066875" duration="13268000" />
       <workItem from="1541264015962" duration="1507000" />
-      <workItem from="1541282052643" duration="1456000" />
+      <workItem from="1541282052643" duration="1976000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -481,7 +481,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="500204000" />
+    <option name="totallyTimeSpent" value="500724000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -935,8 +935,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-508">
-          <caret line="23" column="56" selection-start-line="23" selection-start-column="56" selection-end-line="23" selection-end-column="56" />
+        <state relative-caret-position="277">
+          <caret line="32" column="8" selection-start-line="32" selection-start-column="8" selection-end-line="32" selection-end-column="8" />
         </state>
       </provider>
     </entry>

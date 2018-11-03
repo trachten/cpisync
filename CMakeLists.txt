@@ -30,6 +30,7 @@ if(NOT NTL_LIB_INIT_SEARCH)
             INSTALL_COMMAND make install
             PREFIX=${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
             )
+        
     ExternalProject_Get_Property(NTL_LIB ntl_dir)
     add_library(ntl STATIC IMPORTED)
     set_property(TARGET cpisynclib PROPERTY IMPORTED_LOCATION ${ntl_dir}/lib/libntl.a)

@@ -24,9 +24,9 @@ if(NOT NTL_LIB_INIT_SEARCH)
     include(ExternalProject)
     ExternalProject_Add(NTL_LIB
             URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
-            PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
-            SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1/NTL
-            DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}
+            PREFIX ${CMAKE_BINARY_DIR}/ntl-11.3.1
+            SOURCE_DIR ${CMAKE_BINARY_DIR}/ntl-11.3.1/NTL
+            DOWNLOAD_DIR ${CMAKE_BINARY_DIR}
             CONFIGURE_COMMAND ""
             BUILD_COMMAND make
             INSTALL_COMMAND make install

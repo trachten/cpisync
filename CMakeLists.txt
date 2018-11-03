@@ -17,18 +17,21 @@ set(PERF_DIR ${TEST_DIR}/perf)
 # Set location of the test runner
 set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
 
-find_library(NTL_LIB ntl)
-if(NOT NTL_LIB)
-    message(FATAL_ERROR "NTL lib not found")
-endif()
-find_library(CPP_LIB cppunit)
-if(NOT CPP_LIB)
-    message(FATAL_ERROR "cppunit lib not found")
-endif()
+find_library(NTL_LIB_INIT_SEARCH ntl)
 find_library(GMP_LIB gmp)
-if(NOT GMP_LIB)
-    message(FATAL_ERROR "GMP lib not found")
+find_library(CPP_LIB cppunit)
+if(NOT NTL_LIB_INIT_SEARCH)
+    ExternalProject_Add(NTL_LIB
+            URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
+            PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND make
+            INSTALL_COMMAND make install
+            PREFIX=${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
+            )
+    ExternalProject_Get_Property(NTL_LIB ntl_dir)
 endif()
+
 
 # Set file config
 set(SOURCE_FILES
@@ -65,6 +68,12 @@ include_directories(tests)
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} )
+
+# Add dependencies if necessary
+if(NOT NTL_LIB_INIT_SEARCH)
+    set_property(TARGET cpisynclib PROPERTY IMPORTED_LOCATION ${ntl_dir}/lib/libntl.a)
+    add_dependencies(cpisynclib NTL_LIB)
+endif()
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add

@@ -127,15 +127,20 @@ bool Communicant::establishKshingleSend(size_t kshingle_size, char stop_word, bo
 bool Communicant::establishKshingleRecv(size_t kshingle_size, char stop_word, bool oneWay /* = false */) {
     // receive other size and eltSize. both must be read, even if the first parameter is wrong
     long otherKshingleSize = commRecv_long();
-    string otherStopWord = commRecv_long();
+    string temStopWord = commRecv_string();
+    if (temStopWord.size()>1 or temStopWord.empty()){
+        Logger::gLog(Logger::COMM, "otherStopWord is not a single char");
+        return false;
+    }
+    char otherStopWord = temStopWord[0]; // stopword is a single char
 
-    if(otherSize == size && otherEltSize == eltSize) {
+    if(kshingle_size == otherKshingleSize && stop_word == otherStopWord) {
         if(!oneWay)
             commSend(SYNC_OK_FLAG);
         return true;
     } else {
-        Logger::gLog(Logger::COMM, "IBLT params do not match: mine(size=" + toStr(size) + ", eltSize="
-                                   + toStr(eltSize) + ") vs other(size=" + toStr(otherSize) + ", eltSize=" + toStr(otherEltSize) + ").");
+        Logger::gLog(Logger::COMM, "Kshingle params do not match: mine(shingle size=" + toStr(kshingle_size) + ", stop_word="
+                                   + toStr(stop_word) + ") vs other(size=" + toStr(otherKshingleSize) + ", eltSize=" + toStr(otherStopWord) + ").");
         if(!oneWay)
             commSend(SYNC_FAIL_FLAG);
         return false;

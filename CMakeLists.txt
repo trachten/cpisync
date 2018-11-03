@@ -21,21 +21,24 @@ find_library(NTL_LIB_INIT_SEARCH ntl)
 find_library(GMP_LIB gmp)
 find_library(CPP_LIB cppunit)
 if(NOT NTL_LIB_INIT_SEARCH)
-    include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+    include(ExternalProject)
     ExternalProject_Add(NTL_LIB
             URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
             PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
+            SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1/NTL
+            DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}
             CONFIGURE_COMMAND ""
             BUILD_COMMAND make
             INSTALL_COMMAND make install
             PREFIX=${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
             )
-        
+
     ExternalProject_Get_Property(NTL_LIB ntl_dir)
     add_library(ntl STATIC IMPORTED)
     set_property(TARGET cpisynclib PROPERTY IMPORTED_LOCATION ${ntl_dir}/lib/libntl.a)
     add_dependencies(ntl NTL_LIB)
     include_directories(${install_dir}/include)
+    link_directories()
 endif()
 
 

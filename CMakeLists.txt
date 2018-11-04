@@ -85,7 +85,7 @@ find_library(CPP_LIB cppunit)
 #BUILD_COMMAND make
 #INSTALL_COMMAND make install
 #endif()
-if(UNIX AND NOT APPLE AND NOT NTL_LIB)
+if(UNIX AND NOT APPLE)
     include(ExternalProject)
     ExternalProject_Add(NTL
 

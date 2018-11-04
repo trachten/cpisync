@@ -91,12 +91,10 @@ if(UNIX AND NOT APPLE AND NOT NTL_LIB)
     ExternalProject_Add(NTL
 
             PREFIX ${CMAKE_BINARY_DIR}/libs
-            SOURCE_DIR libs/NTL
-            DOWNLOAD_DIR libs/tmp
-            SOURCE_DIR ${PREFIX}
             URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
 
-
+            SOURCE_DIR libs/NTL
+            DOWNLOAD_DIR libs/tmp
 
             CONFIGURE_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && ./configure
             BUILD_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && make all -j4

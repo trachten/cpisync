@@ -86,9 +86,10 @@ if(UNIX AND NOT APPLE AND NOT NTL_LIB)
     include(ExternalProject)
     ExternalProject_Add(project_ntl
 
-            PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
+            PREFIX ${CMAKE_CURRENT_BINARY_DIR}/../ntl-11.3.1
+            SOURCE_DIR ${PREFIX}
             URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
-            CONFIGURE_COMMAND cd ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1/src/project_ntl && ./configure --prefix=${PREFIX}
+            CONFIGURE_COMMAND cd ${PREFIX}/src/project_ntl/src && ./configure --prefix=${PREFIX}
             BUILD_COMMAND make
             INSTALL_COMMAND make install
             )

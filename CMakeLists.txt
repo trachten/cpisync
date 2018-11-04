@@ -81,17 +81,26 @@ find_library(CPP_LIB cppunit)
 #CONFIGURE_COMMAND mkdir ${HOME}/ntllib && cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && ./configure --prefix=${HOME}/ntllib
 #BUILD_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && make
 #INSTALL_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && make install
+#CONFIGURE_COMMAND cd ${PREFIX}/src/project_ntl/src && ./configure --prefix=${PREFIX}
+#BUILD_COMMAND make
+#INSTALL_COMMAND make install
 #endif()
 if(UNIX AND NOT APPLE AND NOT NTL_LIB)
     include(ExternalProject)
-    ExternalProject_Add(project_ntl
+    ExternalProject_Add(NTL
 
-            PREFIX ${CMAKE_CURRENT_BINARY_DIR}/../ntl-11.3.1
+            PREFIX ${CMAKE_BINARY_DIR}/libs
+            SOURCE_DIR libs/NTL
+            DOWNLOAD_DIR libs/tmp
             SOURCE_DIR ${PREFIX}
             URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
-            CONFIGURE_COMMAND cd ${PREFIX}/src/project_ntl/src && ./configure --prefix=${PREFIX}
-            BUILD_COMMAND make
-            INSTALL_COMMAND make install
+
+
+
+            CONFIGURE_COMMAND cd ${PREFIX}/NTL/src/ && ./configure
+            BUILD_COMMAND cd ${PREFIX}/NTL/src/ && make all -j4
+            INSTALL_COMMAND cd ${PREFIX}/NTL/src/ && sudo make install
+
             )
 
     ExternalProject_Get_Property(project_ntl install_dir)

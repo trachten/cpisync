@@ -97,9 +97,9 @@ if(UNIX AND NOT APPLE)
 
 
 
-            CONFIGURE_COMMAND cd ${PREFIX}/NTL/src/ && ./configure
-            BUILD_COMMAND cd ${PREFIX}/NTL/src/ && make all -j4
-            INSTALL_COMMAND cd ${PREFIX}/NTL/src/ && sudo make install
+            CONFIGURE_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && ./configure
+            BUILD_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && make all -j4
+            INSTALL_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && sudo make install
 
             )
 
@@ -144,11 +144,13 @@ include_directories(tests)
 add_library(cpisynclib ${SOURCE_FILES})
 
 if(UNIX AND NOT APPLE) # if linux without sudo previleges or centos gird where ntl is not installed
-    add_library(ntl STATIC IMPORTED)
-    set_property(TARGET ntl PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libntl.a)
-    add_dependencies(ntl project_ntl)
-    include_directories(${install_dir}/include/)
-    target_link_libraries(cpisynclib ntl)
+#    add_library(ntl STATIC IMPORTED)
+#    set_property(TARGET ntl PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libntl.a)
+#    add_dependencies(ntl project_ntl)
+#    include_directories(${install_dir}/include/)
+#    target_link_libraries(cpisynclib ntl)
+    include_directories("${CMAKE_BINARY_DIR}/libs/NTL/src/")
+    link_directories()
 endif()
 
 # Define a macro for adding executables testing multiple files

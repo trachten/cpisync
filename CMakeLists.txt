@@ -102,7 +102,7 @@ if(UNIX AND NOT APPLE AND NOT NTL_LIB)
 
             )
 
-    #ExternalProject_Get_Property(NTL install_dir)
+    ExternalProject_Get_Property(NTL install_dir)
 endif()
 
 

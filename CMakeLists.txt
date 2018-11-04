@@ -88,11 +88,9 @@ if(UNIX AND NOT APPLE AND NOT NTL_LIB)
 
             PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
             URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
-
-            CONFIGURE_COMMAND ""
+            CONFIGURE_COMMAND ./configure --prefix=${PREFIX}
             BUILD_COMMAND make
             INSTALL_COMMAND make install
-            PREFIX=${CMAKE_CURRENT_BINARY_DIR}/ntl-11.3.1
             )
 
     ExternalProject_Get_Property(project_ntl install_dir)

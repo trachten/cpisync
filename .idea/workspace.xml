@@ -23,8 +23,6 @@
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Performance" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpisynclib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cpisynclib.cbp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -118,12 +116,12 @@
         <counts>
           <entry key="cpp" value="14191" />
           <entry key="h" value="5965" />
-          <entry key="txt" value="850" />
+          <entry key="txt" value="884" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="CMakeLists.txt" value="850" />
+          <entry key="CMakeLists.txt" value="884" />
           <entry key="Doxygen file" value="20" />
           <entry key="ObjectiveC" value="20136" />
         </counts>
@@ -170,8 +168,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
+            <state relative-caret-position="-431">
+              <caret line="90" column="60" selection-start-line="90" selection-start-column="60" selection-end-line="90" selection-end-column="60" />
             </state>
           </provider>
         </entry>
@@ -470,7 +468,7 @@
       <workItem from="1541031229912" duration="35878000" />
       <workItem from="1541169066875" duration="13268000" />
       <workItem from="1541264015962" duration="1507000" />
-      <workItem from="1541282052643" duration="9375000" />
+      <workItem from="1541282052643" duration="9991000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -483,7 +481,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="508123000" />
+    <option name="totallyTimeSpent" value="508739000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -508,7 +506,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
-      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" weight="0.31566265" />
+      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.31566265" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50143063" side_tool="true" weight="0.3421687" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.329927" />
@@ -937,8 +935,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
+        <state relative-caret-position="-431">
+          <caret line="90" column="60" selection-start-line="90" selection-start-column="60" selection-end-line="90" selection-end-column="60" />
         </state>
       </provider>
     </entry>

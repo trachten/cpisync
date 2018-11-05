@@ -15,6 +15,7 @@
 #include "DataObject.h"
 #include "DataPriorityObject.h"
 #include "IBLT.h"
+#include "StrataEst.h"
 
 // namespace imports
 using namespace NTL;
@@ -223,7 +224,14 @@ public:
      */
     void commSend(const IBLT& iblt, bool sync=false);
 
-        /**
+    /**
+     * Send a Strata
+     * @param strata vector of IBLTs
+     * @param sync sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the number of IBLTs
+     */
+    void commSend(const vector<IBLT>& strata, bool sync);
+
+    /**
      * Receives up to MAX_BUF_SIZE characters from the socket.
      * This is the primitive receive method that all other methods call.
      * %R: Must have called either commListen or commConnect already.
@@ -292,6 +300,13 @@ public:
      * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLT, false) was used to send the IBLT
      */
     IBLT commRecv_IBLT(size_t size=NOT_SET, size_t eltSize=NOT_SET);
+
+    /**
+     * Recived a vector of iblts
+     * @param size number of iblt in the vector
+     * @return vector<IBLT> as Strata
+     */
+    StrataEst commRecv_Strata(size_t size=NOT_SET);
 
     // Informational
 

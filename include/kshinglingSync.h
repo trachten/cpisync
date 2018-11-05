@@ -27,6 +27,14 @@ public:
             const char stop_word = '$');
 
     ~kshinglingSync(){};
+
+     size_t injectString(string str) {
+         myKshingle.inject(str);
+         for (auto item : myKshingle.getShingleSet_str()) addElem(new DataObject(item));
+         return myKshingle.reconstructStringBacktracking().second;
+     };
+
+
     /**
      *
      * @param commSync
@@ -52,7 +60,9 @@ public:
 //        return res;
 //    };
 
-    //string getString(GenSync host,K_Shingle& host_content);
+    string reconString(size_t cycNum){
+        return myKshingle.reconstructStringBacktracking(cycNum).first;
+    };
 //    /**
 //     * @return print a string that is reconstructed from object's current set of shingles
 //     */

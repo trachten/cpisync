@@ -13,6 +13,16 @@ StrataEst::StrataEst( size_t value_size, size_t num_strata, size_t num_cells) {
     space = pow(2,numStrata);
 }
 
+StrataEst::StrataEst(vector<IBLT> myIBLT) {
+    if (myIBLT.empty()) return ;
+
+    numStrata =  myIBLT.size(), numCells =  myIBLT[0].size(), bits =  myIBLT[0].eltSize();
+    for (int i = 0; i < numStrata; ++i) {
+        Strata.push_back(myIBLT[i]);
+    }
+    space = pow(2,numStrata);
+}
+
 StrataEst::~StrataEst(){};
 
 void StrataEst::insert(DataObject *datum) {

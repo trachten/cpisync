@@ -300,6 +300,17 @@ void Communicant::commSend(const IBLT& iblt, bool sync) {
     }
 }
 
+void Communicant::commSend(const vector<IBLT>& strata, bool sync) {
+    if (!sync) {
+        commSend((long) strata.size());
+    }
+
+    // Access the iblt to serialize it
+    for(const IBLT& iblt : strata) {
+        commSend(iblt, sync);
+    }
+}
+
 void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
     commSend(hte.count);
     commSend((unsigned long) hte.keyCheck);
@@ -477,6 +488,24 @@ IBLT Communicant::commRecv_IBLT(size_t size, size_t eltSize) {
     }
 
     return theirs;
+}
+
+StrataEst Communicant::commRecv_Strata(size_t size){
+    size_t numSize;
+
+    if (size == NOT_SET){
+        numSize = (size_t) commRecv_long();
+    } else{
+        numSize = size;
+    }
+
+    vector<IBLT> theirs;
+
+    for(int ii = 0; ii < numSize; ii++) {
+        theirs.push_back(commRecv_IBLT());
+    }
+
+    return StrataEst(theirs);
 }
 
 IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {

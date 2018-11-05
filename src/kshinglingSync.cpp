@@ -64,12 +64,14 @@
 //    }
 //    return host_content.reconstructStringBacktracking(cycleNum).first;
 //}
+
+
 kshinglingSync::kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const size_t shingle_size,
         const char stop_word) : myKshingle(shingle_size, stop_word), setSyncProtocol(set_sync_protocol) {
     oneway = false;
-
-
 }
+
+
 
 bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObject &selfString,
         DataObject &otherString, bool Estimate) {
@@ -100,7 +102,7 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
         }
 
         // since Kshingling are the same, Strata Est parameters would also be the same.
-        for (auto iblt : est.getStrata()) commSync->commSend(iblt, true);
+        commSync->commSend(est.getStrata(), true);
         mbar = (size_t) commSync->commRecv_long(); // Dangerous cast
         mbar = mbar + mbar/2; // get to the upper bound
     }
@@ -120,6 +122,36 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObj
                                 DataObject &otherString, bool Estimate) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncServer");
     bool syncSuccess = true;
+
+    SyncMethod::SyncServer(commSync, selfString, otherString);
+
+    commSync->commListen();
+    if(!commSync->establishKshingleRecv(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)){
+        Logger::gLog(Logger::METHOD_DETAILS,
+                     "Kshingle parameters do not match up between client and server!");
+        syncSuccess = false;
+    }
+
+    // estimate difference
+    if (Estimate and needEst()){
+        StrataEst est = StrataEst(myKshingle.getElemSize());
+
+        for (auto item : myKshingle.getShingleSet_str()){
+            est.insert(new DataObject(item)); // Add to estimator
+        }
+
+        // since Kshingling are the same, Strata Est parameters would also be the same.
+        auto theirStarata = commSync->commRecv_Strata();
+        mbar = (est-=theirStarata).estimate();
+        commSync->commSend(mbar); // Dangerous cast
+        mbar = mbar + mbar/2; // get to the upper bound
+    }
+    // reconcile difference + delete extra
+    GenSync myHost = configurate(myKshingle.getSetSize());
+
+    for (auto item : myKshingle.getShingleSet_str()){
+        myHost.addElem(new DataObject(item)); // Add to GenSync
+    }
 
     return syncSuccess;
 }

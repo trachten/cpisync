@@ -44,7 +44,7 @@ typedef unsigned long int hashVal;
 
 class StrataEst{
 public:
-
+    friend class Communicant;
     /**
      * Construct a vector of IBF Hierarchy as Strata
      * @param num_strata default value 16 / 32
@@ -52,6 +52,8 @@ public:
      * @param value_size default value 8
      */
     StrataEst(size_t value_size, size_t num_strata = 16, size_t num_cells=40);
+
+    StrataEst(vector<IBLT> myIBLT);
 
     ~StrataEst();
 

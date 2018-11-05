@@ -37,7 +37,7 @@ public:
     // Default deconstructor
     ~K_Shingle();
 
-    bool inject(const string str){
+    bool inject(const string str) {
         clear_shingleSet();
         orig_string = stopword + str + stopword;
         return create(str);
@@ -48,7 +48,7 @@ public:
      * Works on object
      * @param ver shingle
      */
-    void incrementEdgeCount(const string ver, map<string,idx_t> & shingle_map);
+    void incrementEdgeCount(const string ver, map<string, idx_t> &shingle_map);
 
 
     /**
@@ -60,7 +60,7 @@ public:
      * @return String if input int, int if input string
      * Fail to return a string, second would be 0
      */
-    pair<string, idx_t> reconstructStringBacktracking(idx_t str_coll_tar=0);
+    pair<string, idx_t> reconstructStringBacktracking(idx_t str_coll_tar = 0);
 
     // get methods
     /**
@@ -73,8 +73,12 @@ public:
     /**
      * @return The bit size of a shingle set
      */
-    size_t getShingleSize() const {
+    size_t getElemSize() const {
         return sizeof(pair<string, idx_t>);
+    }
+
+    char getStopWord() const {
+        return stopword;
     }
 
     string getOriginString() {
@@ -86,9 +90,21 @@ public:
         return shingleSet;
     }
 
+    /**
+     * Interact with sending set elements as string
+     * @return
+     */
+    vector<string> getShingleSet_str() { return shingleSet_str; };
+
+    /**
+     * Interact with reciving set element update as string
+     */
+    void updateShingleSet_str(string shingle);
+
     // Delete and reinsert
     void clear_shingleSet() {
         shingleSet.clear();
+        shingleSet_str.clear();
     };
 
 private:
@@ -105,6 +121,7 @@ private:
 
     // resetable parameters
     vector<pair<string, idx_t>> shingleSet; // transfer shingleSet to other host
+    vector<string> shingleSet_str; // mirror variable, used to sedn to another hose in string format
 
     string orig_string;  // original string with stopwords on both ends
 
@@ -124,7 +141,7 @@ private:
      * @param str current string
      * @return whether this process is successfully.
      */
-    bool shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, string curEdge, idx_t &strCollect_ind,
+    bool shingle2string(vector<pair<string, idx_t>> changed_shingleOccur, string curEdge, idx_t &strCollect_ind,
                         idx_t &str_order, string &final_str, string str = "");
 
     /**
@@ -136,12 +153,12 @@ private:
 
     inline bool emptyState(vector<idx_t> state) {
         for (idx_t i = 0; i < state.size(); ++i) {
-            if (state[i]>0) return false;
+            if (state[i] > 0) return false;
         }
         return true;
     }
 
-    void insert(pair<string,idx_t> Elem) {
+    void insert(pair<string, idx_t> Elem) {
         shingleSet.push_back(Elem);
     };
 };

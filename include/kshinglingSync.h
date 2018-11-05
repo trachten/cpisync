@@ -10,6 +10,7 @@
 #include "SyncMethod.h"
 #include "Auxiliary.h"
 #include "kshingling.h"
+#include "StrataEst.h"
 
 class kshinglingSync : public SyncMethod{
 public:
@@ -26,10 +27,17 @@ public:
             const char stop_word = '$');
 
     ~kshinglingSync(){};
+    /**
+     *
+     * @param commSync
+     * @param selfString
+     * @param otherString
+     * @param Estimate whether estimate using existing estimation protocol, set mbar (maximum difference) if false
+     * @return
+     */
+    bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true);
 
-    bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString);
-
-    bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString);
+    bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true);
 
     bool update(DataObject* str){
         return myKshingle.inject(str->to_string());
@@ -58,7 +66,7 @@ protected:
 private:
     K_Shingle myKshingle;
     string originStr;
-    GenSync myhost;
+    //GenSync myhost;
 
     size_t eltSize; // defined by shingle size
     size_t mbar; // defined by set difference estimator ... not necessarily a global variable
@@ -75,7 +83,12 @@ private:
     /**
      * Configure set recon protocols
      */
-    void configurate(int port_num=8001, GenSync::SyncComm setSyncComm=GenSync::SyncComm::socket);
+    GenSync configurate(idx_t set_size, int port_num=8001, GenSync::SyncComm setSyncComm=GenSync::SyncComm::socket);
+
+    bool needEst(){
+        return setSyncProtocol==GenSync::SyncProtocol::IBLTSync or setSyncProtocol==GenSync::SyncProtocol::CPISync;
+    };
+
 };
 
 #endif //CPISYNCLIB_KSHINGLINGSYNC_H

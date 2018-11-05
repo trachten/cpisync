@@ -68,12 +68,11 @@ kshinglingSync::kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const si
         const char stop_word) : myKshingle(shingle_size, stop_word), setSyncProtocol(set_sync_protocol) {
     oneway = false;
 
-    // configure set reconciliation
-    configurate();
+
 }
 
 bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObject &selfString,
-        DataObject &otherString) {
+        DataObject &otherString, bool Estimate) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncClient");
 
     bool syncSuccess = true;
@@ -85,36 +84,56 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
     // connect to server
     commSync->commConnect();
     // ensure that the kshingle size and stopword equal those of the server
-    if(!commSync->establishKshingleSend(myKshingle.size(), myKshingle.eltSize(), oneway)) {
+    if(!commSync->establishKshingleSend(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)) {
         Logger::gLog(Logger::METHOD_DETAILS,
                      "Kshingle parameters do not match up between client and server!");
         syncSuccess = false;
     }
-    commSync->commSend(myKshingle, true);
+
+
     // estimate difference
+    if (Estimate and needEst()){
+        StrataEst est = StrataEst(myKshingle.getElemSize());
+
+        for (auto item : myKshingle.getShingleSet_str()){
+            est.insert(new DataObject(item)); // Add to estimator
+        }
+
+        // since Kshingling are the same, Strata Est parameters would also be the same.
+        for (auto iblt : est.getStrata()) commSync->commSend(iblt, true);
+        mbar = (size_t) commSync->commRecv_long(); // Dangerous cast
+        mbar = mbar + mbar/2; // get to the upper bound
+    }
+
     // reconcile difference + delete extra
+    GenSync myHost = configurate(myKshingle.getSetSize());
+
+    for (auto item : myKshingle.getShingleSet_str()){
+        myHost.addElem(new DataObject(item)); // Add to GenSync
+    }
     // choose to send if not oneway (default is one way)
 
-    return true;
+    return syncSuccess;
 }
 
 bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObject &selfString,
-                                DataObject &otherString) {
+                                DataObject &otherString, bool Estimate) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncServer");
+    bool syncSuccess = true;
 
-    return true;
+    return syncSuccess;
 }
 
-void kshinglingSync::configurate(int port_num, GenSync::SyncComm setSyncComm) {
-//    myhost = GenSync::Builder().
-//            setProtocol(setSyncProtocol).
-//            setComm(setSyncComm).
-//            setMbar(mbar).
-//            setNumPartitions(numParts).
-//            setBits(bits).
-//            setPort(portNum).
-//            setNumExpectedElements(numExpElem).
-//            build();
+GenSync kshinglingSync::configurate(idx_t set_size, int port_num, GenSync::SyncComm setSyncComm) {
+    return GenSync::Builder().
+            setProtocol(setSyncProtocol).
+            setComm(setSyncComm).
+            setMbar(mbar).
+            setNumPartitions((ceil(log(set_size))>1)?:2).
+            setBits(eltSize).
+            setPort(port_num).
+            setNumExpectedElements(mbar).
+            build();
 }
 
 string kshinglingSync::getName(){ return "This is a kshinglingSync of string reconciliation";}

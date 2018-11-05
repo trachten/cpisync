@@ -41,8 +41,8 @@ void StrataEstTest::createStrata() {
 
     auto est = (Alice -= Bob).estimate();
 
-    CPPUNIT_ASSERT(est*1.5 > SET_DIFF);
-    CPPUNIT_ASSERT(est < SET_DIFF + SET_DIFF);
+    CPPUNIT_ASSERT(est + est/2 > SET_DIFF);
+    CPPUNIT_ASSERT(est + est/2 > SET_DIFF);
 
 
 }

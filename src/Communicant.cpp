@@ -223,11 +223,12 @@ void Communicant::commSend(const long num) {
     Logger::gLog(Logger::COMM, "... attempting to send: long " + toStr(num));
     commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
 }
+
 void Communicant::commSend(const hashVal num) {
 
     unsigned char toSend[XMIT_LONG];
     BytesFromZZ(toSend, to_ZZ(num), XMIT_LONG);
-    Logger::gLog(Logger::COMM, "... attempting to send: long " + toStr(num));
+    Logger::gLog(Logger::COMM, "... attempting to send: hashVal " + toStr(num));
     commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
 }
 

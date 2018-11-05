@@ -35,11 +35,15 @@ bool K_Shingle::create(const string str) {
             string nxt_Shingle = orig_string.substr(i, k);
             incrementEdgeCount(nxt_Shingle, tmpShingleMap);
         }
-        for (auto item : tmpShingleMap)shingleSet.emplace_back(item.first, item.second);
+        for (auto item : tmpShingleMap){
+            shingleSet.emplace_back(item.first, item.second);
+            shingleSet_str.push_back(item.first+":"+to_string(item.second));
+        }
     } else {
         throw invalid_argument("No input string");
         return false;
     }
+
     return true;
 }
 
@@ -194,6 +198,12 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
         }
     }
     return false;
+}
+
+
+void K_Shingle::updateShingleSet_str(string shingle) {
+    shingleSet.emplace_back(shingle.substr(0, shingle.find_last_of(":")), to_ulong(StrtoZZ(shingle.substr(shingle.find_last_of(":") + 1))));
+    shingleSet_str.push_back(shingle);
 }
 
 //void K_Shingle::shingle2string_recursion(vector<pair<string,int>> changed_shingleSet, string curEdge, int &strCollect_ind,int &str_order,string &finalstr, string str) {

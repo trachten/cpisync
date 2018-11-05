@@ -109,7 +109,9 @@ public:
      * @return true iff common parameters were verified
      */
     bool establishKshingleRecv(const size_t kshingle_size, const char stop_word, bool oneWay = false);
-      /**
+
+
+    /**
      * Primitive for sending data over an existing connection.  All other sending methods
        * eventually call this.
      * @param str The string to be transmitted.
@@ -166,7 +168,13 @@ public:
      * @param num The number to send
      */
     void commSend(long num);
+
+    /**
+     * Sends a hashVal integer over the line
+     * @param num The number to send
+     */
     void commSend(hashVal num);
+
     /**
      * Sends an integer over the line
      * @param num The number to send

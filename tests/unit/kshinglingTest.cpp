@@ -6,6 +6,7 @@
 #include "kshinglingTest.h"
 #include "time.h"
 
+
 CPPUNIT_TEST_SUITE_REGISTRATION(kshinglingTest);
 
 kshinglingTest::kshinglingTest() {

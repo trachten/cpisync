@@ -21,7 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/src/PerformanceData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/PerformanceData.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -115,7 +115,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="16970" />
+          <entry key="cpp" value="16985" />
           <entry key="h" value="7635" />
           <entry key="txt" value="1052" />
         </counts>
@@ -124,7 +124,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="1052" />
           <entry key="Doxygen file" value="29" />
-          <entry key="ObjectiveC" value="24576" />
+          <entry key="ObjectiveC" value="24591" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -200,11 +200,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="359" column="12" selection-start-line="359" selection-start-column="12" selection-end-line="359" selection-end-column="12" />
+            <state relative-caret-position="154">
+              <caret line="347" column="22" selection-start-line="347" selection-start-column="22" selection-end-line="347" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -227,11 +227,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="443">
-              <caret line="64" column="20" selection-start-line="64" selection-start-column="9" selection-end-line="64" selection-end-column="20" />
+            <state relative-caret-position="342">
+              <caret line="19" column="55" selection-start-line="19" selection-start-column="55" selection-end-line="19" selection-end-column="55" />
             </state>
           </provider>
         </entry>
@@ -353,9 +353,9 @@
         <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h" />
         <option value="$PROJECT_DIR$/include/PerformanceData.h" />
         <option value="$PROJECT_DIR$/include/StrataEst.h" />
-        <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/PerformanceData.cpp" />
+        <option value="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" />
       </list>
     </option>
   </component>
@@ -559,7 +559,7 @@
       <workItem from="1541264015962" duration="1507000" />
       <workItem from="1541282052643" duration="27077000" />
       <workItem from="1541432092872" duration="10496000" />
-      <workItem from="1541515450174" duration="19416000" />
+      <workItem from="1541515450174" duration="19591000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -572,7 +572,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="555737000" />
+    <option name="totallyTimeSpent" value="555912000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -592,12 +592,12 @@
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4985694" visible="true" weight="0.31445783" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4985694" weight="0.31445783" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.20963855" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
-      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" weight="0.23493975" />
+      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.23493975" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50143063" side_tool="true" weight="0.3421687" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.329927" />
@@ -1076,20 +1076,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="443">
-          <caret line="64" column="20" selection-start-line="64" selection-start-column="9" selection-end-line="64" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/StrataReport2DREF.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="248">
@@ -1104,10 +1090,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/StrataReport2DREF.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="359" column="12" selection-start-line="359" selection-start-column="12" selection-end-line="359" selection-end-column="12" />
+        <state relative-caret-position="154">
+          <caret line="347" column="22" selection-start-line="347" selection-start-column="22" selection-end-line="347" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="19" column="55" selection-start-line="19" selection-start-column="55" selection-end-line="19" selection-end-column="55" />
         </state>
       </provider>
     </entry>

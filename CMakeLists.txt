@@ -85,25 +85,25 @@ find_library(CPP_LIB cppunit)
 #BUILD_COMMAND make
 #INSTALL_COMMAND make install
 #endif()
-if(UNIX AND NOT APPLE AND NOT NTL_LIB)
-    message("This is a Linux machine without ntl library")
-    include(ExternalProject)
-    ExternalProject_Add(NTL
-
-            PREFIX ${CMAKE_BINARY_DIR}/libs
-            URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
-
-            SOURCE_DIR libs/NTL
-            DOWNLOAD_DIR libs/tmp
-
-            CONFIGURE_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && ./configure
-            BUILD_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && make all -j4
-            INSTALL_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && sudo make install
-
-            )
-
-    ExternalProject_Get_Property(NTL install_dir)
-endif()
+#if(UNIX AND NOT APPLE AND NOT NTL_LIB)
+#    message("This is a Linux machine without ntl library")
+#    include(ExternalProject)
+#    ExternalProject_Add(NTL
+#
+#            PREFIX ${CMAKE_BINARY_DIR}/libs
+#            URL https://www.shoup.net/ntl/ntl-11.3.1.tar.gz
+#
+#            SOURCE_DIR libs/NTL
+#            DOWNLOAD_DIR libs/tmp
+#
+#            CONFIGURE_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && ./configure
+#            BUILD_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && make all -j4
+#            INSTALL_COMMAND cd ${CMAKE_BINARY_DIR}/libs/NTL/src/ && sudo make install
+#
+#            )
+#
+#    ExternalProject_Get_Property(NTL install_dir)
+#endif()
 
 
 # Set file config
@@ -141,19 +141,19 @@ include_directories(tests)
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES})
-
-if(UNIX AND NOT APPLE) # if linux without sudo previleges or centos gird where ntl is not installed
-    message("Link to ntl libraries")
-#    add_library(ntl STATIC IMPORTED)
-#    set_property(TARGET ntl PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libntl.a)
-#    add_dependencies(ntl project_ntl)
-#    include_directories(${install_dir}/include/)
-#    target_link_libraries(cpisynclib ntl)
-    include_directories("${CMAKE_BINARY_DIR}/libs/NTL/src/")
-    link_directories()
-target_link_libraries(cpisynclib ${CMAKE_BINARY_DIR}/libs/NTL/src/ntl.a)
-
-endif()
+#
+#if(UNIX AND NOT APPLE) # if linux without sudo previleges or centos gird where ntl is not installed
+#    message("Link to ntl libraries")
+##    add_library(ntl STATIC IMPORTED)
+##    set_property(TARGET ntl PROPERTY IMPORTED_LOCATION ${install_dir}/lib/libntl.a)
+##    add_dependencies(ntl project_ntl)
+##    include_directories(${install_dir}/include/)
+##    target_link_libraries(cpisynclib ntl)
+#    include_directories("${CMAKE_BINARY_DIR}/libs/NTL/src/")
+#    link_directories()
+#target_link_libraries(cpisynclib ${CMAKE_BINARY_DIR}/libs/NTL/src/ntl.a)
+#
+#endif()
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add

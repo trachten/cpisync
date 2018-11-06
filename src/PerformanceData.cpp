@@ -348,7 +348,7 @@ PerformanceData::~PerformanceData() = default;
 void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
     int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / tesPts);
 
-//#pragma omp parallel for  num_threads(omp_get_max_threads())
+#pragma omp parallel for  num_threads(omp_get_max_threads())
 
     for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size += set_sizeinterval) {
 
@@ -357,7 +357,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 
         for (int set_diff = 0; set_diff <= top_set_diff; set_diff += set_diffinterval) {
 
-            //#pragma omp critical
+            #pragma omp critical
             for (int conf = 0; conf < confidence; ++conf) {
 
 

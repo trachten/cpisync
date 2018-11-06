@@ -43,13 +43,10 @@ public:
      * @param Estimate whether estimate using existing estimation protocol, set mbar (maximum difference) if false
      * @return
      */
-    bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true);
+    bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true) override;
 
-    bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true);
+    bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true) override;
 
-    bool update(DataObject* str){
-        return myKshingle.inject(str->to_string());
-    };
 //    GenSync SyncHost(K_Shingle& host_content);
 //    forkHandleReport SyncNreport(GenSync& server, GenSync client);
 //
@@ -59,6 +56,7 @@ public:
 //            res.insert(item);
 //        return res;
 //    };
+    vector<DataObject*> addStr(DataObject* datum) override;
 
     string reconString(size_t cycNum){
         return myKshingle.reconstructStringBacktracking(cycNum).first;
@@ -69,7 +67,7 @@ public:
 //    string printString();
 
     // Get the name of the sync method
-    string getName();
+    string getName() override;
 
 protected:
     bool oneway;

@@ -22,7 +22,7 @@
 #include "CPISync_HalfRound.h"
 #include "FullSync.h"
 #include "IBLTSync_SetDiff.h"
-//#include "kshinglingSync.h"
+#include "kshinglingSync.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
@@ -141,6 +141,7 @@ bool GenSync::startSync(int method_num,bool isRecon) {
     bool syncSuccess = true; // true if all syncs so far were successful
     vector<shared_ptr<Communicant>>::iterator itComm;
     list<DataObject *> selfMinusOther, otherMinusSelf;
+    DataObject selfStr, otherStr;
 
     for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
         // initialize variables
@@ -149,7 +150,12 @@ bool GenSync::startSync(int method_num,bool isRecon) {
 
         // do the sync
         try {
-            if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
+            // if String Recon,
+            if ((*syncAgentIt)->isStringReconMethod()) {
+                (*syncAgentIt)->SyncClient(*itComm, selfStr, otherStr);
+            }
+
+            else if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
                 Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
                 syncSuccess = false;
             }
@@ -195,6 +201,24 @@ void GenSync::addElem(DataObject* newDatum) {
         (*outFile) << newDatum->to_string() << endl;
 }
 
+// add string
+
+void GenSync::addStr(DataObject *newStr) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addStr");
+    // store locally
+    myString = newStr;
+
+    // update synch methods' metadata
+    vector<shared_ptr<SyncMethod>>::iterator itAgt;
+    for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
+        auto Elems = (*itAgt)->addStr(newStr);
+        for (auto item : Elems) addElem(item);
+    }
+
+    // update file
+    if (outFile != nullptr)
+        (*outFile) << newStr->to_string() << endl;
+}
 // delete element
 
 void GenSync::delElemGroup(list<DataObject *> newDatumList) {
@@ -353,6 +377,8 @@ GenSync GenSync::Builder::build() {
         throw invalid_argument("The synchronization protocol has not been defined.");
     if (comm == SyncComm::UNDEFINED)
         throw invalid_argument("No communication protocol defined.");
+    if (stringProto != StringSyncProtocol::UNDEFINED and proto == SyncProtocol::UNDEFINED)
+        throw invalid_argument("String synchronization protocol requires base set sync protocol.");
 
     // setup
     switch (comm) {
@@ -398,12 +424,18 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol ::IBLTSyncSetDiff:
             myMeth = make_shared<IBLTSync_SetDiff>(mbar,bits);
             break;
-//        case SyncProtocol::kshinglingSync:
-//            myMeth = make_shared<kshinglingSync>(shingleLen, baseSetProto, editDistance, bits);
-//            break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }
+
+    switch (stringProto){
+        case StringSyncProtocol::kshinglingSync:
+            myMeth = make_shared<kshinglingSync>(proto,shingleLen,stopWord);
+            break;
+        default: // do nothing
+            break;
+    }
+
     theMeths.push_back(myMeth);
 
     return GenSync(theComms, theMeths);

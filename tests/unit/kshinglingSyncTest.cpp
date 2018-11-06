@@ -25,21 +25,39 @@ void kshinglingSyncTest::testAll() {
     int string_len = 500;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
-    int shingle_len = 4;
+    size_t shingle_len = 4;
     int editDistance_bar = 7;
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
     string Alicetxt = randAsciiStr(string_len);
     string Bobtxt = randStringEdit(Alicetxt, editDistance_bar);
+    size_t bits = sizeof(string);
 
-    auto Alice = kshinglingSync(base_set_proto, shingle_len, stopword);
-    Alice.injectString(Alicetxt);
+    GenSync Alice = GenSync::Builder().
+            setProtocol(GenSync::SyncProtocol::IBLTSync).
+            setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+            setComm(GenSync::SyncComm::socket).
+            setBits(bits).
+            setShingleLen(shingle_len).
+            build();
+
+    Alice.addStr(new DataObject(Alicetxt));
 
 
-    auto Bob = kshinglingSync(base_set_proto, shingle_len, stopword);
-    Bob.injectString(Bobtxt);
+    GenSync Bob = GenSync::Builder().
+            setProtocol(GenSync::SyncProtocol::IBLTSync).
+            setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+            setComm(GenSync::SyncComm::socket).
+            setBits(bits).
+            setShingleLen(shingle_len).
+            build();
 
+    Bob.addStr(new DataObject(Bobtxt));
+
+    string  AliceSyncTxt, BobSyncTxt;
+
+    forkHandleReport report = forkHandle(Alice,Bob,true);
 
 //    CPPUNIT_ASSERT(editDistance_bar * (shingleLen - 1) + 4 >= numDif);
 
@@ -57,11 +75,10 @@ void kshinglingSyncTest::testAll() {
 
     //forkHandleReport report = forkHandle(Alice, Bob);
 
-//    CPPUNIT_ASSERT(report.success);
-//    cout << "numDif: " + to_string(numDif) << endl;
-//    cout << "bits: " + to_string(report.bytes) << endl;
-//    cout << "bitsTot: " + to_string(report.bytesTot) << endl;
-//    cout << "bitsR: " + to_string(report.bytesRTot) << endl;
+    CPPUNIT_ASSERT(report.success);
+    cout << "bits: " + to_string(report.bytes) << endl;
+    cout << "bitsTot: " + to_string(report.bytesTot) << endl;
+    cout << "bitsR: " + to_string(report.bytesRTot) << endl;
 
 
 

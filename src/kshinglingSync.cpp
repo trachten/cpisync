@@ -168,4 +168,17 @@ GenSync kshinglingSync::configurate(idx_t set_size, int port_num, GenSync::SyncC
             build();
 }
 
+vector<DataObject*> kshinglingSync::addStr(DataObject* datum){
+    // call parent add
+    SyncMethod::addStr(datum);
+    myKshingle.inject(datum->to_string());
+    vector<DataObject*> res;
+    for (auto item : myKshingle.getShingleSet_str()){
+        auto tmp = new DataObject(item);
+        addElem(tmp);
+        res.push_back(tmp);
+    }
+    return res;
+}
+
 string kshinglingSync::getName(){ return "This is a kshinglingSync of string reconciliation";}

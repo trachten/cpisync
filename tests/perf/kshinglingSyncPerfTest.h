@@ -27,13 +27,13 @@ public:
     /**
      * explore the edit distance and resulting set difference
      */
-    void setDiffTest2D();
-
-    void setDiffTest3D();
-
-    void testperf2D();
-
-    void testperf3D();
+//    void setDiffTest2D();
+//
+//    void setDiffTest3D();
+//
+//    void testperf2D();
+//
+//    void testperf3D();
 
     void testStrataEst3D();
 

@@ -96,6 +96,14 @@ public:
         addElem(newDO);
     }
 
+    void addStr(DataObject* newStr);
+
+    template <typename T>
+    void addStr(T* newStr) {
+        Logger::gLog(Logger::METHOD, "Entering GenSync::addStr");
+        addStr(new DataObject(*newStr));
+    }
+
     /**
      * Deletes a given element from the GenSync data structure
      * Not currently implemented.
@@ -278,6 +286,13 @@ public:
         END     // one after the end of iterable options
     };
 
+    enum class StringSyncProtocol {
+        UNDEFINED,
+        BEGIN,
+        kshinglingSync=BEGIN,
+        END
+    };
+
     enum class SyncComm {
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
@@ -297,6 +312,9 @@ private:
     // FIELDS
     /** A container for the data stored by this GenSync object. */
     list<DataObject*> myData;
+
+    /** A container for the string stored by this GenSync object. */
+    DataObject* myString;
 
     /** A vector of communicants registered to be able to sync with this GenSync object. */
     vector<shared_ptr<Communicant>> myCommVec;
@@ -326,8 +344,10 @@ public:
     mbar(DFT_MBAR),
     bits(DFT_BITS),
     numParts(DFT_PARTS),
-    baseSetProto(DFT_PROTO),
+    stringProto(DFT_STRPROTO),
+    stopWord(DFT_STOPWORD),
     editDistance(DFT_MBAR),
+    shingleLen(DFT_SHINGLELEN),
     numExpElem(DFT_EXPELEMS){
         myComm = nullptr;
         myMeth = nullptr;
@@ -346,15 +366,27 @@ public:
         this->proto = theProto;
         return *this;
     }
-    Builder& setBaseProtocol(SyncProtocol baseSetProto) {
-        this->baseSetProto = baseSetProto;
+
+    Builder& setStringProto(StringSyncProtocol theStringProto) {
+        this->stringProto = theStringProto;
         return *this;
         }
 
-    Builder& setEditDistance(long editDistance) {
-        this->editDistance = editDistance;
+    Builder& setShingleLen(size_t theShingleLen) {
+        this->shingleLen = theShingleLen;
         return *this;
     }
+
+    Builder& setEditDistance(long theEditDistance) {
+        this->editDistance = theEditDistance;
+        return *this;
+    }
+
+    Builder& setStopWord(long theStopWord) {
+        this->stopWord = theStopWord;
+        return *this;
+    }
+
     /**
      * Sets the host to which to connect for synchronization in a socket-based sync.
      */
@@ -452,9 +484,9 @@ private:
     int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
     size_t numExpElem; /** the number of expected elements to be stored in an IBLT */
     size_t shingleLen; /** each of k-shingle length */
-    SyncProtocol baseSetProto; /** basic set recon protocol */
+    StringSyncProtocol stringProto; /** string recon protocol */
     long editDistance; /** edit distnace upper bound, can be used as mbar */
-
+    char stopWord;
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
     shared_ptr<SyncMethod> myMeth;
@@ -462,6 +494,7 @@ private:
     // DEFAULT constants
     static const long UNDEFINED = -1;
     static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;
+    static const StringSyncProtocol DFT_STRPROTO = StringSyncProtocol::UNDEFINED;
     static const int DFT_PRT = 8001;
     static const bool DFT_BASE64 = true;
     static const long DFT_MBAR = UNDEFINED; // this parameter *must* be specified for sync to work
@@ -472,6 +505,8 @@ private:
     static const string DFT_HOST;
     static const string DFT_IO;
     static const int DFT_ERROR;
+    static const size_t DFT_SHINGLELEN = 2;
+    static const char DFT_STOPWORD = '$';
 };
 
 #endif

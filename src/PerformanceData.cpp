@@ -1,11 +1,11 @@
 ////
 //// Created by Bowen on 10/9/18.
 ////
-//
-//#include "PerformanceData.h"
-//
-//
-//PerformanceData::~PerformanceData() = default;
+
+#include "PerformanceData.h"
+
+
+PerformanceData::~PerformanceData() = default;
 //
 //
 //
@@ -345,134 +345,140 @@
 //}
 //
 //
-//void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
-//    int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / 2);
-//
-//
-//    for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size+=set_sizeinterval) {
-//
-//        int top_set_diff = set_size/10;
-//        int set_diffinterval = floor((top_set_diff) / tesPts);
-//
-//        for (int set_diff = 0; set_diff <= top_set_diff; set_diff+=set_diffinterval) {
-//
-//            for (int conf = 0; conf < confidence; ++conf) {
-//
-//                StrataEst Alice = StrataEst(sizeof(DataObject *));
-//                StrataEst Bob = StrataEst(sizeof(DataObject *));
-//                for (int j = 0; j < set_size; ++j) {
-//                    auto tmp = randZZ();
-//                    Alice.insert(new DataObject(tmp));
-//                    if (j >= set_diff) {
-//                        Bob.insert(new DataObject(tmp));
-//                    }
-//                }
-//                plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate());
-//
-//            }
-//        }
-//    }
-//}
-//
-//void PerformanceData::plot2D(string label, double X, double Y){
-//    if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
-//        vector<double> tmp(2);
-//        tmp[0] = X;
-//        tmp[1] = Y;
-//        vector<vector<double>> init;
-//        init.push_back(tmp);
-//        data2D.insert(make_pair(label,init));
-//    } else{
-//        vector<double> tmp(2);
-//        tmp[0] = X;
-//        tmp[1] = Y;
-//        data2D[label].push_back(tmp);
-//    }
-//
-//}
-//
-//void PerformanceData::plot3D(string label, double X, double Y, double Z){
-//    if (data3D.find(label)==data3D.end()) { // if no label of such kind is in there
-//        vector<double> tmp(3);
-//        tmp[0] = X;
-//        tmp[1] = Y;
-//        tmp[2] = Z;
-//        vector<vector<double>> init;
-//        init.push_back(tmp);
-//        data3D.insert(make_pair(label,init));
-//    } else{
-//        vector<double> tmp(3);
-//        tmp[0] = X;
-//        tmp[1] = Y;
-//        tmp[2] = Z;
-//        data3D[label].push_back(tmp);
-//    }
-//}
-//
-//void PerformanceData::plot4D(string label, double X, double Y, double Z, double A){
-//    if (data4D.find(label)==data4D.end()) { // if no label of such kind is in there
-//        vector<double> tmp(4);
-//        tmp[0] = X;
-//        tmp[1] = Y;
-//        tmp[2] = Z;
-//        tmp[3] = A;
-//        vector<vector<double>> init;
-//        init.push_back(tmp);
-//        data4D.insert(make_pair(label,init));
-//    } else{
-//        vector<double> tmp(4);
-//        tmp[0] = X;
-//        tmp[1] = Y;
-//        tmp[2] = Z;
-//        tmp[3] = A;
-//        data4D[label].push_back(tmp);
-//    }
-//}
-//
-//void PerformanceData::write2file(string file_name) {
-//    ofstream myfile;
-//    //TODO: do soemthing about the directories, this hard coding is not a long term solution
-//    myfile.open(file_name + ".txt");
-//
-//    for (auto item : data4D) {
-//        myfile << "Label:" + item.first + "\n";
-//        string tmpx, tmpy, tmpz, tmpa;
-//        for (auto num : item.second) {
-//            tmpx += to_string(num[0]) + " ";
-//            tmpy += to_string(num[1]) + " ";
-//            tmpz += to_string(num[2]) + " ";
-//            tmpa += to_string(num[3]) + " ";
-//        }
-//        myfile << "X:" + tmpx + "\n";
-//        myfile << "Y:" + tmpy + "\n";
-//        myfile << "Z:" + tmpz + "\n";
-//        myfile << "A:" + tmpa + "\n";
-//    }
-//
-//    for (auto item : data3D) {
-//        myfile << "Label:" + item.first + "\n";
-//        string tmpx, tmpy, tmpz;
-//        for (auto num : item.second) {
-//            tmpx += to_string(num[0]) + " ";
-//            tmpy += to_string(num[1]) + " ";
-//            tmpz += to_string(num[2]) + " ";
-//        }
-//        myfile << "X:" + tmpx + "\n";
-//        myfile << "Y:" + tmpy + "\n";
-//        myfile << "Z:" + tmpz + "\n";
-//    }
-//
-//    for (auto item : data2D) {
-//        myfile << "Label:" + item.first + "\n";
-//        string tmpx, tmpy;
-//        for (auto num : item.second) {
-//            tmpx += to_string(num[0]) + " ";
-//            tmpy += to_string(num[1]) + " ";
-//        }
-//        myfile << "X:" + tmpx + "\n";
-//        myfile << "Y:" + tmpy + "\n";
-//    }
-//
-//    myfile.close();
-//}
-//
+void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
+    int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / tesPts);
+
+#pragma omp parallel for  num_threads(omp_get_max_threads())
+    {
+        for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size += set_sizeinterval) {
+
+            int top_set_diff = set_size / 10;
+            int set_diffinterval = floor((top_set_diff) / tesPts);
+
+            for (int set_diff = 0; set_diff <= top_set_diff; set_diff += set_diffinterval) {
+
+
+                for (int conf = 0; conf < confidence; ++conf) {
+#pragma omp critical
+                    {
+                        StrataEst Alice = StrataEst(sizeof(DataObject *));
+                        StrataEst Bob = StrataEst(sizeof(DataObject *));
+
+                        for (int j = 0; j < set_size; ++j) {
+                            auto tmp = randZZ();
+                            Alice.insert(new DataObject(tmp));
+                            if (j >= set_diff) {
+                                Bob.insert(new DataObject(tmp));
+                            }
+                        }
+                        plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate());
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+void PerformanceData::plot2D(string label, double X, double Y){
+    if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
+        vector<double> tmp(2);
+        tmp[0] = X;
+        tmp[1] = Y;
+        vector<vector<double>> init;
+        init.push_back(tmp);
+        data2D.insert(make_pair(label,init));
+    } else{
+        vector<double> tmp(2);
+        tmp[0] = X;
+        tmp[1] = Y;
+        data2D[label].push_back(tmp);
+    }
+
+}
+
+void PerformanceData::plot3D(string label, double X, double Y, double Z){
+    if (data3D.find(label)==data3D.end()) { // if no label of such kind is in there
+        vector<double> tmp(3);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        vector<vector<double>> init;
+        init.push_back(tmp);
+        data3D.insert(make_pair(label,init));
+    } else{
+        vector<double> tmp(3);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        data3D[label].push_back(tmp);
+    }
+}
+
+void PerformanceData::plot4D(string label, double X, double Y, double Z, double A){
+    if (data4D.find(label)==data4D.end()) { // if no label of such kind is in there
+        vector<double> tmp(4);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        tmp[3] = A;
+        vector<vector<double>> init;
+        init.push_back(tmp);
+        data4D.insert(make_pair(label,init));
+    } else{
+        vector<double> tmp(4);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        tmp[3] = A;
+        data4D[label].push_back(tmp);
+    }
+}
+
+void PerformanceData::write2file(string file_name) {
+    ofstream myfile;
+    //TODO: do soemthing about the directories, this hard coding is not a long term solution
+    myfile.open(file_name + ".txt");
+
+    for (auto item : data4D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy, tmpz, tmpa;
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
+            tmpz += to_string(num[2]) + " ";
+            tmpa += to_string(num[3]) + " ";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+        myfile << "Z:" + tmpz + "\n";
+        myfile << "A:" + tmpa + "\n";
+    }
+
+    for (auto item : data3D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy, tmpz;
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
+            tmpz += to_string(num[2]) + " ";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+        myfile << "Z:" + tmpz + "\n";
+    }
+
+    for (auto item : data2D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy;
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+    }
+
+    myfile.close();
+}
+

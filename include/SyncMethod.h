@@ -69,7 +69,7 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    virtual bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString) {
+    virtual bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true) {
         commSync->resetCommCounters();
         return true;
     }
@@ -83,7 +83,7 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    virtual bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString) {
+    virtual bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true) {
         commSync->resetCommCounters();
         return true;
     }
@@ -110,12 +110,15 @@ public:
 
     /**
      * Update string from the data structure
+     * Add a set to Set Recon Method
      * @param str
      * @return
      */
-    virtual bool update(DataObject* str) {
+    virtual vector<DataObject*> addStr(DataObject* str) {
         originStr = str;
-        return true;
+        vector<DataObject*> res;
+        isStringRecon = true;
+        return res;
     }
 
     // INFORMATIONAL
@@ -138,6 +141,8 @@ public:
      * @return An iterator pointing just past the last element in the data structure
      */
     vector<DataObject*>::const_iterator endElements() { return elements.end();}
+
+    bool isStringReconMethod(){return isStringRecon;};
     
 protected:
     
@@ -165,7 +170,9 @@ protected:
 private:
     vector<DataObject *> elements; /** Pointers to the elements stored in the data structure. */
 
-    DataObject * originStr; /** Pointers to the string stored in the data structure. */
+    DataObject* originStr; /** Pointers to the string stored in the data structure. */
+
+    bool isStringRecon = false; /**falg for if it is string reconciliation. */
 };
 
 

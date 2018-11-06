@@ -21,21 +21,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change afterPath="$PROJECT_DIR$/StrataReport2DREF.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/StrataReport2D.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/GenSync.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/GenSync.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/PerformanceData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/PerformanceData.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/StrataEst.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/StrataEst.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/SyncMethod.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/SyncMethod.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/kshinglingSync.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/kshinglingSync.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GenSync.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/GenSync.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Performance" beforeDir="false" afterPath="$PROJECT_DIR$/Performance" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PerformanceData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/PerformanceData.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/kshingling.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/kshingling.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/kshinglingSync.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/kshinglingSync.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -129,7 +116,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="16960" />
+          <entry key="cpp" value="16966" />
           <entry key="h" value="7635" />
           <entry key="txt" value="1052" />
         </counts>
@@ -138,7 +125,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="1052" />
           <entry key="Doxygen file" value="29" />
-          <entry key="ObjectiveC" value="24566" />
+          <entry key="ObjectiveC" value="24572" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -229,8 +216,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="219">
-              <caret line="350" selection-start-line="350" selection-end-line="350" />
+            <state relative-caret-position="257">
+              <caret line="359" column="12" selection-start-line="359" selection-start-column="12" selection-end-line="359" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -576,7 +563,7 @@
       <workItem from="1541264015962" duration="1507000" />
       <workItem from="1541282052643" duration="27077000" />
       <workItem from="1541432092872" duration="10496000" />
-      <workItem from="1541515450174" duration="18862000" />
+      <workItem from="1541515450174" duration="19079000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -589,7 +576,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="555183000" />
+    <option name="totallyTimeSpent" value="555400000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1123,8 +1110,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="219">
-          <caret line="350" selection-start-line="350" selection-end-line="350" />
+        <state relative-caret-position="257">
+          <caret line="359" column="12" selection-start-line="359" selection-start-column="12" selection-end-line="359" selection-end-column="12" />
         </state>
       </provider>
     </entry>

@@ -53,7 +53,12 @@ if (APPLE)
 endif(APPLE)
 
 # some flags
+if(APPLE)
 set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST -fopenmp")
+else()
+set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST")
+endif(APPLE)
+
 #set(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -Wall")
 #set(CMAKE_LINKER_FLAGS_"-DDEFAULT_LOGLEVEL=TEST -fsanitize=address -fno-omit-frame-pointer -Wall")
 

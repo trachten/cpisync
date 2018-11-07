@@ -33,7 +33,7 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
 
     if(sizeof(value) != valueSize) {
-        Logger::error_and_quit("The value being inserted is different than the IBLT value size! value size: "
+        Logger::error_and_quit("The value being inserted is different than the IBLT value size! actual value size: "
                                + toStr(sizeof(value)) + ". IBLT value size: " + toStr(valueSize));
     }
 

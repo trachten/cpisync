@@ -80,7 +80,6 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
     bool syncSuccess = true;
     // call parent method for bookkeeping
     SyncMethod::SyncClient(commSync, selfString, otherString);
-
     // create kshingle
 
     // connect to server
@@ -102,10 +101,14 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
         }
 
         // since Kshingling are the same, Strata Est parameters would also be the same.
-        commSync->commSend(est.getStrata(), true);
-        mbar = (size_t) commSync->commRecv_long(); // Dangerous cast
+        commSync->commSend(est.getStrata(), false);
+
+        mbar = (size_t) commSync->commRecv_long(); // cast long to long long
+        cout<< "we done SyncClient" + to_string(mbar)<<endl;
         mbar = mbar + mbar/2; // get to the upper bound
+
     }
+    commSync->commClose(); // done with Kshingling communication
 
     // reconcile difference + delete extra
     GenSync myHost = configurate(myKshingle.getSetSize());
@@ -115,6 +118,7 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
     }
     // choose to send if not oneway (default is one way)
 
+    myHost.startSync(0,true);
     return syncSuccess;
 }
 
@@ -146,6 +150,8 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObj
         commSync->commSend(mbar); // Dangerous cast
         mbar = mbar + mbar/2; // get to the upper bound
     }
+
+    commSync->commClose(); // done with Kshingling communication
     // reconcile difference + delete extra
     GenSync myHost = configurate(myKshingle.getSetSize());
 
@@ -153,10 +159,19 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObj
         myHost.addElem(new DataObject(item)); // Add to GenSync
     }
 
+    // since using forkHandle only
+    signal(SIGCHLD, SIG_IGN);
+    myHost.listenSync(0,true);
     return syncSuccess;
 }
 
 GenSync kshinglingSync::configurate(idx_t set_size, int port_num, GenSync::SyncComm setSyncComm) {
+
+    if (setSyncProtocol == GenSync::SyncProtocol::CPISync or setSyncProtocol == GenSync::SyncProtocol::InteractiveCPISync){
+        eltSize = 14+(myKshingle.getshinglelen_str()+2)*6;
+    }else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSync or setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff){
+        eltSize = sizeof(DataObject*);
+    }
     return GenSync::Builder().
             setProtocol(setSyncProtocol).
             setComm(setSyncComm).
@@ -175,7 +190,7 @@ vector<DataObject*> kshinglingSync::addStr(DataObject* datum){
     vector<DataObject*> res;
     for (auto item : myKshingle.getShingleSet_str()){
         auto tmp = new DataObject(item);
-        addElem(tmp);
+//        addElem(tmp);
         res.push_back(tmp);
     }
     return res;

@@ -5,11 +5,13 @@
 #include "StrataEst.h"
 
 StrataEst::StrataEst( size_t value_size, size_t num_strata, size_t num_cells) {
-    numStrata =  num_strata, numCells =  num_cells, bits =  value_size;
+    numStrata =  num_strata, numCells = num_cells, bits =  value_size;
     for (int i = 0; i < numStrata; ++i) {
         IBLT iblt = IBLT(numCells,bits);
         Strata.push_back(iblt);
     }
+    if (!Strata.empty()) numCells = Strata.back().size();
+
     space = pow(2,numStrata);
 }
 

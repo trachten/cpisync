@@ -106,6 +106,7 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         throw (s);
     } // might not need the try-catch
 }
+
 bool IBLTSync::addElem(DataObject* datum){
     // call parent add
     SyncMethod::addElem(datum);

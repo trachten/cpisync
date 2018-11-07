@@ -26,13 +26,13 @@ void kshinglingSyncTest::testAll() {
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     size_t shingle_len = 4;
-    int editDistance_bar = 7;
-    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
-    //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
+    int editDistance_bar = 1;
+    //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
     string Alicetxt = randAsciiStr(string_len);
     string Bobtxt = randStringEdit(Alicetxt, editDistance_bar);
-    size_t bits = sizeof(string);
+    size_t bits = sizeof(DataObject*);
 
     GenSync Alice = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::IBLTSync).
@@ -57,7 +57,7 @@ void kshinglingSyncTest::testAll() {
 
     string  AliceSyncTxt, BobSyncTxt;
 
-    forkHandleReport report = forkHandle(Alice,Bob,true);
+    forkHandleReport report = forkHandle(Alice, Bob, true);
 
 //    CPPUNIT_ASSERT(editDistance_bar * (shingleLen - 1) + 4 >= numDif);
 

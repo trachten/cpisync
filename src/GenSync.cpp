@@ -103,13 +103,19 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
     // ask each communicant to listen, one by one
     vector<shared_ptr<Communicant>>::iterator itComm;
     list<DataObject *> selfMinusOther, otherMinusSelf;
+    DataObject selfStr, otherStr;
+
     for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
         // initialize variables
         selfMinusOther.clear();
         otherMinusSelf.clear();
 
         try {
-            syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
+            if ((*syncAgent)->isStringReconMethod()) {
+                syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfStr, otherStr);
+            }else {
+                syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
+            }
         } catch (SyncFailureException s) {
             Logger::error_and_quit(s.what());
             return false;
@@ -151,11 +157,10 @@ bool GenSync::startSync(int method_num,bool isRecon) {
         // do the sync
         try {
             // if String Recon,
-            if ((*syncAgentIt)->isStringReconMethod()) {
-                (*syncAgentIt)->SyncClient(*itComm, selfStr, otherStr);
-            }
-
-            else if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
+            if ((*syncAgentIt)->isStringReconMethod() and !(*syncAgentIt)->SyncClient(*itComm, selfStr, otherStr)) {
+                Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
+                syncSuccess = false;
+            } else if (!(*syncAgentIt)->isStringReconMethod() and !(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
                 Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
                 syncSuccess = false;
             }
@@ -211,7 +216,7 @@ void GenSync::addStr(DataObject *newStr) {
     // update synch methods' metadata
     vector<shared_ptr<SyncMethod>>::iterator itAgt;
     for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
-        auto Elems = (*itAgt)->addStr(newStr);
+        vector<DataObject*> Elems = (*itAgt)->addStr(newStr);
         for (auto item : Elems) addElem(item);
     }
 

@@ -74,7 +74,8 @@ public:
      * @return The bit size of a shingle set
      */
     size_t getElemSize() const {
-        return sizeof(pair<string, idx_t>);
+        return sizeof(DataObject*);
+        //return sizeof(pair<string, idx_t>);
     }
 
     char getStopWord() const {
@@ -95,6 +96,8 @@ public:
      * @return
      */
     vector<string> getShingleSet_str() { return shingleSet_str; };
+
+    size_t getshinglelen_str() {return shingleSet_str.back().size();};
 
     /**
      * Interact with reciving set element update as string

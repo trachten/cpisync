@@ -306,7 +306,7 @@ void Communicant::commSend(const vector<IBLT>& strata, bool sync) {
     }
 
     // Access the iblt to serialize it
-    for(const IBLT& iblt : strata) {
+    for (const IBLT &iblt : strata) {
         commSend(iblt, sync);
     }
 }
@@ -501,7 +501,7 @@ StrataEst Communicant::commRecv_Strata(size_t size){
 
     vector<IBLT> theirs;
 
-    for(int ii = 0; ii < numSize; ii++) {
+    for(int ii = 0; ii < numSize; ++ii) {
         theirs.push_back(commRecv_IBLT());
     }
 

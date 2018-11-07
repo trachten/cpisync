@@ -56,7 +56,7 @@ endif(APPLE)
 if(APPLE)
 set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST -fopenmp")
 else()
-set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST")
+set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST -lntl")
 endif(APPLE)
 
 #set(CMAKE_CXX_FLAGS_DEBUG "-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -Wall")

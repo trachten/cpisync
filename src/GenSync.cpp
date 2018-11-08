@@ -134,8 +134,8 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
             delElemGroup(selfMinusOther);
         }
 
-        if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
-            syncSuccess = (*syncAgentIt)->reconstructString(); // reconstruct the string based on the new information from set reconciliation
+        if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
+            syncSuccess = (*syncAgent)->reconstructString(); // reconstruct the string based on the new information from set reconciliation
         }
     }
 

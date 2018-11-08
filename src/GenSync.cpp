@@ -113,9 +113,11 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
         try {
             if ((*syncAgent)->isStringReconMethod()) {
                 syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfStr, otherStr);
-            }else {
-                syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
             }
+
+            syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
+
+
         } catch (SyncFailureException s) {
             Logger::error_and_quit(s.what());
             return false;
@@ -132,6 +134,9 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
             delElemGroup(selfMinusOther);
         }
 
+        if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
+            syncSuccess = (*syncAgentIt)->reconstructString(); // reconstruct the string based on the new information from set reconciliation
+        }
     }
 
     return syncSuccess;
@@ -160,7 +165,8 @@ bool GenSync::startSync(int method_num,bool isRecon) {
             if ((*syncAgentIt)->isStringReconMethod() and !(*syncAgentIt)->SyncClient(*itComm, selfStr, otherStr)) {
                 Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
                 syncSuccess = false;
-            } else if (!(*syncAgentIt)->isStringReconMethod() and !(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
+            }
+            if(!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
                 Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
                 syncSuccess = false;
             }
@@ -179,6 +185,9 @@ bool GenSync::startSync(int method_num,bool isRecon) {
             delElemGroup(selfMinusOther);
         }
 
+        if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
+            syncSuccess = (*syncAgentIt)->reconstructString(); // reconstruct the string based on the new information from set reconciliation
+        }
 
     }
 

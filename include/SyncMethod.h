@@ -127,6 +127,10 @@ public:
      */
     virtual string getName() = 0;
 
+    virtual bool reconstructString(){
+        return true;
+    }
+
     /** Accessor methods */
     long getNumElem() const {
         return elements.size();
@@ -143,7 +147,9 @@ public:
     vector<DataObject*>::const_iterator endElements() { return elements.end();}
 
     bool isStringReconMethod(){return isStringRecon;};
-    
+
+
+
 protected:
     
     /**

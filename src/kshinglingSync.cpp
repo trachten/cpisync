@@ -68,7 +68,7 @@
 
 kshinglingSync::kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const size_t shingle_size,
         const char stop_word) : myKshingle(shingle_size, stop_word), setSyncProtocol(set_sync_protocol) {
-    oneway = false;
+    oneway = true;
 }
 
 
@@ -104,12 +104,10 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
         commSync->commSend(est.getStrata(), false);
 
         mbar = (size_t) commSync->commRecv_long(); // cast long to long long
-        cout<< "we done SyncClient" + to_string(mbar)<<endl;
         mbar = mbar + mbar/2; // get to the upper bound
 
     }
     commSync->commClose(); // done with Kshingling communication
-
     // reconcile difference + delete extra
     GenSync myHost = configurate(myKshingle.getSetSize());
 
@@ -117,8 +115,8 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
         myHost.addElem(new DataObject(item)); // Add to GenSync
     }
     // choose to send if not oneway (default is one way)
-
-    myHost.startSync(0,true);
+//
+//    myHost.startSync(0, false);
     return syncSuccess;
 }
 
@@ -159,9 +157,9 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObj
         myHost.addElem(new DataObject(item)); // Add to GenSync
     }
 
-    // since using forkHandle only
-    signal(SIGCHLD, SIG_IGN);
-    myHost.listenSync(0,true);
+//    // since using forkHandle only
+//    signal(SIGCHLD, SIG_IGN);
+//    myHost.listenSync(0, false);
     return syncSuccess;
 }
 
@@ -171,6 +169,7 @@ GenSync kshinglingSync::configurate(idx_t set_size, int port_num, GenSync::SyncC
         eltSize = 14+(myKshingle.getshinglelen_str()+2)*6;
     }else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSync or setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff){
         eltSize = sizeof(DataObject*);
+        mbar = 50;
     }
     return GenSync::Builder().
             setProtocol(setSyncProtocol).

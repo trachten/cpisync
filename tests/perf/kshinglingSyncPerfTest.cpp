@@ -15,7 +15,7 @@ const int strSize = 5;
 const pair<int,int> strSizeRange = make_pair(500, 1000);
 const pair<int,int> shingleLenRange = make_pair(2,ceil(log2(strSizeRange.second)));
 
-const int tesPts = 30;// Test Pts per graph
+const int tesPts = 20;// Test Pts per graph
 const int target_confidence = 1000;// Confidence interval
 const int confidenceCap = 40; // after edit distance exceed confidenceCap, confidence go to 1.
 

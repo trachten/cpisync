@@ -62,6 +62,6 @@ auto strRecon = PerformanceData::StringReconProtocol::KshinglingSync;
 
 void KshingleSyncPerf::testStrataEst3D() {
     PerformanceData test = PerformanceData(tesPts);
-    test.strataEst3D(make_pair(1000,100000), target_confidence);
+    test.strataEst3D(make_pair(1000,10000), target_confidence);
     test.genReport("StrataReport2D");
 }

@@ -127,7 +127,7 @@ public:
      */
     virtual string getName() = 0;
 
-    virtual bool reconstructString(){
+    virtual bool reconstructString(DataObject* recovered_string){
         return true;
     }
 

@@ -23,16 +23,13 @@ public:
      */
 //    kshinglingSync(GenSync::SyncProtocol sync_protocol,GenSync::SyncComm sync_comm,
 //                   size_t symbol_size , int m_bar, int num_Parts, int num_ExpElem, int port_num=8001);
+
     kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const size_t shingle_size,
             const char stop_word = '$');
 
-    ~kshinglingSync(){};
+    ~kshinglingSync() {};
 
-     size_t injectString(string str) {
-         myKshingle.inject(str);
-         for (auto item : myKshingle.getShingleSet_str()) addElem(new DataObject(item));
-         return myKshingle.reconstructStringBacktracking().second;
-     };
+     size_t injectString(string str);
 
 
     /**
@@ -56,6 +53,9 @@ public:
 //            res.insert(item);
 //        return res;
 //    };
+
+    bool reconstructString(DataObject* recovered_string) override;
+
     vector<DataObject*> addStr(DataObject* datum) override;
 
     string reconString(size_t cycNum){
@@ -69,11 +69,13 @@ public:
     // Get the name of the sync method
     string getName() override;
 
+    long cycleNum;
+
 protected:
     bool oneway;
 private:
     K_Shingle myKshingle;
-    string originStr;
+    string Str;
     //GenSync myhost;
 
     size_t eltSize; // defined by shingle size
@@ -82,7 +84,6 @@ private:
     GenSync::SyncProtocol setSyncProtocol;
 //    GenSync::SyncComm setSyncComm;
 
-    int cycleNum; //... not necessarily a global variable
 //    int numParts;
 //    int numExpElem;
 //    int portNum;
@@ -93,6 +94,11 @@ private:
      */
     GenSync configurate(idx_t set_size, int port_num=8001, GenSync::SyncComm setSyncComm=GenSync::SyncComm::socket);
 
+    /**
+     * assess if estimation is needed for the set reconcialition
+     * interCPI sync and Full sync does not need estimation
+     * @return
+     */
     bool needEst(){
         return setSyncProtocol==GenSync::SyncProtocol::IBLTSync or setSyncProtocol==GenSync::SyncProtocol::CPISync;
     };

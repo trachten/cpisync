@@ -116,6 +116,11 @@ public:
      */// get a data object element from data list
     const list<DataObject *> dumpElements();
 
+    /**
+     * get recovered string
+     * @return a pointer to the string stored in the data structure
+     */
+    const DataObject* dumpString();
 
     // COMMUNICANT MANIPULATION
     /* Communicants are entities that can communicate [and thus sync] with this GenSync object.

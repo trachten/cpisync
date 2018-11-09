@@ -135,7 +135,7 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
         }
 
         if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
-            syncSuccess = (*syncAgent)->reconstructString(); // reconstruct the string based on the new information from set reconciliation
+            syncSuccess = (*syncAgent)->reconstructString(myString); // reconstruct the string based on the new information from set reconciliation
         }
     }
 
@@ -186,7 +186,7 @@ bool GenSync::startSync(int method_num,bool isRecon) {
         }
 
         if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
-            syncSuccess = (*syncAgentIt)->reconstructString(); // reconstruct the string based on the new information from set reconciliation
+            syncSuccess = (*syncAgentIt)->reconstructString(myString); // reconstruct the string based on the new information from set reconciliation
         }
 
     }
@@ -339,6 +339,10 @@ vector<shared_ptr<SyncMethod>>::iterator GenSync::getSyncAgt(int index) {
 
 const list<DataObject *> GenSync::dumpElements() {
     return myData;
+}
+
+const DataObject* GenSync::dumpString() {
+    return myString;
 }
 
 const long GenSync::getXmitBytes(int commIndex) const {

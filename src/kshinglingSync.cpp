@@ -66,13 +66,14 @@
 //}
 
 
+
 kshinglingSync::kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const size_t shingle_size,
         const char stop_word) : myKshingle(shingle_size, stop_word), setSyncProtocol(set_sync_protocol) {
     oneway = true;
 }
 
 
-
+//Alice
 bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObject &selfString,
         DataObject &otherString, bool Estimate) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncClient");
@@ -85,41 +86,53 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
     // connect to server
     commSync->commConnect();
     // ensure that the kshingle size and stopword equal those of the server
-    if(!commSync->establishKshingleSend(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)) {
+    if (!commSync->establishKshingleSend(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)) {
         Logger::gLog(Logger::METHOD_DETAILS,
                      "Kshingle parameters do not match up between client and server!");
         syncSuccess = false;
     }
 
+    // send cycNum
+    commSync->commSend(cycleNum);
+    if(!oneway) cycleNum = commSync->commRecv_long();
+
 
     // estimate difference
-    if (Estimate and needEst()){
+    if (Estimate and needEst()) {
         StrataEst est = StrataEst(myKshingle.getElemSize());
 
-        for (auto item : myKshingle.getShingleSet_str()){
+        for (auto item : myKshingle.getShingleSet_str()) {
             est.insert(new DataObject(item)); // Add to estimator
         }
 
         // since Kshingling are the same, Strata Est parameters would also be the same.
         commSync->commSend(est.getStrata(), false);
 
-        mbar = (size_t) commSync->commRecv_long(); // cast long to long long
-        mbar = mbar + mbar/2; // get to the upper bound
+        mbar = commSync->commRecv_long(); // cast long to long long
+        mbar = mbar + mbar / 2; // get to the upper bound
 
     }
     commSync->commClose(); // done with Kshingling communication
+
     // reconcile difference + delete extra
     GenSync myHost = configurate(myKshingle.getSetSize());
 
-    for (auto item : myKshingle.getShingleSet_str()){
+    for (auto item : myKshingle.getShingleSet_str()) {
         myHost.addElem(new DataObject(item)); // Add to GenSync
     }
     // choose to send if not oneway (default is one way)
 //
-//    myHost.startSync(0, false);
+    myHost.listenSync(0, false);
+
+    auto elems = myHost.dumpElements();
+    myKshingle.clear_shingleSet();
+    for (auto Elem : elems)
+        myKshingle.updateShingleSet_str(Elem->to_string());
+
     return syncSuccess;
 }
 
+//Bob
 bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObject &selfString,
                                 DataObject &otherString, bool Estimate) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncServer");
@@ -128,35 +141,46 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObj
     SyncMethod::SyncServer(commSync, selfString, otherString);
 
     commSync->commListen();
-    if(!commSync->establishKshingleRecv(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)){
+    if (!commSync->establishKshingleRecv(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)) {
         Logger::gLog(Logger::METHOD_DETAILS,
                      "Kshingle parameters do not match up between client and server!");
         syncSuccess = false;
     }
 
+    // send cycNum
+    auto tmpcycleNum = cycleNum;
+    cycleNum = commSync->commRecv_long();
+    if (!oneway) commSync->commSend(tmpcycleNum);
+
     // estimate difference
-    if (Estimate and needEst()){
+    if (Estimate and needEst()) {
         StrataEst est = StrataEst(myKshingle.getElemSize());
 
-        for (auto item : myKshingle.getShingleSet_str()){
+        for (auto item : myKshingle.getShingleSet_str()) {
             est.insert(new DataObject(item)); // Add to estimator
         }
 
         // since Kshingling are the same, Strata Est parameters would also be the same.
         auto theirStarata = commSync->commRecv_Strata();
-        mbar = (est-=theirStarata).estimate();
+        mbar = (est -= theirStarata).estimate();
         commSync->commSend(mbar); // Dangerous cast
-        mbar = mbar + mbar/2; // get to the upper bound
+        mbar = mbar + mbar / 2; // get to the upper bound
     }
 
     commSync->commClose(); // done with Kshingling communication
     // reconcile difference + delete extra
     GenSync myHost = configurate(myKshingle.getSetSize());
 
-    for (auto item : myKshingle.getShingleSet_str()){
+    for (auto item : myKshingle.getShingleSet_str()) {
         myHost.addElem(new DataObject(item)); // Add to GenSync
     }
 
+
+    myHost.startSync(0,false);
+    auto elems = myHost.dumpElements();
+    myKshingle.clear_shingleSet();
+    for (auto Elem : elems)
+        myKshingle.updateShingleSet_str(Elem->to_string());
 //    // since using forkHandle only
 //    signal(SIGCHLD, SIG_IGN);
 //    myHost.listenSync(0, false);
@@ -169,7 +193,6 @@ GenSync kshinglingSync::configurate(idx_t set_size, int port_num, GenSync::SyncC
         eltSize = 14+(myKshingle.getshinglelen_str()+2)*6;
     }else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSync or setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff){
         eltSize = sizeof(DataObject*);
-        mbar = 50;
     }
     return GenSync::Builder().
             setProtocol(setSyncProtocol).
@@ -177,15 +200,24 @@ GenSync kshinglingSync::configurate(idx_t set_size, int port_num, GenSync::SyncC
             setMbar(mbar).
             setNumPartitions((ceil(log(set_size))>1)?:2).
             setBits(eltSize).
-            setPort(port_num).
+            setPort(8002).
             setNumExpectedElements(mbar).
             build();
+}
+
+bool kshinglingSync::reconstructString(DataObject* recovered_string) {
+    if (cycleNum != 0)
+        recovered_string = new DataObject(myKshingle.reconstructStringBacktracking(cycleNum).first);
+    return cycleNum != 0;
 }
 
 vector<DataObject*> kshinglingSync::addStr(DataObject* datum){
     // call parent add
     SyncMethod::addStr(datum);
+    myKshingle.clear_shingleSet();
+
     myKshingle.inject(datum->to_string());
+    cycleNum = myKshingle.reconstructStringBacktracking().second;
     vector<DataObject*> res;
     for (auto item : myKshingle.getShingleSet_str()){
         auto tmp = new DataObject(item);
@@ -194,5 +226,11 @@ vector<DataObject*> kshinglingSync::addStr(DataObject* datum){
     }
     return res;
 }
+
+//size_t kshinglingSync::injectString(string str) {
+//    myKshingle.inject(str);
+//    for (auto item : myKshingle.getShingleSet_str()) addElem(new DataObject(item));
+//    return myKshingle.reconstructStringBacktracking().second;
+//}
 
 string kshinglingSync::getName(){ return "This is a kshinglingSync of string reconciliation";}

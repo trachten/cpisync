@@ -350,6 +350,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
     confidence /=omp_get_max_threads();
  #pragma omp parallel num_threads(omp_get_max_threads())
     for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size += set_sizeinterval) {
+    (set_size < set_sizeRange.first + (set_sizeRange.second-set_sizeRange.first)/2) ? : confidence=5;
     cout<<"Current Set Size:"+to_string(set_size)<<endl;
         int top_set_diff = set_size / 10;
         int set_diffinterval = floor((top_set_diff) / tesPts);
@@ -375,7 +376,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
             }
         }
 
-
+	write2file("Strata"+to_string(set_size)+".txt");
     }
 }
 

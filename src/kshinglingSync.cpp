@@ -122,7 +122,7 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
     }
     // choose to send if not oneway (default is one way)
 //
-    myHost.listenSync(0, false);
+    myHost.startSync(0,false);
 
     auto elems = myHost.dumpElements();
     myKshingle.clear_shingleSet();
@@ -175,8 +175,8 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObj
         myHost.addElem(new DataObject(item)); // Add to GenSync
     }
 
+    myHost.listenSync(0, false);
 
-    myHost.startSync(0,false);
     auto elems = myHost.dumpElements();
     myKshingle.clear_shingleSet();
     for (auto Elem : elems)

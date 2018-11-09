@@ -30,8 +30,8 @@ void kshinglingSyncTest::testAll() {
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
-    string Alicetxt = "Bowen";//randAsciiStr(string_len);
-    string Bobtxt = "owen";//randStringEdit(Alicetxt, editDistance_bar);
+    string Alicetxt = "owen";//randAsciiStr(string_len);
+    string Bobtxt = "Bowen";//randStringEdit(Alicetxt, editDistance_bar);
     size_t bits = sizeof(DataObject*);
 
     GenSync Alice = GenSync::Builder().

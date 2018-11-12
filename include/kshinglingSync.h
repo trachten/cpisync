@@ -11,6 +11,7 @@
 #include "Auxiliary.h"
 #include "kshingling.h"
 #include "StrataEst.h"
+#include "IBLTSync.h"
 
 class kshinglingSync : public SyncMethod{
 public:
@@ -40,9 +41,9 @@ public:
      * @param Estimate whether estimate using existing estimation protocol, set mbar (maximum difference) if false
      * @return
      */
-    bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true) override;
+    bool SyncClient(const shared_ptr<Communicant>& commSync, shared_ptr<SyncMethod> & setHost, DataObject &selfString, DataObject &otherString, bool Estimate=true) override;
 
-    bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true) override;
+    bool SyncServer(const shared_ptr<Communicant>& commSync, shared_ptr<SyncMethod> & setHost, DataObject &selfString, DataObject &otherString, bool Estimate=true) override;
 
 //    GenSync SyncHost(K_Shingle& host_content);
 //    forkHandleReport SyncNreport(GenSync& server, GenSync client);

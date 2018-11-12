@@ -69,7 +69,7 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    virtual bool SyncClient(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true) {
+    virtual bool SyncClient(const shared_ptr<Communicant>& commSync,shared_ptr<SyncMethod> & setHost, DataObject &selfString, DataObject &otherString, bool Estimate=true) {
         commSync->resetCommCounters();
         return true;
     }
@@ -83,7 +83,7 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    virtual bool SyncServer(const shared_ptr<Communicant>& commSync, DataObject &selfString, DataObject &otherString, bool Estimate=true) {
+    virtual bool SyncServer(const shared_ptr<Communicant>& commSync, shared_ptr<SyncMethod> & setHost, DataObject &selfString, DataObject &otherString, bool Estimate=true) {
         commSync->resetCommCounters();
         return true;
     }

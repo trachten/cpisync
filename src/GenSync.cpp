@@ -94,7 +94,7 @@ GenSync::~GenSync() {
 
 bool GenSync::listenSync(int method_num,bool isRecon) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::listenSync");
-    // find the right syncAgent	
+    // find the right syncAgent
     auto syncAgent = mySyncVec.begin();
     advance(syncAgent, method_num);
 
@@ -109,13 +109,18 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
         // initialize variables
         selfMinusOther.clear();
         otherMinusSelf.clear();
+        shared_ptr<SyncMethod> setSync;
 
         try {
             if ((*syncAgent)->isStringReconMethod()) {
-                syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfStr, otherStr);
+
+                syncSuccess &= (*syncAgent)->SyncServer(*itComm, setSync, selfStr, otherStr);
+                syncSuccess &= setSync->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
+            }else{
+                syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
             }
 
-            syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
+
 
 
         } catch (SyncFailureException s) {
@@ -135,7 +140,8 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
         }
 
         if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
-            syncSuccess = (*syncAgent)->reconstructString(myString); // reconstruct the string based on the new information from set reconciliation
+            syncSuccess = (*syncAgent)->reconstructString(
+                    myString); // reconstruct the string based on the new information from set reconciliation
         }
     }
 
@@ -145,7 +151,7 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
 // request connection, send data and get the result
 bool GenSync::startSync(int method_num,bool isRecon) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::startSync");
-    // find the right syncAgent	
+    // find the right syncAgent
     auto syncAgentIt = mySyncVec.begin();
     advance(syncAgentIt, method_num);
 
@@ -158,17 +164,18 @@ bool GenSync::startSync(int method_num,bool isRecon) {
         // initialize variables
         selfMinusOther.clear();
         otherMinusSelf.clear();
-
+        shared_ptr<SyncMethod> setSync;
         // do the sync
         try {
             // if String Recon,
-            if ((*syncAgentIt)->isStringReconMethod() and !(*syncAgentIt)->SyncClient(*itComm, selfStr, otherStr)) {
-                Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
-                syncSuccess = false;
-            }
-            if(!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
-                Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
-                syncSuccess = false;
+            if ((*syncAgentIt)->isStringReconMethod()) {
+                syncSuccess &= (*syncAgentIt)->SyncClient(*itComm, setSync, selfStr, otherStr);
+                syncSuccess &= setSync->SyncClient(*itComm, selfMinusOther, otherMinusSelf);
+            } else {
+                if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
+                    Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
+                    syncSuccess = false;
+                }
             }
         } catch (SyncFailureException s) {
             Logger::error_and_quit(s.what());
@@ -186,7 +193,8 @@ bool GenSync::startSync(int method_num,bool isRecon) {
         }
 
         if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
-            syncSuccess = (*syncAgentIt)->reconstructString(myString); // reconstruct the string based on the new information from set reconciliation
+            syncSuccess = (*syncAgentIt)->reconstructString(
+                    myString); // reconstruct the string based on the new information from set reconciliation
         }
 
     }
@@ -207,7 +215,8 @@ void GenSync::addElem(DataObject* newDatum) {
     vector<shared_ptr<SyncMethod>>::iterator itAgt;
     for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
         if (!(*itAgt)->addElem(newDatum))
-            Logger::error_and_quit("Could not add item " + newDatum->to_string() + ".  Please considering increasing the number of bits per set element.");
+            Logger::error_and_quit("Could not add item " + newDatum->to_string() +
+                                   ".  Please considering increasing the number of bits per set element.");
     }
 
     // update file
@@ -439,16 +448,16 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::OneWayIBLTSync:
             myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
             break;
-        case SyncProtocol ::IBLTSyncSetDiff:
-            myMeth = make_shared<IBLTSync_SetDiff>(mbar,bits);
+        case SyncProtocol::IBLTSyncSetDiff:
+            myMeth = make_shared<IBLTSync_SetDiff>(mbar, bits);
             break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }
 
-    switch (stringProto){
+    switch (stringProto) {
         case StringSyncProtocol::kshinglingSync:
-            myMeth = make_shared<kshinglingSync>(proto,shingleLen,stopWord);
+            myMeth = make_shared<kshinglingSync>(proto, shingleLen, stopWord);
             break;
         default: // do nothing
             break;

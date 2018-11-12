@@ -74,13 +74,13 @@ kshinglingSync::kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const si
 
 
 //Alice
-bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObject &selfString,
-        DataObject &otherString, bool Estimate) {
+bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> & setHost,
+        DataObject &selfString, DataObject &otherString, bool Estimate) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncClient");
 
     bool syncSuccess = true;
     // call parent method for bookkeeping
-    SyncMethod::SyncClient(commSync, selfString, otherString);
+    SyncMethod::SyncClient(commSync, setHost, selfString, otherString);
     // create kshingle
 
     // connect to server
@@ -112,35 +112,32 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, DataObj
         mbar = mbar + mbar / 2; // get to the upper bound
 
     }
-    commSync->commClose(); // done with Kshingling communication
+    //commSync->commClose(); // done with Kshingling communication
 
     // reconcile difference + delete extra
-    GenSync myHost = configurate(myKshingle.getSetSize());
+
+    setHost = make_shared<IBLTSync>(mbar, sizeof(DataObject*));
+    //GenSync myHost = configurate(myKshingle.getSetSize());
 
     for (auto item : myKshingle.getShingleSet_str()) {
-        myHost.addElem(new DataObject(item)); // Add to GenSync
+        setHost->addElem(new DataObject(item)); // Add to GenSync
     }
     // choose to send if not oneway (default is one way)
 //
-    myHost.startSync(0,false);
-
-    auto elems = myHost.dumpElements();
-    myKshingle.clear_shingleSet();
-    for (auto Elem : elems)
-        myKshingle.updateShingleSet_str(Elem->to_string());
 
     return syncSuccess;
 }
 
 //Bob
-bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObject &selfString,
-                                DataObject &otherString, bool Estimate) {
+bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared_ptr<SyncMethod> & setHost,
+        DataObject &selfString, DataObject &otherString, bool Estimate) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncServer");
     bool syncSuccess = true;
 
-    SyncMethod::SyncServer(commSync, selfString, otherString);
+    SyncMethod::SyncServer(commSync, setHost, selfString, otherString);
 
     commSync->commListen();
+
     if (!commSync->establishKshingleRecv(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)) {
         Logger::gLog(Logger::METHOD_DETAILS,
                      "Kshingle parameters do not match up between client and server!");
@@ -169,18 +166,12 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync, DataObj
 
     commSync->commClose(); // done with Kshingling communication
     // reconcile difference + delete extra
-    GenSync myHost = configurate(myKshingle.getSetSize());
-
+    //GenSync myHost = configurate(myKshingle.getSetSize());
+    setHost = make_shared<IBLTSync>(mbar, sizeof(DataObject*));
     for (auto item : myKshingle.getShingleSet_str()) {
-        myHost.addElem(new DataObject(item)); // Add to GenSync
+        setHost->addElem(new DataObject(item)); // Add to GenSync
     }
 
-    myHost.listenSync(0, false);
-
-    auto elems = myHost.dumpElements();
-    myKshingle.clear_shingleSet();
-    for (auto Elem : elems)
-        myKshingle.updateShingleSet_str(Elem->to_string());
 //    // since using forkHandle only
 //    signal(SIGCHLD, SIG_IGN);
 //    myHost.listenSync(0, false);

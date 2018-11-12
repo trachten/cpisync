@@ -120,9 +120,6 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
                 syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
             }
 
-
-
-
         } catch (SyncFailureException s) {
             Logger::error_and_quit(s.what());
             return false;
@@ -164,13 +161,15 @@ bool GenSync::startSync(int method_num,bool isRecon) {
         // initialize variables
         selfMinusOther.clear();
         otherMinusSelf.clear();
-        shared_ptr<SyncMethod> setSync;
+
         // do the sync
         try {
             // if String Recon,
             if ((*syncAgentIt)->isStringReconMethod()) {
+                shared_ptr<SyncMethod> setSync;
+                shared_ptr<SyncMethod> setComm = *syncAgentIt;
                 syncSuccess &= (*syncAgentIt)->SyncClient(*itComm, setSync, selfStr, otherStr);
-                syncSuccess &= setSync->SyncClient(*itComm, selfMinusOther, otherMinusSelf);
+                syncSuccess &= setSync->SyncClient(setComm, selfMinusOther, otherMinusSelf);
             } else {
                 if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
                     Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");

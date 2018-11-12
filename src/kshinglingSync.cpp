@@ -112,7 +112,7 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
         mbar = mbar + mbar / 2; // get to the upper bound
 
     }
-    //commSync->commClose(); // done with Kshingling communication
+    commSync->commClose(); // done with Kshingling communication
 
     // reconcile difference + delete extra
 

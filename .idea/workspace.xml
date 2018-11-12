@@ -22,29 +22,6 @@
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata1000.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata10000.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata1450.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata1900.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata2350.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata2800.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata3250.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata3700.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata4150.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata4600.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata5050.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata5500.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata5950.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata6400.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata6850.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata7300.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata7750.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata8200.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata8650.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata9100.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata9550.txt.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/SyncMethod.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/SyncMethod.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/kshinglingSync.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/kshinglingSync.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GenSync.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/GenSync.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/kshinglingSync.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/kshinglingSync.cpp" afterDir="false" />
     </list>
@@ -61,17 +38,18 @@
     <session id="642130883">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="13" />
+          <entry key="project.closed" value="14" />
           <entry key="project.open.time.0" value="3" />
-          <entry key="project.open.time.1" value="7" />
+          <entry key="project.open.time.1" value="8" />
           <entry key="project.open.time.12" value="3" />
           <entry key="project.open.time.15" value="1" />
           <entry key="project.open.time.18" value="1" />
+          <entry key="project.open.time.20" value="1" />
           <entry key="project.open.time.22" value="1" />
           <entry key="project.open.time.25" value="1" />
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.opened" value="19" />
+          <entry key="project.opened" value="21" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -80,11 +58,11 @@
           <entry key="__string" value="1" />
           <entry key="__tree" value="4" />
           <entry key="algorithm" value="1" />
-          <entry key="cpp" value="181" />
+          <entry key="cpp" value="183" />
           <entry key="functional" value="2" />
-          <entry key="h" value="198" />
+          <entry key="h" value="199" />
           <entry key="iterator" value="8" />
-          <entry key="memory" value="2" />
+          <entry key="memory" value="3" />
           <entry key="new" value="1" />
           <entry key="py" value="1" />
           <entry key="string" value="1" />
@@ -97,14 +75,14 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CMakeLists.txt" value="9" />
-          <entry key="ObjectiveC" value="412" />
+          <entry key="ObjectiveC" value="416" />
           <entry key="PLAIN_TEXT" value="8" />
           <entry key="Python" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="13604" />
+          <entry key="cpp" value="13649" />
           <entry key="h" value="9468" />
           <entry key="mm" value="115" />
           <entry key="txt" value="358" />
@@ -114,7 +92,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="342" />
           <entry key="Doxygen file" value="39" />
-          <entry key="ObjectiveC" value="23148" />
+          <entry key="ObjectiveC" value="23193" />
           <entry key="PLAIN_TEXT" value="16" />
         </counts>
       </usages-collector>
@@ -196,76 +174,91 @@
     <favorites_list name="cpisynclib" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/ForkHandle.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-814">
-              <caret line="47" column="71" selection-start-line="47" selection-start-column="71" selection-end-line="47" selection-end-column="71" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="256">
-              <caret line="171" selection-start-line="171" selection-end-line="171" />
-              <folding>
-                <element signature="e#127#146#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/SyncMethod.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="7" column="22" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/GenSync.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="557">
-              <caret line="496" column="26" selection-start-line="496" selection-start-column="4" selection-end-line="496" selection-end-column="26" />
-              <folding>
-                <element signature="e#242#257#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/SyncMethod.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="233">
-              <caret line="71" column="17" selection-start-line="71" selection-start-column="17" selection-end-line="71" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/kshinglingSync.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="322">
-              <caret line="175" column="31" lean-forward="true" selection-start-line="175" selection-start-column="31" selection-end-line="175" selection-end-column="31" />
-              <folding>
-                <element signature="e#44#67#0" expanded="true" />
-                <marker date="1542026533919" expanded="true" signature="3987:4047" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/include/ForkHandle.h">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1444">
+                  <caret line="76" column="25" selection-start-line="76" selection-start-column="25" selection-end-line="76" selection-end-column="25" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="774">
+                  <caret line="192" lean-forward="true" selection-start-line="192" selection-end-line="192" />
+                  <folding>
+                    <element signature="e#127#146#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/CommSocket.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="988">
+                  <caret line="52" column="30" selection-start-line="52" selection-start-column="30" selection-end-line="52" selection-end-column="30" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/SyncMethod.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state>
+                  <caret column="9" selection-start-column="9" selection-end-column="9" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/include/SyncMethod.h">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="293">
+                  <caret line="41" selection-start-line="41" selection-end-line="41" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/kshinglingSync.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="2166">
+                  <caret line="114" column="4" selection-start-line="114" selection-start-column="4" selection-end-line="114" selection-end-column="4" />
+                  <folding>
+                    <element signature="e#44#67#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="329">
+                  <caret line="412" column="69" selection-start-line="412" selection-start-column="65" selection-end-line="412" selection-end-column="69" />
+                  <folding>
+                    <element signature="e#127#146#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>mystring</find>
       <find>The value being inserted is different than the IBLT value size! value size:</find>
       <find>GenSync::SyncComm</find>
       <find>getElemSize</find>
@@ -295,6 +288,7 @@
       <find>addSync</find>
       <find>myD</find>
       <find>myData</find>
+      <find>Could not bind to a Communicant!</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -349,11 +343,11 @@
         <option value="$PROJECT_DIR$/include/CPISync.h" />
         <option value="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" />
         <option value="$PROJECT_DIR$/include/ForkHandle.h" />
-        <option value="$PROJECT_DIR$/include/GenSync.h" />
         <option value="$PROJECT_DIR$/include/kshinglingSync.h" />
         <option value="$PROJECT_DIR$/include/SyncMethod.h" />
-        <option value="$PROJECT_DIR$/src/GenSync.cpp" />
+        <option value="$PROJECT_DIR$/include/GenSync.h" />
         <option value="$PROJECT_DIR$/src/kshinglingSync.cpp" />
+        <option value="$PROJECT_DIR$/src/GenSync.cpp" />
       </list>
     </option>
   </component>
@@ -365,9 +359,8 @@
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="-1920" />
-    <option name="width" value="1920" />
-    <option name="height" value="1080" />
+    <option name="width" value="1274" />
+    <option name="height" value="1440" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -565,6 +558,8 @@
       <workItem from="1541726699889" duration="94000" />
       <workItem from="1541791345766" duration="3531000" />
       <workItem from="1541969104084" duration="9556000" />
+      <workItem from="1542036120853" duration="2022000" />
+      <workItem from="1542050555065" duration="583000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -577,7 +572,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="598578000" />
+    <option name="totallyTimeSpent" value="601183000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -589,20 +584,20 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
+    <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.10010649" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49945593" weight="0.10087371" />
       <window_info id="Structure" order="1" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4985694" weight="0.31287128" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4985694" weight="0.31167883" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.3108911" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
-      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.24455446" />
+      <window_info active="true" anchor="bottom" id="Messages" order="7" sideWeight="0.49960285" visible="true" weight="0.24452555" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50143063" side_tool="true" weight="0.3421687" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.329927" />
@@ -644,23 +639,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/GenSync.cpp</url>
-          <line>117</line>
-          <option name="timeStamp" value="124" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/GenSync.cpp</url>
-          <line>172</line>
+          <line>178</line>
           <option name="timeStamp" value="125" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/GenSync.cpp</url>
-          <line>116</line>
-          <option name="timeStamp" value="126" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/GenSync.cpp</url>
-          <line>171</line>
-          <option name="timeStamp" value="127" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -846,13 +826,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/CommSocket.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3420">
-          <caret line="180" selection-start-line="180" selection-end-line="180" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/sys/signal.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="305">
@@ -956,13 +929,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/Cellar/llvm/7.0.0/include/c++/v1/memory">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="296">
-          <caret line="4849" selection-start-line="4849" selection-end-line="4849" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/kshingling.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="137">
@@ -1005,13 +971,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/ForkHandle.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-814">
-          <caret line="47" column="71" selection-start-line="47" selection-start-column="71" selection-end-line="47" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/kshinglingSync.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="342">
@@ -1029,48 +988,68 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/SyncMethod.h">
+    <entry file="file:///usr/local/Cellar/llvm/7.0.0/include/c++/v1/memory">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="71" column="17" selection-start-line="71" selection-start-column="17" selection-end-line="71" selection-end-column="17" />
+        <state relative-caret-position="654">
+          <caret line="4306" column="4" selection-start-line="4306" selection-start-column="4" selection-end-line="4306" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/include/GenSync.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="557">
-          <caret line="496" column="26" selection-start-line="496" selection-start-column="4" selection-end-line="496" selection-end-column="26" />
+        <state relative-caret-position="324">
+          <caret line="343" column="9" selection-start-line="343" selection-start-column="9" selection-end-line="343" selection-end-column="9" />
           <folding>
             <element signature="e#242#257#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/include/ForkHandle.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1444">
+          <caret line="76" column="25" selection-start-line="76" selection-start-column="25" selection-end-line="76" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CommSocket.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="988">
+          <caret line="52" column="30" selection-start-line="52" selection-start-column="30" selection-end-line="52" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/SyncMethod.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="7" column="22" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="22" />
+        <state>
+          <caret column="9" selection-start-column="9" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/kshinglingSync.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2166">
+          <caret line="114" column="4" selection-start-line="114" selection-start-column="4" selection-end-line="114" selection-end-column="4" />
+          <folding>
+            <element signature="e#44#67#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/GenSync.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="171" selection-start-line="171" selection-end-line="171" />
+        <state relative-caret-position="774">
+          <caret line="192" lean-forward="true" selection-start-line="192" selection-end-line="192" />
           <folding>
             <element signature="e#127#146#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/kshinglingSync.cpp">
+    <entry file="file://$PROJECT_DIR$/include/SyncMethod.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="175" column="31" lean-forward="true" selection-start-line="175" selection-start-column="31" selection-end-line="175" selection-end-column="31" />
-          <folding>
-            <element signature="e#44#67#0" expanded="true" />
-            <marker date="1542026533919" expanded="true" signature="3987:4047" ph="..." />
-          </folding>
+        <state relative-caret-position="293">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
         </state>
       </provider>
     </entry>

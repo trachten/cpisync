@@ -93,8 +93,8 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
     }
 
     // send cycNum
-    commSync->commSend(cycleNum);
-    if(!oneway) cycleNum = commSync->commRecv_long();
+    if(!oneway)commSync->commSend(cycleNum);
+    cycleNum = commSync->commRecv_long();
 
 
     // estimate difference
@@ -112,11 +112,11 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
         mbar = mbar + mbar / 2; // get to the upper bound
 
     }
-    commSync->commClose(); // done with Kshingling communication
+    //commSync->commClose(); // done with Kshingling communication
 
     // reconcile difference + delete extra
 
-    setHost = make_shared<IBLTSync>(mbar, sizeof(DataObject*));
+    setHost = make_shared<IBLTSync_SetDiff>(mbar, sizeof(DataObject*),true);
     //GenSync myHost = configurate(myKshingle.getSetSize());
 
     for (auto item : myKshingle.getShingleSet_str()) {
@@ -137,7 +137,6 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
     SyncMethod::SyncServer(commSync, setHost, selfString, otherString);
 
     commSync->commListen();
-
     if (!commSync->establishKshingleRecv(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)) {
         Logger::gLog(Logger::METHOD_DETAILS,
                      "Kshingle parameters do not match up between client and server!");
@@ -146,8 +145,8 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
 
     // send cycNum
     auto tmpcycleNum = cycleNum;
-    cycleNum = commSync->commRecv_long();
-    if (!oneway) commSync->commSend(tmpcycleNum);
+    if (!oneway) cycleNum = commSync->commRecv_long();
+     commSync->commSend(tmpcycleNum);
 
     // estimate difference
     if (Estimate and needEst()) {
@@ -164,10 +163,10 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
         mbar = mbar + mbar / 2; // get to the upper bound
     }
 
-    commSync->commClose(); // done with Kshingling communication
+    //commSync->commClose(); // done with Kshingling communication
     // reconcile difference + delete extra
     //GenSync myHost = configurate(myKshingle.getSetSize());
-    setHost = make_shared<IBLTSync>(mbar, sizeof(DataObject*));
+    setHost = make_shared<IBLTSync_SetDiff>(mbar, sizeof(DataObject*),true);
     for (auto item : myKshingle.getShingleSet_str()) {
         setHost->addElem(new DataObject(item)); // Add to GenSync
     }

@@ -12,7 +12,7 @@
 class IBLTSync_SetDiff : public SyncMethod {
 public:
     // Constructors and destructors
-    IBLTSync_SetDiff(size_t expected_diff, size_t eltSize);
+    IBLTSync_SetDiff(size_t expected_diff, size_t eltSize, bool keep_alive=false);
     ~IBLTSync_SetDiff();
 
     // Implemented parent class methods
@@ -22,7 +22,7 @@ public:
     bool delElem(DataObject* datum) override;
     string getName() override;
 protected:
-    bool oneWay;
+    bool oneWay, keepAlive;
 private:
     IBLT myIBLT;
     size_t expNumDiff;

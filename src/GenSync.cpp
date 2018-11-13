@@ -36,7 +36,6 @@ GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<share
     myCommVec = cVec;
     mySyncVec = mVec;
     outFile = nullptr; // no output file is being used
-
     // add each datum one by one
     auto itData = data.begin();
     for (; itData != data.end(); itData++)
@@ -113,7 +112,6 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
 
         try {
             if ((*syncAgent)->isStringReconMethod()) {
-
                 syncSuccess &= (*syncAgent)->SyncServer(*itComm, setSync, selfStr, otherStr);
                 syncSuccess &= setSync->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
             }else{
@@ -167,9 +165,8 @@ bool GenSync::startSync(int method_num,bool isRecon) {
             // if String Recon,
             if ((*syncAgentIt)->isStringReconMethod()) {
                 shared_ptr<SyncMethod> setSync;
-                shared_ptr<SyncMethod> setComm = *syncAgentIt;
                 syncSuccess &= (*syncAgentIt)->SyncClient(*itComm, setSync, selfStr, otherStr);
-                syncSuccess &= setSync->SyncClient(setComm, selfMinusOther, otherMinusSelf);
+                syncSuccess &= setSync->SyncClient(*itComm, selfMinusOther, otherMinusSelf);
             } else {
                 if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
                     Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");

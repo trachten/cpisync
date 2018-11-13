@@ -11,7 +11,7 @@
 #include "Auxiliary.h"
 #include "kshingling.h"
 #include "StrataEst.h"
-#include "IBLTSync.h"
+#include "IBLTSync_SetDiff.h"
 
 class kshinglingSync : public SyncMethod{
 public:

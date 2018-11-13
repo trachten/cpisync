@@ -4,9 +4,10 @@
 
 #include "IBLTSync_SetDiff.h"
 
-IBLTSync_SetDiff::IBLTSync_SetDiff(size_t expected_diff, size_t eltSize) : myIBLT(expected_diff, eltSize) {
+IBLTSync_SetDiff::IBLTSync_SetDiff(size_t expected_diff, size_t eltSize, bool keep_alive) : myIBLT(expected_diff, eltSize) {
     expNumDiff = expected_diff;
     oneWay = false;
+    keepAlive = keep_alive;
 }
 IBLTSync_SetDiff::~IBLTSync_SetDiff() = default;
 
@@ -15,12 +16,12 @@ bool IBLTSync_SetDiff::SyncClient(const shared_ptr<Communicant> &commSync, list<
     Logger::gLog(Logger::METHOD, "Entering IBLTSync::SyncClient");
 
     bool success = true;
-
+if(!keepAlive) {
     // call parent method for bookkeeping
     SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf);
-
     // connect to server
     commSync->commConnect();
+}
     // ensure that the IBLT size and eltSize equal those of the server
     if(!commSync->establishIBLTSend(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
         Logger::gLog(Logger::METHOD_DETAILS,
@@ -51,12 +52,13 @@ bool IBLTSync_SetDiff::SyncServer(const shared_ptr<Communicant> &commSync, list<
 
     bool success = true;
 
-    // call parent method for bookkeeping
-    SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf);
+    if(!keepAlive) {
+        // call parent method for bookkeeping
+        SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf);
 
-    // listen for client
-    commSync->commListen();
-
+        // listen for client
+        commSync->commListen();
+    }
     // ensure that the IBLT size and eltSize equal those of the server
     if(!commSync->establishIBLTRecv(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
         Logger::gLog(Logger::METHOD_DETAILS,

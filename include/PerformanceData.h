@@ -11,6 +11,12 @@
 #include <fstream>
 #include <omp.h>
 
+#ifdef DEBUG
+#define DEBUG_IF(cond) if(true)
+#else
+#define DEBUG_IF(cond) if(false)
+#endif
+
 class PerformanceData {
 public:
     PerformanceData(int tes_pts) {

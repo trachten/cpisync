@@ -173,7 +173,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
             throw invalid_argument("state stack and nxtEdge Stack size miss match" + to_string(stateStack.size())
                                    + ":" + to_string(nxtEdgeStack.size()));
         }
-
+        printMemUsage();
 
         str += shingleSet[nxt_idx].first.back();
 

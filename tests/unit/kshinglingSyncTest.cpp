@@ -22,10 +22,10 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 100;
+    int string_len = 10000000;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
-    size_t shingle_len = 3;
+    size_t shingle_len = ceil(log2(string_len));
     int editDistance_bar = 7;
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;

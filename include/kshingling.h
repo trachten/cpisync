@@ -13,6 +13,7 @@
 #include <sstream>
 #include "Auxiliary.h"
 #include "DataObject.h"
+#include "ProcessData.h"
 
 using std::vector;
 using std::hash;

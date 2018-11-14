@@ -22,10 +22,10 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 50;
+    int string_len = 100;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
-    size_t shingle_len = 2;
+    size_t shingle_len = 3;
     int editDistance_bar = 7;
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
@@ -35,7 +35,7 @@ void kshinglingSyncTest::testAll() {
     size_t bits = sizeof(DataObject*);
 
     GenSync Alice = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::IBLTSync).
+            setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
             setComm(GenSync::SyncComm::socket).
             setBits(bits).
@@ -46,7 +46,7 @@ void kshinglingSyncTest::testAll() {
 
 
     GenSync Bob = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::IBLTSync).
+            setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
             setComm(GenSync::SyncComm::socket).
             setBits(bits).
@@ -73,9 +73,7 @@ void kshinglingSyncTest::testAll() {
 
     //forkHandleReport report = forkHandle(Alice, Bob);
     string recoveredAlice = Alice.dumpString()->to_string();
-    string recoveredBob = Bob.dumpString()->to_string();
     CPPUNIT_ASSERT(recoveredAlice == Bobtxt);
-    CPPUNIT_ASSERT(recoveredBob == Alicetxt);
     CPPUNIT_ASSERT(report.success);
     cout << "bits: " + to_string(report.bytes) << endl;
     cout << "bitsTot: " + to_string(report.bytesTot) << endl;

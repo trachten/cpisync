@@ -202,7 +202,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
 
 void K_Shingle::updateShingleSet_str(string shingle) {
-    shingleSet.emplace_back(shingle.substr(0, shingle.find_last_of(":")), to_ulong(StrtoZZ(shingle.substr(shingle.find_last_of(":") + 1))));
+    shingleSet.emplace_back(shingle.substr(0, shingle.find_last_of(":")), stoi(shingle.substr(shingle.find_last_of(":") + 1)));
     shingleSet_str.push_back(shingle);
 }
 

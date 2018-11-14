@@ -502,7 +502,7 @@ private:
     static const StringSyncProtocol DFT_STRPROTO = StringSyncProtocol::UNDEFINED;
     static const int DFT_PRT = 8001;
     static const bool DFT_BASE64 = true;
-    static const long DFT_MBAR = UNDEFINED; // this parameter *must* be specified for sync to work
+    static const long DFT_MBAR = 0;//UNDEFINED; // this parameter *must* be specified for sync to work
     static const long DFT_BITS = 32;
     static const int DFT_PARTS = 2;
     static const size_t DFT_EXPELEMS = 50;

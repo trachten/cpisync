@@ -4,7 +4,7 @@
 
 #include "IBLTSync_SetDiff.h"
 
-IBLTSync_SetDiff::IBLTSync_SetDiff(size_t expected_diff, size_t eltSize, bool keep_alive) : myIBLT(expected_diff, eltSize) {
+IBLTSync_SetDiff::IBLTSync_SetDiff(size_t expected_diff, size_t eltSize, bool keep_alive) : myIBLT((expected_diff>0)?expected_diff:0, eltSize) {
     expNumDiff = expected_diff;
     oneWay = false;
     keepAlive = keep_alive;

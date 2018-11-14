@@ -12,6 +12,8 @@
 #include "kshingling.h"
 #include "StrataEst.h"
 #include "IBLTSync_SetDiff.h"
+#include "ProbCPISync.h"
+#include "InterCPISync.h"
 
 class kshinglingSync : public SyncMethod{
 public:
@@ -55,7 +57,7 @@ public:
 //        return res;
 //    };
 
-    bool reconstructString(DataObject* recovered_string) override;
+    bool reconstructString(DataObject* & recovered_string, const list<DataObject *> & Elems) override;
 
     vector<DataObject*> addStr(DataObject* datum) override;
 
@@ -93,7 +95,7 @@ private:
     /**
      * Configure set recon protocols
      */
-    GenSync configurate(idx_t set_size, int port_num=8001, GenSync::SyncComm setSyncComm=GenSync::SyncComm::socket);
+    void configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size);
 
     /**
      * assess if estimation is needed for the set reconcialition
@@ -101,7 +103,7 @@ private:
      * @return
      */
     bool needEst(){
-        return setSyncProtocol==GenSync::SyncProtocol::IBLTSync or setSyncProtocol==GenSync::SyncProtocol::CPISync;
+        return setSyncProtocol==GenSync::SyncProtocol::IBLTSyncSetDiff or setSyncProtocol==GenSync::SyncProtocol::CPISync;
     };
 
 };

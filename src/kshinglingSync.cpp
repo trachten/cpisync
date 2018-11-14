@@ -116,9 +116,9 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
 
     // reconcile difference + delete extra
 
-    setHost = make_shared<IBLTSync_SetDiff>(mbar, sizeof(DataObject*),true);
+    //setHost = make_shared<IBLTSync_SetDiff>(mbar, sizeof(DataObject*),true);
     //GenSync myHost = configurate(myKshingle.getSetSize());
-
+    configurate(setHost, myKshingle.getSetSize());
     for (auto item : myKshingle.getShingleSet_str()) {
         setHost->addElem(new DataObject(item)); // Add to GenSync
     }
@@ -165,7 +165,7 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
 
     //commSync->commClose(); // done with Kshingling communication
     // reconcile difference + delete extra
-    //GenSync myHost = configurate(myKshingle.getSetSize());
+    configurate(setHost, myKshingle.getSetSize());
     setHost = make_shared<IBLTSync_SetDiff>(mbar, sizeof(DataObject*),true);
     for (auto item : myKshingle.getShingleSet_str()) {
         setHost->addElem(new DataObject(item)); // Add to GenSync
@@ -177,26 +177,31 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
     return syncSuccess;
 }
 
-GenSync kshinglingSync::configurate(idx_t set_size, int port_num, GenSync::SyncComm setSyncComm) {
+void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size) {
 
-    if (setSyncProtocol == GenSync::SyncProtocol::CPISync or setSyncProtocol == GenSync::SyncProtocol::InteractiveCPISync){
-        eltSize = 14+(myKshingle.getshinglelen_str()+2)*6;
-    }else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSync or setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff){
-        eltSize = sizeof(DataObject*);
+    if (setSyncProtocol == GenSync::SyncProtocol::CPISync) {
+        eltSize = 14 + (myKshingle.getshinglelen_str() + 2) * 6;
+        int err = 8;// negative log of acceptable error probability for probabilistic syncs
+        setHost = make_shared<ProbCPISync>(mbar, eltSize, err);
+    } else if (setSyncProtocol == GenSync::SyncProtocol::InteractiveCPISync) {
+        eltSize = 14 + (myKshingle.getshinglelen_str() + 2) * 6;
+        //make_shared<InterCPISync>(mBar, eltSizeSq, err, (ceil(log(set_size))>1)?:2)
+        //(ceil(log(set_size))>1)?:2;
+    } else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff) {
+        eltSize = sizeof(DataObject *);
+        setHost = make_shared<IBLTSync_SetDiff>(mbar, eltSize, true);
     }
-    return GenSync::Builder().
-            setProtocol(setSyncProtocol).
-            setComm(setSyncComm).
-            setMbar(mbar).
-            setNumPartitions((ceil(log(set_size))>1)?:2).
-            setBits(eltSize).
-            setPort(8002).
-            setNumExpectedElements(mbar).
-            build();
 }
 
-bool kshinglingSync::reconstructString(DataObject* recovered_string) {
+bool kshinglingSync::reconstructString(DataObject* & recovered_string, const list<DataObject *> & Elems) {
     if (cycleNum != 0)
+        myKshingle.clear_shingleSet();
+
+        for (auto elem: Elems) {
+            auto tmp2 = elem->to_string();
+            myKshingle.updateShingleSet_str(elem->to_string());
+        }
+        auto tmp  = myKshingle.reconstructStringBacktracking(cycleNum).first;
         recovered_string = new DataObject(myKshingle.reconstructStringBacktracking(cycleNum).first);
     return cycleNum != 0;
 }

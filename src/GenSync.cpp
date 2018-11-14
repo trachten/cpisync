@@ -136,7 +136,7 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
 
         if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
             syncSuccess = (*syncAgent)->reconstructString(
-                    myString); // reconstruct the string based on the new information from set reconciliation
+                    myString,dumpElements()); // reconstruct the string based on the new information from set reconciliation
         }
     }
 
@@ -190,7 +190,7 @@ bool GenSync::startSync(int method_num,bool isRecon) {
 
         if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
             syncSuccess = (*syncAgentIt)->reconstructString(
-                    myString); // reconstruct the string based on the new information from set reconciliation
+                    myString, dumpElements()); // reconstruct the string based on the new information from set reconciliation
         }
 
     }

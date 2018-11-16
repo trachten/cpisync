@@ -22,7 +22,7 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 10000000;
+    int string_len = 5000000;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     size_t shingle_len = ceil(log2(string_len));
@@ -41,7 +41,7 @@ void kshinglingSyncTest::testAll() {
             setBits(bits).
             setShingleLen(shingle_len).
             build();
-
+    cout << "Add first string -----------------------------------------------------Here 1"<<endl;
     Alice.addStr(new DataObject(Alicetxt));
 
 
@@ -52,7 +52,7 @@ void kshinglingSyncTest::testAll() {
             setBits(bits).
             setShingleLen(shingle_len).
             build();
-
+    cout << "Add second string -----------------------------------------------------Here 2"<<endl;
     Bob.addStr(new DataObject(Bobtxt));
 
     forkHandleReport report = forkHandle(Alice, Bob, false);
@@ -70,15 +70,15 @@ void kshinglingSyncTest::testAll() {
     //IBLTSync Setup
     //kshinglingSync kshingling = kshinglingSync(baseSetProto, base_comm, 8, 0, 0, numDif*10);
 
-
+    cout << "dump a string -----------------------------------------------------Here 3"<<endl;
     //forkHandleReport report = forkHandle(Alice, Bob);
     string recoveredAlice = Alice.dumpString()->to_string();
+    cout << "dump string -----------------------------------------------------Here 4"<<endl;
     CPPUNIT_ASSERT(recoveredAlice == Bobtxt);
     CPPUNIT_ASSERT(report.success);
     cout << "bits: " + to_string(report.bytes) << endl;
     cout << "bitsTot: " + to_string(report.bytesTot) << endl;
     cout << "bitsR: " + to_string(report.bytesRTot) << endl;
-
 
 
 //    syncTest(GenSyncServer, GenSyncClient);

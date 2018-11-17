@@ -13,10 +13,16 @@
 #include <mach/mach_init.h>
 #include <mach/mach_host.h>
 
+
+#include <sys/param.h>
+#include <sys/mount.h>
+
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
-#elif __linux // TODO: Implement Libraries for linux
+#elif __linux__ // TODO: Implement Libraries for linux
+    #include "sys/types.h"
+    #include "sys/sysinfo.h"
 #endif
 
 using namespace std;
@@ -31,12 +37,42 @@ inline void printMemUsage() { // VM currently Used by my process
         //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl;
         cout<<"Process Resident size:" << std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<t_info.resident_size*(long double)1.25e-10
         << " virtual size:" << std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<t_info.virtual_size*(long double)1.25e-10<<endl;
+        cout<< "what is in the policy: "<<t_info.policy<<endl;
 
+
+        struct statfs stats;
+        if (0 == statfs("/", &stats))
+        {
+           cout<<"Total "<< (uint64_t)stats.f_bsize * stats.f_bfree<<endl;
+        }
         //process resident diff =  879087616 == 0.109 GB
         //virtual size diff = 59762421760 == 7.470 GB
         //start V - size = 0.98
         //end V - size = 8.45GB
     }
+}
+
+inline void freeMem(long long & virtualMemUsed){
+#if __APPLE__
+#elif __linux
+    struct sysinfo memInfo;
+
+    sysinfo (&memInfo);
+    long long totalVirtualMem = memInfo.totalram;
+    //Add other values in next statement to avoid int overflow on right hand side...
+    totalVirtualMem += memInfo.totalswap;
+    totalVirtualMem *= memInfo.mem_unit;
+    virtualMemUsed = memInfo.totalram - memInfo.freeram;
+    //Add other values in next statement to avoid int overflow on right hand side...
+    virtualMemUsed += memInfo.totalswap - memInfo.freeswap;
+    virtualMemUsed *= memInfo.mem_unit;
+    long long virtualFreeMem = totalVirtualMem - virtualMemUsed;
+
+    cout<<"virtualFreeMem:"<<virtualFreeMem<<endl;
+    cout<<"virtualMemUsed:"<<virtualMemUsed<<endl;
+    cout<<"totalVirtualMem:"<<totalVirtualMem<<endl;
+#endif
+
 }
 
 inline void printRAMUsage() { //RAM Currently Used

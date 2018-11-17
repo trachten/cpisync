@@ -112,41 +112,41 @@ inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
 
 }
 
-inline void printRAMUsage() { //RAM Currently Used
-    vm_size_t page_size;
-    mach_port_t mach_port;
-    mach_msg_type_number_t count;
-    vm_statistics64_data_t vm_stats;
+//inline void printRAMUsage() { //RAM Currently Used
+//    vm_size_t page_size;
+//    mach_port_t mach_port;
+//    mach_msg_type_number_t count;
+//    vm_statistics64_data_t vm_stats;
+//
+//    mach_port = mach_host_self();
+//    count = sizeof(vm_stats) / sizeof(natural_t);
+//    if (KERN_SUCCESS == host_page_size(mach_port, &page_size) &&
+//        KERN_SUCCESS == host_statistics64(mach_port, HOST_VM_INFO,
+//                                          (host_info64_t) &vm_stats, &count)) {
+//        long long free_memory = (int64_t) vm_stats.free_count * (int64_t) page_size;
+//
+//        long long used_memory = ((int64_t) vm_stats.active_count +
+//                                 (int64_t) vm_stats.inactive_count +
+//                                 (int64_t) vm_stats.wire_count) * (int64_t) page_size;
+//        //printf("Total free memory: %f used memory: %f\n", free_memory*1.25e-10, used_memory*1.25e-10);
+//        cout<< "Total free memory: " << std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<free_memory*(long double)1.25e-10
+//        <<" Used Mem: "<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<used_memory*(long double)1.25e-10<<endl;
+//        // Total free memory diff = -126529536 == -0.0158
+//        // used mem diff = 443351040 == 0.055 GB
+//    }
+//
+//}
 
-    mach_port = mach_host_self();
-    count = sizeof(vm_stats) / sizeof(natural_t);
-    if (KERN_SUCCESS == host_page_size(mach_port, &page_size) &&
-        KERN_SUCCESS == host_statistics64(mach_port, HOST_VM_INFO,
-                                          (host_info64_t) &vm_stats, &count)) {
-        long long free_memory = (int64_t) vm_stats.free_count * (int64_t) page_size;
+//inline void printRAMavl(){ // Total RAM Available
+//    int mib[2];
+//    int64_t physical_memory;
+//    mib[0] = CTL_HW;
+//    mib[1] = HW_MEMSIZE;
+//    auto length = sizeof(int64_t);
+//    sysctl(mib, 2, &physical_memory, &length, NULL, 0);
+//    cout << "Total RAM Available: "+to_string(physical_memory)+" length:"+to_string(length) <<endl;
+//}
 
-        long long used_memory = ((int64_t) vm_stats.active_count +
-                                 (int64_t) vm_stats.inactive_count +
-                                 (int64_t) vm_stats.wire_count) * (int64_t) page_size;
-        //printf("Total free memory: %f used memory: %f\n", free_memory*1.25e-10, used_memory*1.25e-10);
-        cout<< "Total free memory: " << std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<free_memory*(long double)1.25e-10
-        <<" Used Mem: "<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<used_memory*(long double)1.25e-10<<endl;
-        // Total free memory diff = -126529536 == -0.0158
-        // used mem diff = 443351040 == 0.055 GB
-    }
-
-}
-
-inline void printRAMavl(){ // Total RAM Available
-    int mib[2];
-    int64_t physical_memory;
-    mib[0] = CTL_HW;
-    mib[1] = HW_MEMSIZE;
-    auto length = sizeof(int64_t);
-    sysctl(mib, 2, &physical_memory, &length, NULL, 0);
-    cout << "Total RAM Available: "+to_string(physical_memory)+" length:"+to_string(length) <<endl;
-}
-//TODO: 
 #endif //CPISYNCLIB_PROCESSDATA_H
 
 //Process Resident size:0.293176 virtual size:0.981849

@@ -119,7 +119,7 @@ private:
     //default constructor
     K_Shingle();
 
-    long long currentVM, initVM; // keeps track of Ram usage
+    long long currentVM = 0, initVM = 0; // keeps track of Ram usage
 
     // k and stopword better be the same between two hosts, or should be transferred.
     size_t k;  //shingle size

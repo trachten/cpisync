@@ -253,12 +253,15 @@ public:
      * */
     int getPort(int commIndex);
 
+    const long getVirMem(int commIndex) const;
+
     /**
      * Displays some internal information about this method
      */
     virtual string getName() {
         return "I am a GenSync object";
-    }
+    };
+
 
     /**
      * Destructor - clears out all memory

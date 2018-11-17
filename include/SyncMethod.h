@@ -127,6 +127,8 @@ public:
      */
     virtual string getName() = 0;
 
+    virtual long getVirMem(){return 0;};
+
     virtual bool reconstructString(DataObject* & recovered_string, const list<DataObject *> & Elems){
         return true;
     }

@@ -11,7 +11,10 @@
 K_Shingle::~K_Shingle() = default;
 
 K_Shingle::K_Shingle(const size_t shingle_size, const char stop_word)
-: k(shingle_size), stopword(stop_word) {}
+: k(shingle_size), stopword(stop_word) {
+    virtualMemMonitor(currentVM);
+    initVM=currentVM;
+}
 
 bool K_Shingle::create(const string str) {
     //  Sanity check
@@ -53,9 +56,8 @@ void K_Shingle::incrementEdgeCount(const string ver, map<string,idx_t> & shingle
     if (!ver.empty()) {
 
         auto it = shingle_map.find(ver);
-        (it != shingle_map.end()) ? it->second++ : shingle_map[ver] = 1;
+        (it != shingle_map.end()) ? shingle_map[ver] += 1 : shingle_map[ver] = 1;
 
-        return;
     } else {
         throw invalid_argument("No string in vertex");
     }
@@ -133,6 +135,9 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
     idx_t nxt_idx;
 
     while (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1) { // while state stack is not empty
+
+        if (!virtualMemMonitor(currentVM)) return false;
+
         auto nxtEdges = getEdgeIdx(curEdge.substr(1), stateStack.back());
 
         if (!nxtEdges.empty()) { // If we can go further with this route
@@ -174,7 +179,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
                                    + ":" + to_string(nxtEdgeStack.size()));
         }
 
-        printMemUsage();
+
 
         str += shingleSet[nxt_idx].first.back();
 
@@ -203,7 +208,14 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
 
 void K_Shingle::updateShingleSet_str(string shingle) {
-    shingleSet.emplace_back(shingle.substr(0, shingle.find_last_of(":")), stoi(shingle.substr(shingle.find_last_of(":") + 1)));
+    try {
+        auto ind = shingle.find_last_of(":");
+        shingleSet.emplace_back(shingle.substr(0, ind),
+                                stoi(shingle.substr(ind + 1)));
+    }
+    catch (std::exception e){
+        cout<<"what do we have here: "<<shingle<<endl;
+    }
     shingleSet_str.push_back(shingle);
 }
 

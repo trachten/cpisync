@@ -73,10 +73,9 @@ inline void printMemUsage(long long & virtualMemUsed=NOT_SET) { // VM currently 
     cout<<"virtualMemUsed:"<<virtualMemUsed<<endl;
     cout<<"totalVirtualMem:"<<totalVirtualMem<<endl;
 #endif
-
 }
 
-inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
+inline bool virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
 #if __APPLE__
 
     struct task_basic_info t_info;
@@ -88,11 +87,10 @@ inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
                                   &t_info_count) && 0 == statfs("/", &stats)) {
 
         //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl;
+        if (t_info.virtual_size - virtualMemUsed + t_info.virtual_size> stats.f_bsize * stats.f_bavail) return false;
+
         virtualMemUsed = t_info.virtual_size;
-
-
-        long long virtualFreeMem = stats.f_bsize * stats.f_bavail;
-
+//        long long virtualFreeMem = stats.f_bsize * stats.f_bavail;
 
     }
 #elif __linux
@@ -103,13 +101,14 @@ inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
     //Add other values in next statement to avoid int overflow on right hand side...
     totalVirtualMem += memInfo.totalswap;
     totalVirtualMem *= memInfo.mem_unit;
+
+    if (memInfo.totalram - memInfo.freeram - virtualMemUsed > memInfo.freeram) return false;
     virtualMemUsed = memInfo.totalram - memInfo.freeram;
     //Add other values in next statement to avoid int overflow on right hand side...
     virtualMemUsed += memInfo.totalswap - memInfo.freeswap;
     virtualMemUsed *= memInfo.mem_unit;
-    long long virtualFreeMem = totalVirtualMem - virtualMemUsed;
 #endif
-
+    return true;
 }
 
 //inline void printRAMUsage() { //RAM Currently Used
@@ -167,3 +166,4 @@ inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
 //
 //Process Resident size:0.3350896640000000209 virtual size:8.442508800000000526
 //Total free memory: 0.002508288000000000156 Used Mem: 0.8493696000000000529
+

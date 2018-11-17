@@ -109,7 +109,6 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
         commSync->commSend(est.getStrata(), false);
 
         mbar = commSync->commRecv_long(); // cast long to long long
-        mbar = mbar + mbar / 2; // get to the upper bound
 
     }
     //commSync->commClose(); // done with Kshingling communication
@@ -159,8 +158,9 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
         // since Kshingling are the same, Strata Est parameters would also be the same.
         auto theirStarata = commSync->commRecv_Strata();
         mbar = (est -= theirStarata).estimate();
+        mbar = mbar + mbar / 2; // get an upper bound
         commSync->commSend(mbar); // Dangerous cast
-        mbar = mbar + mbar / 2; // get to the upper bound
+
     }
 
     //commSync->commClose(); // done with Kshingling communication
@@ -179,6 +179,7 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
 
 void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size) {
 
+
     if (setSyncProtocol == GenSync::SyncProtocol::CPISync) {
         eltSize = 14 + (myKshingle.getshinglelen_str() + 2) * 6;
         int err = 8;// negative log of acceptable error probability for probabilistic syncs
@@ -188,6 +189,7 @@ void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size
         //make_shared<InterCPISync>(mBar, eltSizeSq, err, (ceil(log(set_size))>1)?:2)
         //(ceil(log(set_size))>1)?:2;
     } else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff) {
+        (mbar == 0)? mbar = 10 : mbar;
         eltSize = sizeof(DataObject *);
         setHost = make_shared<IBLTSync_SetDiff>(mbar, eltSize, true);
     }
@@ -198,10 +200,8 @@ bool kshinglingSync::reconstructString(DataObject* & recovered_string, const lis
         myKshingle.clear_shingleSet();
 
         for (auto elem: Elems) {
-            auto tmp2 = elem->to_string();
             myKshingle.updateShingleSet_str(elem->to_string());
         }
-        auto tmp  = myKshingle.reconstructStringBacktracking(cycleNum).first;
         recovered_string = new DataObject(myKshingle.reconstructStringBacktracking(cycleNum).first);
     return cycleNum != 0;
 }
@@ -216,10 +216,13 @@ vector<DataObject*> kshinglingSync::addStr(DataObject* datum){
     vector<DataObject*> res;
     for (auto item : myKshingle.getShingleSet_str()){
         auto tmp = new DataObject(item);
-//        addElem(tmp);
         res.push_back(tmp);
     }
     return res;
+}
+
+long kshinglingSync::getVirMem(){
+    return myKshingle.virtualMemUsed();
 }
 
 //size_t kshinglingSync::injectString(string str) {

@@ -38,6 +38,7 @@ struct forkHandleReport {
     long bytes;       // the number of bytes communicated
     long bytesRTot;    // the number of bytes from total comm
     long bytesTot;      // the total number of bytes communicated
+    long bytesVM;       // the amount of virtual memory used for reconstruction
     double CPUtime;   // the amount of CPU time used
     double totalTime; // total time used
     bool success;     // true iff the sync completed successfully
@@ -75,7 +76,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server, bool isRecon
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
             result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytesRTot = client.getRecvBytesTot(method_num);
-
+            result.bytesVM = client.getVirMem(method_num);
             result.bytesTot = client.getXmitBytesTot(method_num);
             result.bytes = client.getXmitBytes(method_num);
             waitpid(pID, &chld_state, my_opt);

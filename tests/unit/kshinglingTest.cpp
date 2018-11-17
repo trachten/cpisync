@@ -16,6 +16,8 @@ kshinglingTest::~kshinglingTest() {
 }
 
 void kshinglingTest::setUp() {
+    const int SEED = 617;
+    srand(SEED);
 }
 
 void kshinglingTest::tearDown() {

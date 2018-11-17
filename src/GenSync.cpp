@@ -388,6 +388,10 @@ int GenSync::getPort(int commIndex) {
 
 }
 
+const long GenSync::getVirMem(int syncIndex) const {
+    return mySyncVec[syncIndex]->getVirMem();
+}
+
 // Builder methods
 
 GenSync GenSync::Builder::build() {

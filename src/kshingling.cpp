@@ -175,7 +175,6 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
         }
 
         printMemUsage();
-        printRAMUsage();
 
         str += shingleSet[nxt_idx].first.back();
 

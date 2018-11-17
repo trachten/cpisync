@@ -359,7 +359,6 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
         for (int set_diff = 0; set_diff <= top_set_diff; set_diff += set_diffinterval) {
 //#pragma omp critical
             printMemUsage();
-            printRAMUsage();
             for (int conf = 0; conf < confidence; ++conf) {
 
 

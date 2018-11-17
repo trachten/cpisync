@@ -31,6 +31,8 @@ static long long NOT_SET = -1; // not set parameters are not used
 
 using namespace std;
 inline void printMemUsage() { // VM currently Used by my process
+
+#if __APPLE__
     struct task_basic_info t_info;
     mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
@@ -53,10 +55,6 @@ inline void printMemUsage() { // VM currently Used by my process
         //start V - size = 0.98
         //end V - size = 8.45GB
     }
-}
-
-inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
-#if __APPLE__
 #elif __linux
     struct sysinfo memInfo;
 
@@ -74,6 +72,42 @@ inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
     cout<<"virtualFreeMem:"<<virtualFreeMem<<endl;
     cout<<"virtualMemUsed:"<<virtualMemUsed<<endl;
     cout<<"totalVirtualMem:"<<totalVirtualMem<<endl;
+#endif
+
+}
+
+inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
+#if __APPLE__
+
+    struct task_basic_info t_info;
+    struct statfs stats;
+    mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+
+    if (KERN_SUCCESS == task_info(mach_task_self(),
+                                  TASK_BASIC_INFO, (task_info_t) &t_info,
+                                  &t_info_count) && 0 == statfs("/", &stats)) {
+
+        //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl;
+        virtualMemUsed = t_info.virtual_size;
+
+
+        long long virtualFreeMem = stats.f_bsize * stats.f_bavail;
+
+
+    }
+#elif __linux
+    struct sysinfo memInfo;
+
+    sysinfo (&memInfo);
+    long long totalVirtualMem = memInfo.totalram;
+    //Add other values in next statement to avoid int overflow on right hand side...
+    totalVirtualMem += memInfo.totalswap;
+    totalVirtualMem *= memInfo.mem_unit;
+    virtualMemUsed = memInfo.totalram - memInfo.freeram;
+    //Add other values in next statement to avoid int overflow on right hand side...
+    virtualMemUsed += memInfo.totalswap - memInfo.freeswap;
+    virtualMemUsed *= memInfo.mem_unit;
+    long long virtualFreeMem = totalVirtualMem - virtualMemUsed;
 #endif
 
 }

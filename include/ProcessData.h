@@ -25,6 +25,10 @@
     #include "sys/sysinfo.h"
 #endif
 
+
+static long long NOT_SET = -1; // not set parameters are not used
+
+
 using namespace std;
 inline void printMemUsage() { // VM currently Used by my process
     struct task_basic_info t_info;
@@ -37,13 +41,12 @@ inline void printMemUsage() { // VM currently Used by my process
         //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl;
         cout<<"Process Resident size:" << std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<t_info.resident_size*(long double)1.25e-10
         << " virtual size:" << std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<t_info.virtual_size*(long double)1.25e-10<<endl;
-        cout<< "what is in the policy: "<<t_info.policy<<endl;
 
 
         struct statfs stats;
         if (0 == statfs("/", &stats))
         {
-           cout<<"Total "<< (uint64_t)stats.f_bsize * stats.f_bfree<<endl;
+           cout<<"Total MEM left: "<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<(long double)stats.f_bsize * stats.f_bavail * 1.25e-10<<endl;
         }
         //process resident diff =  879087616 == 0.109 GB
         //virtual size diff = 59762421760 == 7.470 GB
@@ -52,7 +55,7 @@ inline void printMemUsage() { // VM currently Used by my process
     }
 }
 
-inline void freeMem(long long & virtualMemUsed){
+inline void virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
 #if __APPLE__
 #elif __linux
     struct sysinfo memInfo;

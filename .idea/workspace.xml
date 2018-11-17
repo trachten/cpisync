@@ -21,7 +21,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/ProcessData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/ProcessData.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -122,7 +121,7 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="cpp" value="18382" />
-          <entry key="h" value="9076" />
+          <entry key="h" value="9173" />
           <entry key="txt" value="1052" />
         </counts>
       </usages-collector>
@@ -130,7 +129,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="1052" />
           <entry key="Doxygen file" value="32" />
-          <entry key="ObjectiveC" value="27426" />
+          <entry key="ObjectiveC" value="27523" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -138,7 +137,7 @@
           <entry key="__functional_base" value="1" />
           <entry key="cbp" value="1" />
           <entry key="cpp" value="266" />
-          <entry key="h" value="245" />
+          <entry key="h" value="246" />
           <entry key="iomanip" value="1" />
           <entry key="iterator" value="5" />
           <entry key="list" value="1" />
@@ -156,7 +155,7 @@
         <counts>
           <entry key="CMakeCache.txt" value="1" />
           <entry key="CMakeLists.txt" value="12" />
-          <entry key="ObjectiveC" value="528" />
+          <entry key="ObjectiveC" value="529" />
           <entry key="PLAIN_TEXT" value="51" />
           <entry key="Python" value="2" />
         </counts>
@@ -198,9 +197,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/include/ProcessData.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-9">
-              <caret line="18" selection-start-line="18" selection-end-line="18" />
+            <state relative-caret-position="230">
+              <caret line="48" column="70" selection-start-line="48" selection-start-column="70" selection-end-line="48" selection-end-column="70" />
               <folding>
+                <element signature="e#121#142#0" expanded="true" />
                 <element signature="e#363#410#0" expanded="true" />
                 <element signature="e#1494#2225#0" expanded="true" />
               </folding>
@@ -243,7 +243,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>GenSync::SyncComm</find>
       <find>getElemSize</find>
       <find>The value being inserted is different than the IBLT value size! value size</find>
       <find>The value being inserted is different than the IBLT value size!</find>
@@ -273,6 +272,7 @@
       <find>myData</find>
       <find>Could not bind to a Communicant!</find>
       <find>here</find>
+      <find>not_set</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -552,7 +552,7 @@
       <workItem from="1542050555065" duration="772000" />
       <workItem from="1542209540514" duration="5067000" />
       <workItem from="1542304360899" duration="11289000" />
-      <workItem from="1542467659087" duration="3842000" />
+      <workItem from="1542467659087" duration="5823000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -565,7 +565,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="621570000" />
+    <option name="totallyTimeSpent" value="623551000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -578,6 +578,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1920" y="0" width="958" height="1080" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49945593" weight="0.3930131" />
       <window_info id="Structure" order="1" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
@@ -912,13 +913,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/Communicant.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="40" column="17" selection-start-line="40" selection-start-column="17" selection-end-line="40" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/Cellar/llvm/7.0.0/include/c++/v1/memory">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="654">
@@ -930,6 +924,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="324">
           <caret line="343" column="9" selection-start-line="343" selection-start-column="9" selection-end-line="343" selection-end-column="9" />
+          <folding>
+            <element signature="e#242#257#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1049,11 +1046,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/include/Communicant.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="753">
+          <caret line="392" column="34" selection-start-line="392" selection-start-column="4" selection-end-line="392" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/include/ProcessData.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
+        <state relative-caret-position="230">
+          <caret line="48" column="70" selection-start-line="48" selection-start-column="70" selection-end-line="48" selection-end-column="70" />
           <folding>
+            <element signature="e#121#142#0" expanded="true" />
             <element signature="e#363#410#0" expanded="true" />
             <element signature="e#1494#2225#0" expanded="true" />
           </folding>

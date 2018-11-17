@@ -30,7 +30,7 @@ static long long NOT_SET = -1; // not set parameters are not used
 
 
 using namespace std;
-inline void printMemUsage() { // VM currently Used by my process
+inline void printMemUsage(long long & virtualMemUsed=NOT_SET) { // VM currently Used by my process
 
 #if __APPLE__
     struct task_basic_info t_info;

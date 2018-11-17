@@ -21,9 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/include/ProcessData.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/ProcessData.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PerformanceData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/PerformanceData.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/kshingling.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/kshingling.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/CMakeFiles/" />
@@ -122,7 +120,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="18384" />
+          <entry key="cpp" value="18411" />
           <entry key="h" value="9212" />
           <entry key="txt" value="1052" />
         </counts>
@@ -131,7 +129,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="1052" />
           <entry key="Doxygen file" value="32" />
-          <entry key="ObjectiveC" value="27564" />
+          <entry key="ObjectiveC" value="27591" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -196,14 +194,15 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/ProcessData.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="67" column="59" lean-forward="true" selection-start-line="67" selection-start-column="59" selection-end-line="67" selection-end-column="59" />
+            <state relative-caret-position="404">
+              <caret line="57" column="13" selection-start-line="57" selection-start-column="13" selection-end-line="57" selection-end-column="13" />
               <folding>
                 <element signature="e#121#142#0" expanded="true" />
                 <element signature="e#363#410#0" expanded="true" />
+                <element signature="e#1815#2544#0" expanded="true" />
                 <element signature="e#3811#4384#0" expanded="true" />
               </folding>
             </state>
@@ -219,11 +218,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="361" selection-start-line="361" selection-end-line="361" />
+            <state relative-caret-position="261">
+              <caret line="364" column="28" selection-start-line="364" selection-start-column="28" selection-end-line="364" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -257,7 +256,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getElemSize</find>
       <find>The value being inserted is different than the IBLT value size! value size</find>
       <find>The value being inserted is different than the IBLT value size!</find>
       <find>The Number of cells per IBF is not the same</find>
@@ -287,6 +285,7 @@
       <find>Could not bind to a Communicant!</find>
       <find>here</find>
       <find>not_set</find>
+      <find>omp_get_max_threads</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -344,8 +343,8 @@
         <option value="$PROJECT_DIR$/include/PerformanceData.h" />
         <option value="$PROJECT_DIR$/tests/unit/kshinglingSyncTest.cpp" />
         <option value="$PROJECT_DIR$/src/kshingling.cpp" />
-        <option value="$PROJECT_DIR$/src/PerformanceData.cpp" />
         <option value="$PROJECT_DIR$/include/ProcessData.h" />
+        <option value="$PROJECT_DIR$/src/PerformanceData.cpp" />
       </list>
     </option>
   </component>
@@ -566,7 +565,7 @@
       <workItem from="1542050555065" duration="772000" />
       <workItem from="1542209540514" duration="5067000" />
       <workItem from="1542304360899" duration="11289000" />
-      <workItem from="1542467659087" duration="7883000" />
+      <workItem from="1542467659087" duration="8224000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -579,7 +578,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="625611000" />
+    <option name="totallyTimeSpent" value="625952000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1056,13 +1055,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="361" selection-start-line="361" selection-end-line="361" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/kshingling.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1900">
@@ -1072,13 +1064,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/include/ProcessData.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="67" column="59" lean-forward="true" selection-start-line="67" selection-start-column="59" selection-end-line="67" selection-end-column="59" />
+        <state relative-caret-position="404">
+          <caret line="57" column="13" selection-start-line="57" selection-start-column="13" selection-end-line="57" selection-end-column="13" />
           <folding>
             <element signature="e#121#142#0" expanded="true" />
             <element signature="e#363#410#0" expanded="true" />
+            <element signature="e#1815#2544#0" expanded="true" />
             <element signature="e#3811#4384#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="364" column="28" selection-start-line="364" selection-start-column="28" selection-end-line="364" selection-end-column="28" />
         </state>
       </provider>
     </entry>

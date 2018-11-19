@@ -25,7 +25,7 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 100000;
+    int string_len = 500;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     size_t shingle_len = ceil(log2(string_len));
@@ -35,7 +35,7 @@ void kshinglingSyncTest::testAll() {
     char stopword = '$';
 
 
-    string Alicetxt = randAsciiStr(string_len);
+    string Alicetxt = scanTxtFromFile("./tests/SampleCode.txt",string_len);//randAsciiStr(string_len);
     string Bobtxt = randStringEdit(Alicetxt, editDistance_bar);
 
 

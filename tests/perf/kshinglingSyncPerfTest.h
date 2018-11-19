@@ -16,7 +16,8 @@ CPPUNIT_TEST_SUITE(KshingleSyncPerf);
 //        CPPUNIT_TEST(testperf3D);
 //        CPPUNIT_TEST(setDiffTest2D);
 //        CPPUNIT_TEST(testperf2D);
-        CPPUNIT_TEST(testStrataEst3D);
+//        CPPUNIT_TEST(testStrataEst3D);
+//
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -35,7 +36,7 @@ public:
 //
 //    void testperf3D();
 
-    void testStrataEst3D();
+//    void testStrataEst3D();
 
 private:
     // file parameters

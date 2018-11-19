@@ -220,10 +220,5 @@ long kshinglingSync::getVirMem(){
     return myKshingle.virtualMemUsed();
 }
 
-//size_t kshinglingSync::injectString(string str) {
-//    myKshingle.inject(str);
-//    for (auto item : myKshingle.getShingleSet_str()) addElem(new DataObject(item));
-//    return myKshingle.reconstructStringBacktracking().second;
-//}
 
 string kshinglingSync::getName(){ return "This is a kshinglingSync of string reconciliation";}

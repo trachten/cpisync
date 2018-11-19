@@ -76,14 +76,15 @@ public:
      */
     size_t getElemSize() const {
         //return sizeof(DataObject*);
-        return 16;
-        //return k+(floor(log(floor(orig_string.size()/k)))+2);
+        int act_size = k+(floor(log(floor(orig_string.size()/k)))+2);
+        return sizeof(ZZ)*(floor(act_size/sizeof(ZZ)) + ((act_size%sizeof(DataObject*)>0)? 1:0));
         //return StrtoZZ(randAsciiStr(k+(floor(log(floor(orig_string.size()/k)))+2))).size();
     }
 
     char getStopWord() const {
         return stopword;
     }
+
 
     string getOriginString() {
         if (orig_string.empty() || orig_string == "$$") return "";

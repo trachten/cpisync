@@ -25,13 +25,13 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 20;
+    int string_len = 20000;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
-    size_t shingle_len = 10;//ceil(log2(string_len));
+    size_t shingle_len = ceil(log2(string_len));
     int editDistance_bar = 7;
-    //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSync;
-    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSyncSetDiff;
+    //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
 
 
@@ -41,7 +41,7 @@ void kshinglingSyncTest::testAll() {
 
 
     GenSync Alice = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+            setProtocol(base_set_proto).
             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
             setComm(GenSync::SyncComm::socket).
             setShingleLen(shingle_len).
@@ -50,7 +50,7 @@ void kshinglingSyncTest::testAll() {
 
 
     GenSync Bob = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+            setProtocol(base_set_proto).
             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
             setComm(GenSync::SyncComm::socket).
             setShingleLen(shingle_len).

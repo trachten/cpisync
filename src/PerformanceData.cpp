@@ -327,26 +327,28 @@ void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair
         int conf = 400;
 if (str_size>str_sizeRange.second/2)conf = 10;
         for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
-            shingle_len = ceil(log2(str_size));
-            for (int con = 0; con < conf; ++con){
-            GenSync Alice = GenSync::Builder().
-                    setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
-                    setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
-                    setComm(GenSync::SyncComm::socket).
-                    setShingleLen(shingle_len).
-                    build();
-            GenSync Bob = GenSync::Builder().
-                    setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
-                    setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
-                    setComm(GenSync::SyncComm::socket).
-                    setShingleLen(shingle_len).
-                    build();
-            string Alicetxt = randAsciiStr(str_size);
-                    string Bobtxt = randStringEdit(Alicetxt,edit_dist);
-            Alice.addStr(new DataObject(Alicetxt));
-            Bob.addStr(new DataObject(Bobtxt));
 
-            forkHandleReport report = forkHandle(Alice, Bob, false);
+            shingle_len = ceil(log2(str_size));
+            for (int con = 0; con < conf; ++con) {
+                try {
+                GenSync Alice = GenSync::Builder().
+                        setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+                        setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                        setComm(GenSync::SyncComm::socket).
+                        setShingleLen(shingle_len).
+                        build();
+                GenSync Bob = GenSync::Builder().
+                        setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+                        setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                        setComm(GenSync::SyncComm::socket).
+                        setShingleLen(shingle_len).
+                        build();
+                string Alicetxt = randAsciiStr(str_size);
+                string Bobtxt = randStringEdit(Alicetxt, edit_dist);
+                Alice.addStr(new DataObject(Alicetxt));
+                Bob.addStr(new DataObject(Bobtxt));
+
+                forkHandleReport report = forkHandle(Alice, Bob, false);
 
 
 //            for (auto setRecon:setReconProto) {
@@ -359,6 +361,9 @@ if (str_size>str_sizeRange.second/2)conf = 10;
                        str_size, edit_dist, report.CPUtime);
                 plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
                    str_size, edit_dist, report.bytesVM);
+            }catch (std::exception){
+                  cout<<"we failed once"<<endl;
+            }
 
 //            }
             }

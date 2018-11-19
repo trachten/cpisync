@@ -9,13 +9,12 @@ IBLT::IBLT() = default;
 IBLT::~IBLT() = default;
 
 IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize)
-: valueSize(_valueSize)
-{
-    if (expectedNumEntries < 0) throw invalid_argument("expected NumEntries of NumSetDiff should be >= 0");
+: valueSize(_valueSize) {
+    if (expectedNumEntries < 0) throw invalid_argument("expected NumEntries should be >= 0");
     // 1.5x expectedNumEntries gives very low probability of decoding failure
-    size_t nEntries = expectedNumEntries + expectedNumEntries/2;
+    size_t nEntries = expectedNumEntries + expectedNumEntries / 2;
     // ... make nEntries exactly divisible by N_HASH
-    while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;
+    while (N_HASH * (nEntries / N_HASH) != nEntries) ++nEntries;
     hashTable.resize(nEntries);
 }
 
@@ -33,9 +32,9 @@ hashVal IBLT::hashK(const ZZ& item, long kk) {
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
 
-    if(sizeof(value) != valueSize) {
+    if(sizeof(value)*value.size() != valueSize) {
         Logger::error_and_quit("The value being inserted is different than the IBLT value size! actual value size: "
-                               + toStr(sizeof(value)) + ". IBLT value size: " + toStr(valueSize));
+                               + toStr(sizeof(ZZ)*value.size()) + ". IBLT value size: " + toStr(valueSize));
     }
 
     for(int ii=0; ii < N_HASH; ii++){

@@ -75,8 +75,10 @@ public:
      * @return The bit size of a shingle set
      */
     size_t getElemSize() const {
-        return sizeof(DataObject*);
-        //return sizeof(pair<string, idx_t>);
+        //return sizeof(DataObject*);
+        return 16;
+        //return k+(floor(log(floor(orig_string.size()/k)))+2);
+        //return StrtoZZ(randAsciiStr(k+(floor(log(floor(orig_string.size()/k)))+2))).size();
     }
 
     char getStopWord() const {
@@ -103,7 +105,7 @@ public:
     /**
      * Interact with reciving set element update as string
      */
-    void updateShingleSet_str(string shingle);
+    void updateShingleSet_str(string shingle); //change here - send pair
 
     // Delete and reinsert
     void clear_shingleSet() {

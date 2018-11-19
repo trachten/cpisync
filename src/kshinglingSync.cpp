@@ -68,7 +68,7 @@
 
 
 kshinglingSync::kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const size_t shingle_size,
-        const char stop_word) : myKshingle(shingle_size, stop_word), setSyncProtocol(set_sync_protocol) {
+        const char stop_word) : myKshingle(shingle_size, stop_word), setSyncProtocol(set_sync_protocol), shingleSize(shingle_size){
     oneway = true;
 }
 
@@ -77,8 +77,8 @@ kshinglingSync::kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const si
 bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> & setHost,
         DataObject &selfString, DataObject &otherString, bool Estimate) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncClient");
-
     bool syncSuccess = true;
+
     // call parent method for bookkeeping
     SyncMethod::SyncClient(commSync, setHost, selfString, otherString);
     // create kshingle
@@ -93,7 +93,7 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
     }
 
     // send cycNum
-    if(!oneway)commSync->commSend(cycleNum);
+    if (!oneway)commSync->commSend(cycleNum);
     cycleNum = commSync->commRecv_long();
 
 
@@ -111,12 +111,8 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
         mbar = commSync->commRecv_long(); // cast long to long long
 
     }
-    //commSync->commClose(); // done with Kshingling communication
 
     // reconcile difference + delete extra
-
-    //setHost = make_shared<IBLTSync_SetDiff>(mbar, sizeof(DataObject*),true);
-    //GenSync myHost = configurate(myKshingle.getSetSize());
     configurate(setHost, myKshingle.getSetSize());
     for (auto item : myKshingle.getShingleSet_str()) {
         setHost->addElem(new DataObject(item)); // Add to GenSync
@@ -163,10 +159,8 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
 
     }
 
-    //commSync->commClose(); // done with Kshingling communication
     // reconcile difference + delete extra
     configurate(setHost, myKshingle.getSetSize());
-    setHost = make_shared<IBLTSync_SetDiff>(mbar, sizeof(DataObject*),true);
     for (auto item : myKshingle.getShingleSet_str()) {
         setHost->addElem(new DataObject(item)); // Add to GenSync
     }
@@ -190,7 +184,7 @@ void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size
         //(ceil(log(set_size))>1)?:2;
     } else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff) {
         (mbar == 0)? mbar = 10 : mbar;
-        eltSize = sizeof(DataObject *);
+        eltSize = myKshingle.getElemSize();
         setHost = make_shared<IBLTSync_SetDiff>(mbar, eltSize, true);
     }
 }
@@ -200,7 +194,8 @@ bool kshinglingSync::reconstructString(DataObject* & recovered_string, const lis
         myKshingle.clear_shingleSet();
 
         for (auto elem: Elems) {
-            myKshingle.updateShingleSet_str(elem->to_string());
+            //change here - send pair
+            myKshingle.updateShingleSet_str(ZZtoStr(elem->to_ZZ()));
         }
         recovered_string = new DataObject(myKshingle.reconstructStringBacktracking(cycleNum).first);
     return cycleNum != 0;
@@ -215,7 +210,7 @@ vector<DataObject*> kshinglingSync::addStr(DataObject* datum){
     cycleNum = myKshingle.reconstructStringBacktracking().second;
     vector<DataObject*> res;
     for (auto item : myKshingle.getShingleSet_str()){
-        auto tmp = new DataObject(item);
+        auto tmp = new DataObject(StrtoZZ(item));
         res.push_back(tmp);
     }
     return res;

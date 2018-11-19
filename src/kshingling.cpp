@@ -209,12 +209,11 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
 void K_Shingle::updateShingleSet_str(string shingle) {
     try {
-        auto ind = shingle.find_last_of(":");
-        shingleSet.emplace_back(shingle.substr(0, ind),
-                                stoi(shingle.substr(ind + 1)));
+        int ind = shingle.find_last_of(":");
+        shingleSet.emplace_back(shingle.substr(0, ind), stoi(shingle.substr(ind + 1)));
     }
-    catch (std::exception e){
-        cout<<"what do we have here: "<<shingle<<endl;
+    catch (std::exception e) {
+        cout << "what do we have here: " << shingle << endl;
     }
     shingleSet_str.push_back(shingle);
 }

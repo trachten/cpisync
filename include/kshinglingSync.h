@@ -71,8 +71,8 @@ private:
     string Str;
     //GenSync myhost;
 
-    size_t eltSize; // defined by shingle size
-    size_t mbar; // defined by set difference estimator ... not necessarily a global variable
+    size_t shingleSize =0, eltSize = 0; // defined by shingle size
+    size_t mbar = 0; // defined by set difference estimator ... not necessarily a global variable
 
     GenSync::SyncProtocol setSyncProtocol;
 

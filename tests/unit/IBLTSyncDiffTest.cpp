@@ -73,9 +73,11 @@ void IBLTSyncDiffTest::testAddDelElem() {
 }
 
 void IBLTSyncDiffTest::stringReconFullTest() {
-    const int BITS = sizeof(randZZ());
+
     const int EXP_NumE = 200;
     const int EXP_Diff = 49;
+    size_t str_len = 11;
+    const int BITS = sizeof(ZZ)*StrtoZZ(randAsciiStr(str_len)).size();
 
 
     GenSync Alice = GenSync::Builder().
@@ -94,7 +96,7 @@ void IBLTSyncDiffTest::stringReconFullTest() {
 
     vector<ZZ> ALL_ELEM;
     for (int i = 0; i < EXP_NumE; ++i) {
-        ALL_ELEM.push_back(randZZ());
+        ALL_ELEM.push_back(StrtoZZ(randAsciiStr(str_len)));
     }
 
     for (int j = 0; j < EXP_NumE; ++j) {

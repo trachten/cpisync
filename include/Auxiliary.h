@@ -28,6 +28,8 @@
 #include <cstring>
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
+#include <iostream>
+#include <fstream>
 
 // some standard names
 using std::cout;
@@ -73,6 +75,7 @@ inline string ZZtoStr(const ZZ& zz){
 inline ZZ StrtoZZ(const string& str) {
     return ZZFromBytes((const uint8_t *) str.data(), str.size());
 }
+
 
 /**
  * Converts a vector of bytes into a string.  The opposite of StrToVec.
@@ -439,11 +442,27 @@ inline string randAsciiStr(int len = 10) {
 
     for (int jj = 0; jj < len; ++jj) {
         auto intchar = rand() % 127;  // avoid random string to be "$" changed to "%"
-        if (intchar == 36)intchar++;
+        if (intchar == 36 || intchar ==0)intchar++;// avoid random string to be "$" changed to "%" and avoid \0 which is NULL
         str += toascii(intchar);
 
     }
     return str;
+}
+
+
+inline string scanTxtFromFile(string dir, int len) {
+    std::string line;
+    std::ifstream myfile(dir); //"./tests/SampleTxt.txt"
+    ostringstream txt;
+    long long str_len = 0;
+    if (myfile.is_open()) {
+        while (getline(myfile, line) and (str_len += line.size()) < len) txt << line;
+        txt << line.substr(0, len-str_len+line.size());
+        myfile.close();
+    } else{
+        throw invalid_argument("Directory " + dir + " does not exist.-");
+    }
+    return txt.str();
 }
 
 /**

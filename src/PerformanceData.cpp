@@ -324,9 +324,11 @@ void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair
 
     for (int str_size = str_sizeRange.first; str_size <= str_sizeRange.second; str_size += str_sizeinterval) {
         cout << to_string(str_size) << endl;
-
+        int conf = 400;
+if (str_size>str_sizeRange.second/2)conf = 10;
         for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
             shingle_len = ceil(log2(str_size));
+            for (int con = 0; con < conf; ++con){
             GenSync Alice = GenSync::Builder().
                     setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
                     setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
@@ -357,7 +359,9 @@ void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair
                        str_size, edit_dist, report.CPUtime);
                 plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
                    str_size, edit_dist, report.bytesVM);
+
 //            }
+            }
         }
     }
 }

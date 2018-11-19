@@ -137,6 +137,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
     while (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1) { // while state stack is not empty
 
         if (!virtualMemMonitor(currentVM)) return false;
+        //printMemUsage();
 
         auto nxtEdges = getEdgeIdx(curEdge.substr(1), stateStack.back());
 
@@ -187,7 +188,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
         stateStack.push_back(stateStack.back());
         stateStack.back()[nxt_idx] -= 1;
 
-
+        curEdge = shingleSet[nxt_idx].first;
         // if we reached a stop point
         if (shingleSet[nxt_idx].first.back() == stopword and emptyState(stateStack.back())) {
             strCollect_size++;
@@ -196,7 +197,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
                 final_str = str.substr(1, str.size() - 2);
             }
         }
-        curEdge = shingleSet[nxt_idx].first;
+
 
 
         if (strCollect_size == str_order && str_order != 0) {

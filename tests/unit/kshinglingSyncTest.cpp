@@ -25,17 +25,17 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 500;
+    int string_len = 2000;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     size_t shingle_len = ceil(log2(string_len));
-    int editDistance_bar = 20;
+    int editDistance_bar = 25;
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSyncSetDiff;
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
 
 
-    string Alicetxt = scanTxtFromFile("./tests/SampleCode.txt",string_len);//randAsciiStr(string_len);
+    string Alicetxt = randAsciiStr(string_len);
     string Bobtxt = randStringEdit(Alicetxt, editDistance_bar);
 
 
@@ -76,7 +76,7 @@ void kshinglingSyncTest::testAll() {
     string recoveredAlice = Alice.dumpString()->to_string();
     CPPUNIT_ASSERT(recoveredAlice == Bobtxt);
     CPPUNIT_ASSERT(report.success);
-    cout << "bits: " + to_string(report.bytes) << endl;
+    cout << "Time: " + to_string(report.totalTime) << endl;
     cout << "bitsTot: " + to_string(report.bytesTot) << endl;
     cout << "bitsR: " + to_string(report.bytesRTot) << endl;
     cout << "VM used (bits):"<< report.bytesVM<<endl;

@@ -30,7 +30,7 @@ static long long NOT_SET = -1; // not set parameters are not used
 
 
 using namespace std;
-inline void printMemUsage(long long & virtualMemUsed=NOT_SET) { // VM currently Used by my process
+inline void printMemUsage() { // VM currently Used by my process
 
 #if __APPLE__
     struct task_basic_info t_info;
@@ -63,7 +63,7 @@ inline void printMemUsage(long long & virtualMemUsed=NOT_SET) { // VM currently 
     //Add other values in next statement to avoid int overflow on right hand side...
     totalVirtualMem += memInfo.totalswap;
     totalVirtualMem *= memInfo.mem_unit;
-    virtualMemUsed = memInfo.totalram - memInfo.freeram;
+    long long virtualMemUsed = memInfo.totalram - memInfo.freeram;
     //Add other values in next statement to avoid int overflow on right hand side...
     virtualMemUsed += memInfo.totalswap - memInfo.freeswap;
     virtualMemUsed *= memInfo.mem_unit;

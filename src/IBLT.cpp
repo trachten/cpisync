@@ -31,11 +31,11 @@ hashVal IBLT::hashK(const ZZ& item, long kk) {
 
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
-
-    if(sizeof(value)*value.size() != valueSize) {
-        Logger::error_and_quit("The value being inserted is different than the IBLT value size! actual value size: "
-                               + toStr(sizeof(ZZ)*value.size()) + ". IBLT value size: " + toStr(valueSize));
-    }
+//TODO: enable this again, and see if its a max size issue
+//    if(sizeof(value)*value.size() != valueSize) {
+//        Logger::error_and_quit("The value being inserted is different than the IBLT value size! actual value size: "
+//                               + toStr(sizeof(ZZ)*value.size()) + ". IBLT value size: " + toStr(valueSize));
+//    }
 
     for(int ii=0; ii < N_HASH; ii++){
         hashVal hk = hashK(key, ii);

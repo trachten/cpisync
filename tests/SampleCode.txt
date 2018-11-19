@@ -1,3 +1,4 @@
+164004 characters in here
 /** Micro Mezzo Macro Flation -- Overheated Economy ., Last Update: Jan. 28th 2013 **/ //{
 
 /** Header .. **/ //{
@@ -1303,7 +1304,7 @@ public:
     char getStopWord() const {
         return stopword;
     }
-    
+
 
     string getOriginString() {
         if (orig_string.empty() || orig_string == "$$") return "";
@@ -1355,7 +1356,7 @@ private:
     string orig_string;  // original string with stopwords on both ends
 
     /**
-     * GET THE NEXT POSSIBLE EDGES 
+     * GET THE NEXT POSSIBLE EDGES
      * @param changed_shingleSet pair<edge idx,edge occurrence>
      * @return index of next edges to look at
      */
@@ -1737,8 +1738,8 @@ string CommSocket::commRecv(unsigned long numBytes) {
 
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-/* 
- * File:   CommString.cpp 
+/*
+ * File:   CommString.cpp
  * Created on November 5, 2011, 8:49 PM
  */
 
@@ -2049,7 +2050,7 @@ void Communicant::commSend(const ZZ_p& num) {
 void Communicant::commSend(const vec_ZZ_p& vec) {
     Logger::gLog(Logger::COMM, "... attempting to send: vec_ZZ_p " + toStr(vec));
 
-    // pack the vec_ZZ_p into a big ZZ and send it along    
+    // pack the vec_ZZ_p into a big ZZ and send it along
     ZZ result;
     result = 0;
 
@@ -2063,7 +2064,7 @@ vec_ZZ_p Communicant::commRecv_vec_ZZ_p() {
     ZZ received = commRecv_ZZ();
     vec_ZZ_p result;
 
-     
+
     while (received != 0) {
         ZZ divisor, remainder;
         DivRem(divisor, remainder, received, ZZ_p::modulus()+1);
@@ -2361,14 +2362,14 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
       ** by splitting the error probability between hash collisions and sync failures.
       ** The former is controlled by lengthening the effective bit-representation of strings.
       */
-      bitNum = 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;      
+      bitNum = 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
     /*
      *  The analysis here is based on the birthday paradox.
      *  The probability of a collision for (at most) 2^bits elements chosen from
      *  a space of 2^x is bounded by roughly 1-exp(-2^(2*bits)/(2^(x+1)).  Setting
      *  this upper bounded by 2^-(epsilon+1) yields the above value
      */
-      
+
       epsilon = epsilon + 1; // half the prob. error for the sync failure probability below
       Logger::gLog(Logger::METHOD_DETAILS," ... upping bitNum to "+toStr(bitNum));
     }
@@ -2488,7 +2489,7 @@ bool CPISync::ratFuncInterp(const vec_ZZ_p& evals, long mA, long mB, vec_ZZ_p& P
         }
 
         // row-reduce the resulting matrix
-        rank = gauss(van_matrix, mAbar + mBbar); // the last column just goes along for the ride      
+        rank = gauss(van_matrix, mAbar + mBbar); // the last column just goes along for the ride
     }
 
     // store the solution to the linear system in coefficient_vec
@@ -2684,7 +2685,7 @@ void CPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay
     // take care of parent sync method
     SyncMethod::RecvSyncParam(commSync, oneWay);
 
-    // ... sync ID, mbar, bits, and epsilon        
+    // ... sync ID, mbar, bits, and epsilon
     byte theSyncID = commSync->commRecv_byte();
     long mbarClient = commSync->commRecv_long();
     long bitsClient = commSync->commRecv_long();
@@ -2737,7 +2738,7 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
             append(valList, CPI_evals[currDiff + ii]);
         commSync->commSend(valList);
         valList.kill();
-      
+
         // 2. Get more characteristic polynomial values if needed
         while (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG)) {
             if (!probCPI || currDiff == maxDiff) {
@@ -2829,11 +2830,11 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
                 append(meta_other, recv_meta[currDiff + ii]);
                 append(meta_self, CPI_evals[currDiff + ii]);
         }
-        
+
         // attempt to reconcile with the presumed number of differences
         bool succeed = set_reconcile(otherSetSize, recv_meta, delta_self, delta_other);
         if (succeed) { // the node reconciliation might have been successful
-            
+
             // PERFORM some added checks
             vec_ZZ_p value_self = meta_self;
             vec_ZZ_p value_other = meta_other;
@@ -2897,14 +2898,14 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
                 result = false;
                 break;
             } else {
-                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p();               
+                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p();
                 append(recv_meta, recv_new);
                 currDiff = min(currDiff * 2, maxDiff);
             }
         }
         meta_self.kill();
         meta_other.kill();
-    } while (result); //end of while	
+    } while (result); //end of while
 
 
     if (!keepAlive)
@@ -2974,7 +2975,7 @@ ZZ_p CPISync::hash2(const long num) const {
 bool CPISync::addElem(DataObject * datum) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::addElem");
     int ii;
-    
+
     // call the parent class to take care of bookkeeping
     bool result = SyncMethod::addElem(datum);
 
@@ -3081,7 +3082,7 @@ DataObject::DataObject()  : UID()
 
 DataObject::DataObject(const ZZ &datum)  : DataObject() {
     myBuffer = datum;
-    
+
 }
 
 DataObject::DataObject(const string str) : DataObject() {
@@ -3089,8 +3090,8 @@ DataObject::DataObject(const string str) : DataObject() {
 }
 
 ZZ DataObject::pack(const string theStr) {
-    return ZZFromBytes(reinterpret_cast<const unsigned char*>(theStr.data()), theStr.length());   
-} 
+    return ZZFromBytes(reinterpret_cast<const unsigned char*>(theStr.data()), theStr.length());
+}
 
 string DataObject::unpack(const ZZ num) {
     int size = NumBytes(num);
@@ -3616,10 +3617,10 @@ const string GenSync::Builder::DFT_IO;
 const int GenSync::Builder::DFT_ERROR = 8;
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-/* 
+/*
  * File:   IncreCPI.cpp
  * Author: arit
- * 
+ *
  * Created on November 30, 2011, 10:46 PM
  */
 
@@ -3681,7 +3682,7 @@ bool InterCPISync::addElem(DataObject* newDatum) {
    * Assuming there are no hash collisions, we should always end at one
    * of these two options.  Otherwise, we report an error by returning false.
    */
-  Logger::gLog(Logger::METHOD,"Entering InterCPISync::AddElem");  
+  Logger::gLog(Logger::METHOD,"Entering InterCPISync::AddElem");
   if (!SyncMethod::addElem(newDatum)) // run the parent's version first
     return false;
 
@@ -3694,7 +3695,7 @@ bool InterCPISync::addElem(DataObject* newDatum) {
 	 treeNode = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k), pFactor);
   }
   CPISync *curr = treeNode->getDatum();
-  return curr->addElem(newDatum);	
+  return curr->addElem(newDatum);
 //  return addElem(newDatum, treeNode, NULL, ZZ_ZERO, DATA_MAX); // use the recursive helper method
 }
 
@@ -3809,7 +3810,7 @@ bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<Data
           && SyncClient(commSync, selfMinusOther, otherMinusSelf, treeNode);*/
   pTree *parentNode = treeNode;//Create a copy of the root node - Just to make sure that it is not deleted
   bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
-          && SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode,ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges 
+          && SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode,ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges
   if (result) { // Sync succeeded
     Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
             + "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
@@ -4027,10 +4028,10 @@ bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<Data
 		}
 		return true;
 	}
-} 
+}
 void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ begRange, const ZZ endRange)
 {
-	
+
 	ZZ step = (endRange - begRange)/pFactor;//Get the step size of the node to establish bin sizes
 	if(step ==0) step = 1;                  //Set minimum step size to 1 to avoid divide errors
 	int pos;
@@ -4040,7 +4041,7 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
 		{
 			tempTree->child[ii] =  new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),pFactor);//Create child nodes for parent
 			nodes[ii] = tempTree->child[ii]->getDatum();//Create references for the child nodes(used for insertion)
-		}	
+		}
 		CPISync * parent = parentNode->getDatum();//Get the parent node
         auto elem = parent->beginElements();
 		for(;elem!=parent->endElements();elem++){    //Iterate through all parent information
@@ -4054,9 +4055,9 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
                                 break;
                             }
                         }
-                        
+
                         /*ZZ dival;
-			div(dival,elemZZ,begRange+step);     //Calculate the bin 
+			div(dival,elemZZ,begRange+step);     //Calculate the bin
                         conv(pos,dival);// Which child node to add data from parent
                         if(pos >= pFactor) pos = pFactor-1; // For odd pFactors put the edge data into the last bin
 			*/
@@ -4080,7 +4081,7 @@ bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<Data
 			return true;
 		} else
 			commSync->commSend(SYNC_SOME_INFO); // I have some elements
-		
+
 		CPISync *node = parentNode->getDatum(); // the current node
 		response = commSync->commRecv_byte(); // get the other Communicants initial declaration
 
@@ -4092,7 +4093,7 @@ bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<Data
 		} else { // Case 2: We both have something
 			// synchronize the current node
 			node->SyncClient(commSync, selfMinusOther, otherMinusSelf); // attempt synchroniztion
-			if (commSync->commRecv_byte() == SYNC_FAIL_FLAG) 
+			if (commSync->commRecv_byte() == SYNC_FAIL_FLAG)
 			{ // i.e. the sync is reported by the Server to have failed; recurse
                 auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),pFactor);
 				createChildren(parentNode, tempTree, begRange, endRange);//Create child Nodes;
@@ -4602,5 +4603,6 @@ void PerformanceData::write2file(string file_name) {
 
     myfile.close();
 }
+
 
 

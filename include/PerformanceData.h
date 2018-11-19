@@ -8,6 +8,7 @@
 #include "GenSync.h"
 #include "kshinglingSync.h"
 #include "StrataEst.h"
+#include "ForkHandle.h"
 #include <fstream>
 #include <omp.h>
 
@@ -83,8 +84,11 @@ public:
 //    void kshingleStr2D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> strSizeRange, int shingleLen,
 //                       int editDist, int target_confidence);
 //
-//    void kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
-//                    pair<int, int> str_sizeRange, int shingle_len);
+    void kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
+                    pair<int, int> str_sizeRange, int shingle_len);
+    void kshingleCode3D(pair<int, int> edit_distRange,    pair<int, int> str_sizeRange);
+
+    void kshingleBook3D(pair<int, int> edit_distRange,    pair<int, int> str_sizeRange);
 
     void strataEst3D(pair<size_t,size_t> set_sizeRange, int confidence);
 

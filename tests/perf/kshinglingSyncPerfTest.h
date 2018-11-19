@@ -12,7 +12,7 @@
 //TODO: Later write a abstract class for this
 class KshingleSyncPerf : public CPPUNIT_NS::TestFixture {
 CPPUNIT_TEST_SUITE(KshingleSyncPerf);
-//        CPPUNIT_TEST(setDiffTest3D);
+        CPPUNIT_TEST(kshingleTest3D);
 //        CPPUNIT_TEST(testperf3D);
 //        CPPUNIT_TEST(setDiffTest2D);
 //        CPPUNIT_TEST(testperf2D);
@@ -30,7 +30,7 @@ public:
      */
 //    void setDiffTest2D();
 //
-//    void setDiffTest3D();
+    void kshingleTest3D();
 //
 //    void testperf2D();
 //

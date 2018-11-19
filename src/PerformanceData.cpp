@@ -317,34 +317,143 @@ PerformanceData::~PerformanceData() = default;
 //    }
 //}
 //
-//void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
-//                                 pair<int,int> str_sizeRange, int shingle_len) {
-//    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
-//    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
-//
-//    for (int str_size = str_sizeRange.first; str_size <= str_sizeRange.second; str_size += str_sizeinterval) {
-//        cout << to_string(str_size) << endl;
-//
-//        for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
-//            prepareStringRecon(str_size, shingle_len, edit_dist);
-//
+void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
+                                 pair<int,int> str_sizeRange, int shingle_len) {
+    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+
+    for (int str_size = str_sizeRange.first; str_size <= str_sizeRange.second; str_size += str_sizeinterval) {
+        cout << to_string(str_size) << endl;
+
+        for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+            shingle_len = ceil(log2(str_size));
+            GenSync Alice = GenSync::Builder().
+                    setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+                    setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                    setComm(GenSync::SyncComm::socket).
+                    setShingleLen(shingle_len).
+                    build();
+            GenSync Bob = GenSync::Builder().
+                    setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+                    setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                    setComm(GenSync::SyncComm::socket).
+                    setShingleLen(shingle_len).
+                    build();
+            string Alicetxt = randAsciiStr(str_size);
+                    string Bobtxt = randStringEdit(Alicetxt,edit_dist);
+            Alice.addStr(new DataObject(Alicetxt));
+            Bob.addStr(new DataObject(Bobtxt));
+
+            forkHandleReport report = forkHandle(Alice, Bob, false);
+
+
 //            for (auto setRecon:setReconProto) {
-//                prepareSetComm(StringReconProtocol::KshinglingSync, setRecon);
-//                forkHandleReport res = calCostReport(PerformanceData::PlotType::PLOT3D);
 //                double comm_cost = res.bytesTot;
-//                //for Interactive CPI we care bout the total comm cost
-//                if (baseSetProto == GenSync::SyncProtocol::InteractiveCPISync) comm_cost += res.bytesRTot;
-//
-//                plot4D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes):Set Diff",
-//                       str_size, edit_dist, comm_cost, mbar / 2);
-//                plot4D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s):Set Diff",
-//                       str_size, edit_dist, res.CPUtime, mbar / 2);
+                //for Interactive CPI we care bout the total comm cost
+
+                plot3D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes)",
+                       str_size, edit_dist, report.bytesTot);
+                plot3D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s)",
+                       str_size, edit_dist, report.CPUtime);
+                plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
+                   str_size, edit_dist, report.bytesVM);
 //            }
-//        }
-//    }
-//}
-//
-//
+        }
+    }
+}
+
+
+void PerformanceData::kshingleBook3D( pair<int, int> edit_distRange,
+                                 pair<int,int> str_sizeRange) {
+    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+
+    for (int str_size = str_sizeRange.first; str_size <= str_sizeRange.second; str_size += str_sizeinterval) {
+        cout << to_string(str_size) << endl;
+        string Alicetxt = scanTxtFromFile("./tests/SampleTxt.txt",str_size);
+        for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+            int shingle_len = ceil(log2(str_size));
+            GenSync Alice = GenSync::Builder().
+                    setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+                    setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                    setComm(GenSync::SyncComm::socket).
+                    setShingleLen(shingle_len).
+                    build();
+            GenSync Bob = GenSync::Builder().
+                    setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+                    setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                    setComm(GenSync::SyncComm::socket).
+                    setShingleLen(shingle_len).
+                    build();
+
+            string Bobtxt = randStringEdit(Alicetxt,edit_dist);
+            Alice.addStr(new DataObject(Alicetxt));
+            Bob.addStr(new DataObject(Bobtxt));
+
+            forkHandleReport report = forkHandle(Alice, Bob, false);
+
+
+//            for (auto setRecon:setReconProto) {
+//                double comm_cost = res.bytesTot;
+            //for Interactive CPI we care bout the total comm cost
+
+            plot3D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes)",
+                   str_size, edit_dist, report.bytesTot);
+            plot3D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s)",
+                   str_size, edit_dist, report.CPUtime);
+            plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
+                   str_size, edit_dist, report.bytesVM);
+//            }
+        }
+    }
+}
+void PerformanceData::kshingleCode3D(pair<int, int> edit_distRange,
+                                 pair<int,int> str_sizeRange) {
+    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+
+    for (int str_size = str_sizeRange.first; str_size <= str_sizeRange.second; str_size += str_sizeinterval) {
+        cout << to_string(str_size) << endl;
+        string Alicetxt = scanTxtFromFile("./tests/SampleCode.txt",str_size);
+        for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+            int shingle_len = ceil(log2(str_size));
+            GenSync Alice = GenSync::Builder().
+                    setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+                    setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                    setComm(GenSync::SyncComm::socket).
+                    setShingleLen(shingle_len).
+                    build();
+            GenSync Bob = GenSync::Builder().
+                    setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
+                    setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                    setComm(GenSync::SyncComm::socket).
+                    setShingleLen(shingle_len).
+                    build();
+
+            string Bobtxt = randStringEdit(Alicetxt,edit_dist);
+            Alice.addStr(new DataObject(Alicetxt));
+            Bob.addStr(new DataObject(Bobtxt));
+
+            forkHandleReport report = forkHandle(Alice, Bob, false);
+
+
+//            for (auto setRecon:setReconProto) {
+//                double comm_cost = res.bytesTot;
+            //for Interactive CPI we care bout the total comm cost
+
+            plot3D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes)",
+                   str_size, edit_dist, report.bytesTot);
+            plot3D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s)",
+                   str_size, edit_dist, report.CPUtime);
+            plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
+                   str_size, edit_dist, report.bytesVM);
+//            }
+        }
+    }
+}
+
+
+
 void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
     int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / tesPts);
 #if __APPLE__

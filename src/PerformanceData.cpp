@@ -355,12 +355,12 @@ if (str_size>str_sizeRange.second/2)conf = 10;
 //                double comm_cost = res.bytesTot;
                 //for Interactive CPI we care bout the total comm cost
 
-                plot3D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes)",
-                       str_size, edit_dist, report.bytesTot);
-                plot3D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s)",
-                       str_size, edit_dist, report.CPUtime);
-                plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
-                   str_size, edit_dist, report.bytesVM);
+//                plot3D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes)",
+//                       str_size, edit_dist, report.bytesTot);
+//                plot3D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s)",
+//                       str_size, edit_dist, report.CPUtime);
+//                plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
+//                   str_size, edit_dist, report.bytesVM);
             }catch (std::exception){
                   cout<<"we failed once"<<endl;
             }
@@ -402,17 +402,6 @@ void PerformanceData::kshingleBook3D( pair<int, int> edit_distRange,
             forkHandleReport report = forkHandle(Alice, Bob, false);
 
 
-//            for (auto setRecon:setReconProto) {
-//                double comm_cost = res.bytesTot;
-            //for Interactive CPI we care bout the total comm cost
-
-            plot3D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes)",
-                   str_size, edit_dist, report.bytesTot);
-            plot3D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s)",
-                   str_size, edit_dist, report.CPUtime);
-            plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
-                   str_size, edit_dist, report.bytesVM);
-//            }
         }
     }
 }
@@ -446,17 +435,6 @@ void PerformanceData::kshingleCode3D(pair<int, int> edit_distRange,
             forkHandleReport report = forkHandle(Alice, Bob, false);
 
 
-//            for (auto setRecon:setReconProto) {
-//                double comm_cost = res.bytesTot;
-            //for Interactive CPI we care bout the total comm cost
-
-            plot3D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes)",
-                   str_size, edit_dist, report.bytesTot);
-            plot3D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s)",
-                   str_size, edit_dist, report.CPUtime);
-            plot3D("Space of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Space(Bytes)",
-                   str_size, edit_dist, report.bytesVM);
-//            }
         }
     }
 }
@@ -469,7 +447,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
     //confidence /=omp_get_max_threads();
 //#pragma omp parallel num_threads(omp_get_max_threads())
 #endif
-
+    PlotRegister plot = PlotRegister("Strata Est",{"Set Size","Set Diff","Est"});
     for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size += set_sizeinterval) {
     (set_size < set_sizeRange.first + (set_sizeRange.second-set_sizeRange.first)/2) ? confidence : confidence=5;
     cout<<"Current Set Size:"+to_string(set_size)<<endl;
@@ -480,7 +458,8 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 #if __APPLE__
 //#pragma omp critical
 #endif
-            printMemUsage();
+            //if (set_size>set_sizeRange.second/2)confidence = 10;
+//            printMemUsage();
             for (int conf = 0; conf < confidence; ++conf) {
 
 
@@ -489,119 +468,158 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 
                 for (int j = 0; j < set_size; ++j) {
                     auto tmp = randZZ();
-                    Alice.insert(new DataObject(tmp));
-                    if (j >= set_diff) {
-                        Bob.insert(new DataObject(tmp));
-                    }
+                    if (j < set_size - ceil(set_diff / 2)) Alice.insert(new DataObject(tmp));
+
+                    if (j >= ceil(set_diff / 2)) Bob.insert(new DataObject(tmp));
+
                 }
-                plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate());
+                plot.add({to_string(set_size), to_string(set_diff), to_string((Alice -= Bob).estimate())});
 
             }
         }
 
-	write2file("Strata"+to_string(set_size)+".txt");
+	plot.update();
     }
 }
 
-void PerformanceData::plot2D(string label, double X, double Y){
-    if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
-        vector<double> tmp(2);
-        tmp[0] = X;
-        tmp[1] = Y;
-        vector<vector<double>> init;
-        init.push_back(tmp);
-        data2D.insert(make_pair(label,init));
-    } else{
-        vector<double> tmp(2);
-        tmp[0] = X;
-        tmp[1] = Y;
-        data2D[label].push_back(tmp);
-    }
+//void PerformanceData::plot2D(string label, double X, double Y){
+//    if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
+//        vector<double> tmp(2);
+//        tmp[0] = X;
+//        tmp[1] = Y;
+//        vector<vector<double>> init;
+//        init.push_back(tmp);
+//        data2D.insert(make_pair(label,init));
+//    } else{
+//        vector<double> tmp(2);
+//        tmp[0] = X;
+//        tmp[1] = Y;
+//        data2D[label].push_back(tmp);
+//    }
+//
+//}
+//
+//void PerformanceData::plot3D(string label, double X, double Y, double Z){
+//    if (data3D.find(label)==data3D.end()) { // if no label of such kind is in there
+//        vector<double> tmp(3);
+//        tmp[0] = X;
+//        tmp[1] = Y;
+//        tmp[2] = Z;
+//        vector<vector<double>> init;
+//        init.push_back(tmp);
+//        data3D.insert(make_pair(label,init));
+//    } else{
+//        vector<double> tmp(3);
+//        tmp[0] = X;
+//        tmp[1] = Y;
+//        tmp[2] = Z;
+//        data3D[label].push_back(tmp);
+//    }
+//}
+//
+//void PerformanceData::plot4D(string label, double X, double Y, double Z, double A){
+//    if (data4D.find(label)==data4D.end()) { // if no label of such kind is in there
+//        vector<double> tmp(4);
+//        tmp[0] = X;
+//        tmp[1] = Y;
+//        tmp[2] = Z;
+//        tmp[3] = A;
+//        vector<vector<double>> init;
+//        init.push_back(tmp);
+//        data4D.insert(make_pair(label,init));
+//    } else{
+//        vector<double> tmp(4);
+//        tmp[0] = X;
+//        tmp[1] = Y;
+//        tmp[2] = Z;
+//        tmp[3] = A;
+//        data4D[label].push_back(tmp);
+//    }
+//}
 
+//void PerformanceData::write2file(string file_name) {
+//    ofstream myfile;
+//    //TODO: do soemthing about the directories, this hard coding is not a long term solution
+//    myfile.open(file_name + ".txt");
+//
+//    for (auto item : data4D) {
+//        myfile << "Label:" + item.first + "\n";
+//        string tmpx, tmpy, tmpz, tmpa;
+//        for (auto num : item.second) {
+//            tmpx += to_string(num[0]) + " ";
+//            tmpy += to_string(num[1]) + " ";
+//            tmpz += to_string(num[2]) + " ";
+//            tmpa += to_string(num[3]) + " ";
+//        }
+//        myfile << "X:" + tmpx + "\n";
+//        myfile << "Y:" + tmpy + "\n";
+//        myfile << "Z:" + tmpz + "\n";
+//        myfile << "A:" + tmpa + "\n";
+//    }
+//
+//    for (auto item : data3D) {
+//        myfile << "Label:" + item.first + "\n";
+//        string tmpx, tmpy, tmpz;
+//        for (auto num : item.second) {
+//            tmpx += to_string(num[0]) + " ";
+//            tmpy += to_string(num[1]) + " ";
+//            tmpz += to_string(num[2]) + " ";
+//        }
+//        myfile << "X:" + tmpx + "\n";
+//        myfile << "Y:" + tmpy + "\n";
+//        myfile << "Z:" + tmpz + "\n";
+//    }
+//
+//    for (auto item : data2D) {
+//        myfile << "Label:" + item.first + "\n";
+//        string tmpx, tmpy;
+//        for (auto num : item.second) {
+//            tmpx += to_string(num[0]) + " ";
+//            tmpy += to_string(num[1]) + " ";
+//        }
+//        myfile << "X:" + tmpx + "\n";
+//        myfile << "Y:" + tmpy + "\n";
+//    }
+//
+//    myfile.close();
+//}
+
+PlotRegister::PlotRegister(string _title, vector<string> _labels) : title(_title), labels(_labels) {
+    init();
 }
 
-void PerformanceData::plot3D(string label, double X, double Y, double Z){
-    if (data3D.find(label)==data3D.end()) { // if no label of such kind is in there
-        vector<double> tmp(3);
-        tmp[0] = X;
-        tmp[1] = Y;
-        tmp[2] = Z;
-        vector<vector<double>> init;
-        init.push_back(tmp);
-        data3D.insert(make_pair(label,init));
-    } else{
-        vector<double> tmp(3);
-        tmp[0] = X;
-        tmp[1] = Y;
-        tmp[2] = Z;
-        data3D[label].push_back(tmp);
-    }
-}
+PlotRegister::~PlotRegister() {}
 
-void PerformanceData::plot4D(string label, double X, double Y, double Z, double A){
-    if (data4D.find(label)==data4D.end()) { // if no label of such kind is in there
-        vector<double> tmp(4);
-        tmp[0] = X;
-        tmp[1] = Y;
-        tmp[2] = Z;
-        tmp[3] = A;
-        vector<vector<double>> init;
-        init.push_back(tmp);
-        data4D.insert(make_pair(label,init));
-    } else{
-        vector<double> tmp(4);
-        tmp[0] = X;
-        tmp[1] = Y;
-        tmp[2] = Z;
-        tmp[3] = A;
-        data4D[label].push_back(tmp);
-    }
-}
-
-void PerformanceData::write2file(string file_name) {
+void PlotRegister::init() {
     ofstream myfile;
     //TODO: do soemthing about the directories, this hard coding is not a long term solution
-    myfile.open(file_name + ".txt");
+    myfile.open(title + ".txt");
 
-    for (auto item : data4D) {
-        myfile << "Label:" + item.first + "\n";
-        string tmpx, tmpy, tmpz, tmpa;
-        for (auto num : item.second) {
-            tmpx += to_string(num[0]) + " ";
-            tmpy += to_string(num[1]) + " ";
-            tmpz += to_string(num[2]) + " ";
-            tmpa += to_string(num[3]) + " ";
-        }
-        myfile << "X:" + tmpx + "\n";
-        myfile << "Y:" + tmpy + "\n";
-        myfile << "Z:" + tmpz + "\n";
-        myfile << "A:" + tmpa + "\n";
-    }
+    myfile<< accumulate(std::next(labels.begin()), labels.end(),
+                    labels[0], // start with first element
+                    [](string a, string b) {
+                        return a + "|" + b;
+                    }) + "\n";
 
-    for (auto item : data3D) {
-        myfile << "Label:" + item.first + "\n";
-        string tmpx, tmpy, tmpz;
-        for (auto num : item.second) {
-            tmpx += to_string(num[0]) + " ";
-            tmpy += to_string(num[1]) + " ";
-            tmpz += to_string(num[2]) + " ";
-        }
-        myfile << "X:" + tmpx + "\n";
-        myfile << "Y:" + tmpy + "\n";
-        myfile << "Z:" + tmpz + "\n";
-    }
 
-    for (auto item : data2D) {
-        myfile << "Label:" + item.first + "\n";
-        string tmpx, tmpy;
-        for (auto num : item.second) {
-            tmpx += to_string(num[0]) + " ";
-            tmpy += to_string(num[1]) + " ";
-        }
-        myfile << "X:" + tmpx + "\n";
-        myfile << "Y:" + tmpy + "\n";
-    }
-
+//    myfile<<accumulate(labels.begin(), labels.end(), string("|")) + "\n";
     myfile.close();
+}
+
+void PlotRegister::update() {
+    ofstream myfile(title+".txt",ios::app);
+    if (!myfile.good()) init();
+    for (auto datum : data)
+        myfile<< accumulate(next(datum.begin()), datum.end(),
+                            datum[0], // start with first element
+                            [](string a, string b) {
+                                return a + " " + b;
+                            }) + "\n";
+    data.clear();
+    myfile.close();
+}
+
+void PlotRegister::add(vector<string> datum) {
+    data.push_back(datum);
 }
 

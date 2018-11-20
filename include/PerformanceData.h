@@ -11,6 +11,7 @@
 #include "ForkHandle.h"
 #include <fstream>
 #include <omp.h>
+#include <numeric>
 
 #ifdef DEBUG
 #define DEBUG_IF(cond) if(true)
@@ -74,9 +75,7 @@ public:
      */
     //forkHandleReport calCostReport(PlotType plot_type, bool check_outcome = true);
 
-    void genReport(string file_name) {
-        write2file(file_name);
-    };
+
 //
 //    void kshingle2D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
 //                    int shingle_len, int str_size, int target_confidence);
@@ -110,35 +109,6 @@ private:
     string AliceTxt, BobTxt;
 
 
-    //GenPlot
-    map<string, vector<vector<double>>> data3D, data2D, data4D; // map<label,content(X,Y,Z)> // map<label,content(X,Y)>
-
-    /**
-    * Store Values in Genplot class - for 2D plots
-    * Find the right label and add the data
-    * @param label
-    * @param X
-    * @param Y
-    */
-    void plot2D(string label, double X, double Y);
-
-    /**
-     * Store Values in Genplot class - for 3D plots
-     * Find the right label and add the data
-     * @param label
-     * @param X
-     * @param Y
-     * @param Z
-     */
-    void plot3D(string label, double X, double Y, double Z);
-
-    void plot4D(string label, double X, double Y, double Z, double A);
-
-    /**
-     * Export Data into a txt file for python code to process
-     * Every instance of a class is one data file
-     */
-    void write2file(string file_name);
 
     /**
      * explore relation of edit distance and set difference in kshingling
@@ -149,6 +119,24 @@ private:
     int setdiff(int shingle_len, int str_size, int edit_dist);
 
 
+};
+
+
+class PlotRegister { // Export Data into a txt file for external code to graph
+public:
+    PlotRegister(string _title, vector<string> _labels);// init - open a file with a title and labels
+
+    ~PlotRegister();
+
+    void add(vector<string> datum); // add to data
+    void update(); // bulk insert to what is in the data, clear data, close file after.
+private:
+
+    void init();
+
+    string title; // title of the graph, used as file name
+    vector<string> labels; //label including units
+    vector<vector<string>> data; // Number of
 };
 
 #endif //CPISYNCLIB_PERFORMANCEDATA_H

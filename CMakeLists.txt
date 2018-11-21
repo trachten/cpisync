@@ -140,7 +140,8 @@ set(SOURCE_FILES
         ${SRC_DIR}/IBLTSync_SetDiff.cpp
         ${SRC_DIR}/StrataEst.cpp
         ${SRC_DIR}/StrataEst_CPI.cpp
-        ${SRC_DIR}/CPI.cpp)
+        ${SRC_DIR}/CPI.cpp
+        ${SRC_DIR}/SetsOfStrings.cpp)
 
 #cppunit
 include_directories(include)

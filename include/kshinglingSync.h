@@ -69,7 +69,6 @@ protected:
 private:
     K_Shingle myKshingle;
     string Str;
-    //GenSync myhost;
 
     size_t shingleSize =0, eltSize = 0; // defined by shingle size
     size_t mbar = 0; // defined by set difference estimator ... not necessarily a global variable

@@ -460,11 +460,12 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 #endif
             //if (set_size>set_sizeRange.second/2)confidence = 10;
 //            printMemUsage();
+            printMemUsage();
             for (int conf = 0; conf < confidence; ++conf) {
 
 
-                StrataEst Alice = StrataEst(sizeof(DataObject *));
-                StrataEst Bob = StrataEst(sizeof(DataObject *));
+                StrataEst Alice = StrataEst(sizeof(DataObject));
+                StrataEst Bob = StrataEst(sizeof(DataObject));
 
                 for (int j = 0; j < set_size; ++j) {
                     auto tmp = randZZ();
@@ -474,8 +475,9 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 
                 }
                 plot.add({to_string(set_size), to_string(set_diff), to_string((Alice -= Bob).estimate())});
-
             }
+            printMemUsage();
+
         }
 
 	plot.update();

@@ -233,6 +233,9 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/PerformanceData.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/SetsOfStrings.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/StrataEst.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>

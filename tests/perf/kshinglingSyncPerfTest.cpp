@@ -69,5 +69,5 @@ void KshingleSyncPerf::kshingleTest3D(){
 
 void KshingleSyncPerf::testStrataEst3D() {
     PerformanceData test = PerformanceData(tesPts);
-    test.strataEst3D(make_pair(10000,1000000), target_confidence);
+    test.strataEst3D(make_pair(1000,1000000), target_confidence);
 }

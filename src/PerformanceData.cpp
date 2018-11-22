@@ -446,10 +446,10 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 
     PlotRegister plot = PlotRegister("Strata Est",{"Set Size","Set Diff","Est"});
 
-#if __APPLE__
-    confidence /=omp_get_max_threads();
-#pragma omp parallel num_threads(omp_get_max_threads())
-#endif
+//#if __APPLE__
+//    confidence /=omp_get_max_threads();
+//#pragma omp parallel num_threads(omp_get_max_threads())
+//#endif
     for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size += set_sizeinterval) {
     (set_size < set_sizeRange.first + (set_sizeRange.second-set_sizeRange.first)/2) ? confidence : confidence=5;
     cout<<"Current Set Size:"+to_string(set_size)<<endl;
@@ -459,7 +459,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 
         for (int set_diff = 0; set_diff <= top_set_diff; set_diff += set_diffinterval) {
 
-            //if (set_size>set_sizeRange.second/2)confidence = 10;
+            if (set_size>set_sizeRange.second/2)confidence = 100;
 //            printMemUsage();
             //printMemUsage();
 //#if __APPLE__
@@ -469,9 +469,9 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 
                 StrataEst Alice = StrataEst(sizeof(DataObject));
                 StrataEst Bob = StrataEst(sizeof(DataObject));
-#if __APPLE__
-#pragma omp parallel firstprivate(Alice,Bob)
-#endif
+//#if __APPLE__
+//#pragma omp parallel firstprivate(Alice,Bob)
+//#endif
                 for (int j = 0; j < set_size; ++j) {
                     auto tmp = randZZ();
                     if (j < set_size - ceil(set_diff / 2)) Alice.insert(new DataObject(tmp));
@@ -483,9 +483,9 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
             //printMemUsage();
 
         }
-#if __APPLE__
-#pragma omp critical
-#endif
+//#if __APPLE__
+//#pragma omp critical
+//#endif
 	plot.update();
     }
 }

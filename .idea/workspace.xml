@@ -21,9 +21,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19d3d3ff-50a5-4fd4-b3e5-8ddc63f6217b" name="Default" comment="Auxiliary added">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Performance" beforeDir="false" afterPath="$PROJECT_DIR$/Performance" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strata Est.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Strata Est.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PerformanceData.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/PerformanceData.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp" afterDir="false" />
     </list>
@@ -125,7 +123,7 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="21470" />
+          <entry key="cpp" value="21479" />
           <entry key="h" value="12843" />
           <entry key="txt" value="1080" />
         </counts>
@@ -134,7 +132,7 @@
         <counts>
           <entry key="CMakeLists.txt" value="1080" />
           <entry key="Doxygen file" value="38" />
-          <entry key="ObjectiveC" value="34275" />
+          <entry key="ObjectiveC" value="34284" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -185,8 +183,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="337">
-                  <caret line="470" selection-start-line="470" selection-end-line="472" selection-end-column="6" />
+                <state relative-caret-position="768">
+                  <caret line="486" column="20" lean-forward="true" selection-start-line="486" selection-start-column="20" selection-end-line="486" selection-end-column="20" />
                 </state>
               </provider>
             </entry>
@@ -194,7 +192,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Strata Est.txt">
               <provider selected="true" editor-type-id="text-editor">
-                <state>
+                <state relative-caret-position="-105">
                   <caret column="3" selection-start-column="3" selection-end-column="3" />
                 </state>
               </provider>
@@ -261,8 +259,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1065">
-                  <caret line="71" column="39" selection-start-line="71" selection-start-column="39" selection-end-line="71" selection-end-column="39" />
+                <state relative-caret-position="270">
+                  <caret line="18" column="31" selection-start-line="18" selection-start-column="31" selection-end-line="18" selection-end-column="31" />
                 </state>
               </provider>
             </entry>
@@ -598,7 +596,7 @@
       <workItem from="1542731904131" duration="13023000" />
       <workItem from="1542817424623" duration="5030000" />
       <workItem from="1542904035407" duration="755000" />
-      <workItem from="1542905144654" duration="2354000" />
+      <workItem from="1542905144654" duration="2659000" />
     </task>
     <task id="LOCAL-00001" summary="Auxiliary added">
       <created>1537215469660</created>
@@ -611,7 +609,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="712467000" />
+    <option name="totallyTimeSpent" value="712772000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -626,12 +624,12 @@
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.08785942" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.08785942" />
       <window_info id="Structure" order="1" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info id="Favorites" order="2" sideWeight="0.5005441" side_tool="true" weight="0.13661636" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4985694" visible="true" weight="0.32673267" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4985694" visible="true" weight="0.32673267" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49960285" weight="0.43960395" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -1105,24 +1103,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
+    <entry file="file://$PROJECT_DIR$/Strata Est.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1065">
-          <caret line="71" column="39" selection-start-line="71" selection-start-column="39" selection-end-line="71" selection-end-column="39" />
+        <state relative-caret-position="-105">
+          <caret column="3" selection-start-column="3" selection-end-column="3" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Strata Est.txt">
+    <entry file="file://$PROJECT_DIR$/tests/perf/kshinglingSyncPerfTest.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="3" selection-start-column="3" selection-end-column="3" />
+        <state relative-caret-position="270">
+          <caret line="18" column="31" selection-start-line="18" selection-start-column="31" selection-end-line="18" selection-end-column="31" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/PerformanceData.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="337">
-          <caret line="470" selection-start-line="470" selection-end-line="472" selection-end-column="6" />
+        <state relative-caret-position="768">
+          <caret line="486" column="20" lean-forward="true" selection-start-line="486" selection-start-column="20" selection-end-line="486" selection-end-column="20" />
         </state>
       </provider>
     </entry>

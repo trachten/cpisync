@@ -453,6 +453,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
     for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size += set_sizeinterval) {
     (set_size < set_sizeRange.first + (set_sizeRange.second-set_sizeRange.first)/2) ? confidence : confidence=5;
     cout<<"Current Set Size:"+to_string(set_size)<<endl;
+        printMemUsage();
         int top_set_diff = set_size / 10;
         int set_diffinterval = floor((top_set_diff) / tesPts);
 
@@ -479,7 +480,7 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
                 }
                 plot.add({to_string(set_size), to_string(set_diff), to_string((Alice -= Bob).estimate())});
             }
-            printMemUsage();
+            //printMemUsage();
 
         }
 #if __APPLE__

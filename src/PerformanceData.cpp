@@ -443,11 +443,13 @@ void PerformanceData::kshingleCode3D(pair<int, int> edit_distRange,
 
 void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
     int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / tesPts);
-#if __APPLE__
-    //confidence /=omp_get_max_threads();
-//#pragma omp parallel num_threads(omp_get_max_threads())
-#endif
+
     PlotRegister plot = PlotRegister("Strata Est",{"Set Size","Set Diff","Est"});
+
+#if __APPLE__
+    confidence /=omp_get_max_threads();
+#pragma omp parallel num_threads(omp_get_max_threads())
+#endif
     for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size += set_sizeinterval) {
     (set_size < set_sizeRange.first + (set_sizeRange.second-set_sizeRange.first)/2) ? confidence : confidence=5;
     cout<<"Current Set Size:"+to_string(set_size)<<endl;
@@ -455,15 +457,16 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
         int set_diffinterval = floor((top_set_diff) / tesPts);
 
         for (int set_diff = 0; set_diff <= top_set_diff; set_diff += set_diffinterval) {
-#if __APPLE__
-//#pragma omp critical
-#endif
+
             //if (set_size>set_sizeRange.second/2)confidence = 10;
 //            printMemUsage();
             //printMemUsage();
+#if __APPLE__
+#pragma omp critical
+#endif
             for (int conf = 0; conf < confidence; ++conf) {
 
-
+cout<< "im here"<< endl;
                 StrataEst Alice = StrataEst(sizeof(DataObject));
                 StrataEst Bob = StrataEst(sizeof(DataObject));
 
@@ -479,7 +482,9 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
             //printMemUsage();
 
         }
-
+#if __APPLE__
+#pragma omp critical
+#endif
 	plot.update();
     }
 }

@@ -466,7 +466,6 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
 #endif
             for (int conf = 0; conf < confidence; ++conf) {
 
-cout<< "im here"<< endl;
                 StrataEst Alice = StrataEst(sizeof(DataObject));
                 StrataEst Bob = StrataEst(sizeof(DataObject));
 

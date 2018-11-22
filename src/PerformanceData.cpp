@@ -461,24 +461,25 @@ void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confid
             //if (set_size>set_sizeRange.second/2)confidence = 10;
 //            printMemUsage();
             //printMemUsage();
-#if __APPLE__
-#pragma omp critical
-#endif
+//#if __APPLE__
+//#pragma omp critical
+//#endif
             for (int conf = 0; conf < confidence; ++conf) {
 
                 StrataEst Alice = StrataEst(sizeof(DataObject));
                 StrataEst Bob = StrataEst(sizeof(DataObject));
-
+#if __APPLE__
+#pragma omp parallel firstprivate(Alice,Bob)
+#endif
                 for (int j = 0; j < set_size; ++j) {
                     auto tmp = randZZ();
                     if (j < set_size - ceil(set_diff / 2)) Alice.insert(new DataObject(tmp));
 
                     if (j >= ceil(set_diff / 2)) Bob.insert(new DataObject(tmp));
-
                 }
                 plot.add({to_string(set_size), to_string(set_diff), to_string((Alice -= Bob).estimate())});
             }
-            //printMemUsage();
+            printMemUsage();
 
         }
 #if __APPLE__

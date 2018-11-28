@@ -343,6 +343,12 @@
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/IBLTTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/SetsOfStringsTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/SetsOfStringsTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/StrataEstTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>

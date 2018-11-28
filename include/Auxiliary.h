@@ -465,6 +465,14 @@ inline string scanTxtFromFile(string dir, int len) {
     return txt.str();
 }
 
+inline string randSampleTxt(int len) {
+    return scanTxtFromFile("./tests/SampleTxt.txt", len);
+}
+
+inline string randSampleCode(int len) {
+    return scanTxtFromFile("./tests/SampleCode.txt", len);
+}
+
 /**
  * Generate a string with upperI number of random insertions of the original string
  * @param upperI number of insertion upper bound

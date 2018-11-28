@@ -82,7 +82,9 @@ private:
 
 
     // Sets of strings parameters
-    vector<vector<pair<string,size_t>>> subStrSet;
+    vector<vector<string>> subStrSet;
+    vector<vector<string>> confromSet;
+
     string myString; // original input string
     size_t BlockSize, Levels, substrSize;
     const static size_t NOT_SET = 0; // size_t = unsigend int | dependent value 0: e.g. BlockSize > NOT_SET

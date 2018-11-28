@@ -343,17 +343,13 @@
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-<<<<<<< HEAD
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/SetsOfStringsTest.cpp">
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/SetsOfStringsTest.cpp">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/SetsOfStringsTest.h">
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/SetsOfStringsTest.h">
 			<Option target="UnitTest"/>
 		</Unit>
-		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/tests/unit/StrataEstTest.cpp">
-=======
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/StrataEstTest.cpp">
->>>>>>> 630e3f7abae86b7ff5ac984c52cbd589d7695cd3
 			<Option target="UnitTest"/>
 		</Unit>
 		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/StrataEstTest.h">

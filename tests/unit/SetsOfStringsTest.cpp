@@ -19,14 +19,15 @@ void SetsOfStringsTest::tearDown() {}
 
 void SetsOfStringsTest::testAll() {
     SetsOfStrings Alice = SetsOfStrings(2,0,10,2); // default parameters
-    string txt = randAsciiStr(1000000);
+    string txt = randSampleTxt(1000000);//randAsciiStr(1000000);
     Alice.injectString(txt);
 
     SetsOfStrings Bob = SetsOfStrings(2,0,10,2); // default parameters
     Bob.injectString(randStringEdit(txt,100));
 
-auto aliceset = Alice.getTerminalSubstr();
-auto bobset = Bob.getTerminalSubstr();
+    auto aliceset = Alice.getTerminalSubstr();
+    auto bobset = Bob.getTerminalSubstr();
+
     cout<<"Number of different terminal str: "<<multisetDiff(aliceset,bobset).size()<<" from Alice:" <<aliceset.size()
     <<" and Bob: "<<bobset.size()<<endl;
 }

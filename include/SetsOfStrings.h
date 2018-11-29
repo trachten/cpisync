@@ -82,7 +82,7 @@ private:
 
 
     // Sets of strings parameters
-    vector<vector<string>> subStrSet;
+    vector<vector<pair<string,size_t>>> subStrSet;
     vector<vector<string>> confromSet;
 
     string myString; // original input string

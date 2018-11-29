@@ -68,13 +68,9 @@ vector<idx_t>  K_Shingle::getEdgeIdx(const string verStart, vector<idx_t> change
     if (!verStart.empty()) { // verStart not empty
         vector<idx_t> templst;
         // sorted list, start to find it then, as soon as the next is not starting with the substring, bail.
-        bool find_can_end = false;
         for (idx_t i = 0; i < shingleSet.size(); ++i) {
             if (shingleSet[i].first.substr(0,verStart.size()) == verStart && changed_shingleOccur[i]>0){
-                find_can_end = true;
                 templst.push_back(i);
-            }else if (find_can_end){
-                return templst;
             }
         }
         return templst; // no hit unless last element is included in the list
@@ -132,7 +128,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
     // Init Original state
     stateStack.push_back(origiState);
-    idx_t nxt_idx;
+    idx_t nxt_idx = 0;
 
     while (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1) { // while state stack is not empty
 
@@ -150,7 +146,6 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
             if (!str.empty()) str.pop_back();
 
             //look for other edge options
-            curEdge = shingleSet[nxtEdgeStack.back().back()].first;
             nxt_idx = nxtEdgeStack.back().back();
             nxtEdgeStack.back().pop_back();
 
@@ -169,7 +164,6 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
             if (nxtEdgeStack.empty()) {
                 return false;
             } else if (!nxtEdgeStack.back().empty()) {
-                curEdge = shingleSet[nxtEdgeStack.back().back()].first;
                 nxt_idx = nxtEdgeStack.back().back();
                 nxtEdgeStack.back().pop_back();
                 stateStack.pop_back();
@@ -189,6 +183,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
         stateStack.back()[nxt_idx] -= 1;
 
         curEdge = shingleSet[nxt_idx].first;
+
         // if we reached a stop point
         if (shingleSet[nxt_idx].first.back() == stopword and emptyState(stateStack.back())) {
             strCollect_size++;

@@ -8,7 +8,7 @@
 PerformanceData::~PerformanceData() = default;
 
 void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, int> edit_distRange,
-                                 pair<int,int> str_sizeRange, int confidence) {
+                                 pair<int,int> str_sizeRange, int confidence, string (*stringInput)(int), string (*stringEdits)(string, int)) {
     int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
     int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
 
@@ -38,8 +38,8 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, 
                         setShingleLen(shingle_len).
                         build();
 
-                string Alicetxt = randAsciiStr(str_size);
-                string Bobtxt = randStringEdit(Alicetxt, edit_dist);
+                string Alicetxt = stringInput(str_size);
+                string Bobtxt = stringEdits(Alicetxt, edit_dist);
 
                 Alice.addStr(new DataObject(Alicetxt));
                 Bob.addStr(new DataObject(Bobtxt));

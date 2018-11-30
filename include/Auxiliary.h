@@ -549,6 +549,15 @@ inline string randStringEditBurst(string str, int burstE, int numLoc) {
     return str;
 }
 
+inline string randStringEditBurst(string str, int upperE) {
+    while (upperE > 0) {
+        int burst = randLenBetween(1, upperE);
+        upperE -= burst;
+        str = randStringEditBurst(str, burst, 1);
+    }
+    return str;
+}
+
 /**
  * @return A random integer converted to a string
  * @require srand() must've been called

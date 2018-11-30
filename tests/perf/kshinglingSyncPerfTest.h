@@ -12,11 +12,9 @@
 //TODO: Later write a abstract class for this
 class KshingleSyncPerf : public CPPUNIT_NS::TestFixture {
 CPPUNIT_TEST_SUITE(KshingleSyncPerf);
- //       CPPUNIT_TEST(kshingleTest3D);
-//        CPPUNIT_TEST(testperf3D);
-//        CPPUNIT_TEST(setDiffTest2D);
-//        CPPUNIT_TEST(testperf2D);
-        CPPUNIT_TEST(testStrataEst3D);
+        CPPUNIT_TEST(kshingleTest3D);
+
+//        CPPUNIT_TEST(testStrataEst3D);
 //
     CPPUNIT_TEST_SUITE_END();
 
@@ -25,16 +23,9 @@ public:
 
     ~KshingleSyncPerf();
 
-    /**
-     * explore the edit distance and resulting set difference
-     */
-//    void setDiffTest2D();
-//
+
     void kshingleTest3D();
-//
-//    void testperf2D();
-//
-//    void testperf3D();
+
 
     void testStrataEst3D();
 

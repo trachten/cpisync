@@ -3,6 +3,12 @@
 //
 #include "kshinglingSyncPerfTest.h"
 
+// K-Shingling method does not scale because as string size increase,
+// the lenght of each shingle needs to increase inorder to compensate the expoential time of baktracking
+// In addition, as shingle size increase, the size for each element increases thus increase the communicaotn cost.
+// At last, as shingle size increaases, the amount of differencecs between two shinlge set increases, due to shingle's redundancy
+// set size increase as string sizxe increase.
+
 CPPUNIT_TEST_SUITE_REGISTRATION(KshingleSyncPerf);
 KshingleSyncPerf::KshingleSyncPerf() = default;
 KshingleSyncPerf::~KshingleSyncPerf() = default;
@@ -12,11 +18,11 @@ const int shingleLen = 4;
 const int editDist = 20;
 const int strSize = 5;
 
-const pair<int,int> strSizeRange = make_pair(1000, 50000);
+const pair<int,int> strSizeRange = make_pair(500, 50000);
 const pair<int,int> shingleLenRange = make_pair(2,ceil(log2(strSizeRange.second)));
 
 const int tesPts = 20;// Test Pts per graph
-const int target_confidence = 500;// Confidence interval
+const int target_confidence = 1;// Confidence interval
 const int confidenceCap = 40; // after edit distance exceed confidenceCap, confidence go to 1.
 
 const pair<int,int> editDistRange = make_pair(1, 1000); // range of edit distance
@@ -28,16 +34,10 @@ auto setReconProto = {GenSync::SyncProtocol::IBLTSyncSetDiff};
 auto strRecon = PerformanceData::StringReconProtocol::KshinglingSync;
 
 
-//void KshingleSyncPerf::setDiffTest3D(){
-//    PerformanceData test = PerformanceData(tesPts);
-//    test.StrKDif3D(strSizeRange,shingleLenRange,editDist);
-//    test.StrEDDif3D(strSizeRange,editDistRange,shingleLen);
-//    test.EDKDif3D(editDistRange,shingleLenRange,strSize);
-//    test.genReport("setDiff3D");
-//}
+
 void KshingleSyncPerf::kshingleTest3D(){
     PerformanceData test = PerformanceData(tesPts);
-    test.kshingle3D(setReconProto,editDistRange,strSizeRange,0);
+    test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence);
 
 //    PerformanceData test3 = PerformanceData(tesPts);
 //    test3.kshingleBook3D(editDistRange,strSizeRange);
@@ -49,22 +49,7 @@ void KshingleSyncPerf::kshingleTest3D(){
 
 
 }
-//
-//void KshingleSyncPerf::testperf3D() {
-//    PerformanceData test = PerformanceData(tesPts);
-//
-//    test.kshingle3D(setReconProto, editDistRange, strSizeRange, shingleLen);
-//    test.genReport("testperf3D");
-//}
-//
-//
-//void KshingleSyncPerf::testperf2D() {
-//    PerformanceData test = PerformanceData(tesPts);
-//
-//    test.kshingle2D(setReconProto, editDistRange, shingleLen, strSizeRange.first, target_confidence);
-//    test.kshingle2D(setReconProto, editDistRange, shingleLen, strSizeRange.second, target_confidence);
-//    test.genReport("testperf2D");
-//}
+
 
 
 void KshingleSyncPerf::testStrataEst3D() {

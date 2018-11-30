@@ -466,11 +466,23 @@ inline string scanTxtFromFile(string dir, int len) {
 }
 
 inline string randSampleTxt(int len) {
-    return scanTxtFromFile("./tests/SampleTxt.txt", len);
+    // max at 1 million characters
+    int MAX_LEN = (int) 8e5; // the sample file is 8e5 characters long
+    if (len > MAX_LEN) throw invalid_argument("rand Sample Txt can not be more than " + to_string(MAX_LEN));
+    string full_txt = scanTxtFromFile("./tests/SampleTxt.txt", MAX_LEN);
+    int start_pt = randLenBetween(0,full_txt.size()-len-1);
+
+    return full_txt.substr(start_pt,len);
+
 }
 
 inline string randSampleCode(int len) {
-    return scanTxtFromFile("./tests/SampleCode.txt", len);
+    int MAX_LEN = (int) 1e5; // the sample file is 1e5 characters long
+    if (len > MAX_LEN) throw invalid_argument("rand Sample Code can not be more than " + to_string(MAX_LEN));
+    string full_txt = scanTxtFromFile("./tests/SampleCode.txt", MAX_LEN);
+    int start_pt = randLenBetween(0,full_txt.size()-len-1);
+
+    return full_txt.substr(start_pt,len);
 }
 
 /**

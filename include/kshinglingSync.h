@@ -39,10 +39,10 @@ public:
      * @return
      */
     bool SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost, DataObject &selfString,
-                    DataObject &otherString, bool Estimate = true) override;
+                    DataObject &otherString) override;
 
     bool SyncServer(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost, DataObject &selfString,
-                    DataObject &otherString, bool Estimate = true) override;
+                    DataObject &otherString) override;
 
     bool reconstructString(DataObject *&recovered_string, const list<DataObject *> &Elems) override;
 

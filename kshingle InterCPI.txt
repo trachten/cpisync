@@ -1,0 +1,1 @@
+Str Size|Edit Diff|Comm (bits)|Time (s)|Space (bits)

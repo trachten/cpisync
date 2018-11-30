@@ -53,7 +53,7 @@ public:
      * @param partition The number of subspaces to partition a subset if synchronization fails.
      *     Must be >= 2 and <2^bits
      */
-    InterCPISync(long m_bar, long bits, int epsilon, int partition);
+    InterCPISync(long m_bar, long bits, int epsilon, int partition, bool use_existing=false);
 
     // destructor
     ~InterCPISync() override;

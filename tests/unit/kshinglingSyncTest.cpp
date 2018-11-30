@@ -25,12 +25,12 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 1000;
+    int string_len = 100000;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     size_t shingle_len = ceil(log2(string_len));
     int editDistance_bar = 25;
-    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::IBLTSyncSetDiff;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::InteractiveCPISync;
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
 
@@ -58,10 +58,6 @@ void kshinglingSyncTest::testAll() {
     Bob.addStr(new DataObject(Bobtxt));
 
     forkHandleReport report = forkHandle(Alice, Bob, false);
-
-//    CPPUNIT_ASSERT(editDistance_bar * (shingleLen - 1) + 4 >= numDif);
-
-    //number of difference between should always- be editDistance_bar*(shingleLen-1)
 
     //CPISync Setup
     //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*6,ceil(numDif*2.3), 0,0);

@@ -38,13 +38,12 @@ void CPISync::initData(int num) {
         sampleLoc[ii] = to_ZZ_p(DATA_MAX) + ii + 1; // i.e. from the region outside where valid data might lie
         CPI_evals[ii] = 1;
     }
-
-    probCPI = oneWay = keepAlive = false; // assume not OneWay or Probabilistic synchronization unless otherwise stated, and manage our own communicant connections
+    probCPI = oneWay = false; // assume not OneWay or Probabilistic synchronization unless otherwise stated, and manage our own communicant connections
     SyncID = SYNC_TYPE::CPISync;
 }
 
-CPISync::CPISync(long m_bar, long bits, int epsilon, int redundant, bool hashes /* = false */) :
-maxDiff(m_bar), probEps(epsilon), hashQ(hashes) {
+CPISync::CPISync(long m_bar, long bits, int epsilon, int redundant, bool hashes /* = false */, bool use_existing) :
+maxDiff(m_bar), probEps(epsilon), hashQ(hashes), keepAlive(use_existing) {
 Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
     // set default parameters
     if (hashQ) {
@@ -412,10 +411,10 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
         // ... connect to the other party
         if (!keepAlive) {
             commSync->commConnect();
-
+        }
             // ... check that the other side is doing the same synchronization
             SendSyncParam(commSync, oneWay);
-        }
+
 
         // 1. Transmit characteristic polynomial values
         commSync->commSend((long) CPI_hash.size()); // ... first outputs how many set elements the client has
@@ -499,10 +498,10 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
         Logger::gLog(Logger::METHOD, "Server: Started listening to: " + commSync->getName());
 //        commSync->state==Listern
         commSync->commListen();
-
+    }
         // ... verify sync parameters
         RecvSyncParam(commSync, oneWay);
-    }
+
 
 
     // Perform synchronization

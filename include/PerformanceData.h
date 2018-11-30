@@ -34,57 +34,12 @@ public:
         END
     };
 
-    enum class PlotType {
-        PLOT2D,
-        PLOT3D,
-        BOTH
-    };
-//
-//    void StrKDif3D(pair<int, int> str_sizeRange, pair<int, int> shingle_lenRange, int edit_dist);
-//
-//    void StrEDDif3D(pair<int, int> str_sizeRange, pair<int, int> edit_distRange, int shingle_len);
-//
-//    void EDKDif3D(pair<int, int> edit_distRange, pair<int, int> shingle_lenRange, int str_size);
-//
-//
-//    void KDif2D(pair<int, int> shingle_lenRange, int str_size, int edit_dist, int confidence);
-//
-//    void EDDif2D(pair<int, int> edit_distRange, int str_size, int shingle_len, int confidence);
-//
-//    void StrDif2D(pair<int, int> str_sizeRange, int shingle_len, int edit_dist, int confidence);
-
-    /**
-     * Perpare a shing recon method for random string and random edits testing
-     * @param string_size size of the string
-     * @param shingle_len shingle length
-     * @param edit_distance randome edits
-     */
-    //void prepareStringRecon(int string_size, int shingle_len, int edit_distance, string Alice_txt = "",
-    //                        string Bob_txt = "");
-
-    /**
-     * Prepare a set recon protocol include CPIsync, InteractiveCPIsync, and IBLTsync
-     * @param base_set_proto one of teh tree protocol
-     */
-    //void prepareSetComm(StringReconProtocol string_recon_proto, GenSync::SyncProtocol base_set_proto);
-
-    /**
-     * Generate a report for Time and Comm cost
-     * @param check_outcome check if reconciliation is successful
-     * @return cost report
-     */
-    //forkHandleReport calCostReport(PlotType plot_type, bool check_outcome = true);
 
 
-//
-//    void kshingle2D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
-//                    int shingle_len, int str_size, int target_confidence);
-//
-//    void kshingleStr2D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> strSizeRange, int shingleLen,
-//                       int editDist, int target_confidence);
-//
-    void kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
-                    pair<int, int> str_sizeRange, int shingle_len);
+
+
+    void kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, int> edit_distRange,
+                    pair<int, int> str_sizeRange, int confidence);
     void kshingleCode3D(pair<int, int> edit_distRange,    pair<int, int> str_sizeRange);
 
     void kshingleBook3D(pair<int, int> edit_distRange,    pair<int, int> str_sizeRange);

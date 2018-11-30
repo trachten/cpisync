@@ -25,18 +25,19 @@ void kshinglingTest::tearDown() {
 
 void kshinglingTest::testAll() {
     // init a string of random byte (shortest,longest) possible string len
-    string Alicetxt = randSampleTxt(500);  // generate a string
+    string Alicetxt = randSampleTxt(100);  // generate a string
     //string Bobtxt = randStringEdit(Alicetxt,10);  // Generate a edited string
 
     clock_t t1 = clock();
-    K_Shingle Alice = K_Shingle(log2(Alicetxt.size()));
+    int shingle_size = ceil(log2(Alicetxt.size()));
+    K_Shingle Alice = K_Shingle(shingle_size);
 
     Alice.inject(Alicetxt);
 
     auto AliceStringNOrder = Alice.reconstructStringBacktracking();  // Get order of the cycle
     clock_t t2 = clock();
 
-    //cout<<to_string(double(t2-t1)/CLOCKS_PER_SEC)<<endl;
+    cout<<to_string(double(t2-t1)/CLOCKS_PER_SEC)<<endl;
 
     //test functions
     CPPUNIT_ASSERT(AliceStringNOrder.first==Alicetxt);  // Make sure Alice can recover her own string from shingle set

@@ -18,7 +18,7 @@
 #include "CPISync_HalfRound_Hashed.h"
 
 // might be a bug with epsilon... getting passed a double but receives an int
-InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition)
+InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition, bool use_existing)
 : maxDiff(m_bar), bitNum(bits), probEps(epsilon + bits), pFactor(partition) {
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
   // setup ZZ_p field size
@@ -32,7 +32,7 @@ InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition)
 
   DATA_MAX = power(ZZ_TWO, bitNum); // maximum data element for the multiset
   treeNode = nullptr;
-  useExisting=false;
+  useExisting=use_existing;
   SyncID = SYNC_TYPE::Interactive_CPISync; // the synchronization type
 }
 

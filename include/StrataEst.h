@@ -51,7 +51,7 @@ public:
      * @param num_cells default value 40 / 80
      * @param value_size default value 8
      */
-    StrataEst(size_t value_size, size_t num_strata = 16, size_t num_cells=40);
+    StrataEst(size_t value_size, size_t num_strata = 16, size_t num_cells=25);
 
     StrataEst(vector<IBLT> myIBLT);
 

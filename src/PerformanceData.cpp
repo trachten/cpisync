@@ -50,7 +50,6 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, 
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
                               to_string(report.CPUtime),to_string(report.bytesVM)});
-                    return;
             }catch (std::exception){
                   cout<<"we failed once"<<endl;
             }

@@ -108,7 +108,9 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
     // reconcile difference + delete extra
     configurate(setHost, myKshingle.getSetSize());
     for (auto item : myKshingle.getShingleSet_str()) {
-        setHost->addElem(new DataObject(item)); // Add to GenSync
+        auto* tmp = new DataObject(item);
+        setHost->addElem(tmp); // Add to GenSync
+        delete tmp;
     }
     return syncSuccess;
 }

@@ -82,7 +82,6 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server, bool isRecon
             waitpid(pID, &chld_state, my_opt);
             result.success=true;
         }
-
     } catch (int& err) {
         sleep(1); // why?
         cout << "handle_error caught" << endl;

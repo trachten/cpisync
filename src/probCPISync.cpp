@@ -12,7 +12,7 @@
 #include "ProbCPISync.h"
 
 ProbCPISync::ProbCPISync(long m_bar, long bits, int epsilon, bool use_existing) : // now using Hash (true) flag
-CPISync(m_bar, bits, epsilon + ceil(log(bits) / log(2)), 0, true, use_existing) // adding lg(b) gives an equivalent probability of error for CPISync
+CPISync(m_bar, bits, epsilon + ceil(log(bits) / log(2)), 0, false, use_existing) // adding lg(b) gives an equivalent probability of error for CPISync
 {
 
   // tweak parameters of CPISync for probabilistic implementation

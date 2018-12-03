@@ -114,7 +114,7 @@ public:
      * @param str
      * @return
      */
-    virtual vector<DataObject*> addStr(DataObject* str) {
+    virtual vector<DataObject*> addStr(DataObject* str, bool bakctrack) {
         originStr = str;
         vector<DataObject*> res;
         isStringRecon = true;

@@ -14,12 +14,31 @@
 #include "CPI.h"
 #include "SyncMethod.h"
 #include "DataObject.h"
+#include <algorithm>
 
 using std::vector;
 using std::hash;
 using std::string;
 using namespace NTL;
 typedef unsigned long idx_t;
+
+/**
+ * help function in this scope to find
+ */
+inline bool contains_between(const vector<idx_t> &nums,idx_t from, idx_t to,idx_t tar){
+    for (idx_t i = from; i <= to; ++i) {
+        if (nums[i] == tar) return true;
+    }
+    return false;
+}
+inline idx_t min_between(const vector<idx_t> &nums,idx_t from, idx_t to){
+    if (nums.empty()) throw invalid_argument("min function does not take empty vector");
+    idx_t min = nums[0];
+    for (idx_t i = from; i <= to; ++i) {
+        if (nums[i]<min) min = nums[i];
+    }
+    return min;
+}
 
 class SetsOfStrings {
 public:
@@ -57,7 +76,7 @@ public:
     vector<vector<K_Shingle>> getShingleSet();
 
     // Concept testing
-    multiset<pair<string,size_t>> getTerminalSubstr();
+    multiset<string> getTerminalSubstr();
 
     multiset<pair<string,size_t>> setTotoalKshingleset();
 
@@ -80,9 +99,20 @@ private:
      */
     size_t create_substrings(string str, vector<pair<string,size_t>> & substr_pairset);
 
+    /**
+     * content-dependent partition
+     * @param str string to be partitioned
+     * @param mod universe of hash values values
+     * @param k shingle len
+     * @param w window len
+     * @param substr_pairset output a vectoer of string partitions
+     * @return
+     */
+    size_t contentDepParition(string str,idx_t space, idx_t shingle_size, idx_t win_size,vector<string> & substr_pairset);
+
 
     // Sets of strings parameters
-    vector<vector<pair<string,size_t>>> subStrSet;
+    vector<vector<string>> subStrSet;
     vector<vector<string>> confromSet;
 
     string myString; // original input string

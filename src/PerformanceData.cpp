@@ -8,11 +8,11 @@
 PerformanceData::~PerformanceData() = default;
 
 void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, int> edit_distRange,
-                                 pair<int,int> str_sizeRange, int confidence, string (*stringInput)(int), string (*stringEdits)(string, int)) {
+                                 pair<int,int> str_sizeRange, int confidence, string (*stringInput)(int)) {
     int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
     int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
 
-    PlotRegister plot = PlotRegister("kshingle InterCPI",{"Str Size","Edit Diff","Comm (bits)","Time (s)",
+    PlotRegister plot = PlotRegister("kshingle InterCPI",{"Str Size","Edit Diff","Comm (bits)","Time Set(s)","Time Str(s)",
                                                               "Space (bits)"});
     //TODO: Separate Comm, and Time, Separate Faile rate.
 
@@ -39,10 +39,10 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, 
                         build();
 
                 string Alicetxt = stringInput(str_size);
-                string Bobtxt = stringEdits(Alicetxt, edit_dist);
+                string Bobtxt = randStringEdit(Alicetxt, edit_dist);
 
-                Alice.addStr(new DataObject(Alicetxt));
-                Bob.addStr(new DataObject(Bobtxt));
+                Alice.addStr(new DataObject(Alicetxt), true);
+                Bob.addStr(new DataObject(Bobtxt), false);
 
                 forkHandleReport report = forkHandle(Alice, Bob, false);
 
@@ -86,8 +86,8 @@ void PerformanceData::kshingleBook3D( pair<int, int> edit_distRange,
                     build();
 
             string Bobtxt = randStringEdit(Alicetxt,edit_dist);
-            Alice.addStr(new DataObject(Alicetxt));
-            Bob.addStr(new DataObject(Bobtxt));
+            Alice.addStr(new DataObject(Alicetxt), true);
+            Bob.addStr(new DataObject(Bobtxt), false);
 
             forkHandleReport report = forkHandle(Alice, Bob, false);
 
@@ -119,8 +119,8 @@ void PerformanceData::kshingleCode3D(pair<int, int> edit_distRange,
                     build();
 
             string Bobtxt = randStringEdit(Alicetxt,edit_dist);
-            Alice.addStr(new DataObject(Alicetxt));
-            Bob.addStr(new DataObject(Bobtxt));
+            Alice.addStr(new DataObject(Alicetxt), true);
+            Bob.addStr(new DataObject(Bobtxt), false);
 
             forkHandleReport report = forkHandle(Alice, Bob, false);
 

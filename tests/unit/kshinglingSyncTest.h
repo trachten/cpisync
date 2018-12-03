@@ -11,6 +11,7 @@
 
 class kshinglingSyncTest : public CPPUNIT_NS::TestFixture{
   CPPUNIT_TEST_SUITE(kshinglingSyncTest);
+  CPPUNIT_TEST(testIdividualCPI);
   CPPUNIT_TEST(testAll);
   CPPUNIT_TEST_SUITE_END();
 public:
@@ -20,6 +21,9 @@ public:
     void tearDown();
 
     void testAll();
+
+    // try fit CPI sync in kshingling
+    void testIdividualCPI();
 };
 
 #endif //CPISYNCLIB_KSHINGLINGSYNCTEST_H

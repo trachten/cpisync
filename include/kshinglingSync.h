@@ -46,7 +46,7 @@ public:
 
     bool reconstructString(DataObject *&recovered_string, const list<DataObject *> &Elems) override;
 
-    vector<DataObject *> addStr(DataObject *datum) override;
+    vector<DataObject *> addStr(DataObject *datum, bool backtrack) override;
 
     string reconString(size_t cycNum) {
         return myKshingle.reconstructStringBacktracking(cycNum).first;
@@ -69,6 +69,7 @@ protected:
 private:
     K_Shingle myKshingle;
     string Str;
+    size_t strLen;
 
     size_t shingleSize =0, eltSize = 0; // defined by shingle size
     size_t mbar = 0; // defined by set difference estimator ... not necessarily a global variable
@@ -87,8 +88,7 @@ private:
      * @return
      */
     bool needEst() {
-        return setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff or
-               setSyncProtocol == GenSync::SyncProtocol::CPISync;
+        return setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff;
     };
 
 };

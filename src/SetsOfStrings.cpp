@@ -30,15 +30,22 @@ void SetsOfStrings::injectString(string str) {
 void SetsOfStrings::encoding() {
     if (Levels <= NOT_SET or myString.empty()) //sanity check
         throw invalid_argument("No string input or Levels is not > 0, Levels: " + to_string(Levels));
+//parameters
+    vector<vector<string>> str_par(Levels); // init str_par
+    vector<string> firslevel;
 
-    vector<vector<pair<string,size_t>>> str_par(Levels); // init str_par
-    vector<pair<string,size_t>> firslevel;
-    create_substrings(myString, firslevel); // create first level
+    //Content-dependent parameters
+    idx_t shingle_size = log10(myString.size());// consider how long of a content
+    idx_t space = shingle_size*126; // for ascii racaters,
+    clock_t begin = clock();
+    contentDepParition(myString, space,shingle_size, 500,firslevel); // create first level
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     str_par[0].insert(str_par[0].begin(), firslevel.begin(), firslevel.end()); // append into first level
     for (int i = 1; i < Levels; ++i) {
         for (const auto level_str : str_par[i - 1]) {
-            vector<pair<string,size_t>> templvl;
-            create_substrings(level_str.first,templvl); // create sub_substrings per substring
+            vector<string> templvl;
+            contentDepParition(level_str,space,shingle_size, 500,templvl); // create sub_substrings per substring
             str_par[i].insert(str_par[i].begin(), templvl.begin(),
                               templvl.end()); // append into one vector at every level
         }
@@ -87,16 +94,43 @@ size_t SetsOfStrings::create_substrings(const string str, vector<pair<string,siz
     return 0; // a set of hashes
 }
 
+
+
+// Content-dependent partitioning
+size_t SetsOfStrings::contentDepParition(string str, idx_t space, idx_t shingle_size, idx_t win_size, vector<string> &substr_pairset) {
+    vector<idx_t> hash_val;
+    for (idx_t i = 0; i < str.size() - shingle_size + 1; ++i) {
+        std::hash<std::string> shash;
+        hash_val.push_back(shash(str.substr(i, shingle_size)) % space);
+    }
+    idx_t prev = 0;
+    idx_t last_min = space; // Biggest number is the space
+    for (idx_t j = win_size; j < hash_val.size() - win_size; ++j) {
+        if (hash_val[j] == min_between(hash_val, (j - win_size), j + win_size) )
+//        and (contains_between(hash_val, j - win_size, j - 1, hash_val[j]) or
+//             contains_between(hash_val, j + 1, j + win_size, hash_val[j])))
+//        if ((last_min==hash_val[j] and hash_val[j-win_size] != last_min and min(last_min,hash_val[j+win_size])) or
+//                hash_val[j] == min_between(hash_val, (j - win_size), j + win_size) )
+        {
+            substr_pairset.push_back(str.substr(prev, j - prev));
+            prev = j;
+        }
+
+    }
+    substr_pairset.push_back(str.substr(prev));
+    return 0; // TODO: return permutaiton order
+}
+
 // Concept testing
 
-multiset<pair<string,size_t>> SetsOfStrings::getTerminalSubstr() {
-    multiset<pair<string,size_t>> res;
+multiset<string> SetsOfStrings::getTerminalSubstr() {
+    multiset<string> res;
     for(auto subpair : subStrSet.back()) {
-//        res.emplace(subpair.first,subpair.second);
-        K_Shingle tmp = K_Shingle(4);
-        tmp.inject(subpair.first);
-        for( auto item :tmp.getShingleSet())
-            res.emplace(item.first,item.second);
+        res.emplace(subpair);
+//        K_Shingle tmp = K_Shingle(4);
+//        tmp.inject(subpair);
+//        for( auto item :tmp.getShingleSet())
+//            res.insert(item);
     }
     return res;
 }

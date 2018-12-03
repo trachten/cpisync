@@ -222,7 +222,7 @@ void GenSync::addElem(DataObject* newDatum) {
 
 // add string
 
-void GenSync::addStr(DataObject *newStr) {
+void GenSync::addStr(DataObject *newStr, bool backtrack) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addStr");
     // store locally
     myString = newStr;
@@ -230,7 +230,7 @@ void GenSync::addStr(DataObject *newStr) {
     // update synch methods' metadata
     vector<shared_ptr<SyncMethod>>::iterator itAgt;
     for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
-        vector<DataObject*> Elems = (*itAgt)->addStr(newStr);
+        vector<DataObject*> Elems = (*itAgt)->addStr(newStr, backtrack);
         for (auto item : Elems) addElem(item);
     }
 

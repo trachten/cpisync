@@ -18,11 +18,11 @@ void SetsOfStringsTest::setUp() {
 void SetsOfStringsTest::tearDown() {}
 
 void SetsOfStringsTest::testAll() {
-    SetsOfStrings Alice = SetsOfStrings(2,0,10,2); // default parameters
-    string txt = randSampleTxt(1000000);//randAsciiStr(1000000);
+    SetsOfStrings Alice = SetsOfStrings(2,0,1,2); // default parameters
+    string txt = randAsciiStr(8000);//randAsciiStr(1000000);
     Alice.injectString(txt);
 
-    SetsOfStrings Bob = SetsOfStrings(2,0,10,2); // default parameters
+    SetsOfStrings Bob = SetsOfStrings(2,0,1,2); // default parameters
     Bob.injectString(randStringEdit(txt,100));
 
     auto aliceset = Alice.getTerminalSubstr();

@@ -37,7 +37,7 @@ auto strRecon = PerformanceData::StringReconProtocol::KshinglingSync;
 
 void KshingleSyncPerf::kshingleTest3D(){
     PerformanceData test = PerformanceData(tesPts);
-    test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence, randAsciiStr, randStringEditBurst());
+    test.kshingle3D(GenSync::SyncProtocol::CPISync,editDistRange,strSizeRange,target_confidence, randAsciiStr);
 
 //    PerformanceData test3 = PerformanceData(tesPts);
 //    test3.kshingleBook3D(editDistRange,strSizeRange);

@@ -13,7 +13,7 @@
 
 class SetsOfStringsTest : public CPPUNIT_NS::TestFixture{
 CPPUNIT_TEST_SUITE(SetsOfStringsTest);
-        //CPPUNIT_TEST(testAll);
+        CPPUNIT_TEST(testAll);
     CPPUNIT_TEST_SUITE_END();
 public:
     SetsOfStringsTest();

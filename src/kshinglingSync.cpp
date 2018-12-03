@@ -36,7 +36,7 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
 
     // send cycNum
     if (!oneway){
-        cycleNum = myKshingle.reconstructStringBacktracking().second;
+        if (cycleNum ==0) throw invalid_argument("cycleNum Not prepared by this host, consider enable backtracking before reconciling strings");
         commSync->commSend(cycleNum);
     }
     cycleNum = commSync->commRecv_long();
@@ -84,7 +84,6 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
     }
 
     // send cycNum
-    cycleNum = myKshingle.reconstructStringBacktracking().second; // perform backtrack no matter what
     auto tmpcycleNum = cycleNum;
     if (!oneway) cycleNum = commSync->commRecv_long();
      commSync->commSend(tmpcycleNum);
@@ -110,7 +109,7 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
     for (auto item : myKshingle.getShingleSet_str()) {
         auto* tmp = new DataObject(item);
         setHost->addElem(tmp); // Add to GenSync
-        delete tmp;
+//        delete tmp;
     }
     return syncSuccess;
 }
@@ -120,11 +119,10 @@ void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size
     int err = 8;// negative log of acceptable error probability for probabilistic syncs
 
     if (setSyncProtocol == GenSync::SyncProtocol::CPISync) {
-        eltSize = 14 + (myKshingle.getshinglelen_str() + 2) * 6;
-        setHost = make_shared<ProbCPISync>(mbar, eltSize, err, true);
+        eltSize = 14 + (myKshingle.getshinglelen_str() + 3) * 8;
+        setHost = make_shared<ProbCPISync>(2000, eltSize, err, true);
     } else if (setSyncProtocol == GenSync::SyncProtocol::InteractiveCPISync) {
-        eltSize = 14 + (myKshingle.getshinglelen_str() + 2 ) * 6;
-        int par = (ceil(log(set_size)) > 1) ?: 2;
+        eltSize = 14 + (myKshingle.getshinglelen_str() + 3) * 8;
         setHost = make_shared<InterCPISync>(5, eltSize, err, 3, true);
         //(ceil(log(set_size))>1)?:2;
     } else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff) {
@@ -146,12 +144,14 @@ bool kshinglingSync::reconstructString(DataObject* & recovered_string, const lis
     return cycleNum != 0;
 }
 
-vector<DataObject*> kshinglingSync::addStr(DataObject* datum){
+vector<DataObject*> kshinglingSync::addStr(DataObject* datum, bool backtrack){
     // call parent add
-    SyncMethod::addStr(datum);
+    SyncMethod::addStr(datum, backtrack);
+    strLen = (datum->to_string()).size();
     myKshingle.clear_shingleSet();
-
     myKshingle.inject(datum->to_string());
+    (backtrack)? cycleNum = myKshingle.reconstructStringBacktracking().second : cycleNum = 0;
+
     vector<DataObject*> res;
     for (auto item : myKshingle.getShingleSet_str()){
         auto tmp = new DataObject(StrtoZZ(item));

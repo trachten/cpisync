@@ -96,12 +96,12 @@ public:
         addElem(newDO);
     }
 
-    void addStr(DataObject* newStr, bool backtrack);
+    bool addStr(DataObject* newStr, bool backtrack);
 
     template <typename T>
-    void addStr(T* newStr, bool backtrack) {
+    bool addStr(T* newStr, bool backtrack) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addStr");
-        addStr(new DataObject(*newStr), backtrack);
+        return addStr(new DataObject(*newStr), backtrack);
     }
 
     /**

@@ -35,8 +35,8 @@ public:
     };
 
 
-    void kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, int> edit_distRange,
-                    pair<int, int> str_sizeRange, int confidence, string (*stringInput)(int));
+    void kshingle3D(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
+                    vector<int> str_sizeRange, int confidence, string (*stringInput)(int));
 
     void kshingleCode3D(pair<int, int> edit_distRange, pair<int, int> str_sizeRange);
 

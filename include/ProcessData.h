@@ -75,7 +75,7 @@ inline void printMemUsage() { // VM currently Used by my process
 #endif
 }
 
-inline bool virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
+inline bool virtualMemMonitor(long long & virtualMemUsed=NOT_SET, const int MaxMem = 1e9/* 1 GB */ ){
 #if __APPLE__
 
     struct task_basic_info t_info;
@@ -86,12 +86,12 @@ inline bool virtualMemMonitor(long long & virtualMemUsed=NOT_SET){
                                   TASK_BASIC_INFO, (task_info_t) &t_info,
                                   &t_info_count) && 0 == statfs("/", &stats)) {
 
-        //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl;
-        if (t_info.virtual_size - virtualMemUsed + t_info.virtual_size> stats.f_bsize * stats.f_bavail) return false;
+        //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl; // mem print
+//        if (t_info.virtual_size - virtualMemUsed + t_info.virtual_size> stats.f_bsize * stats.f_bavail) return false; // return if no Virtual mem available
+
+        if (t_info.virtual_size - virtualMemUsed + t_info.virtual_size> MaxMem) return false;
 
         virtualMemUsed = t_info.virtual_size;
-//        long long virtualFreeMem = stats.f_bsize * stats.f_bavail;
-
     }
 #elif __linux
     struct sysinfo memInfo;

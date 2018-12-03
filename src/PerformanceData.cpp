@@ -7,21 +7,20 @@
 
 PerformanceData::~PerformanceData() = default;
 
-void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, int> edit_distRange,
-                                 pair<int,int> str_sizeRange, int confidence, string (*stringInput)(int)) {
-    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
-    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
+                                 vector<int> str_sizeRange, int confidence, string (*stringInput)(int)) {
 
     PlotRegister plot = PlotRegister("kshingle InterCPI",{"Str Size","Edit Diff","Comm (bits)","Time Set(s)","Time Str(s)",
                                                               "Space (bits)"});
     //TODO: Separate Comm, and Time, Separate Faile rate.
 
-    for (int str_size = str_sizeRange.first; str_size <= str_sizeRange.second; str_size += str_sizeinterval) {
+    for (int str_size : str_sizeRange) {
         cout << to_string(str_size) << endl;
-        if (str_size>str_sizeRange.second/2)confidence /= 10;
-        for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+        edit_distRange.clear();
+        for (int i = 1; i<21; ++i) edit_distRange.push_back((int)((str_size*i)/100));
+        for (int edit_dist : edit_distRange) {
 
-            int shingle_len = ceil(log10(str_size))+1;
+            int shingle_len = ceil(log2(str_size));
 
             for (int con = 0; con < confidence; ++con) {
                 try {
@@ -41,12 +40,12 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, pair<int, 
                 string Alicetxt = stringInput(str_size);
                 string Bobtxt = randStringEdit(Alicetxt, edit_dist);
 
-                Alice.addStr(new DataObject(Alicetxt), true);
+                    bool success_StrRecon = Alice.addStr(new DataObject(Alicetxt), true); // Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
                 Bob.addStr(new DataObject(Bobtxt), false);
 
                 forkHandleReport report = forkHandle(Alice, Bob, false);
 
-                    bool success_str = (Bobtxt == Alice.dumpString()->to_string());
+                    bool success_SetRecon = (Bobtxt == Alice.dumpString()->to_string()); // str Recon is deterministic, if not sucess , set recon is the problem
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
                               to_string(report.CPUtime),to_string(report.bytesVM)});

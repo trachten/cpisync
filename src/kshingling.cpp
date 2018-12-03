@@ -102,7 +102,7 @@ pair<string,idx_t> K_Shingle::reconstructStringBacktracking(idx_t strOrder) {
         string final_str;
         shingle2string(changed_shingleSet, startString, strCollect_size, strOrder, final_str, startString);
         if (strCollect_size == 0 || strCollect_size < strOrder) { // failed to recover a string
-            return make_pair("", -1);  // return -1 for fail
+            return make_pair("", 0);  // return 0 for fail
         }
         return make_pair(final_str, strOrder);
     } else {

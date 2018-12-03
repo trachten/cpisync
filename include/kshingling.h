@@ -114,7 +114,11 @@ public:
         shingleSet_str.clear();
     };
 
-    long long virtualMemUsed(){ return currentVM-initVM;};
+    long long virtualMemUsed(){
+        long long currentVM = -1;
+        virtualMemMonitor(currentVM);
+        return currentVM-initVM;
+    };
 
 private:
     // local data
@@ -122,7 +126,7 @@ private:
     //default constructor
     K_Shingle();
 
-    long long currentVM = 0, initVM = 0; // keeps track of Ram usage
+    long long initVM = -1; // keeps track of Ram usage
 
     // k and stopword better be the same between two hosts, or should be transferred.
     size_t k;  //shingle size

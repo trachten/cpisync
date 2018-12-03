@@ -47,7 +47,7 @@ void kshinglingSyncTest::testAll() {
             setComm(GenSync::SyncComm::socket).
             setShingleLen(shingle_len).
             build();
-    Alice.addStr(new DataObject(Alicetxt),false);
+    Alice.addStr(new DataObject(Alicetxt), false);
 
 
     GenSync Bob = GenSync::Builder().

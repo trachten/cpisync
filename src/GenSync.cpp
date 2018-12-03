@@ -130,7 +130,7 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
         }
 
         if (!isRecon) {
-//        // newly added --- worked for general test
+        // newly added --- worked for general test
             delElemGroup(selfMinusOther);
         }
 //TODO: if not one way, enable this and set up a flag for one way , mind sync client or sync server
@@ -207,7 +207,7 @@ void GenSync::addElem(DataObject* newDatum) {
     // store locally
     myData.push_back(newDatum);
 
-    // update synch methods' metadata
+    // update sync methods' metadata
     vector<shared_ptr<SyncMethod>>::iterator itAgt;
     for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
         if (!(*itAgt)->addElem(newDatum))

@@ -12,8 +12,7 @@ K_Shingle::~K_Shingle() = default;
 
 K_Shingle::K_Shingle(const size_t shingle_size, const char stop_word)
 : k(shingle_size), stopword(stop_word) {
-    virtualMemMonitor(currentVM);
-    initVM=currentVM;
+    virtualMemMonitor(initVM);
 }
 
 bool K_Shingle::create(const string str) {
@@ -132,7 +131,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
     while (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1) { // while state stack is not empty
 
-        if (!virtualMemMonitor(currentVM)) return false;
+        if (!virtualMemMonitor(initVM)) return false;
         //printMemUsage();
 
         auto nxtEdges = getEdgeIdx(curEdge.substr(1), stateStack.back());

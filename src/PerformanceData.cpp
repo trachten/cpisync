@@ -34,9 +34,10 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
 
 
                     string Alicetxt = stringInput(str_size);
-                    bool success_StrRecon = Alice.addStr(new DataObject(Alicetxt),
-                                                         true); // Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
+                    auto str_s = clock();
 
+                    Alice.addStr(new DataObject(Alicetxt), false);
+                    double str_time = (double) (clock() - str_s) / CLOCKS_PER_SEC;
                     GenSync Bob = GenSync::Builder().
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
@@ -46,16 +47,17 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
 
                     string Bobtxt = randStringEdit(Alicetxt, edit_dist);
 
-                    Bob.addStr(new DataObject(Bobtxt), false);
+// Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
+                    bool success_StrRecon = Bob.addStr(new DataObject(Bobtxt), true);
 
                     forkHandleReport report = forkHandle(Alice, Bob, false);
-
+                    auto bobtxtis = Alice.dumpString()->to_string();
                     bool success_SetRecon = (Bobtxt ==
                                              Alice.dumpString()->to_string()); // str Recon is deterministic, if not success , set recon is the problem
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
-                              to_string(report.CPUtime), to_string(report.bytesVM)});
-                    return;
+                              to_string(report.CPUtime), to_string(str_time + (report.totalTime - report.CPUtime)),
+                              to_string(report.bytesVM)});
                 } catch (std::exception) {
                     cout << "we failed once" << endl;
                 }

@@ -10,50 +10,55 @@ PerformanceData::~PerformanceData() = default;
 void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
                                  vector<int> str_sizeRange, int confidence, string (*stringInput)(int)) {
 
-    PlotRegister plot = PlotRegister("kshingle InterCPI",{"Str Size","Edit Diff","Comm (bits)","Time Set(s)","Time Str(s)",
-                                                              "Space (bits)"});
+    PlotRegister plot = PlotRegister("kshingle InterCPI",
+                                     {"Str Size", "Edit Diff", "Comm (bits)", "Time Set(s)", "Time Str(s)",
+                                      "Space (bits)"});
     //TODO: Separate Comm, and Time, Separate Faile rate.
 
     for (int str_size : str_sizeRange) {
         cout << to_string(str_size) << endl;
         edit_distRange.clear();
-        for (int i = 1; i<21; ++i) edit_distRange.push_back((int)((str_size*i)/100));
+        for (int i = 1; i < 21; ++i) edit_distRange.push_back((int) ((str_size * i) / 100));
         for (int edit_dist : edit_distRange) {
 
             int shingle_len = ceil(log2(str_size));
 
             for (int con = 0; con < confidence; ++con) {
                 try {
-                GenSync Alice = GenSync::Builder().
-                        setProtocol(setReconProto).
-                        setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
-                        setComm(GenSync::SyncComm::socket).
-                        setShingleLen(shingle_len).
-                        build();
-                GenSync Bob = GenSync::Builder().
-                        setProtocol(setReconProto).
-                        setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
-                        setComm(GenSync::SyncComm::socket).
-                        setShingleLen(shingle_len).
-                        build();
+                    GenSync Alice = GenSync::Builder().
+                            setProtocol(setReconProto).
+                            setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                            setComm(GenSync::SyncComm::socket).
+                            setShingleLen(shingle_len).
+                            build();
 
-                string Alicetxt = stringInput(str_size);
-                string Bobtxt = randStringEdit(Alicetxt, edit_dist);
 
-                    bool success_StrRecon = Alice.addStr(new DataObject(Alicetxt), true); // Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
-                Bob.addStr(new DataObject(Bobtxt), false);
+                    string Alicetxt = stringInput(str_size);
+                    bool success_StrRecon = Alice.addStr(new DataObject(Alicetxt),
+                                                         true); // Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
 
-                forkHandleReport report = forkHandle(Alice, Bob, false);
+                    GenSync Bob = GenSync::Builder().
+                            setProtocol(setReconProto).
+                            setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
+                            setComm(GenSync::SyncComm::socket).
+                            setShingleLen(shingle_len).
+                            build();
 
-                    bool success_SetRecon = (Bobtxt == Alice.dumpString()->to_string()); // str Recon is deterministic, if not sucess , set recon is the problem
+                    string Bobtxt = randStringEdit(Alicetxt, edit_dist);
+
+                    Bob.addStr(new DataObject(Bobtxt), false);
+
+                    forkHandleReport report = forkHandle(Alice, Bob, false);
+
+                    bool success_SetRecon = (Bobtxt ==
+                                             Alice.dumpString()->to_string()); // str Recon is deterministic, if not success , set recon is the problem
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
-                              to_string(report.CPUtime),to_string(report.bytesVM)});
-            }catch (std::exception){
-                  cout<<"we failed once"<<endl;
-            }
-
-//            }
+                              to_string(report.CPUtime), to_string(report.bytesVM)});
+                    return;
+                } catch (std::exception) {
+                    cout << "we failed once" << endl;
+                }
             }
         }
         plot.update();

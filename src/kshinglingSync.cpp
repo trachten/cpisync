@@ -153,7 +153,8 @@ vector<DataObject*> kshinglingSync::addStr(DataObject* datum, bool backtrack){
     myKshingle.inject(datum->to_string());
     (backtrack)? cycleNum = myKshingle.reconstructStringBacktracking().second : cycleNum = 0;
 
-    for (DataObject* dop : setPointers) delete dop; //CLear SetPointers if any
+    for (DataObject* dop : setPointers)
+        delete dop; //Clear SetPointers if any
     if (backtrack and cycleNum == 0) return setPointers;
 
     for (auto item : myKshingle.getShingleSet_str()){

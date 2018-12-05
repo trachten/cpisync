@@ -34,10 +34,10 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
                             build();
 
 
-                    string Alicetxt = stringInput(str_size);
+                    DataObject* Alicetxt = new DataObject(stringInput(str_size));
                     auto str_s = clock();
 
-                    Alice.addStr(new DataObject(Alicetxt), false);
+                    Alice.addStr(Alicetxt, false);
                     double str_time = (double) (clock() - str_s) / CLOCKS_PER_SEC;
                     GenSync Bob = GenSync::Builder().
                             setProtocol(setReconProto).
@@ -46,19 +46,22 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
                             setShingleLen(shingle_len).
                             build();
 
-                    string Bobtxt = randStringEdit(Alicetxt, edit_dist);
+                    DataObject* Bobtxt = new DataObject(randStringEdit((*Alicetxt).to_string(), edit_dist));
 
 // Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
-                    bool success_StrRecon = Bob.addStr(new DataObject(Bobtxt), true);
+                    bool success_StrRecon = Bob.addStr(Bobtxt, true);
 
                     forkHandleReport report = forkHandle(Alice, Bob, false);
                     auto bobtxtis = Alice.dumpString()->to_string();
-                    bool success_SetRecon = (Bobtxt ==
+                    bool success_SetRecon = ((*Bobtxt).to_string() ==
                                              Alice.dumpString()->to_string()); // str Recon is deterministic, if not success , set recon is the problem
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
                               to_string(report.CPUtime), to_string(str_time + (report.totalTime - report.CPUtime)),
                               to_string(report.bytesVM)});
+
+                    delete Alicetxt;
+                    delete Bobtxt;
                 } catch (std::exception) {
                     cout << "we failed once" << endl;
                 }

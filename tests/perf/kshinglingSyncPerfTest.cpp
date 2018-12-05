@@ -22,7 +22,7 @@ const int strSize = 5;
 //const pair<int,int> shingleLenRange = make_pair(2,ceil(log2(strSizeRange.second)));
 
 const int tesPts = 20;// Test Pts per graph
-const int target_confidence = 10;// Confidence interval
+const int target_confidence = 1;// Confidence interval
 const int confidenceCap = 40; // after edit distance exceed confidenceCap, confidence go to 1.
 
 //const pair<int,int> editDistRange = make_pair(1, 1000); // range of edit distance
@@ -41,7 +41,7 @@ void KshingleSyncPerf::kshingleTest3D(){
 //    vector<int> strSizeRange = {100, 200, 400, 600, 800, 1000, 1500, 2000};
 //    test.kshingle3D(GenSync::SyncProtocol::CPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
 
-    vector<int> strSizeRange = {100};
+    vector<int> strSizeRange = {40};
     test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence, randAsciiStr);
 
 

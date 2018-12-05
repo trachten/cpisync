@@ -63,13 +63,8 @@ inline void printMemUsage() {
     }
 }
 #elif __linux
-inline void printMemUsage() {
-    cout<<getValue()<<endl;
-}
 
-
-
-int parseLine(char* line){
+inline int parseLine(char* line){
     // This assumes that a digit will be found and the line ends in " Kb".
     int i = strlen(line);
     const char* p = line;
@@ -79,7 +74,7 @@ int parseLine(char* line){
     return i;
 }
 
-int getValue(){ //Note: this value is in KB!
+inline int getValue(){ //Note: this value is in KB!
     FILE* file = fopen("/proc/self/status", "r");
     int result = -1;
     char line[128];
@@ -92,6 +87,9 @@ int getValue(){ //Note: this value is in KB!
     }
     fclose(file);
     return result;
+}
+inline void printMemUsage() {
+    cout<<getValue()<<endl;
 }
 #endif
 /**
@@ -136,17 +134,17 @@ inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 1e
 //    virtualMem *= memInfo.mem_unit;
 
         if (virtualMem == NOT_SET or virtualMem == 0) {//set initial mem
-            virtualMem = memInfo.totalram - memInfo.freeram;
-            virtualMem += memInfo.totalswap - memInfo.freeswap;
-            virtualMem *= memInfo.mem_unit;
+            // virtualMem = memInfo.totalram - memInfo.freeram;
+            // virtualMem += memInfo.totalswap - memInfo.freeswap;
+            // virtualMem *= memInfo.mem_unit;
+            virtualMem = getValue();
         } else {
-            size_t usedmem = memInfo.totalram - memInfo.freeram;
-            usedmem += memInfo.totalswap - memInfo.freeswap;
-            usedmem *= memInfo.mem_unit;
-            if (usedmem - virtualMem > MaxMem) return false;
+            // size_t usedmem = memInfo.totalram - memInfo.freeram;
+            // usedmem += memInfo.totalswap - memInfo.freeswap;
+            // usedmem *= memInfo.mem_unit;
+            if (getValue() - virtualMem > MaxMem) return false;
         }
-        return true;
-    return true;
+
 #endif
     return true;
 }

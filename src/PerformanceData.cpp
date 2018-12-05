@@ -9,16 +9,19 @@ PerformanceData::~PerformanceData() = default;
 
 void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
                                  vector<int> str_sizeRange, int confidence, string (*stringInput)(int)) {
-
-    PlotRegister plot = PlotRegister("kshingle IBLT Rand String",
+                                     string protoName;
+if(GenSync::SyncProtocol::CPISync == setReconProto) protoName = "CPISync";
+if(GenSync::SyncProtocol::IBLTSyncSetDiff == setReconProto) protoName = "IBLTSyncSetDiff";
+if(GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "InteractiveCPISync";
+    PlotRegister plot = PlotRegister("kshingle "+protoName,
                                      {"Str Size", "Edit Diff", "Comm (bits)", "Time Set(s)", "Time Str(s)",
-                                      "Space (bits)"});
+                                      "Space (bits)", "Set Recon True", "Str Recon True"});
     //TODO: Separate Comm, and Time, Separate Faile rate.
 
     for (int str_size : str_sizeRange) {
         cout << to_string(str_size) << endl;
         edit_distRange.clear();
-        for (int i = 1; i < 21; ++i) edit_distRange.push_back((int) ((str_size * i) / 100));
+        for (int i = 1; i < 3; ++i) edit_distRange.push_back((int) ((str_size * i) / 100));
         for (int edit_dist : edit_distRange) {
 
             int shingle_len = ceil(log2(str_size));
@@ -35,10 +38,8 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
 
 
                     DataObject* Alicetxt = new DataObject(stringInput(str_size));
-                    auto str_s = clock();
 
                     Alice.addStr(Alicetxt, false);
-                    double str_time = (double) (clock() - str_s) / CLOCKS_PER_SEC;
                     GenSync Bob = GenSync::Builder().
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
@@ -49,7 +50,10 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
                     DataObject* Bobtxt = new DataObject(randStringEdit((*Alicetxt).to_string(), edit_dist));
 
 // Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
+                    auto str_s = clock();
+
                     bool success_StrRecon = Bob.addStr(Bobtxt, true);
+                    double str_time = (double) (clock() - str_s) / CLOCKS_PER_SEC;
 
                     forkHandleReport report = forkHandle(Alice, Bob, false);
                     auto bobtxtis = Alice.dumpString()->to_string();
@@ -58,7 +62,7 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
                               to_string(report.CPUtime), to_string(str_time + (report.totalTime - report.CPUtime)),
-                              to_string(report.bytesVM)});
+                              to_string(report.bytesVM), to_string(success_SetRecon), to_string(success_StrRecon)});
 
                     delete Alicetxt;
                     delete Bobtxt;

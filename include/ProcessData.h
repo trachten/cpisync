@@ -22,6 +22,9 @@
 #elif __linux__ // TODO: Implement Libraries for linux
     #include "sys/types.h"
     #include "sys/sysinfo.h"
+    #include "stdlib.h"
+    #include "stdio.h"
+    #include "string.h"
 #endif
 
 
@@ -29,9 +32,11 @@ static size_t NOT_SET = -1; // not set parameters are not used
 
 
 using namespace std;
-inline void printMemUsage() { // VM currently Used by my process
+
+ // VM currently Used by my process
 
 #if __APPLE__
+inline void printMemUsage() {
     struct task_basic_info t_info;
     mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
@@ -40,40 +45,55 @@ inline void printMemUsage() { // VM currently Used by my process
                                   &t_info_count)) {
 
         //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl;
-        cout<<"Process Resident size:" << std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<t_info.resident_size*(long double)1.25e-10
-        << " virtual size:" << std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<t_info.virtual_size*(long double)1.25e-10<<endl;
+        cout << "Process Resident size:" << std::setprecision(std::numeric_limits<long double>::digits10 + 1)
+             << t_info.resident_size * (long double) 1.25e-10
+             << " virtual size:" << std::setprecision(std::numeric_limits<long double>::digits10 + 1)
+             << t_info.virtual_size * (long double) 1.25e-10 << endl;
 
 
         struct statfs stats;
-        if (0 == statfs("/", &stats))
-        {
-           cout<<"Total MEM left: "<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<<(long double)stats.f_bsize * stats.f_bavail * 1.25e-10<<endl;
+        if (0 == statfs("/", &stats)) {
+            cout << "Total MEM left: " << std::setprecision(std::numeric_limits<long double>::digits10 + 1)
+                 << (long double) stats.f_bsize * stats.f_bavail * 1.25e-10 << endl;
         }
         //process resident diff =  879087616 == 0.109 GB
         //virtual size diff = 59762421760 == 7.470 GB
         //start V - size = 0.98
         //end V - size = 8.45GB
     }
+}
 #elif __linux
-    struct sysinfo memInfo;
-
-    sysinfo (&memInfo);
-    long long totalVirtualMem = memInfo.totalram;
-    //Add other values in next statement to avoid int overflow on right hand side...
-    totalVirtualMem += memInfo.totalswap;
-    totalVirtualMem *= memInfo.mem_unit;
-    long long virtualMemUsed = memInfo.totalram - memInfo.freeram;
-    //Add other values in next statement to avoid int overflow on right hand side...
-    virtualMemUsed += memInfo.totalswap - memInfo.freeswap;
-    virtualMemUsed *= memInfo.mem_unit;
-    long long virtualFreeMem = totalVirtualMem - virtualMemUsed;
-
-    cout<<"virtualFreeMem:"<<virtualFreeMem<<endl;
-    cout<<"virtualMemUsed:"<<virtualMemUsed<<endl;
-    cout<<"totalVirtualMem:"<<totalVirtualMem<<endl;
-#endif
+inline void printMemUsage() {
+    cout<<getValue()<<endl;
 }
 
+
+
+int parseLine(char* line){
+    // This assumes that a digit will be found and the line ends in " Kb".
+    int i = strlen(line);
+    const char* p = line;
+    while (*p <'0' || *p > '9') p++;
+    line[i-3] = '\0';
+    i = atoi(p);
+    return i;
+}
+
+int getValue(){ //Note: this value is in KB!
+    FILE* file = fopen("/proc/self/status", "r");
+    int result = -1;
+    char line[128];
+
+    while (fgets(line, 128, file) != NULL){
+        if (strncmp(line, "VmSize:", 7) == 0){
+            result = parseLine(line);
+            break;
+        }
+    }
+    fclose(file);
+    return result;
+}
+#endif
 /**
  * Monitor Mem based on a hard threshold
  * @param virtualMemUsed if not set, set initial value, else monitor mem growth

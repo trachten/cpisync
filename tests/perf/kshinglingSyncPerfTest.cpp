@@ -42,7 +42,7 @@ void KshingleSyncPerf::kshingleTest3D(){
 //    test.kshingle3D(GenSync::SyncProtocol::CPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
 
     vector<int> strSizeRange = {40};
-    test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence, randAsciiStr);
+    test.kshingle3D(GenSync::SyncProtocol::CPISync,editDistRange,strSizeRange,target_confidence, randAsciiStr);
 
 
 //    PerformanceData test3 = PerformanceData(tesPts);

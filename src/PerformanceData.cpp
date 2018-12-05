@@ -10,7 +10,7 @@ PerformanceData::~PerformanceData() = default;
 void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
                                  vector<int> str_sizeRange, int confidence, string (*stringInput)(int)) {
 
-    PlotRegister plot = PlotRegister("kshingle InterCPI",
+    PlotRegister plot = PlotRegister("kshingle IBLT Rand String",
                                      {"Str Size", "Edit Diff", "Comm (bits)", "Time Set(s)", "Time Str(s)",
                                       "Space (bits)"});
     //TODO: Separate Comm, and Time, Separate Faile rate.

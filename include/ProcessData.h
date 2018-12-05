@@ -13,7 +13,6 @@
 #include <mach/mach_init.h>
 #include <mach/mach_host.h>
 
-
 #include <sys/param.h>
 #include <sys/mount.h>
 
@@ -26,7 +25,7 @@
 #endif
 
 
-static long long NOT_SET = -1; // not set parameters are not used
+static size_t NOT_SET = -1; // not set parameters are not used
 
 
 using namespace std;
@@ -81,7 +80,7 @@ inline void printMemUsage() { // VM currently Used by my process
  * @param MaxMem Maximum amount of mem allowed before returning false
  * @return True if it is still within threshold, false if exceeds
  */
-inline bool virtualMemMonitor(long long & virtualMem=NOT_SET, const int MaxMem = 1e9/* 1 GB */ ){
+inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 1e9/* 1 GB */ ){
 #if __APPLE__
 
     struct task_basic_info t_info;
@@ -95,7 +94,7 @@ inline bool virtualMemMonitor(long long & virtualMem=NOT_SET, const int MaxMem =
         //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl; // mem print
 //        if (t_info.virtual_size - virtualMemUsed + t_info.virtual_size> stats.f_bsize * stats.f_bavail) return false; // return if no Virtual mem available
         if (virtualMem == NOT_SET or virtualMem == 0) {//set initial mem
-            virtualMem = t_info.virtual_size;
+            virtualMem = (size_t)t_info.virtual_size;
         } else {
             if (t_info.virtual_size - virtualMem > MaxMem) return false;
         }

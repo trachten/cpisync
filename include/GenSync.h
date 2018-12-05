@@ -319,7 +319,7 @@ private:
 
     // FIELDS
     /** A container for the data stored by this GenSync object. */
-    list<DataObject*> myData;
+    list<DataObject*> myData, myDiff;
 
     /** A container for the string stored by this GenSync object. */
     DataObject* myString;

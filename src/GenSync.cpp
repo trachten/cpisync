@@ -85,7 +85,6 @@ GenSync::~GenSync() {
         outFile->close();
         outFile.reset();
     }
-
 }
 
 

@@ -9,7 +9,9 @@ IBLTSync_SetDiff::IBLTSync_SetDiff(size_t expected_diff, size_t eltSize, bool ke
     oneWay = false;
     keepAlive = keep_alive;
 }
-IBLTSync_SetDiff::~IBLTSync_SetDiff() = default;
+IBLTSync_SetDiff::~IBLTSync_SetDiff(){
+
+};
 
 bool IBLTSync_SetDiff::SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
                                   list<DataObject *> &otherMinusSelf) {

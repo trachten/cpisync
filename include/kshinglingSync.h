@@ -28,7 +28,7 @@ public:
     kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const size_t shingle_size,
                    const char stop_word = '$');
 
-    ~kshinglingSync() {};
+    ~kshinglingSync();
 
     /**
      *
@@ -75,6 +75,9 @@ private:
     size_t mbar = 0; // defined by set difference estimator ... not necessarily a global variable
 
     GenSync::SyncProtocol setSyncProtocol;
+
+    //Mem handle
+    vector<DataObject*> setPointers;
 
 
     /**

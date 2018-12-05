@@ -14,6 +14,9 @@ kshinglingSync::kshinglingSync(GenSync::SyncProtocol set_sync_protocol, const si
         throw invalid_argument("Base Set Reconciliation Protocol not supported.");
 }
 
+kshinglingSync::~kshinglingSync() {
+    for (DataObject* dop : setPointers) delete dop;
+}
 
 //Alice
 bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> & setHost,
@@ -59,8 +62,8 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
 
     // reconcile difference + delete extra
     configurate(setHost, myKshingle.getSetSize());
-    for (auto item : myKshingle.getShingleSet_str()) {
-        setHost->addElem(new DataObject(item)); // Add to GenSync
+    for (DataObject* dop : setPointers){
+        setHost->addElem(dop); // Add to GenSync
     }
     // choose to send if not oneway (default is one way)
 //
@@ -106,10 +109,8 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
 
     // reconcile difference + delete extra
     configurate(setHost, myKshingle.getSetSize());
-    for (auto item : myKshingle.getShingleSet_str()) {
-        auto* tmp = new DataObject(item);
-        setHost->addElem(tmp); // Add to GenSync
-//        delete tmp;
+    for (DataObject* dop : setPointers){
+        setHost->addElem(dop); // Add to GenSync
     }
     return syncSuccess;
 }
@@ -152,18 +153,17 @@ vector<DataObject*> kshinglingSync::addStr(DataObject* datum, bool backtrack){
     myKshingle.inject(datum->to_string());
     (backtrack)? cycleNum = myKshingle.reconstructStringBacktracking().second : cycleNum = 0;
 
-    vector<DataObject*> res;
-    if (backtrack and cycleNum == 0) return res;
+    for (DataObject* dop : setPointers) delete dop; //CLear SetPointers if any
+    if (backtrack and cycleNum == 0) return setPointers;
 
     for (auto item : myKshingle.getShingleSet_str()){
-        auto tmp = new DataObject(StrtoZZ(item));
-        res.push_back(tmp);
+        setPointers.push_back(new DataObject(StrtoZZ(item)));
     }
-    return res;
+    return setPointers;
 }
 
 long kshinglingSync::getVirMem(){
-    return myKshingle.virtualMemUsed();
+    return myKshingle.getUsedVM();
 }
 
 

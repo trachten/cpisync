@@ -25,6 +25,7 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
 
             for (int con = 0; con < confidence; ++con) {
                 try {
+
                     GenSync Alice = GenSync::Builder().
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).

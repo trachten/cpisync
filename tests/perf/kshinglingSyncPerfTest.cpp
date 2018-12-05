@@ -41,7 +41,7 @@ void KshingleSyncPerf::kshingleTest3D(){
 //    vector<int> strSizeRange = {100, 200, 400, 600, 800, 1000, 1500, 2000};
 //    test.kshingle3D(GenSync::SyncProtocol::CPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
 
-    vector<int> strSizeRange = {100, 200, 400, 600, 800, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000};
+    vector<int> strSizeRange = {100};
     test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence, randAsciiStr);
 
 

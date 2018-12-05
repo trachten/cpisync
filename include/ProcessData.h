@@ -109,11 +109,11 @@ inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 1e
     totalVirtualMem += memInfo.totalswap;
     totalVirtualMem *= memInfo.mem_unit;
 
-    if (memInfo.totalram - memInfo.freeram - virtualMemUsed > memInfo.freeram) return false;
+    if (memInfo.totalram - memInfo.freeram - virtualMem > memInfo.freeram) return false;
     virtualMemUsed = memInfo.totalram - memInfo.freeram;
     //Add other values in next statement to avoid int overflow on right hand side...
-    virtualMemUsed += memInfo.totalswap - memInfo.freeswap;
-    virtualMemUsed *= memInfo.mem_unit;
+    virtualMem += memInfo.totalswap - memInfo.freeswap;
+    virtualMem *= memInfo.mem_unit;
 #endif
     return true;
 }

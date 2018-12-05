@@ -80,7 +80,7 @@ inline void printMemUsage() { // VM currently Used by my process
  * @param MaxMem Maximum amount of mem allowed before returning false
  * @return True if it is still within threshold, false if exceeds
  */
-inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 1e9/* 1 GB */ ){
+inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 1e9/* 1 GB */ ) {
 #if __APPLE__
 
     struct task_basic_info t_info;
@@ -94,7 +94,7 @@ inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 1e
         //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl; // mem print
 //        if (t_info.virtual_size - virtualMemUsed + t_info.virtual_size> stats.f_bsize * stats.f_bavail) return false; // return if no Virtual mem available
         if (virtualMem == NOT_SET or virtualMem == 0) {//set initial mem
-            virtualMem = (size_t)t_info.virtual_size;
+            virtualMem = (size_t) t_info.virtual_size;
         } else {
             if (t_info.virtual_size - virtualMem > MaxMem) return false;
         }
@@ -109,11 +109,24 @@ inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 1e
     totalVirtualMem += memInfo.totalswap;
     totalVirtualMem *= memInfo.mem_unit;
 
-    if (memInfo.totalram - memInfo.freeram - virtualMem > memInfo.freeram) return false;
-    virtualMem = memInfo.totalram - memInfo.freeram;
-    //Add other values in next statement to avoid int overflow on right hand side...
-    virtualMem += memInfo.totalswap - memInfo.freeswap;
-    virtualMem *= memInfo.mem_unit;
+//    if (memInfo.totalram - memInfo.freeram - virtualMem > memInfo.freeram) return false;  //prevent out of mem
+//    virtualMem = memInfo.totalram - memInfo.freeram;
+//    //Add other values in next statement to avoid int overflow on right hand side...
+//    virtualMem += memInfo.totalswap - memInfo.freeswap;
+//    virtualMem *= memInfo.mem_unit;
+
+        if (virtualMem == NOT_SET or virtualMem == 0) {//set initial mem
+            virtualMem = memInfo.totalram - memInfo.freeram;
+            virtualMem += memInfo.totalswap - memInfo.freeswap;
+            virtualMem *= memInfo.mem_unit;
+        } else {
+            size_t usedmem = memInfo.totalram - memInfo.freeram;
+            usedmem += memInfo.totalswap - memInfo.freeswap;
+            usedmem *= memInfo.mem_unit;
+            if (usedmem - virtualMem > MaxMem) return false;
+        }
+        return true;
+    return true;
 #endif
     return true;
 }

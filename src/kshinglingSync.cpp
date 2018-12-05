@@ -121,7 +121,7 @@ void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size
 
     if (setSyncProtocol == GenSync::SyncProtocol::CPISync) {
         eltSize = 14 + (myKshingle.getshinglelen_str() + 3) * 8;
-        setHost = make_shared<ProbCPISync>(2000, eltSize, err, true);
+        setHost = make_shared<ProbCPISync>(1e4, eltSize, err, true);
     } else if (setSyncProtocol == GenSync::SyncProtocol::InteractiveCPISync) {
         eltSize = 14 + (myKshingle.getshinglelen_str() + 3) * 8;
         setHost = make_shared<InterCPISync>(5, eltSize, err, 3, true);

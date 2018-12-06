@@ -131,7 +131,8 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
     while (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1) { // while state stack is not empty
 
-        if (!virtualMemMonitor(initVM)) return false;
+        if (!virtualMemMonitor(initVM))
+            return false;
         //printMemUsage();
         auto nxtEdges = getEdgeIdx(curEdge.substr(1), stateStack.back());
 

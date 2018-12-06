@@ -21,7 +21,7 @@ if(GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "Inte
     for (int str_size : str_sizeRange) {
         cout << to_string(str_size) << endl;
         edit_distRange.clear();
-        for (int i = 1; i <= 5; ++i) edit_distRange.push_back((int) ((str_size * i) / 200));
+        for (int i = 1; i <= tesPts; ++i) edit_distRange.push_back((int) ((str_size * i) / 400));
         for (int edit_dist : edit_distRange) {
 
             int shingle_len = ceil(log2(str_size));

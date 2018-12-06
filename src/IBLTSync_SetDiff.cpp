@@ -101,8 +101,8 @@ bool IBLTSync_SetDiff::SyncServer(const shared_ptr<Communicant> &commSync, list<
     msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
     Logger::gLog(Logger::METHOD, msg.str());
 
-    for (auto item : otherMinusSelf) delete item;
-    for (auto item : selfMinusOther) delete item;
+//    for (auto item : otherMinusSelf) delete item;
+//    for (auto item : selfMinusOther) delete item;
 
     return success;
 }

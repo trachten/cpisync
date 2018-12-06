@@ -124,6 +124,8 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
         origiState[i] = changed_shingleOccur[i].second;
     }
 
+    // predict auxilary Mem size
+    pMem = sizeof(idx_t)*changed_shingleOccur.size()*(orig_string.size()-k)*2;
 
     // Init Original state
     stateStack.push_back(origiState);
@@ -195,7 +197,6 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
 
         if (strCollect_size == str_order && str_order != 0) {
-            UpdateUsedVM();
             return true;
         }
     }

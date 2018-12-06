@@ -20,7 +20,7 @@ using std::vector;
 using std::hash;
 using std::string;
 using namespace NTL;
-typedef unsigned long idx_t;
+typedef unsigned int idx_t;
 
 /**
  * help function in this scope to find

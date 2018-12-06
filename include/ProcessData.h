@@ -93,12 +93,12 @@ inline void printMemUsage() {
 }
 #endif
 /**
- * Monitor Mem based on a hard threshold
+ * Monitor Mem based on a hard threshold of 2GB
  * @param virtualMemUsed if not set, set initial value, else monitor mem growth
  * @param MaxMem Maximum amount of mem allowed before returning false
  * @return True if it is still within threshold, false if exceeds
  */
-inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 1e9/* 1 GB */ ) {
+inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 2e9/* 1 GB */ ) {
 #if __APPLE__
 
     struct task_basic_info t_info;

@@ -25,7 +25,7 @@ void kshinglingTest::tearDown() {
 
 void kshinglingTest::testAll() {
     // init a string of random byte (shortest,longest) possible string len
-    string Alicetxt = randSampleTxt(10000);  // generate a string
+    string Alicetxt = randSampleTxt(500);  // generate a string, no longer than 1e4
     //string Bobtxt = randStringEdit(Alicetxt,10);  // Generate a edited string
 
     clock_t t1 = clock();

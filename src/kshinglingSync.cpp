@@ -155,6 +155,7 @@ vector<DataObject*> kshinglingSync::addStr(DataObject* datum, bool backtrack){
 
     for (DataObject* dop : setPointers)
         delete dop; //Clear SetPointers if any
+//    setPointers.clear();
     if (backtrack and cycleNum == 0) return setPointers;
 
     for (auto item : myKshingle.getShingleSet_str()){

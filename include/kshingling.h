@@ -22,7 +22,7 @@ using std::stringstream;
 using std::pair;
 using namespace NTL;
 
-typedef unsigned long idx_t;
+typedef unsigned int idx_t;
 
 class K_Shingle {
 public:
@@ -115,7 +115,7 @@ public:
     };
 
     size_t getUsedVM(){
-        return usedVm;
+        return pMem;
     };
 
 private:
@@ -124,7 +124,7 @@ private:
     //default constructor
     K_Shingle();
 
-    size_t initVM =0, usedVm = 0; // keeps track of Ram usage
+    size_t initVM =0, pMem = 0; // keeps track of Ram usage
 
     // k and stopword better be the same between two hosts, or should be transferred.
     size_t k;  //shingle size
@@ -174,11 +174,6 @@ private:
         shingleSet.push_back(Elem);
     };
 
-    void UpdateUsedVM(){
-        usedVm = 0;
-        virtualMemMonitor(usedVm);
-        usedVm-=initVM;
-    };
 };
 
 #endif //CPISYNCLIB_KSHINGLING_H

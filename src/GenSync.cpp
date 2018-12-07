@@ -133,10 +133,12 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
             delElemGroup(selfMinusOther);
         }
 //TODO: if not one way, enable this and set up a flag for one way , mind sync client or sync server
-//        if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
+        if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
 //            syncSuccess = (*syncAgent)->reconstructString(
 //                    myString,dumpElements()); // reconstruct the string based on the new information from set reconciliation
-//        }
+        }
+
+
     }
 
     return syncSuccess;

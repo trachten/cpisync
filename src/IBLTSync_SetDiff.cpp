@@ -10,7 +10,7 @@ IBLTSync_SetDiff::IBLTSync_SetDiff(size_t expected_diff, size_t eltSize, bool ke
     keepAlive = keep_alive;
 }
 IBLTSync_SetDiff::~IBLTSync_SetDiff(){
-
+//    for (DataObject* dop : MemCare) delete dop;
 };
 
 bool IBLTSync_SetDiff::SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
@@ -38,6 +38,9 @@ if(!keepAlive) {
 
         otherMinusSelf.insert(otherMinusSelf.end(), newOMS.begin(), newOMS.end());
         selfMinusOther.insert(selfMinusOther.end(), newSMO.begin(), newSMO.end());
+
+//        MemCare.insert(MemCare.end(), otherMinusSelf.begin(), otherMinusSelf.end());
+//        MemCare.insert(MemCare.end(), selfMinusOther.begin(), selfMinusOther.end());
 
         stringstream msg;
         msg << "IBLTSync_SetDiff succeeded." << endl;
@@ -88,7 +91,8 @@ bool IBLTSync_SetDiff::SyncServer(const shared_ptr<Communicant> &commSync, list<
     for(auto pair : negative) {
         selfMinusOther.push_back(new DataObject(pair.first));
     }
-
+//    MemCare.insert(MemCare.end(), otherMinusSelf.begin(), otherMinusSelf.end());
+//    MemCare.insert(MemCare.end(), selfMinusOther.begin(), selfMinusOther.end());
     // send the difference
     if(!oneWay) {
         commSync->commSend(selfMinusOther);

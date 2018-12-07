@@ -26,6 +26,8 @@ protected:
 private:
     IBLT myIBLT;
     size_t expNumDiff;
+
+    list<DataObject*> MemCare;
 };
 
 #endif //CPISYNCLIB_IBLTSYNC_SETDIFF_H

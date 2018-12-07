@@ -21,8 +21,9 @@ const int strSize = 5;
 //const pair<int,int> strSizeRange = make_pair(500, 50000);
 //const pair<int,int> shingleLenRange = make_pair(2,ceil(log2(strSizeRange.second)));
 
-const int tesPts = 10;// Test Pts per graph
-const int target_confidence = 50;// Confidence interval
+const int tesPts = 1
+        ;// Test Pts per graph
+const int target_confidence = 1;// Confidence interval
 const int confidenceCap = 40; // after edit distance exceed confidenceCap, confidence go to 1.
 
 //const pair<int,int> editDistRange = make_pair(1, 1000); // range of edit distance
@@ -38,12 +39,14 @@ auto strRecon = PerformanceData::StringReconProtocol::KshinglingSync;
 void KshingleSyncPerf::kshingleTest3D(){
     PerformanceData test = PerformanceData(tesPts);
     vector<int> editDistRange;
-   vector<int> strSizeRange = {600, 800, 1000, 1400, 1800, 2200, 2600, 3000, 5000, 7000, 9000, 10000};
+   vector<int> strSizeRange = {400, 600, 800, 1000, 1400, 1800, 2200, 2600, 3000, 5000, 7000, 9000, 10000};
    test.kshingle3D(GenSync::SyncProtocol::CPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
     test.kshingle3D(GenSync::SyncProtocol::InteractiveCPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
     test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence, randSampleTxt);
-//     vector<int> strSizeRange = {100};
-//     test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence, randSampleTxt);
+//     vector<int> strSizeRange = {200};
+//   test.kshingle3D(GenSync::SyncProtocol::CPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
+//    test.kshingle3D(GenSync::SyncProtocol::InteractiveCPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
+//    test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence, randSampleTxt);
 
 
 //    PerformanceData test3 = PerformanceData(tesPts);

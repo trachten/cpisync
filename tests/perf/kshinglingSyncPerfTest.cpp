@@ -39,7 +39,7 @@ auto strRecon = PerformanceData::StringReconProtocol::KshinglingSync;
 void KshingleSyncPerf::kshingleTest3D(){
     PerformanceData test = PerformanceData(tesPts);
     vector<int> editDistRange;
-   vector<int> strSizeRange = {400, 600, 800, 1000, 1400, 1800, 2200, 2600, 3000, 5000, 7000, 9000, 10000};
+   vector<int> strSizeRange = {400, 600, 800, 1000, 1400, 1800, 2000, 2200, 2600, 3000, 5000, 7000, 9000, 10000};
    test.kshingle3D(GenSync::SyncProtocol::CPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
     test.kshingle3D(GenSync::SyncProtocol::InteractiveCPISync,editDistRange,strSizeRange,target_confidence, randSampleTxt);
     test.kshingle3D(GenSync::SyncProtocol::IBLTSyncSetDiff,editDistRange,strSizeRange,target_confidence, randSampleTxt);

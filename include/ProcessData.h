@@ -24,14 +24,69 @@
     #include "sys/sysinfo.h"
     #include "stdlib.h"
     #include "stdio.h"
-    #include "string.h"
+
 #endif
+#include <string>
+#include <gperftools/heap-profiler.h> // heap profiler
 
+static size_t NOT_SET = 0; // not set parameters are not used
 
-static size_t NOT_SET = -1; // not set parameters are not used
-
+struct Resources{
+    struct timespec start_time, finish_time;
+    double TimeElapsed;
+    size_t start_vmem, finish_vmem, VmemUsed;
+};
 
 using namespace std;
+
+#if __APPLE__
+
+inline size_t getHeapSize(){
+    size_t mem_size = 0;
+    char* tmp = GetHeapProfile();
+    if (tmp) {
+        string str(tmp);
+        str = str.substr(0,str.find("["));
+        str = str.substr(str.find(":")+1);
+        str = str.substr(str.find(":")+1);
+        if (!str.empty()) mem_size = stoul(str);
+    }
+    delete tmp;
+    return mem_size;
+}
+
+inline double getFinishTime(Resources& res){
+    double str_time;
+
+    clock_gettime(CLOCK_MONOTONIC, &res.finish_time);
+
+    str_time = (res.finish_time.tv_sec - res.start_time.tv_sec);
+    str_time += (res.finish_time.tv_nsec - res.start_time.tv_nsec) / 1000000000.0;
+    return str_time;
+}
+
+inline void initResources(Resources& res){
+    clock_gettime(CLOCK_MONOTONIC, &res.start_time);
+    HeapProfilerStart("Resource Monitor");
+    res.start_vmem = getHeapSize();
+}
+
+inline bool resourceMonitor(Resources& res, double cap_secs, size_t cap_bytes){
+    if(!IsHeapProfilerRunning()){
+        return (cap_secs > getFinishTime(res));
+    }else {
+        return (cap_secs > getFinishTime(res)) and (cap_bytes > getHeapSize());
+    }
+}
+
+inline void resourceReport(Resources& res){
+    res.TimeElapsed = getFinishTime(res);
+    if(!IsHeapProfilerRunning()) return;
+    res.finish_vmem = getHeapSize();
+    HeapProfilerStop();
+    res.VmemUsed = res.finish_vmem - res.start_vmem;
+}
+#endif
 
  // VM currently Used by my process
 
@@ -111,7 +166,7 @@ inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 2e
 
         //cout<< std::setprecision(std::numeric_limits<long double>::digits10 + 1)<< t_info.virtual_size*(long double)1.25e-10<<endl; // mem print
 //        if (t_info.virtual_size - virtualMemUsed + t_info.virtual_size> stats.f_bsize * stats.f_bavail) return false; // return if no Virtual mem available
-        if (virtualMem == NOT_SET or virtualMem == 0) {//set initial mem
+        if (virtualMem == NOT_SET) {//set initial mem
             virtualMem = (size_t) t_info.virtual_size;
         } else {
             if (t_info.virtual_size - virtualMem > MaxMem) return false;
@@ -133,7 +188,7 @@ inline bool virtualMemMonitor(size_t & virtualMem=NOT_SET, const int MaxMem = 2e
 //    virtualMem += memInfo.totalswap - memInfo.freeswap;
 //    virtualMem *= memInfo.mem_unit;
 
-        if (virtualMem == NOT_SET or virtualMem == 0) {//set initial mem
+        if (virtualMem == NOT_SET) {//set initial mem
             // virtualMem = memInfo.totalram - memInfo.freeram;
             // virtualMem += memInfo.totalswap - memInfo.freeswap;
             // virtualMem *= memInfo.mem_unit;

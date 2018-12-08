@@ -51,8 +51,17 @@ if(GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "Inte
 
 // Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
                     auto str_s = clock();
+//                    struct timespec start, finish;
+//                    double str_time;
+
+//                    clock_gettime(CLOCK_MONOTONIC, &start);
 
                     bool success_StrRecon = Bob.addStr(Bobtxt, true);
+
+//                    clock_gettime(CLOCK_MONOTONIC, &finish);
+//
+//                    str_time = (finish.tv_sec - start.tv_sec);
+//                    str_time += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
                     double str_time = (double) (clock() - str_s) / CLOCKS_PER_SEC;
 
                     forkHandleReport report = forkHandle(Alice, Bob, false);
@@ -61,7 +70,7 @@ if(GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "Inte
                                              Alice.dumpString()->to_string()); // str Recon is deterministic, if not success , set recon is the problem
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
-                              to_string(report.CPUtime), to_string(str_time + (report.totalTime - report.CPUtime)),
+                              to_string(report.CPUtime), to_string(str_time),
                               to_string(report.bytesVM), to_string(success_SetRecon), to_string(success_StrRecon)});
 
                     delete Alicetxt;

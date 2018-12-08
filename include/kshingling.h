@@ -24,6 +24,9 @@ using namespace NTL;
 
 typedef unsigned int idx_t;
 
+static const double MAX_TIME = 300; // secs
+static const size_t MAX_VM_SIZE = 1e10; //bytes
+
 class K_Shingle {
 public:
     // Communicant needs to access the internal representation of an kshingle to send it and receive it
@@ -114,9 +117,13 @@ public:
         shingleSet_str.clear();
     };
 
-    size_t getUsedVM(){
-        return pMem;
+    size_t getUsedVM(){ // bytes
+        return initRes.VmemUsed;
     };
+
+    double getUsedTime(){ //secs
+        return initRes.TimeElapsed;
+    }
 
 private:
     // local data
@@ -125,7 +132,7 @@ private:
     K_Shingle();
 
     size_t initVM =0, pMem = 0; // keeps track of Ram usage
-
+    Resources initRes;
     // k and stopword better be the same between two hosts, or should be transferred.
     size_t k;  //shingle size
 

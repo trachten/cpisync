@@ -12,7 +12,8 @@ K_Shingle::~K_Shingle() = default;
 
 K_Shingle::K_Shingle(const size_t shingle_size, const char stop_word)
 : k(shingle_size), stopword(stop_word) {
-    virtualMemMonitor(initVM);
+//    virtualMemMonitor(initVM);
+
 }
 
 bool K_Shingle::create(const string str) {
@@ -100,6 +101,7 @@ pair<string,idx_t> K_Shingle::reconstructStringBacktracking(idx_t strOrder) {
 //        // Delete the first edge by value
         string final_str;
         shingle2string(changed_shingleSet, startString, strCollect_size, strOrder, final_str, startString);
+        resourceReport(initRes);
         if (strCollect_size == 0 || strCollect_size < strOrder) { // failed to recover a string
             return make_pair("", 0);  // return 0 for fail
         }
@@ -109,15 +111,16 @@ pair<string,idx_t> K_Shingle::reconstructStringBacktracking(idx_t strOrder) {
     }
 }
 
-
 bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, string curEdge, idx_t &strCollect_size,
                                idx_t &str_order, string &final_str, string str) {
+
 
 /**
  * nxtEdgeStack: [[idx of nxt edges];[];...] Register the state of nxt possible edges 
  * stateStack: [[occr of shingles ];[];...] Register the state of shigle set occurrences
  */
     vector<vector<idx_t>> nxtEdgeStack, stateStack; // check and can not be negative
+    initResources(initRes); // initiate Recourses tracking
 
     vector<idx_t> origiState(changed_shingleOccur.size()); // compose the original state
     for (idx_t i = 0; i < changed_shingleOccur.size(); ++i) {
@@ -130,11 +133,14 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
     // Init Original state
     stateStack.push_back(origiState);
     idx_t nxt_idx = 0;
-
     while (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1) { // while state stack is not empty
 
-        if (!virtualMemMonitor(initVM))
+//        if (!virtualMemMonitor(initVM))
+//            return false;
+
+        if (!resourceMonitor( initRes, MAX_TIME, MAX_VM_SIZE))
             return false;
+
         //printMemUsage();
         auto nxtEdges = getEdgeIdx(curEdge.substr(1), stateStack.back());
 
@@ -187,6 +193,7 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
         // if we reached a stop point
         if (shingleSet[nxt_idx].first.back() == stopword and emptyState(stateStack.back())) {
+            char* a = GetHeapProfile();
             strCollect_size++;
             if (str == orig_string || (strCollect_size == str_order and str_order != 0)) {
                 str_order = strCollect_size;
@@ -210,7 +217,7 @@ void K_Shingle::updateShingleSet_str(string shingle) {
         shingleSet.emplace_back(shingle.substr(0, ind), stoi(shingle.substr(ind + 1)));
     }
     catch (std::exception e) {
-        cout << "what do we have here: " << shingle << endl;
+        cout << "updateShingleSet_str Failed, shingle inputs are not in the parsible format " << shingle << endl;
     }
     shingleSet_str.push_back(shingle);
 }

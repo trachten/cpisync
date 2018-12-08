@@ -54,7 +54,7 @@ endif(APPLE)
 
 # some flags
 if(APPLE)
-set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST -fopenmp")
+set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST -fopenmp -ltcmalloc")
 else()
 set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST -lntl")
 endif(APPLE)

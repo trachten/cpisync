@@ -41,7 +41,6 @@ bool K_Shingle::create(const string str) {
         for (auto item : tmpShingleMap){
             shingleSet.emplace_back(item.first, item.second);
             shingleSet_str.push_back(item.first+":"+to_string(item.second));
-            (shingleSet_str.back().size()>str_k)? str_k = shingleSet_str.back().size() : 0;
         }
     } else {
         throw invalid_argument("No input string");

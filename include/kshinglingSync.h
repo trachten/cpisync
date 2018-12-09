@@ -46,9 +46,10 @@ public:
 
     bool reconstructString(DataObject *&recovered_string, const list<DataObject *> &Elems) override;
 
-    vector<DataObject *> addStr(DataObject *datum, bool backtrack) override;
+    bool addStr(DataObject* str, vector<DataObject*> &datum,  bool backtrack) override;
 
-    string reconString(size_t cycNum) {
+
+        string reconString(size_t cycNum) {
         return myKshingle.reconstructStringBacktracking(cycNum).first;
     };
 

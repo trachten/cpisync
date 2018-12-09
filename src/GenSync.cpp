@@ -227,20 +227,21 @@ bool GenSync::addStr(DataObject *newStr, bool backtrack) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addStr");
     // store locally
     myString = newStr;
-
+    bool back_track_success = false;
     // update synch methods' metadata
     vector<shared_ptr<SyncMethod>>::iterator itAgt;
     for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
-        vector<DataObject*> Elems = (*itAgt)->addStr(newStr, backtrack);
+        vector<DataObject *> Elems;
+        back_track_success = (*itAgt)->addStr(newStr, Elems, backtrack);
 //        if (Elems.empty()) return false;
-        for (auto item : Elems) addElem(item);
+        for (DataObject * item : Elems) addElem(item);
     }
 
     // update file
     if (outFile != nullptr)
         (*outFile) << newStr->to_string() << endl;
 
-    return true;
+    return back_track_success;
 }
 // delete element
 

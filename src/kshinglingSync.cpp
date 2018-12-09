@@ -120,7 +120,7 @@ void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size
     int err = 8;// negative log of acceptable error probability for probabilistic syncs
 
     if (setSyncProtocol == GenSync::SyncProtocol::CPISync) {
-        eltSize = 14 + (myKshingle.getshinglelen_str()+3) * 8;
+        eltSize = 14 + (myKshingle.getshinglelen_str()+3) * 8; // using k and hardcode to +3 for 2 digits and one ":", finding the max might cuase parameter missmatch
         setHost = make_shared<ProbCPISync>(5e3, eltSize, err, true);
     } else if (setSyncProtocol == GenSync::SyncProtocol::InteractiveCPISync) {
         eltSize = 14 + (myKshingle.getshinglelen_str()+3) * 8;
@@ -145,23 +145,22 @@ bool kshinglingSync::reconstructString(DataObject* & recovered_string, const lis
     return cycleNum != 0;
 }
 
-vector<DataObject*> kshinglingSync::addStr(DataObject* datum, bool backtrack){
+bool kshinglingSync::addStr(DataObject* str, vector<DataObject*> &datum,  bool backtrack){
     // call parent add
-    SyncMethod::addStr(datum, backtrack);
-    strLen = (datum->to_string()).size();
+    SyncMethod::addStr(str, datum, backtrack);
+    strLen = (str->to_string()).size();
     myKshingle.clear_shingleSet();
-    myKshingle.inject(datum->to_string());
+    myKshingle.inject(str->to_string());
     (backtrack)? cycleNum = myKshingle.reconstructStringBacktracking().second : cycleNum = 0;
 
     for (DataObject* dop : setPointers)
         delete dop; //Clear SetPointers if any
 //    setPointers.clear();
-    if (backtrack and cycleNum == 0) return setPointers;
-
     for (auto item : myKshingle.getShingleSet_str()){
         setPointers.push_back(new DataObject(StrtoZZ(item)));
     }
-    return setPointers;
+    datum = setPointers;
+    return (!backtrack or cycleNum > 0);
 }
 
 long kshinglingSync::getVirMem(){

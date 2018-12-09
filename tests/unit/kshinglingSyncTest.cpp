@@ -27,11 +27,11 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 2200;
+    int string_len = 100;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
-    size_t shingle_len =ceil(log2(string_len));
-    int editDistance_bar = 40;
+    size_t shingle_len =ceil(log(string_len));
+    int editDistance_bar = 4;
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
@@ -46,6 +46,7 @@ void kshinglingSyncTest::testAll() {
             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
             setComm(GenSync::SyncComm::socket).
             setShingleLen(shingle_len).
+            setPort(8001).
             build();
     Alice.addStr(new DataObject(Alicetxt), false);
 
@@ -55,18 +56,19 @@ void kshinglingSyncTest::testAll() {
             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
             setComm(GenSync::SyncComm::socket).
             setShingleLen(shingle_len).
+            setPort(8001).
             build();
-    Bob.addStr(new DataObject(Bobtxt), false);
+    Bob.addStr(new DataObject(Bobtxt), true);
 
     forkHandleReport report = forkHandle(Alice, Bob, false);
 
-
-    multiset<string> alice_set;
-    for(auto item : Alice.dumpElements()) alice_set.insert(item->to_string());
-    multiset<string> bob_set;
-    for(auto item : Bob.dumpElements()) bob_set.insert(item->to_string());
-
-    CPPUNIT_ASSERT(multisetDiff(alice_set, bob_set).empty());// separate set recon success from string recon
+//
+//    multiset<string> alice_set;
+//    for(auto item : Alice.dumpElements()) alice_set.insert(item->to_string());
+//    multiset<string> bob_set;
+//    for(auto item : Bob.dumpElements()) bob_set.insert(item->to_string());
+//
+//    CPPUNIT_ASSERT(multisetDiff(alice_set, bob_set).empty());// separate set recon success from string recon
     //CPISync Setup
     //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*6,ceil(numDif*2.3), 0,0);
 
@@ -83,7 +85,8 @@ void kshinglingSyncTest::testAll() {
     cout << "bitsTot: " + to_string(report.bytesTot) << endl;
     cout << "bitsR: " + to_string(report.bytesRTot) << endl;
     cout << "VM used (bits):"<< report.bytesVM<<endl;
-//    CPPUNIT_ASSERT(recoveredAlice == Bobtxt);
+    if(recoveredAlice != Bobtxt) cout<< "enable stgring recon in GenSync"<<endl;
+    CPPUNIT_ASSERT(recoveredAlice == Bobtxt);
     CPPUNIT_ASSERT(report.success);
 //    syncTest(GenSyncServer, GenSyncClient);
 

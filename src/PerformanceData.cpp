@@ -38,7 +38,7 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
                             setComm(GenSync::SyncComm::socket).
-                            setPort(8001).
+                            setPort(8002).
                             setShingleLen(shingle_len).
                             build();
 
@@ -50,7 +50,7 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
                             setComm(GenSync::SyncComm::socket).
-                            setPort(8001).
+                            setPort(8002).
                             setShingleLen(shingle_len).
                             build();
 

@@ -114,11 +114,10 @@ public:
      * @param str
      * @return
      */
-    virtual vector<DataObject*> addStr(DataObject* str, bool bakctrack) {
+    virtual bool addStr(DataObject* str, vector<DataObject*> &datum,  bool backtrack){
         originStr = str;
-        vector<DataObject*> res;
         isStringRecon = true;
-        return res;
+        return true;
     }
 
     // INFORMATIONAL

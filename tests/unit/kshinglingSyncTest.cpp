@@ -27,16 +27,16 @@ void kshinglingSyncTest::tearDown() {}
 
 void kshinglingSyncTest::testAll() {
 
-    int string_len = 500;
+    int string_len = 2200;
 
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
     size_t shingle_len =ceil(log2(string_len));
     int editDistance_bar = 40;
-    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::InteractiveCPISync;
+    GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
 
-    string Alicetxt = randAsciiStr(string_len);
+    string Alicetxt = randSampleTxt(string_len);
     string Bobtxt = randStringEdit(Alicetxt, editDistance_bar);
 
 
@@ -56,10 +56,17 @@ void kshinglingSyncTest::testAll() {
             setComm(GenSync::SyncComm::socket).
             setShingleLen(shingle_len).
             build();
-    Bob.addStr(new DataObject(Bobtxt), true);
+    Bob.addStr(new DataObject(Bobtxt), false);
 
     forkHandleReport report = forkHandle(Alice, Bob, false);
 
+
+    multiset<string> alice_set;
+    for(auto item : Alice.dumpElements()) alice_set.insert(item->to_string());
+    multiset<string> bob_set;
+    for(auto item : Bob.dumpElements()) bob_set.insert(item->to_string());
+
+    CPPUNIT_ASSERT(multisetDiff(alice_set, bob_set).empty());// separate set recon success from string recon
     //CPISync Setup
     //kshinglingSync kshingling = kshinglingSync(base_set_proto, base_comm, 14+(shingle_len+2)*6,ceil(numDif*2.3), 0,0);
 
@@ -76,7 +83,7 @@ void kshinglingSyncTest::testAll() {
     cout << "bitsTot: " + to_string(report.bytesTot) << endl;
     cout << "bitsR: " + to_string(report.bytesRTot) << endl;
     cout << "VM used (bits):"<< report.bytesVM<<endl;
-    CPPUNIT_ASSERT(recoveredAlice == Bobtxt);
+//    CPPUNIT_ASSERT(recoveredAlice == Bobtxt);
     CPPUNIT_ASSERT(report.success);
 //    syncTest(GenSyncServer, GenSyncClient);
 
@@ -120,7 +127,6 @@ void kshinglingSyncTest::testIdividualCPI() {
 
     cout<<"Add Time: "<<to_string(double(t2-t1)/CLOCKS_PER_SEC)<<endl;
     cout<<"Sync Time: "<<to_string(double(t3-t2)/CLOCKS_PER_SEC)<<endl;
-    auto a = Alice.dumpElements();
     cout << "Comm:" + to_string(res.bytes)<<endl;
     cout << "Comm Tot:" + to_string(res.bytesTot)<<endl;
     cout << "Time:" + to_string(res.totalTime)<<endl;

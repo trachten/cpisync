@@ -104,7 +104,7 @@ public:
      */
     vector<string> getShingleSet_str() { return shingleSet_str; };
 
-    size_t getshinglelen_str() {return shingleSet_str.back().size();};
+    size_t getshinglelen_str() {return str_k;};
 
     /**
      * Interact with reciving set element update as string
@@ -134,7 +134,7 @@ private:
     size_t initVM =0, pMem = 0; // keeps track of Ram usage
     Resources initRes;
     // k and stopword better be the same between two hosts, or should be transferred.
-    size_t k;  //shingle size
+    size_t k = 0, str_k = 0;  //shingle size
 
     const char stopword;  // default stop word is "$"
 

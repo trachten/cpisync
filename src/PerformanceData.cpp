@@ -9,11 +9,16 @@ PerformanceData::~PerformanceData() = default;
 
 void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
                                  vector<int> str_sizeRange, int confidence, string (*stringInput)(int)) {
-                                     string protoName;
-if(GenSync::SyncProtocol::CPISync == setReconProto) protoName = "CPISync";
-if(GenSync::SyncProtocol::IBLTSyncSetDiff == setReconProto) protoName = "IBLTSyncSetDiff";
-if(GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "InteractiveCPISync";
-    PlotRegister plot = PlotRegister("kshingle "+protoName,
+    string protoName, str_type;
+    if (GenSync::SyncProtocol::CPISync == setReconProto) protoName = "CPISync";
+    if (GenSync::SyncProtocol::IBLTSyncSetDiff == setReconProto) protoName = "IBLTSyncSetDiff";
+    if (GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "InteractiveCPISync";
+
+    if (*stringInput == randAsciiStr) str_type = "RandAscii";
+    if (*stringInput == randSampleTxt) str_type = "RandText";
+    if (*stringInput == randSampleCode) str_type = "RandCode";
+
+    PlotRegister plot = PlotRegister("kshingle " + protoName + " " + str_type,
                                      {"Str Size", "Edit Diff", "Comm (bits)", "Time Set(s)", "Time Str(s)",
                                       "Space (bits)", "Set Recon True", "Str Recon True"});
     //TODO: Separate Comm, and Time, Separate Faile rate.
@@ -33,21 +38,23 @@ if(GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "Inte
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
                             setComm(GenSync::SyncComm::socket).
+                            setPort(8001).
                             setShingleLen(shingle_len).
                             build();
 
 
-                    DataObject* Alicetxt = new DataObject(stringInput(str_size));
+                    DataObject *Alicetxt = new DataObject(stringInput(str_size));
 
                     Alice.addStr(Alicetxt, false);
                     GenSync Bob = GenSync::Builder().
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
                             setComm(GenSync::SyncComm::socket).
+                            setPort(8001).
                             setShingleLen(shingle_len).
                             build();
 
-                    DataObject* Bobtxt = new DataObject(randStringEdit((*Alicetxt).to_string(), edit_dist));
+                    DataObject *Bobtxt = new DataObject(randStringEdit((*Alicetxt).to_string(), edit_dist));
 
 // Flag true includes backtracking, return false if backtracking fails in the alloted amoun tog memory
                     auto str_s = clock();
@@ -65,13 +72,21 @@ if(GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "Inte
                     double str_time = (double) (clock() - str_s) / CLOCKS_PER_SEC;
 
                     forkHandleReport report = forkHandle(Alice, Bob, false);
-                    auto bobtxtis = Alice.dumpString()->to_string();
-                    bool success_SetRecon = ((*Bobtxt).to_string() ==
-                                             Alice.dumpString()->to_string()); // str Recon is deterministic, if not success , set recon is the problem
+
+                    multiset<string> alice_set;
+                    for (auto item : Alice.dumpElements()) alice_set.insert(item->to_string());
+                    multiset<string> bob_set;
+                    for (auto item : Bob.dumpElements()) bob_set.insert(item->to_string());
+
+                    bool success_SetRecon = multisetDiff(alice_set,
+                                                         bob_set).empty();// separate set recon success from string recon
+//                    auto bobtxtis = Alice.dumpString()->to_string();
+//                    bool success_SetRecon = ((*Bobtxt).to_string() ==
+//                                             Alice.dumpString()->to_string()); // str Recon is deterministic, if not success , set recon is the problem
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
                               to_string(report.CPUtime), to_string(str_time),
-                              to_string(report.bytesVM), to_string(success_SetRecon), to_string(success_StrRecon)});
+                              to_string(Bob.getVirMem(0)), to_string(success_SetRecon), to_string(success_StrRecon)});
 
                     delete Alicetxt;
                     delete Bobtxt;

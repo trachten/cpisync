@@ -28,28 +28,37 @@
 #endif
 #include <string>
 #include <gperftools/heap-profiler.h> // heap profiler
-
 static size_t NOT_SET = 0; // not set parameters are not used
 
 struct Resources{
     struct timespec start_time, finish_time;
     double TimeElapsed;
-    size_t start_vmem, finish_vmem, VmemUsed;
+    size_t VmemUsed;
 };
 
 using namespace std;
 
 #if __APPLE__
 
-inline size_t getHeapSize(){
+inline size_t getHeapSize() {
     size_t mem_size = 0;
-    char* tmp = GetHeapProfile();
-    if (tmp) {
+    char *tmp = GetHeapProfile();
+    if (IsHeapProfilerRunning() and tmp) {
         string str(tmp);
-        str = str.substr(0,str.find("["));
-        str = str.substr(str.find(":")+1);
-        str = str.substr(str.find(":")+1);
-        if (!str.empty()) mem_size = stoul(str);
+        if (!str.empty()) {
+            string second_str = str.substr(str.find("]") + 1);
+            second_str = second_str.substr(0, second_str.find("["));
+            second_str = second_str.substr(second_str.find(":") + 1);
+            size_t mem_last = stoul(second_str);
+            str = str.substr(0, str.find("["));
+            str = str.substr(str.find(":") + 1);
+            str = str.substr(str.find(":") + 1);
+            mem_size = stoul(str) - mem_last;
+        }
+//        FLAGS_verbose=-1;
+
+        HeapProfilerStop(); // clear cache
+        HeapProfilerStart("Resource Monitor"); // restart counting
     }
     delete tmp;
     return mem_size;
@@ -57,9 +66,7 @@ inline size_t getHeapSize(){
 
 inline double getFinishTime(Resources& res){
     double str_time;
-
     clock_gettime(CLOCK_MONOTONIC, &res.finish_time);
-
     str_time = (res.finish_time.tv_sec - res.start_time.tv_sec);
     str_time += (res.finish_time.tv_nsec - res.start_time.tv_nsec) / 1000000000.0;
     return str_time;
@@ -68,23 +75,23 @@ inline double getFinishTime(Resources& res){
 inline void initResources(Resources& res){
     clock_gettime(CLOCK_MONOTONIC, &res.start_time);
     HeapProfilerStart("Resource Monitor");
-    res.start_vmem = getHeapSize();
+    res.VmemUsed = 0;
 }
 
 inline bool resourceMonitor(Resources& res, double cap_secs, size_t cap_bytes){
     if(!IsHeapProfilerRunning()){
         return (cap_secs > getFinishTime(res));
     }else {
-        return (cap_secs > getFinishTime(res)) and (cap_bytes > getHeapSize());
+        return (cap_secs > getFinishTime(res));// and (cap_bytes > (res.VmemUsed+=getHeapSize()));
     }
 }
 
 inline void resourceReport(Resources& res){
     res.TimeElapsed = getFinishTime(res);
     if(!IsHeapProfilerRunning()) return;
-    res.finish_vmem = getHeapSize();
+    res.VmemUsed+=getHeapSize();
+
     HeapProfilerStop();
-    res.VmemUsed = res.finish_vmem - res.start_vmem;
 }
 #endif
 

@@ -12,7 +12,7 @@ K_Shingle::~K_Shingle() = default;
 
 K_Shingle::K_Shingle(const size_t shingle_size, const char stop_word)
 : k(shingle_size), stopword(stop_word) {
-//    virtualMemMonitor(initVM);
+    virtualMemMonitor(initVM);
 
 }
 
@@ -41,6 +41,7 @@ bool K_Shingle::create(const string str) {
         for (auto item : tmpShingleMap){
             shingleSet.emplace_back(item.first, item.second);
             shingleSet_str.push_back(item.first+":"+to_string(item.second));
+            (shingleSet_str.back().size()>str_k)? str_k = shingleSet_str.back().size() : 0;
         }
     } else {
         throw invalid_argument("No input string");
@@ -101,7 +102,6 @@ pair<string,idx_t> K_Shingle::reconstructStringBacktracking(idx_t strOrder) {
 //        // Delete the first edge by value
         string final_str;
         shingle2string(changed_shingleSet, startString, strCollect_size, strOrder, final_str, startString);
-        resourceReport(initRes);
         if (strCollect_size == 0 || strCollect_size < strOrder) { // failed to recover a string
             return make_pair("", 0);  // return 0 for fail
         }
@@ -138,9 +138,6 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 //        if (!virtualMemMonitor(initVM))
 //            return false;
 
-        if (!resourceMonitor( initRes, MAX_TIME, MAX_VM_SIZE))
-            return false;
-
         //printMemUsage();
         auto nxtEdges = getEdgeIdx(curEdge.substr(1), stateStack.back());
 
@@ -158,7 +155,6 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
             stateStack.pop_back();
             //(!stateStack.empty()) ? stateStack.push_back(stateStack.back()) : stateStack.push_back(origiState);
-
         } else if (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1 and
                    nxtEdgeStack.back().empty()) {// if this state is dead and we should look back a state
             if (!str.empty()) str.pop_back();
@@ -175,13 +171,13 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
                 nxtEdgeStack.back().pop_back();
                 stateStack.pop_back();
             }
-
         } else if (stateStack.size() != nxtEdgeStack.size() + 1) {
             throw invalid_argument("state stack and nxtEdge Stack size miss match" + to_string(stateStack.size())
                                    + ":" + to_string(nxtEdgeStack.size()));
         }
 
-
+        if (!resourceMonitor( initRes, MAX_TIME, MAX_VM_SIZE))
+            return false;
 
         str += shingleSet[nxt_idx].first.back();
 
@@ -193,7 +189,6 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
 
         // if we reached a stop point
         if (shingleSet[nxt_idx].first.back() == stopword and emptyState(stateStack.back())) {
-            char* a = GetHeapProfile();
             strCollect_size++;
             if (str == orig_string || (strCollect_size == str_order and str_order != 0)) {
                 str_order = strCollect_size;
@@ -201,9 +196,8 @@ bool K_Shingle::shingle2string(vector<pair<string,idx_t>> changed_shingleOccur, 
             }
         }
 
-
-
         if (strCollect_size == str_order && str_order != 0) {
+            resourceReport(initRes);
             return true;
         }
     }

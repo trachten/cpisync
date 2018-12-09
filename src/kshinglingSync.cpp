@@ -120,15 +120,15 @@ void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size
     int err = 8;// negative log of acceptable error probability for probabilistic syncs
 
     if (setSyncProtocol == GenSync::SyncProtocol::CPISync) {
-        eltSize = 14 + (myKshingle.getshinglelen_str() + 3) * 8;
-        setHost = make_shared<ProbCPISync>(1e4, eltSize, err, true);
+        eltSize = 14 + (myKshingle.getshinglelen_str()) * 8;
+        setHost = make_shared<ProbCPISync>(5e3, eltSize, err, true);
     } else if (setSyncProtocol == GenSync::SyncProtocol::InteractiveCPISync) {
-        eltSize = 14 + (myKshingle.getshinglelen_str() + 3) * 8;
+        eltSize = 14 + (myKshingle.getshinglelen_str()) * 8;
         setHost = make_shared<InterCPISync>(5, eltSize, err, 3, true);
         //(ceil(log(set_size))>1)?:2;
     } else if (setSyncProtocol == GenSync::SyncProtocol::IBLTSyncSetDiff) {
         (mbar == 0) ? mbar = 10 : mbar;
-        eltSize = myKshingle.getElemSize();
+        eltSize = myKshingle.getshinglelen_str();
         setHost = make_shared<IBLTSync_SetDiff>(mbar, eltSize, true);
     }
 }

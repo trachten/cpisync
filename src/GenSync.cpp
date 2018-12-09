@@ -133,10 +133,10 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
             delElemGroup(selfMinusOther);
         }
 //TODO: if not one way, enable this and set up a flag for one way , mind sync client or sync server
-        if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
+//        if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
 //            syncSuccess = (*syncAgent)->reconstructString(
 //                    myString,dumpElements()); // reconstruct the string based on the new information from set reconciliation
-        }
+//        }
 
 
     }
@@ -188,11 +188,11 @@ bool GenSync::startSync(int method_num,bool isRecon) {
             // newly added --- worked for general test
             delElemGroup(selfMinusOther);
         }
-
-        if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
-            syncSuccess = (*syncAgentIt)->reconstructString(
-                    myString, dumpElements()); // reconstruct the string based on the new information from set reconciliation
-        }
+// Disabled for performace testing
+//        if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
+//            syncSuccess = (*syncAgentIt)->reconstructString(
+//                    myString, dumpElements()); // reconstruct the string based on the new information from set reconciliation
+//        }
 
     }
 
@@ -232,7 +232,7 @@ bool GenSync::addStr(DataObject *newStr, bool backtrack) {
     vector<shared_ptr<SyncMethod>>::iterator itAgt;
     for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
         vector<DataObject*> Elems = (*itAgt)->addStr(newStr, backtrack);
-        if (Elems.empty()) return false;
+//        if (Elems.empty()) return false;
         for (auto item : Elems) addElem(item);
     }
 

@@ -4,8 +4,8 @@
 
 #include "SetsOfContent.h"
 
-SetsOfContent::SetsOfContent(size_t block_size, size_t terminal_str_size, size_t levels)
-: BlockSize(block_size), TermStrSize(terminal_str_size), Levels(levels){
+SetsOfContent::SetsOfContent(size_t terminal_str_size, size_t levels)
+: TermStrSize(terminal_str_size), Levels(levels){
 
 }
 
@@ -36,11 +36,18 @@ size_t SetsOfContent::add_to_dictionary(string str) {
     return str_to_hash(str);
 }
 
-bool SetsOfContent::addStr(DataObject *str, vector<DataObject *> &datum, bool sync) {
+void SetsOfContent::injectString(string str) {
     size_t shingle_size = log10(myString.size());// consider how long of a content
     size_t space = shingle_size*126; //126 for ascii content
 
 }
 
+bool SetsOfContent::addStr(DataObject *str, vector<DataObject *> &datum, bool sync) {
 
-// TODO: partition to small chunks and have one number to reprensent each chunck.
+    return true;
+}
+
+
+
+
+

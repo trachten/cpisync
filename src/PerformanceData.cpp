@@ -30,7 +30,7 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
         for (int edit_dist : edit_distRange) {
 
 //            int shingle_len = ceil(log2(str_size));
-            int shingle_len = ceil(log10(str_size))+1;
+            int shingle_len = ceil(log10(str_size));
 
             for (int con = 0; con < confidence; ++con) {
                 try {

@@ -26,16 +26,19 @@ typedef pair<pair<size_t, size_t>, size_t> shingle_hash; //pair<pair<first_str_h
 
 class SetsOfContent : public SyncMethod {
 public:
-    SetsOfContent(size_t block_size, size_t terminal_str_size = 50, size_t levels = NOT_SET);
+    SetsOfContent(size_t terminal_str_size = 50, size_t levels = NOT_SET);
 
     ~SetsOfContent() = default;
 
+    void injectString(string str);
+
     bool addStr(DataObject* str, vector<DataObject*> &datum,  bool sync) override;
 
+    string getName() override {return "Sets of Content";}
 private:
 
     string myString; // original input string
-    size_t BlockSize, TermStrSize, Levels;
+    size_t TermStrSize, Levels;
 
     // each level: store string and their conter-part on the other side
     vector<map<size_t, size_t>> conformingPair;

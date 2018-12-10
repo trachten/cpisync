@@ -23,7 +23,7 @@ const int strSize = 5;
 
 const int tesPts = 6
         ;// Test Pts per graph
-const int target_confidence = 10;// Confidence interval
+const int target_confidence = 20;// Confidence interval
 const int confidenceCap = 40; // after edit distance exceed confidenceCap, confidence go to 1.
 
 //const pair<int,int> editDistRange = make_pair(1, 1000); // range of edit distance

@@ -60,5 +60,10 @@ private:
     map<ZZ, DataObject *> CPI_hash;
 
     bool hashQ = false;
+
+    struct cpi {
+        ZZ space;
+        vector<ZZ> evals, test_pts, self_mius_others, others_minus_self;//sorted;
+    };
 };
 #endif //CPISYNCLIB_CPI_H

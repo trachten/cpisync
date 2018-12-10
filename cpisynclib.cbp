@@ -182,6 +182,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/include/SetsOfContent.h">
+			<Option target="cpisynclib"/>
+		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/AdjMtx.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
@@ -231,6 +234,9 @@
 			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/PerformanceData.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/SetsOfContent.cpp">
 			<Option target="cpisynclib"/>
 		</Unit>
 		<Unit filename="/Users/bowensong/Google Drive/BU/StringReconResearch/cpisync/src/SetsOfStrings.cpp">

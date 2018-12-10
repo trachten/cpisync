@@ -34,13 +34,14 @@
  * Report structure for a forkHandle run
   */
 struct forkHandleReport {
-    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
-    long bytes;       // the number of bytes communicated
-    long bytesRTot;    // the number of bytes from total comm
-    long bytesTot;      // the total number of bytes communicated
-    long bytesVM;       // the amount of virtual memory used for reconstruction
-    double CPUtime;   // the amount of CPU time used
-    double totalTime; // total time used
+    forkHandleReport() : bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
+
+    long bytes = -1;       // the number of bytes communicated
+    long bytesRTot = -1;    // the number of bytes from total comm
+    long bytesTot = -1;      // the total number of bytes communicated
+    long bytesVM = -1;       // the amount of virtual memory used for reconstruction
+    double CPUtime = -1;   // the amount of CPU time used
+    double totalTime = -1; // total time used
     bool success;     // true iff the sync completed successfully
 };
 

@@ -28,10 +28,10 @@ void kshinglingSyncTest::tearDown() {}
 void kshinglingSyncTest::testAll() {
 
     int string_len = 100;
-
+    //randascii = shingles size log10()+1
     // CPISYNC k = 3 b = 38; k = 4 b = 46; k = 5 b = 54
-    size_t shingle_len =ceil(log(string_len));
-    int editDistance_bar = 4;
+    size_t shingle_len =7;//ceil(log(string_len));
+    int editDistance_bar = 5;
     GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     //GenSync::SyncProtocol base_set_proto = GenSync::SyncProtocol::CPISync;
     char stopword = '$';
@@ -84,7 +84,7 @@ void kshinglingSyncTest::testAll() {
     cout << "Time: " + to_string(report.totalTime) << endl;
     cout << "bitsTot: " + to_string(report.bytesTot) << endl;
     cout << "bitsR: " + to_string(report.bytesRTot) << endl;
-    cout << "VM used (bits):"<< report.bytesVM<<endl;
+    cout << "Btyes: "<< report.bytes<<endl;
     if(recoveredAlice != Bobtxt) cout<< "enable stgring recon in GenSync"<<endl;
     CPPUNIT_ASSERT(recoveredAlice == Bobtxt);
     CPPUNIT_ASSERT(report.success);

@@ -23,7 +23,7 @@ void SetsOfStringsTest::testAll() {
     Alice.injectString(txt);
 
     SetsOfStrings Bob = SetsOfStrings(2,0,1,2); // default parameters
-    Bob.injectString(randStringEdit(txt,100));
+    Bob.injectString(randStringEdit(txt,10));
 
     auto aliceset = Alice.getTerminalSubstr();
     auto bobset = Bob.getTerminalSubstr();

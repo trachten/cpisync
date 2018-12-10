@@ -8,7 +8,7 @@
 PerformanceData::~PerformanceData() = default;
 
 void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
-                                 vector<int> str_sizeRange, int confidence, string (*stringInput)(int)) {
+                                 vector<int> str_sizeRange, int confidence, string (*stringInput)(int), int portnum) {
     string protoName, str_type;
     if (GenSync::SyncProtocol::CPISync == setReconProto) protoName = "CPISync";
     if (GenSync::SyncProtocol::IBLTSyncSetDiff == setReconProto) protoName = "IBLTSyncSetDiff";
@@ -29,7 +29,8 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
         for (int i = 1; i <= tesPts; ++i) edit_distRange.push_back((int) ((str_size * i) / 400));
         for (int edit_dist : edit_distRange) {
 
-            int shingle_len = ceil(log2(str_size));
+//            int shingle_len = ceil(log2(str_size));
+            int shingle_len = ceil(log10(str_size))+1;
 
             for (int con = 0; con < confidence; ++con) {
                 try {
@@ -38,7 +39,7 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
                             setComm(GenSync::SyncComm::socket).
-                            setPort(8002).
+                            setPort(portnum).
                             setShingleLen(shingle_len).
                             build();
 
@@ -50,7 +51,7 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
                             setProtocol(setReconProto).
                             setStringProto(GenSync::StringSyncProtocol::kshinglingSync).
                             setComm(GenSync::SyncComm::socket).
-                            setPort(8002).
+                            setPort(portnum).
                             setShingleLen(shingle_len).
                             build();
 

@@ -72,18 +72,18 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
 //                    str_time += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
                     double str_time = (double) (clock() - str_s) / CLOCKS_PER_SEC;
 
-                    forkHandleReport report = forkHandle(Alice, Bob, false);
 
                     multiset<string> alice_set;
                     for (auto item : Alice.dumpElements()) alice_set.insert(item->to_string());
                     multiset<string> bob_set;
                     for (auto item : Bob.dumpElements()) bob_set.insert(item->to_string());
 
-                    bool success_SetRecon = multisetDiff(alice_set,
-                                                         bob_set).empty();// separate set recon success from string recon
+                    int success_SetRecon = multisetDiff(alice_set,
+                                                         bob_set).size();// separate set recon success from string recon
 //                    auto bobtxtis = Alice.dumpString()->to_string();
 //                    bool success_SetRecon = ((*Bobtxt).to_string() ==
 //                                             Alice.dumpString()->to_string()); // str Recon is deterministic, if not success , set recon is the problem
+                    forkHandleReport report = forkHandle(Alice, Bob, false);
 
                     plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot),
                               to_string(report.CPUtime), to_string(str_time),

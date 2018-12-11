@@ -36,6 +36,9 @@ struct Resources{
     size_t VmemUsed;
 };
 
+
+// use PERFTOOLS_VERBOSE=-4 at commandline to get rid of gperf tool printing
+
 using namespace std;
 
 #if __APPLE__
@@ -74,7 +77,7 @@ inline double getFinishTime(Resources& res){
 
 inline void initResources(Resources& res){
     clock_gettime(CLOCK_MONOTONIC, &res.start_time);
-    HeapProfilerStart("Resource Monitor");
+//    HeapProfilerStart("Resource Monitor"); // comment out to disable heap profiling
     res.VmemUsed = 0;
 }
 

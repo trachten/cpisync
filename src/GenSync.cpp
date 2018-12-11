@@ -189,10 +189,10 @@ bool GenSync::startSync(int method_num,bool isRecon) {
             delElemGroup(selfMinusOther);
         }
 // Disabled for performace testing
-//        if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
-//            syncSuccess = (*syncAgentIt)->reconstructString(
-//                    myString, dumpElements()); // reconstruct the string based on the new information from set reconciliation
-//        }
+        if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
+            syncSuccess = (*syncAgentIt)->reconstructString(
+                    myString, dumpElements()); // reconstruct the string based on the new information from set reconciliation
+        }
 
     }
 

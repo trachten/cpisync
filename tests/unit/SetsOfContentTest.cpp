@@ -5,7 +5,7 @@
 CPPUNIT_TEST_SUITE_REGISTRATION(SetsOfContentTest);
 
 void SetsOfContentTest::setDiff() {
-    string alicetxt = randSampleTxt(10000);
+    string alicetxt = randSampleTxt(200000);
     auto Alice = SetsOfContent(100);
     Alice.injectString(alicetxt);
 }

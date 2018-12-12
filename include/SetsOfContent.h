@@ -22,7 +22,13 @@ using std::hash;
 using std::string;
 using namespace NTL;
 
-typedef pair<pair<size_t, size_t>, size_t> shingle_hash; //pair<pair<first_str_hash,second_str_hash>,occurrence>
+struct shingle_hash{
+    size_t first, second, occurr;
+};
+
+//bool shingle_hash_com(shingle_hash a, shingle_hash b) { return a.first < b.first; };
+
+
 
 class SetsOfContent : public SyncMethod {
 public:
@@ -32,16 +38,20 @@ public:
 
     void injectString(string str);
 
+
+// functions for  SyncMethods
     bool addStr(DataObject* str, vector<DataObject*> &datum,  bool sync) override;
 
     string getName() override {return "Sets of Content";}
 private:
 
     string myString; // original input string
-    size_t TermStrSize, Levels;
+    size_t TermStrSize, Levels, Partition;
 
     // each level: store string and their conter-part on the other side
     vector<map<size_t, size_t>> conformingPair;
+
+    vector<vector<vector<shingle_hash>>> tree; // the hash shingle tree
 
     map<size_t, string> dictionary; // TODO: transfer into index of the string to save auxilary space
 
@@ -56,7 +66,7 @@ private:
      * @param shingle_size
      * @param win_size
      */
-    vector<size_t> create_HashSet(string str, size_t space, size_t shingle_size, size_t win_size);
+    vector<size_t> create_HashSet(string str,size_t win_size, size_t space=NOT_SET, size_t shingle_size=NOT_SET);
 
     /**
      * Insert string into dictionary
@@ -74,5 +84,8 @@ private:
         }
         return min;
     }
+
+    // Experiemntal function
+    void update_tree(vector<size_t> hash_vector, size_t level);
 };
 #endif //CPISYNCLIB_SETSOFCONTENT_H

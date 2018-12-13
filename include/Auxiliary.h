@@ -480,6 +480,7 @@ inline string randSampleCode(int len) {
     int MAX_LEN = (int) 1e5; // the sample file is 1e5 characters long
     if (len > MAX_LEN) throw invalid_argument("rand Sample Code can not be more than " + to_string(MAX_LEN));
     string full_txt = scanTxtFromFile("./tests/SampleCode.txt", MAX_LEN);
+    if (len == MAX_LEN) return  full_txt;
     int start_pt = randLenBetween(0,full_txt.size()-len-1);
 
     return full_txt.substr(start_pt,len);

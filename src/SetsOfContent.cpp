@@ -281,7 +281,10 @@ string SetsOfContent::get_str_from(vector<shingle_hash> shingle_set) {
             shingle.occurr--;
             final_str.push_back(shingle.first);
             final_str.push_back(shingle.second);
+            auto ptr = &final_str;
             shingle2hash_train(shingle_set,shingle.cycleVal,final_str);
+            final_str.insert(final_str.begin(),shingle.first);
+            final_str.insert(final_str.begin(),shingle.second);
             break; // there should not be any other shingles that has it
         }
     }

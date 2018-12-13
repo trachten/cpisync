@@ -86,18 +86,15 @@ void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level) {
         throw invalid_argument("hash_vector is zero at level:" + to_string(level) +
                                ". All termianl strgins to be passed down to the bottom level");
 
+    map<pair<size_t, size_t>, size_t> tmp;
+    for (int i = 0; i < hash_vector.size() - 1; ++i) {
+        if (tmp[{hash_vector[i], hash_vector[i + 1]}])
+            tmp[{hash_vector[i], hash_vector[i + 1]}]++;
+        else
+            tmp[{hash_vector[i], hash_vector[i + 1]}] = 1;
+    }
 
     size_t group_id = get_group_signature(hash_vector);
-
-    vector<shingle_hash> lst;
-    auto item = tmp.begin();
-    lst.emplace_back(
-            shingle_hash{.first = item->first.first, .second = item->first.second, .groupID = group_id, .occurr = item->second, .cycleVal = cyc});
-    std::advance(item, 1);
-    for (; item != tmp.end(); ++item) {
-        lst.emplace_back(
-                shingle_hash{.first = item->first.first, .second = item->first.second, .groupID = group_id, .occurr = item->second, .cycleVal = 0});
-    }
 
     // incase a string was not partitioned based on the given window and space size, (either, string is small enough, or it would be partitioned again in a subsequent level)
     if (tmp.empty()) {
@@ -108,13 +105,20 @@ void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level) {
         return;
     }
 
-
+    vector<shingle_hash> lst;
 
     auto cyc = get_cyc_val(hash_vector);
 
+    auto item = tmp.begin();
+    lst.emplace_back(
+            shingle_hash{.first = item->first.first, .second = item->first.second, .groupID = group_id, .occurr = item->second, .cycleVal = cyc});
+    std::advance(item, 1);
+    for (; item != tmp.end(); ++item) {
+        lst.emplace_back(
+                shingle_hash{.first = item->first.first, .second = item->first.second, .groupID = group_id, .occurr = item->second, .cycleVal = 0});
+    }
 
-
-    sort(lst.begin(), lst.end());
+    sort(lst.begin(), lst.end()); // sorting might be unnecessary here due to the use of hashmap above
     //order in lexicographical order for backtracking (sort once at insert, sort another time at reconstruction)
 
     tree[level].insert(tree[level].end(), lst.begin(), lst.end()); // put it in the tree

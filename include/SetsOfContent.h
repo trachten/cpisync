@@ -29,8 +29,7 @@ using namespace NTL;
  * origin is the last origining substring
  */
 struct shingle_hash{
-    size_t first, second, occurr, groupID;
-    unsigned short cycleVal;
+    size_t first, second, occurr, groupID, cycleVal, lvl;
 };
 //Compare and help order struct shingle_hash from a vector
 static bool operator<(const shingle_hash& a, const shingle_hash& b) { return a.first < b.first; };
@@ -47,6 +46,7 @@ public:
 
     void injectString(string str);
 
+    string retriveString();
 
 // functions for  SyncMethods
     bool addStr(DataObject* str, vector<DataObject*> &datum,  bool sync) override;
@@ -60,13 +60,12 @@ public:
     multiset<string> getTerminalStr();
 
     //getShinglesAt
-    multiset<size_t> getShinglesSumAt(int lvl) {
-        if (lvl < 0 or lvl >= tree.size())
-            throw invalid_argument("getShinglesAt a lvl: " + to_string(lvl) + "is out of the range of the tree");
-//        return multiset<shingle_hash>(tree[lvl].begin(), tree[lvl].end());
+    multiset<size_t> getShinglesSum() {
         multiset<size_t> res;
-        for(auto item:tree[lvl]){
-            res.insert(item.first+item.occurr+item.second+item.groupID);
+        for(auto treelvl : tree) {
+            for (auto item:treelvl) {
+                res.insert(item.first * 2 + item.occurr * 3 + item.second * 4 + item.groupID * 5 + item.cycleVal*6+item.lvl*7);
+            }
         }
         return res;
     };
@@ -89,10 +88,11 @@ private:
     /**
      * Create content dependent partitions based on the input string
      * Update Dictionary
-     * @param str input string
-     * @param space
-     * @param shingle_size
-     * @param win_size
+     * @param str origin string to be partitioned
+     * @param win_size partition size is 2*win_size
+     * @param space smaller-more partitions
+     * @param shingle_size inter-relation of the string
+     * @return vector of substring hashes in origin string order
      */
     vector<size_t> create_HashSet(string str,size_t win_size, size_t space=NOT_SET, size_t shingle_size=NOT_SET);
 
@@ -113,7 +113,7 @@ private:
         return min;
     }
 
-    // extractr the unique substring hashes from the shingle_hash vector
+    // extract the unique substring hashes from the shingle_hash vector
     vector<size_t> unique_substr_hash(vector<shingle_hash> hash_set){
         set<size_t> tmp;
         for(shingle_hash item : hash_set){
@@ -126,7 +126,7 @@ private:
 
     void update_tree(vector<size_t> hash_vector, size_t level);
 
-    size_t get_group_signature(vector<size_t> unsorted_hashset);
+    size_t get_group_signature(vector<size_t> strordered_hashset);
 
     // functions for backtracking
     /**
@@ -135,11 +135,33 @@ private:
      * @param str_order
      * @param final_str a hash train in string order
      */
-    void shingle2hash_train(vector<shingle_hash> shingle_set,unsigned short &str_order, vector<size_t> &final_str);
+    bool shingle2hash_train(vector<shingle_hash> shingle_set,size_t &str_order, vector<size_t> &final_str);
 
-    unsigned short get_cyc_val(vector<shingle_hash> shingle_set, vector<size_t> final_str);
+    vector<size_t> get_nxt_edge_idx(size_t current_edge, vector<shingle_hash>changed_shingleOccur);
 
-    string get_str_from(vector<shingle_hash> shingle_set, unsigned short str_order);
+    bool empty_state(vector<shingle_hash> state);
+    /**
+     * compute cycle number based on ordered substring_hash and shingle_hashes
+     * Set the cycle num at the head of the shingle_hash struct and outputs the number
+     * @param shingle_set shingle_hases in lexicographic order
+     * @param strordered_substr_hash hash in string order
+     * @return cycle number
+     */
+    size_t set_cyc_val(vector<shingle_hash>& shingle_set, const vector<size_t> strordered_substr_hash);
+
+    /**
+     * sub fucntion for "get_all_strs_from" extracting string from a group of shigle_hashes
+     * @param shingle_set shinge_hashes from a group
+     * @return the string of that group
+     */
+    string get_str_from(vector<shingle_hash> shingle_set);
+
+    /**
+     * get the full shigle_hash set from a level and spratet them by groups to feed into "get_str_from"
+     * @param level_shingle_set shingle_hashes from a level
+     * @return reconstruct string from the ground lvl
+     */
+    vector<string> get_all_strs_from(vector<shingle_hash> level_shingle_set);
 
 
 };

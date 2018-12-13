@@ -8,7 +8,7 @@ void SetsOfContentTest::setDiff() {
     string alicetxt = randSampleTxt(40000);
     auto Alice = SetsOfContent(100,3);
     Alice.injectString(alicetxt);
-
+string a = Alice.retriveString();
     string bobtxt = randStringEdit(alicetxt,100);
     auto Bob = SetsOfContent(100,3);
     Bob.injectString(bobtxt);
@@ -25,7 +25,7 @@ void SetsOfContentTest::setDiff() {
     cout<<"Largest terminal string size: "<<max_terminal<<endl;
     cout<<"Avg terminal string size: "<<tot_term/ter_bob.size()<<endl;
 
-    cout<<"Terminal shingle difference: "<<multisetDiff(Alice.getShinglesSumAt(3),Bob.getShinglesSumAt(3)).size()<<endl;
+    cout<<"Terminal shingle difference: "<<multisetDiff(Alice.getShinglesSum(),Bob.getShinglesSum()).size()<<endl;
 }
 
 

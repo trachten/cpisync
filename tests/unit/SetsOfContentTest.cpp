@@ -8,7 +8,7 @@ void SetsOfContentTest::setDiff() {
     string alicetxt = randSampleTxt(40000);
     auto Alice = SetsOfContent(100,3);
     Alice.injectString(alicetxt);
-string a = Alice.retriveString();
+    CPPUNIT_ASSERT(Alice.retriveString() == alicetxt);
     string bobtxt = randStringEdit(alicetxt,100);
     auto Bob = SetsOfContent(100,3);
     Bob.injectString(bobtxt);

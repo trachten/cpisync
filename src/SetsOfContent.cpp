@@ -7,6 +7,7 @@
 SetsOfContent::SetsOfContent(size_t terminal_str_size, size_t levels)
 : TermStrSize(terminal_str_size), Levels(levels){
     Partition = NOT_SET; // Set Them Later
+    SyncID = SYNC_TYPE::SetsOfContent;
 }
 
 vector<size_t> SetsOfContent::create_HashSet(string str,size_t win_size, size_t space, size_t shingle_size) {
@@ -14,7 +15,7 @@ vector<size_t> SetsOfContent::create_HashSet(string str,size_t win_size, size_t 
 
     // if the substring is smaller than the terminla stringh size, we do not partition it anymore.
 
-    if (str.size()<=TermStrSize) return vector<size_t>({str_to_hash(str)});
+    if (str.size() <= TermStrSize) return vector<size_t>({str_to_hash(str)});
     vector<size_t> hash_val, hash_set;
 
     for (size_t i = 0; i < str.size() - shingle_size + 1; ++i) {
@@ -22,16 +23,57 @@ vector<size_t> SetsOfContent::create_HashSet(string str,size_t win_size, size_t 
         hash_val.push_back(shash(str.substr(i, shingle_size)) % space);
     }
     size_t prev = 0;
-    for (size_t j = win_size; j < hash_val.size() - win_size; ++j) {
-        if (hash_val[j] == min_between(hash_val, (j - win_size), j + win_size) )
-        {
-            hash_set.push_back(add_to_dictionary(str.substr(prev, j - prev)));
-            prev = j;
-        }
 
+//    for (size_t j = win_size; j < hash_val.size() - win_size; ++j) {
+//        if (hash_val[j] == min_between(hash_val, (j - win_size), j + win_size) )
+//        {
+//            hash_set.push_back(add_to_dictionary(str.substr(prev, j - prev)));
+//            prev = j;
+//        }
+//
+//    }
+    for (size_t min:local_mins(hash_val, win_size)) {
+        hash_set.push_back(add_to_dictionary(str.substr(prev, min - prev)));
+        prev = min;
     }
+
+
     hash_set.push_back(add_to_dictionary(str.substr(prev)));
+
+
     return hash_set;
+}
+
+vector<size_t> SetsOfContent::local_mins(vector<size_t> hash_val, size_t win_size) {
+    // relying on hashMap sorting
+    if (win_size < 1) {
+        cout
+                << "Content Partition window size is less than 1 and adjusted to 1. Consider adjusting number of partition levels"
+                << endl;
+        win_size = 1;
+    }
+    vector<size_t> mins;
+    map<size_t, size_t> hash_occurr;
+    for (size_t j = 0; j < 2 * win_size; ++j) {
+        if (hash_occurr[hash_val[j]])
+            hash_occurr[hash_val[j]]++;
+        else
+            hash_occurr[hash_val[j]] = 1;
+    }
+
+    for (size_t i = win_size+1; i < hash_val.size() - win_size+1; ++i) {
+        if (hash_val[i-1] <= hash_occurr.begin()->first)
+            mins.push_back(i-1);
+        if (hash_occurr[hash_val[i - win_size - 1]])
+            hash_occurr[hash_val[i - win_size - 1]]--;
+        if (!hash_occurr[hash_val[i - win_size - 1]])
+            hash_occurr.erase(hash_val[i - win_size - 1]);
+        if (hash_occurr[hash_val[i+win_size]])
+            hash_occurr[hash_val[i+win_size]]++;
+        else
+            hash_occurr[hash_val[i+win_size]] = 1;
+    }
+    return mins;
 }
 
 size_t SetsOfContent::add_to_dictionary(string str) {
@@ -59,9 +101,15 @@ void SetsOfContent::injectString(string str) {
 
     // fill up the tree and dictionary
     myTree.resize(Levels);
-    auto first_level = create_HashSet(str, floor((str.size() / Partition) / 2), space, shingle_size);
-    update_tree(first_level, 0);
 
+    clock_t lvl1_t = clock();
+
+    auto first_level = create_HashSet(str, floor((str.size() / Partition) / 2), space, shingle_size);
+    update_tree(first_level, 0, false);
+
+    cout << "Lvl 1 time: " << (double) (clock() - lvl1_t) / CLOCKS_PER_SEC << endl;
+
+    clock_t alllvls_t = clock();
     for (int l = 1; l < Levels; ++l) {
         space = floor((space / Partition) / 2);
         shingle_size = floor(shingle_size / 2);
@@ -69,14 +117,45 @@ void SetsOfContent::injectString(string str) {
             string substring = dictionary[substr_hash];
             auto tmp_level = create_HashSet(substring, floor((substring.size() / Partition) / 2),
                                             space, shingle_size);
-            update_tree(tmp_level, l);
+            update_tree(tmp_level, l, false);
         }
 
     }
+    cout << "Rest of the Lvls time: " << (double) (clock() - alllvls_t) / CLOCKS_PER_SEC << endl;
+
 }
 
-void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level) {
-    if (myTree.size() <= level) throw invalid_argument("We have excceeded the levels of the tree");
+void SetsOfContent::backtrackShingles(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine) {
+    map<size_t, vector<shingle_hash>> mine_rid;
+    for (shingle_hash shingle : shingle_hash_mine) { // put my shingles no in their tree in a map for letter to get rid off
+        mine_rid[shingle.first + shingle.second * 2].push_back(shingle);
+    }
+    for (auto tree_lvl : myTree) { // transfer tree
+        for (shingle_hash shingle: tree_lvl) {
+            if (mine_rid[shingle.first + shingle.second * 2].empty()) { // if it is not in the rid list add it in
+                theirTree[shingle.lvl].push_back(shingle);
+            } else { // else, if we are sure,  don't add it
+                bool isRid = false;
+                for (shingle_hash ridshingle: mine_rid[shingle.first + shingle.second * 2]) {
+                    if (shingle == ridshingle) {
+                        isRid = true;
+                        break;
+                    }
+                    if (!isRid)theirTree[shingle.lvl].push_back(shingle);
+                }
+            }
+
+        }
+    }        //Their Tree is now complete
+
+    for (shingle_hash shingle : shingle_hash_theirs) { // put their shingles in their shingle tree at my locol host
+        theirTree[shingle.lvl].push_back(shingle);
+    }
+
+}
+
+void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level, bool isComputeCyc) {
+    if (myTree.size() <= level) throw invalid_argument("We have exceeded the levels of the tree");
     if (hash_vector.size() > 100)
         cout
                 << "It is advised to not excceed 50 partitions for fast backtracking at Level: " + to_string(level) +
@@ -111,7 +190,8 @@ void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level) {
                 shingle_hash{.first = item->first.first, .second = item->first.second, .groupID = group_id, .occurr = item->second, .cycleVal = 0, .lvl = level});
     }
 
-    auto cyc = set_cyc_val(lst,hash_vector); // set the cycle number at the head shingle
+    if (isComputeCyc)
+        set_cyc_val(lst, hash_vector); // set the cycle number at the head shingle
 
 
 //    sort(lst.begin(), lst.end()); // sorting might be unnecessary here due to the use of hashmap above
@@ -321,44 +401,73 @@ string SetsOfContent::retriveString() {
     }
     return get_all_strs_from(myTree[0]).back();
 }
+
+
 // functions for  SyncMethods
 bool SetsOfContent::addStr(DataObject *str_p, vector<DataObject *> &datum, bool sync) {
-    string str = str_p->to_string();
-    if (str.empty()) return false;
-    myString = str;
-    // using Floor will let the terminal string tolerate up to 10 times of string size
-    // should obey the rules of p^l >/< n/t , where p = partition, l = levels, n=string size, and t=terminal string size
-    if (Levels == NOT_SET) {
-        Partition = 10;
-        Levels = floor((log2(str.size()) - log2(TermStrSize)) / log2(Partition));
-    } else {
-        Partition = floor(pow(2, (log2(str.size()) - log2(TermStrSize)) / Levels));
-    }
-    if (Levels == NOT_SET) throw invalid_argument("Consider set a Level value bigger than 0");
+//    string str = str_p->to_string();
+//    if (str.empty()) return false;
+//    myString = str;
+//    // using Floor will let the terminal string tolerate up to 10 times of string size
+//    // should obey the rules of p^l >/< n/t , where p = partition, l = levels, n=string size, and t=terminal string size
+//    if (Levels == NOT_SET) {
+//        Partition = 10;
+//        Levels = floor((log2(str.size()) - log2(TermStrSize)) / log2(Partition));
+//    } else {
+//        Partition = floor(pow(2, (log2(str.size()) - log2(TermStrSize)) / Levels));
+//    }
+//    if (Levels == NOT_SET) throw invalid_argument("Consider set a Level value bigger than 0");
+//
+//    size_t shingle_size = floor(log2(str.size()));
+//    size_t space = TermStrSize * 126; //126 for ascii content
+//
+//    // fill up the tree and dictionary
+//    myTree.resize(Levels);
+//    auto first_level = create_HashSet(str, floor((str.size() / Partition) / 2), space, shingle_size);
+//    update_tree(first_level, 0);
+//
+//    for (int l = 1; l < Levels; ++l) {
+//        space = floor((space / Partition) / 2);
+//        shingle_size = floor(shingle_size / 2);
+//        for (auto substr_hash:unique_substr_hash(myTree[l - 1])) {
+//            string substring = dictionary[substr_hash];
+//            auto tmp_level = create_HashSet(substring, floor((substring.size() / Partition) / 2),
+//                                            space, shingle_size);
+//            update_tree(tmp_level, l);
+//        }
+//
+//    }
+    return true;
+}
+void SetsOfContent::SendSyncParam(const shared_ptr<Communicant> &commSync, bool oneWay) {
+    Logger::gLog(Logger::METHOD,"Entering SendSyncParam::SendSyncParam");
+    // take care of parent sync method
+    SyncMethod::SendSyncParam(commSync);
+    commSync->commSend(enumToByte(SyncID));
+    commSync->commSend(TermStrSize);
+    commSync->commSend(Levels);
+    commSync->commSend(Partition);
+    if (commSync->commRecv_byte() == SYNC_FAIL_FLAG)
+        throw SyncFailureException("Sync parameters do not match.");
+    Logger::gLog(Logger::COMM, "Sync parameters match");
+}
 
-    size_t shingle_size = floor(log2(str.size()));
-    size_t space = TermStrSize * 126; //126 for ascii content
+bool SetsOfContent::SyncServer(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) {
+    Logger::gLog(Logger::METHOD, "Entering SetsOfContent::SyncServer");
+    // 0. Set up communicants
+    if(!useExisting)
+        commSync->commConnect();
+    // ... check that the other side is doing the same synchronization
+    SendSyncParam(commSync);
 
-    // fill up the tree and dictionary
-    myTree.resize(Levels);
-    auto first_level = create_HashSet(str, floor((str.size() / Partition) / 2), space, shingle_size);
-    update_tree(first_level, 0);
 
-    for (int l = 1; l < Levels; ++l) {
-        space = floor((space / Partition) / 2);
-        shingle_size = floor(shingle_size / 2);
-        for (auto substr_hash:unique_substr_hash(myTree[l - 1])) {
-            string substring = dictionary[substr_hash];
-            auto tmp_level = create_HashSet(substring, floor((substring.size() / Partition) / 2),
-                                            space, shingle_size);
-            update_tree(tmp_level, l);
-        }
-
-    }
     return true;
 }
 
-
+bool SetsOfContent::SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) {
+    Logger::gLog(Logger::METHOD, "Entering SetsOfContent::SyncClient");
+    return true;
+}
 
 
 

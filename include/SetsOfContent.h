@@ -36,6 +36,11 @@ struct shingle_hash{ // TODO: change all size_t to unsigned int to cut doen elem
 };
 //Compare and help order struct shingle_hash from a vector
 static bool operator<(const shingle_hash& a, const shingle_hash& b) { return a.first < b.first; };
+//Compare and help differetiate struct shingle_hash
+static bool operator==(const shingle_hash& a, const shingle_hash& b) {
+    return a.first == b.first and a.second == b.second and a.groupID == b.groupID and a.occurr == b.occurr and
+           a.cycleVal == b.cycleVal and a.lvl == b.lvl;
+};
 
 static shingle_hash ZZtoShingleHash(const ZZ& zz){
     shingle_hash shingle;
@@ -43,15 +48,31 @@ static shingle_hash ZZtoShingleHash(const ZZ& zz){
     return shingle;
 }
 
+static vector<shingle_hash> ZZtoShingleHash_vec(const vector<ZZ>& zz_vec){
+    vector<shingle_hash> ZZ_VEC;
+    for(auto zz : zz_vec) {
+        shingle_hash shingle;
+        BytesFromZZ((uint8_t *) &shingle, zz, sizeof(shingle_hash));
+        ZZ_VEC.push_back(shingle);
+    }
+    return ZZ_VEC;
+}
+
 static ZZ ShingleHashtoZZ(shingle_hash shingle) {
     char* my_s_bytes = reinterpret_cast<char*>(&shingle);
     return ZZFromBytes((const uint8_t *) my_s_bytes, sizeof(shingle_hash));
 }
 
-//Compare and help differetiate struct shingle_hash
-//static bool operator==(const shingle_hash& a, const shingle_hash& b){
-//    return a.first == b.first and a.second == b.second and a.origin == b.origin and a.occurr == b.occurr;
-//};
+static vector<ZZ> ShingleHashtoZZ_vec(vector<shingle_hash> shingle_vec) {
+    vector<ZZ> SHINGLE_VEC;
+    for(auto shingle : shingle_vec) {
+        char *my_s_bytes = reinterpret_cast<char *>(&shingle);
+        SHINGLE_VEC.push_back(ZZFromBytes((const uint8_t *) my_s_bytes, sizeof(shingle_hash)));
+    }
+    return SHINGLE_VEC;
+}
+
+
 
 class SetsOfContent : public SyncMethod {
 public:
@@ -61,14 +82,16 @@ public:
 
     void injectString(string str);
 
+    void backtrackShingles(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine);
+
     string retriveString();
 
 // functions for SyncMethods
     bool addStr(DataObject* str, vector<DataObject*> &datum,  bool sync) override;
 
-//    bool SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) override;
+    bool SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) override;
 
-//    bool SyncServer(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) override;
+    bool SyncServer(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) override;
 
     string getName() override {return "Sets of Content";}
 
@@ -88,6 +111,11 @@ public:
         }
         return res;
     };
+
+
+protected:
+    bool useExisting; /** Use Exiting connection for Communication */
+
 private:
 
     string myString; // original input string
@@ -114,6 +142,8 @@ private:
      * @return vector of substring hashes in origin string order
      */
     vector<size_t> create_HashSet(string str,size_t win_size, size_t space=NOT_SET, size_t shingle_size=NOT_SET);
+
+    vector<size_t> local_mins(vector<size_t> hash_val, size_t win_size);
 
     /**
      * Insert string into dictionary
@@ -143,7 +173,7 @@ private:
         return tmp_vec;
     }
 
-    void update_tree(vector<size_t> hash_vector, size_t level);
+    void update_tree(vector<size_t> hash_vector, size_t level, bool isComputeCyc);
 
     size_t get_group_signature(vector<size_t> strordered_hashset);
 
@@ -183,5 +213,8 @@ private:
     vector<string> get_all_strs_from(vector<shingle_hash> level_shingle_set);
 
 
+    // functions for Sync Methods
+
+    void SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
 };
 #endif //CPISYNCLIB_SETSOFCONTENT_H

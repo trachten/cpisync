@@ -58,14 +58,14 @@ void SetsOfContent::injectString(string str) {
     size_t space = TermStrSize * 126; //126 for ascii content
 
     // fill up the tree and dictionary
-    tree.resize(Levels);
+    myTree.resize(Levels);
     auto first_level = create_HashSet(str, floor((str.size() / Partition) / 2), space, shingle_size);
     update_tree(first_level, 0);
 
     for (int l = 1; l < Levels; ++l) {
         space = floor((space / Partition) / 2);
         shingle_size = floor(shingle_size / 2);
-        for (auto substr_hash:unique_substr_hash(tree[l - 1])) {
+        for (auto substr_hash:unique_substr_hash(myTree[l - 1])) {
             string substring = dictionary[substr_hash];
             auto tmp_level = create_HashSet(substring, floor((substring.size() / Partition) / 2),
                                             space, shingle_size);
@@ -76,7 +76,7 @@ void SetsOfContent::injectString(string str) {
 }
 
 void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level) {
-    if (tree.size() <= level) throw invalid_argument("We have excceeded the levels of the tree");
+    if (myTree.size() <= level) throw invalid_argument("We have excceeded the levels of the tree");
     if (hash_vector.size() > 100)
         cout
                 << "It is advised to not excceed 50 partitions for fast backtracking at Level: " + to_string(level) +
@@ -99,7 +99,7 @@ void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level) {
     if (tmp.empty()) {
         // passs down termianl string, if not partitioned
         if (hash_vector.empty()) throw invalid_argument("inherited empty hash vector at level: " + to_string(level));
-        tree[level].emplace_back(
+        myTree[level].emplace_back(
                 shingle_hash{.first = hash_vector.back(), .second = 0, .occurr = 1, .groupID = group_id, .cycleVal = 1, .lvl = level});
         return;
     }
@@ -117,7 +117,7 @@ void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level) {
 //    sort(lst.begin(), lst.end()); // sorting might be unnecessary here due to the use of hashmap above
     //order in lexicographical order for backtracking (sort once at insert, sort another time at reconstruction)
 
-    tree[level].insert(tree[level].end(), lst.begin(), lst.end()); // put it in the tree
+    myTree[level].insert(myTree[level].end(), lst.begin(), lst.end()); // put it in the tree
 }
 
 size_t SetsOfContent::get_group_signature(vector<size_t> strordered_hashset) {
@@ -127,14 +127,19 @@ size_t SetsOfContent::get_group_signature(vector<size_t> strordered_hashset) {
     return strordered_hashset.front();
 }
 
-multiset<string> SetsOfContent::getTerminalStr() {
+vector<string> SetsOfContent::getTerminalDiffStr(vector<shingle_hash> diff_shingle) {
     vector<string> terminal_str;
-
-    for (size_t hash_item: unique_substr_hash(tree.back())) {
+    vector<shingle_hash> tmpset;
+    if (myTree.empty()) throw invalid_argument("getTerminalDiffStr needs myTree with content");
+    size_t lvl = myTree.size() - 1;
+    for(auto shingle : diff_shingle){
+        if(shingle.lvl == lvl) tmpset.push_back(shingle);
+    }
+    for (size_t hash_item: unique_substr_hash(tmpset)) {
         terminal_str.push_back(dictionary[hash_item]);
     }
 
-    return multiset<string>(terminal_str.begin(), terminal_str.end());
+    return terminal_str;
 }
 
 
@@ -311,14 +316,45 @@ vector<string> SetsOfContent::get_all_strs_from(vector<shingle_hash> level_shing
 }
 
 string SetsOfContent::retriveString() {
-    for (int i = tree.size()-1; i > 0; --i){
-        get_all_strs_from(tree[i]);
+    for (int i = myTree.size()-1; i > 0; --i){
+        get_all_strs_from(myTree[i]);
     }
-    return get_all_strs_from(tree[0]).back();
+    return get_all_strs_from(myTree[0]).back();
 }
 // functions for  SyncMethods
-bool SetsOfContent::addStr(DataObject *str, vector<DataObject *> &datum, bool sync) {
+bool SetsOfContent::addStr(DataObject *str_p, vector<DataObject *> &datum, bool sync) {
+    string str = str_p->to_string();
+    if (str.empty()) return false;
+    myString = str;
+    // using Floor will let the terminal string tolerate up to 10 times of string size
+    // should obey the rules of p^l >/< n/t , where p = partition, l = levels, n=string size, and t=terminal string size
+    if (Levels == NOT_SET) {
+        Partition = 10;
+        Levels = floor((log2(str.size()) - log2(TermStrSize)) / log2(Partition));
+    } else {
+        Partition = floor(pow(2, (log2(str.size()) - log2(TermStrSize)) / Levels));
+    }
+    if (Levels == NOT_SET) throw invalid_argument("Consider set a Level value bigger than 0");
 
+    size_t shingle_size = floor(log2(str.size()));
+    size_t space = TermStrSize * 126; //126 for ascii content
+
+    // fill up the tree and dictionary
+    myTree.resize(Levels);
+    auto first_level = create_HashSet(str, floor((str.size() / Partition) / 2), space, shingle_size);
+    update_tree(first_level, 0);
+
+    for (int l = 1; l < Levels; ++l) {
+        space = floor((space / Partition) / 2);
+        shingle_size = floor(shingle_size / 2);
+        for (auto substr_hash:unique_substr_hash(myTree[l - 1])) {
+            string substring = dictionary[substr_hash];
+            auto tmp_level = create_HashSet(substring, floor((substring.size() / Partition) / 2),
+                                            space, shingle_size);
+            update_tree(tmp_level, l);
+        }
+
+    }
     return true;
 }
 

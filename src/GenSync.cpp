@@ -111,7 +111,7 @@ bool GenSync::listenSync(int method_num,bool isRecon) {
 
         try {
             if ((*syncAgent)->isStringReconMethod()) {
-                syncSuccess &= (*syncAgent)->SyncServer(*itComm, setSync, selfStr, otherStr);
+                syncSuccess &= (*syncAgent)->SyncServer(*itComm, setSync);
                 syncSuccess &= setSync->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
             }else{
                 syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
@@ -166,7 +166,7 @@ bool GenSync::startSync(int method_num,bool isRecon) {
             // if String Recon,
             if ((*syncAgentIt)->isStringReconMethod()) {
                 shared_ptr<SyncMethod> setSync;
-                syncSuccess &= (*syncAgentIt)->SyncClient(*itComm, setSync, selfStr, otherStr);
+                syncSuccess &= (*syncAgentIt)->SyncClient(*itComm, setSync);
                 syncSuccess &= setSync->SyncClient(*itComm, selfMinusOther, otherMinusSelf);
             } else {
                 if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {

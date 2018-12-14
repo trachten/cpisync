@@ -19,13 +19,12 @@ kshinglingSync::~kshinglingSync() {
 }
 
 //Alice
-bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> & setHost,
-        DataObject &selfString, DataObject &otherString) {
+bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> & setHost) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncClient");
     bool syncSuccess = true;
 
     // call parent method for bookkeeping
-    SyncMethod::SyncClient(commSync, setHost, selfString, otherString);
+    SyncMethod::SyncClient(commSync, setHost);
     // create kshingle
 
     // connect to server
@@ -72,12 +71,11 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
 }
 
 //Bob
-bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared_ptr<SyncMethod> & setHost,
-        DataObject &selfString, DataObject &otherString) {
+bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared_ptr<SyncMethod> & setHost) {
     Logger::gLog(Logger::METHOD, "Entering kshinglingSync::SyncServer");
     bool syncSuccess = true;
 
-    SyncMethod::SyncServer(commSync, setHost, selfString, otherString);
+    SyncMethod::SyncServer(commSync, setHost);
 
     commSync->commListen();
     if (!commSync->establishKshingleRecv(myKshingle.getElemSize(), myKshingle.getStopWord(), oneway)) {

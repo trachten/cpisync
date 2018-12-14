@@ -16,6 +16,9 @@
 #include "DataObject.h"
 #include <algorithm>
 #include <NTL/ZZ_p.h>
+#include "InterCPISync.h"
+
+#include "ForkHandle.h" // tobe removed
 
 using std::vector;
 using std::hash;
@@ -28,11 +31,23 @@ using namespace NTL;
  * occurrence, how manny time this occrred
  * origin is the last origining substring
  */
-struct shingle_hash{
+struct shingle_hash{ // TODO: change all size_t to unsigned int to cut doen element size by half. see if it limites the hashes
     size_t first, second, occurr, groupID, cycleVal, lvl;
 };
 //Compare and help order struct shingle_hash from a vector
 static bool operator<(const shingle_hash& a, const shingle_hash& b) { return a.first < b.first; };
+
+static shingle_hash ZZtoShingleHash(const ZZ& zz){
+    shingle_hash shingle;
+    BytesFromZZ((uint8_t *) &shingle,zz, sizeof(shingle_hash));
+    return shingle;
+}
+
+static ZZ ShingleHashtoZZ(shingle_hash shingle) {
+    char* my_s_bytes = reinterpret_cast<char*>(&shingle);
+    return ZZFromBytes((const uint8_t *) my_s_bytes, sizeof(shingle_hash));
+}
+
 //Compare and help differetiate struct shingle_hash
 //static bool operator==(const shingle_hash& a, const shingle_hash& b){
 //    return a.first == b.first and a.second == b.second and a.origin == b.origin and a.occurr == b.occurr;
@@ -48,8 +63,12 @@ public:
 
     string retriveString();
 
-// functions for  SyncMethods
+// functions for SyncMethods
     bool addStr(DataObject* str, vector<DataObject*> &datum,  bool sync) override;
+
+//    bool SyncClient(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) override;
+
+//    bool SyncServer(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) override;
 
     string getName() override {return "Sets of Content";}
 
@@ -57,14 +76,14 @@ public:
      * Get the terminal strings to reconcile with another set
      * @return a vector of terminla string
      */
-    multiset<string> getTerminalStr();
+    vector<string> getTerminalDiffStr(vector<shingle_hash> diff_shingle);
 
     //getShinglesAt
-    multiset<size_t> getShinglesSum() {
-        multiset<size_t> res;
-        for(auto treelvl : tree) {
+    multiset<ZZ> getShinglesToZZ() {
+        multiset<ZZ> res;
+        for(auto treelvl : myTree) {
             for (auto item:treelvl) {
-                res.insert(item.first * 2 + item.occurr * 3 + item.second * 4 + item.groupID * 5 + item.cycleVal*6+item.lvl*7);
+                res.insert(ShingleHashtoZZ(item));
             }
         }
         return res;
@@ -77,7 +96,7 @@ private:
     // each level: store string and their conter-part on the other side
     vector<map<size_t, size_t>> conformingPair;
 
-    vector<vector<shingle_hash>> tree; // the hash shingle tree
+    vector<vector<shingle_hash>> myTree, theirTree; // the hash shingle tree
 
     map<size_t, string> dictionary; // TODO: transfer into index of the string to save auxilary space
 

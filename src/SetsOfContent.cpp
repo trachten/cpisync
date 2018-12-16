@@ -27,14 +27,6 @@ vector<size_t> SetsOfContent::create_HashSet(string str,size_t win_size, size_t 
     }
     size_t prev = 0;
 
-//    for (size_t j = win_size; j < hash_val.size() - win_size; ++j) {
-//        if (hash_val[j] == min_between(hash_val, (j - win_size), j + win_size) )
-//        {
-//            hash_set.push_back(add_to_dictionary(str.substr(prev, j - prev)));
-//            prev = j;
-//        }
-//
-//    }
     for (size_t min:local_mins(hash_val, win_size)) {
         hash_set.push_back(add_to_dictionary(str.substr(prev, min - prev)));
         prev = min;

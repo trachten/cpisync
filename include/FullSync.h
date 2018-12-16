@@ -31,7 +31,7 @@ class FullSync : public SyncMethod {
 public:
     
     // General class constructor
-    FullSync();
+    FullSync(bool keep_alive = false);
     
     // General class destructor
     ~FullSync() override;
@@ -48,6 +48,9 @@ public:
      * @return A string representing the elements stored in the FullSync object.
      */
     string printElem();
+
+protected:
+    bool keepAlive;
 private:
     multiset<DataObject*, cmp<DataObject*>> myData;
 };

@@ -9,7 +9,9 @@
 
 #include "FullSync.h"
 
-FullSync::FullSync() = default;
+FullSync::FullSync(bool keep_alive){
+    keepAlive = keep_alive;
+}
 
 FullSync::~FullSync() = default;
 
@@ -27,14 +29,16 @@ string FullSync::printElem() {
 }
 
 bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
-    try{
+    try {
         Logger::gLog(Logger::METHOD, "Entering FullSync::SyncClient");
 
-        // call parent method for bookkeeping
-        SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf);
-        
-        // connect to the other party
-        commSync->commConnect();
+        if (!keepAlive) {
+            // call parent method for bookkeeping
+            SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf);
+
+            // connect to the other party
+            commSync->commConnect();
+        }
 
         // send my set:
         
@@ -68,12 +72,13 @@ bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
 bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
     try {
         Logger::gLog(Logger::METHOD, "Entering FullSync::SyncServer");
+        if (!keepAlive) {
+            // call parent method for bookkeeping
+            SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf);
 
-        // call parent method for bookkeeping
-        SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf);
-        
-        // listen for other party
-        commSync->commListen();
+            // listen for other party
+            commSync->commListen();
+        }
 
         // receive client list once it is sent
         
@@ -92,6 +97,8 @@ bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
 
         // send back differences. our otherMinusSelf is their selfMinusOther and v.v.
         commSync->commSend(otherMinusSelf);
+        for(auto th : selfMinusOther)
+            cout<<th->to_ZZ()<<endl;
         commSync->commSend(selfMinusOther);
 
         stringstream msg;

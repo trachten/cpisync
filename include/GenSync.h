@@ -298,6 +298,7 @@ public:
         UNDEFINED,
         BEGIN,
         kshinglingSync=BEGIN,
+        SetsOfContent,
         END
     };
 
@@ -356,7 +357,9 @@ public:
     stopWord(DFT_STOPWORD),
     editDistance(DFT_MBAR),
     shingleLen(DFT_SHINGLELEN),
-    numExpElem(DFT_EXPELEMS){
+    numExpElem(DFT_EXPELEMS),
+    TerminalStrSize(TERMINAL_STR_SIZE),
+    lvl(NOT_SET){
         myComm = nullptr;
         myMeth = nullptr;
     }
@@ -392,6 +395,16 @@ public:
 
     Builder& setStopWord(long theStopWord) {
         this->stopWord = theStopWord;
+        return *this;
+    }
+
+    Builder& setTerminalStrSize(size_t theTerminalStrSize) {
+        this->TerminalStrSize = theTerminalStrSize;
+        return *this;
+    }
+
+    Builder& setlvl(size_t thelvl){
+        this->lvl = thelvl;
         return *this;
     }
 
@@ -495,6 +508,7 @@ private:
     StringSyncProtocol stringProto; /** string recon protocol */
     long editDistance; /** edit distnace upper bound, can be used as mbar */
     char stopWord;
+    size_t lvl, TerminalStrSize;
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
     shared_ptr<SyncMethod> myMeth;
@@ -515,6 +529,8 @@ private:
     static const int DFT_ERROR;
     static const size_t DFT_SHINGLELEN = 2;
     static const char DFT_STOPWORD = '$';
+    static const size_t TERMINAL_STR_SIZE = 100;
+    static const size_t NOT_SET = 0;
 };
 
 #endif

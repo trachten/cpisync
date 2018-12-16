@@ -16,7 +16,11 @@
 #include "DataObject.h"
 #include <algorithm>
 #include <NTL/ZZ_p.h>
+#include "Exceptions.h"
 #include "InterCPISync.h"
+#include "IBLTSync_SetDiff.h"
+#include "ProbCPISync.h"
+#include "FullSync.h"
 
 #include "ForkHandle.h" // tobe removed
 
@@ -78,11 +82,7 @@ class SetsOfContent : public SyncMethod {
 public:
     SetsOfContent(size_t terminal_str_size = 50, size_t levels = NOT_SET);
 
-    ~SetsOfContent() = default;
-
-    void injectString(string str);
-
-    void backtrackShingles(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine);
+    ~SetsOfContent();
 
     string retriveString();
 
@@ -102,11 +102,11 @@ public:
     vector<string> getTerminalDiffStr(vector<shingle_hash> diff_shingle);
 
     //getShinglesAt
-    multiset<ZZ> getShinglesToZZ() {
-        multiset<ZZ> res;
+    vector<ZZ> getShingles_ZZ() {
+        vector<ZZ> res;
         for(auto treelvl : myTree) {
             for (auto item:treelvl) {
-                res.insert(ShingleHashtoZZ(item));
+                res.push_back(ShingleHashtoZZ(item));
             }
         }
         return res;
@@ -121,12 +121,21 @@ private:
     string myString; // original input string
     size_t TermStrSize, Levels, Partition;
 
+    vector<DataObject*> setPointers;
+
     // each level: store string and their conter-part on the other side
     vector<map<size_t, size_t>> conformingPair;
 
     vector<vector<shingle_hash>> myTree, theirTree; // the hash shingle tree
 
     map<size_t, string> dictionary; // TODO: transfer into index of the string to save auxilary space
+
+    //requests
+    vector<size_t> Req_Dict, Req_Group, Rev_Dict, send_Cyc, get_Cyc;
+
+    map<size_t,bool> Rev_Group;
+
+    vector<string> send_Dict,get_Dict;
 
     size_t str_to_hash(string str) {
         return std::hash<std::string>{}(str);
@@ -212,9 +221,28 @@ private:
      */
     vector<string> get_all_strs_from(vector<shingle_hash> level_shingle_set);
 
+    /**
+     *
+     * @param shingle_hash_theirs
+     * @param shingle_hash_mine
+     * @param groupIDs
+     * @return hashes of unknown
+     */
+    vector<size_t> single_out(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine, vector<size_t>& groupIDs);
 
-    // functions for Sync Methods
+
+    void redo_tree_with_cyc();
+
+    vector<size_t> get_string_cycles();
+
+        // functions for Sync Methods
 
     void SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
+
+    void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
+
+    void configure(shared_ptr<SyncMethod>& setHost, GenSync::SyncProtocol SyncProtocol = GenSync::SyncProtocol::IBLTSyncSetDiff);
+
+    bool reconstructString(DataObject* & recovered_string, const list<DataObject *> & theirsMinusMine, const list<DataObject *> & mineMinusTheirs)override;
 };
 #endif //CPISYNCLIB_SETSOFCONTENT_H

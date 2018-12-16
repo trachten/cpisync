@@ -126,14 +126,17 @@ public:
 
     virtual long getVirMem(){return 0;};
 
-    virtual bool reconstructString(DataObject* & recovered_string, const list<DataObject *> & Elems){
+    virtual bool reconstructString(DataObject* & recovered_string, const list<DataObject *> & theirsMinusMine, const list<DataObject *> & mineMinusTheirs){
         return true;
     }
+
 
     /** Accessor methods */
     long getNumElem() const {
         return elements.size();
     }
+
+    SYNC_TYPE getSyncType() const { return SyncID;}
 
     /**
      * @return An iterator pointing to the first element in the data structure

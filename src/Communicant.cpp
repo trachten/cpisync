@@ -224,6 +224,13 @@ void Communicant::commSend(const long num) {
     commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
 }
 
+//void Communicant::commSend(size_t num) {
+//    unsigned char toSend[sizeof(size_t)];
+//    BytesFromZZ(toSend, to_ZZ(num), sizeof(size_t));
+//    Logger::gLog(Logger::COMM, "... attempting to send: hashVal " + toStr(num));
+//    commSend(ustring(toSend, sizeof(size_t)), sizeof(size_t));
+//}
+
 void Communicant::commSend(const hashVal num) {
 
     unsigned char toSend[XMIT_LONG];
@@ -424,6 +431,14 @@ long Communicant::commRecv_long() {
     Logger::gLog(Logger::COMM, "... received long " + toStr(num));
 
     return to_long(num);
+}
+
+size_t Communicant::commRecv_size_t() {
+    ustring received = commRecv_ustring(sizeof(size_t));
+    ZZ num = ZZFromBytes(received.data(), sizeof(size_t));
+    Logger::gLog(Logger::COMM, "... received long " + toStr(num));
+
+    return to_ulong(num);
 }
 
 int Communicant::commRecv_int() {

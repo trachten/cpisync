@@ -441,7 +441,7 @@ inline string randAsciiStr(int len = 10) {
     string str;
 
     for (int jj = 0; jj < len; ++jj) {
-        auto intchar = rand() % 127;  // avoid random string to be "$" changed to "%"
+        auto intchar = rand() % 126;  // avoid random string to be "$" changed to "%"
         if (intchar == 36 || intchar ==0)intchar++;// avoid random string to be "$" changed to "%" and avoid \0 which is NULL
         str += toascii(intchar);
 

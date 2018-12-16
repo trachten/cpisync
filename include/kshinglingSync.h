@@ -42,7 +42,7 @@ public:
 
     bool SyncServer(const shared_ptr<Communicant> &commSync, shared_ptr<SyncMethod> &setHost) override;
 
-    bool reconstructString(DataObject *&recovered_string, const list<DataObject *> &Elems) override;
+    bool reconstructString(DataObject *&recovered_string, const list<DataObject *> & theirsMinusMine, const list<DataObject *> & mineMinusTheirs) override;
 
     bool addStr(DataObject* str, vector<DataObject*> &datum,  bool backtrack) override;
 

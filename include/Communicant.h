@@ -291,6 +291,7 @@ public:
     long commRecv_long();
     int commRecv_int();
     double commRecv_double();
+    size_t commRecv_size_t();
     byte commRecv_byte();
 
     /**

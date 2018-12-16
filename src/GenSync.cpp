@@ -23,6 +23,7 @@
 #include "FullSync.h"
 #include "IBLTSync_SetDiff.h"
 #include "kshinglingSync.h"
+#include "SetsOfContent.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
@@ -167,7 +168,6 @@ bool GenSync::startSync(int method_num,bool isRecon) {
             if ((*syncAgentIt)->isStringReconMethod()) {
                 shared_ptr<SyncMethod> setSync;
                 syncSuccess &= (*syncAgentIt)->SyncClient(*itComm, setSync);
-                syncSuccess &= setSync->SyncClient(*itComm, selfMinusOther, otherMinusSelf);
             } else {
                 if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
                     Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
@@ -191,7 +191,7 @@ bool GenSync::startSync(int method_num,bool isRecon) {
 // Disabled for performace testing
         if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
             syncSuccess = (*syncAgentIt)->reconstructString(
-                    myString, dumpElements()); // reconstruct the string based on the new information from set reconciliation
+                    myString, otherMinusSelf,selfMinusOther); // reconstruct the string based on the new information from set reconciliation
         }
 
     }
@@ -463,6 +463,9 @@ GenSync GenSync::Builder::build() {
     switch (stringProto) {
         case StringSyncProtocol::kshinglingSync:
             myMeth = make_shared<kshinglingSync>(proto, shingleLen, stopWord);
+            break;
+        case StringSyncProtocol ::SetsOfContent:
+            myMeth = make_shared<SetsOfContent>(TerminalStrSize,lvl);
             break;
         default: // do nothing
             break;

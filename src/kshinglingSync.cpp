@@ -131,7 +131,9 @@ void kshinglingSync::configurate(shared_ptr<SyncMethod>& setHost, idx_t set_size
     }
 }
 
-bool kshinglingSync::reconstructString(DataObject* & recovered_string, const list<DataObject *> & Elems) {
+bool kshinglingSync::reconstructString(DataObject* & recovered_string, const list<DataObject *> & theirsMinusMine, const list<DataObject *> & mineMinusTheirs) {
+    list<DataObject *> Elems = theirsMinusMine; // TODO: Change this
+
     if (cycleNum != 0)
         myKshingle.clear_shingleSet();
 

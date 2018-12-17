@@ -111,8 +111,8 @@ void IBLTSyncTest::stringReconFullTest() {
     }
     forkHandleReport res = forkHandle(Alice,Bob, true);
     auto a = Alice.dumpElements();
-cout << "Comm:" + to_string(res.bytes)<<endl;
-cout << "Comm Tot:" + to_string(res.bytesTot)<<endl;
-cout << "Time:" + to_string(res.totalTime)<<endl;
+//cout << "Comm:" + to_string(res.bytes)<<endl;
+//cout << "Comm Tot:" + to_string(res.bytesTot)<<endl;
+//cout << "Time:" + to_string(res.totalTime)<<endl;
 
 }

@@ -108,10 +108,10 @@ void IBLTSyncDiffTest::stringReconFullTest() {
     }
 
     forkHandleReport res = forkHandle(Alice, Bob, false);
-    cout << "Comm:" + to_string(res.bytes) << endl;
-    cout << "Comm Tot:" + to_string(res.bytesTot) << endl;
-    cout << "Time:" + to_string(res.totalTime) << endl;
-    cout << "Diff:" + to_string(EXP_Diff) << endl;
+//    cout << "Comm:" + to_string(res.bytes) << endl;
+//    cout << "Comm Tot:" + to_string(res.bytesTot) << endl;
+//    cout << "Time:" + to_string(res.totalTime) << endl;
+//    cout << "Diff:" + to_string(EXP_Diff) << endl;
     CPPUNIT_ASSERT(Bob.dumpElements().size() == Alice.dumpElements().size());
 
 }

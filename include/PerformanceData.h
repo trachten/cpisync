@@ -38,9 +38,8 @@ public:
     void kshingle3D(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
                     vector<int> str_sizeRange, int confidence, string (*stringInput)(int), int portnum);
 
-    void kshingleCode3D(pair<int, int> edit_distRange, pair<int, int> str_sizeRange);
-
-    void kshingleBook3D(pair<int, int> edit_distRange, pair<int, int> str_sizeRange);
+    void setsofcontent(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
+                       vector<int> str_sizeRange, int confidence, string (*stringInput)(int), int portnum);
 
     void strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence);
 

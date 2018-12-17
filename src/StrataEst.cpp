@@ -29,7 +29,7 @@ StrataEst::~StrataEst(){};
 
 void StrataEst::insert(DataObject *datum) {
     _insert(datum->to_ZZ());
-    delete datum;
+//    delete datum;
 }
 
 void StrataEst::_insert(ZZ Elem) {

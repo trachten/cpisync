@@ -97,8 +97,6 @@ bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
 
         // send back differences. our otherMinusSelf is their selfMinusOther and v.v.
         commSync->commSend(otherMinusSelf);
-        for(auto th : selfMinusOther)
-            cout<<th->to_ZZ()<<endl;
         commSync->commSend(selfMinusOther);
 
         stringstream msg;

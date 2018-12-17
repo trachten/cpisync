@@ -1,0 +1,2 @@
+Str Size|Edit Diff|Comm (bits)|Time Set(s)|Time Str(s)|Space (bits)|Set Recon True|Str Recon True
+100000 250 37332 0.022744 1

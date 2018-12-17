@@ -49,7 +49,9 @@ bool kshinglingSync::SyncClient(const shared_ptr<Communicant> &commSync, shared_
         StrataEst est = StrataEst(myKshingle.getElemSize());
 
         for (auto item : myKshingle.getShingleSet_str()) {
-            est.insert(new DataObject(item)); // Add to estimator
+            auto tmp = new DataObject(item);
+            setPointers.push_back(tmp);
+            est.insert(tmp); // Add to estimator
         }
 
         // since Kshingling are the same, Strata Est parameters would also be the same.
@@ -94,7 +96,9 @@ bool kshinglingSync::SyncServer(const shared_ptr<Communicant> &commSync,  shared
         StrataEst est = StrataEst(myKshingle.getElemSize());
 
         for (auto item : myKshingle.getShingleSet_str()) {
-            est.insert(new DataObject(item)); // Add to estimator
+            auto tmp = new DataObject(item);
+            setPointers.push_back(tmp);
+            est.insert(tmp); // Add to estimator
         }
 
         // since Kshingling are the same, Strata Est parameters would also be the same.

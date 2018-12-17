@@ -467,7 +467,7 @@ inline string scanTxtFromFile(string dir, int len) {
 
 inline string randSampleTxt(int len) {
     // max at 1 million characters
-    int MAX_LEN = (int) 8e5; // the sample file is 8e5 characters long
+    int MAX_LEN = (int) 2e6; // the sample file is 8e5 characters long
     if (len > MAX_LEN) throw invalid_argument("rand Sample Txt can not be more than " + to_string(MAX_LEN));
     string full_txt = scanTxtFromFile("./tests/SampleTxt.txt", MAX_LEN);
     int start_pt = randLenBetween(0,full_txt.size()-len);

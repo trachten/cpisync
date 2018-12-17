@@ -36,7 +36,8 @@ using namespace NTL;
  * origin is the last origining substring
  */
 struct shingle_hash{ // TODO: change all size_t to unsigned int to cut doen element size by half. see if it limites the hashes
-    size_t first, second, occurr, groupID, cycleVal, lvl;
+    size_t first, second, groupID;
+    int occurr, cycleVal, lvl;
 };
 //Compare and help order struct shingle_hash from a vector
 static bool operator<(const shingle_hash& a, const shingle_hash& b) { return a.first < b.first; };
@@ -80,7 +81,7 @@ static vector<ZZ> ShingleHashtoZZ_vec(vector<shingle_hash> shingle_vec) {
 
 class SetsOfContent : public SyncMethod {
 public:
-    SetsOfContent(size_t terminal_str_size = 50, size_t levels = NOT_SET);
+    SetsOfContent(size_t terminal_str_size, size_t levels, int partition, GenSync::SyncProtocol base_set_proto);
 
     ~SetsOfContent();
 
@@ -121,16 +122,18 @@ private:
     string myString; // original input string
     size_t TermStrSize, Levels, Partition;
 
-    vector<DataObject*> setPointers;
+    GenSync::SyncProtocol baseSyncProtocol;
 
-    // each level: store string and their conter-part on the other side
-    vector<map<size_t, size_t>> conformingPair;
+    vector<DataObject*> setPointers;
 
     vector<vector<shingle_hash>> myTree, theirTree; // the hash shingle tree
 
     map<size_t, string> dictionary; // TODO: transfer into index of the string to save auxilary space
 
     //requests
+    map<size_t, bool> my_group_of_concern, my_dic_of_concern; //group ID of shingle groups not known to the other side;
+    map<size_t, int> my_group_of_query, my_group_of_concern_tosend;
+
     vector<size_t> Req_Dict, Req_Group, Rev_Dict, send_Cyc, get_Cyc;
 
     map<size_t,bool> Rev_Group;
@@ -182,7 +185,7 @@ private:
         return tmp_vec;
     }
 
-    void update_tree(vector<size_t> hash_vector, size_t level, bool isComputeCyc);
+    void update_tree(vector<size_t> hash_vector, int level, bool isComputeCyc);
 
     size_t get_group_signature(vector<size_t> strordered_hashset);
 
@@ -193,7 +196,7 @@ private:
      * @param str_order
      * @param final_str a hash train in string order
      */
-    bool shingle2hash_train(vector<shingle_hash> shingle_set,size_t &str_order, vector<size_t> &final_str);
+    bool shingle2hash_train(vector<shingle_hash> shingle_set,int &str_order, vector<size_t> &final_str);
 
     vector<size_t> get_nxt_edge_idx(size_t current_edge, vector<shingle_hash>changed_shingleOccur);
 
@@ -228,12 +231,12 @@ private:
      * @param groupIDs
      * @return hashes of unknown
      */
-    vector<size_t> single_out(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine, vector<size_t>& groupIDs);
-
+    void single_out_querys(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine);
+    void single_out_concerns(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine);
 
     void redo_tree_with_cyc();
 
-    vector<size_t> get_string_cycles();
+    void go_through_tree(bool get_string_cycles);
 
         // functions for Sync Methods
 
@@ -241,7 +244,7 @@ private:
 
     void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
 
-    void configure(shared_ptr<SyncMethod>& setHost, GenSync::SyncProtocol SyncProtocol = GenSync::SyncProtocol::IBLTSyncSetDiff);
+    void configure(shared_ptr<SyncMethod>& setHost, long mbar);
 
     bool reconstructString(DataObject* & recovered_string, const list<DataObject *> & theirsMinusMine, const list<DataObject *> & mineMinusTheirs)override;
 };

@@ -3,9 +3,8 @@
 //
 
 #include "SetsOfContent.h"
-SetsOfContent::SetsOfContent(size_t terminal_str_size, size_t levels)
-: TermStrSize(terminal_str_size), Levels(levels){
-    Partition = NOT_SET; // Set Them Later
+SetsOfContent::SetsOfContent(size_t terminal_str_size, size_t levels, int partition, GenSync::SyncProtocol base_set_proto)
+: TermStrSize(terminal_str_size), Levels(levels), Partition(partition), baseSyncProtocol(base_set_proto){
     SyncID = SYNC_TYPE::SetsOfContent;
 }
 
@@ -78,34 +77,28 @@ size_t SetsOfContent::add_to_dictionary(string str) {
     return str_to_hash(str);
 }
 
-vector<size_t> SetsOfContent::get_string_cycles() {
-    myTree.empty();
+void SetsOfContent::go_through_tree(bool get_string_cycles) {
+    myTree.clear();
+    auto String_Size = pow(Partition,Levels)*TermStrSize; // calculate a supposed string size, a string size that make sense with the parameters
 
-    string str = myString;
-    // using Floor will let the terminal string tolerate up to 10 times of string size
-    // should obey the rules of p^l >/< n/t , where p = partition, l = levels, n=string size, and t=terminal string size
-    if (Levels == NOT_SET) {
-        Partition = 10;
-        Levels = floor((log2(str.size()) - log2(TermStrSize)) / log2(Partition));
-    } else {
-        Partition = floor(pow(2, (log2(str.size()) - log2(TermStrSize)) / Levels));
-    }
-    if (Levels == NOT_SET) throw invalid_argument("Consider set a Level value bigger than 0");
+    size_t shingle_size = floor(log2(String_Size));
 
-    size_t shingle_size = floor(log2(str.size()));
+    if (shingle_size < 2) throw invalid_argument("Consider larger the paramters for auto shingle size to be more than 2");
+
+
     size_t space = TermStrSize * 126; //126 for ascii content
 
-    // fill up the tree and dictionary
+    // fill up the tree
     myTree.resize(Levels);
 
     clock_t lvl1_t = clock();
 
-    auto first_level = create_HashSet(str, floor((str.size() / Partition) / 2), space, shingle_size);
-    update_tree(first_level, 0, true);
+    auto first_level = create_HashSet(myString, floor((String_Size / Partition) / 2), space, shingle_size);
+    update_tree(first_level, 0, get_string_cycles);
 
-    cout << "Lvl 1 time: " << (double) (clock() - lvl1_t) / CLOCKS_PER_SEC << endl;
+//    cout << "Lvl 1 time with BackTracking: " << (double) (clock() - lvl1_t) / CLOCKS_PER_SEC << endl;
 
-    clock_t alllvls_t = clock();
+//    clock_t all_lvls_t = clock();
     for (int l = 1; l < Levels; ++l) {
         space = floor((space / Partition) / 2);
         shingle_size = floor(shingle_size / 2);
@@ -113,31 +106,30 @@ vector<size_t> SetsOfContent::get_string_cycles() {
             string substring = dictionary[substr_hash];
             auto tmp_level = create_HashSet(substring, floor((substring.size() / Partition) / 2),
                                             space, shingle_size);
-            update_tree(tmp_level, l, true);
+            update_tree(tmp_level, l, get_string_cycles);
         }
 
     }
-    cout << "Rest of the Lvls time: " << (double) (clock() - alllvls_t) / CLOCKS_PER_SEC << endl;
-    return send_Cyc;
+//    cout<<myTree[0].size()<<":"<<myTree[1].size()<<":"<<myTree[2].size()<<endl;
+//    cout << "Rest of the Lvls time with BackTracking: " << (double) (clock() - all_lvls_t) / CLOCKS_PER_SEC << endl;
 }
 
 void SetsOfContent::redo_tree_with_cyc() {
-//    for(string vocab : get_Dict) add_to_dictionary(vocab);
+//
+//    map<size_t, size_t> groupPair;
+//
+//    if (!Rev_Group.empty()) {
+//        for(auto item : Rev_Group){
+//            Req_Group.push_back(item.first);
+//        }
+//    }
 
-    map<size_t, size_t> groupPair;
-
-    if (!Rev_Group.empty()) {
-        for(auto item : Rev_Group){
-            Req_Group.push_back(item.first);
-        }
-    }
-
-
-    for (size_t cyc : Req_Group) groupPair[cyc] = 0; //TODO: this is only the  one way case
-    for (int i = 0; i < get_Cyc.size(); ++i) {
-        groupPair[Req_Group[i]] = get_Cyc[i];
-    }
-
+//
+//    for (size_t cyc : Req_Group) groupPair[cyc] = 0; //TODO: this is only the  one way case
+//    for (int i = 0; i < get_Cyc.size(); ++i) {
+//        groupPair[Req_Group[i]] = get_Cyc[i];
+//    }
+//
 
 //    if(!Rev_Group.empty()) {
 //        for (auto cyc : Rev_Group) groupPair[cyc.first] = 0;
@@ -146,66 +138,125 @@ void SetsOfContent::redo_tree_with_cyc() {
 //        }
 //    }
 
-    for (auto &lvl:theirTree) {
+    for (auto &lvl:theirTree) { // fill their tree with cycle val
         for (auto &item:lvl) {
-            if (groupPair[item.groupID] and item.groupID == item.first) {
-                item.cycleVal = groupPair[item.groupID];
+            if (my_group_of_query[item.groupID] and item.groupID == item.first) {
+                item.cycleVal = my_group_of_query[item.groupID];
             }
         }
     }
 }
+// what i am missing, and what they would be sending to me
+void SetsOfContent::single_out_querys(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine) {
+// get the tree ready
+// know what to expect by getting  my_group_of_query ready
 
-vector<size_t> SetsOfContent::single_out(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine, vector<size_t>& groupIDs) {
-    map<size_t, vector<shingle_hash>> mine_rid;
-    theirTree.resize(myTree.size());// resize my tree
+//
+//    map<size_t, vector<shingle_hash>> mine_rid;
+    theirTree.resize(myTree.size());// resize their tree
+    map<shingle_hash,bool> isExist, rid_shingles;
+    if (my_group_of_query.size()>0) throw invalid_argument("we are not supposed to chance this before single_out_querys");
 
-    for (shingle_hash shingle : shingle_hash_mine) { // put my shingles no in their tree in a map for letter to get rid off
-        mine_rid[shingle.first + shingle.second * 2].push_back(shingle);
-    }
-
-    map<size_t, bool> conceredPool;
-    for (shingle_hash shingle : shingle_hash_theirs) {
-        conceredPool[shingle.groupID] = true;
-    }
-    for (auto id :  conceredPool) {
-        groupIDs.push_back(id.first);
-    }
-
-
-    for (auto tree_lvl : myTree) { // transfer tree
-        for (shingle_hash shingle: tree_lvl) {
-            if (mine_rid[shingle.first + shingle.second * 2].empty() and
-                conceredPool[shingle.groupID]) { // if it is not in the rid list and it is part of concerned gropup: add it in
-                theirTree[shingle.lvl].push_back(shingle);
-            } else { // else, if we are sure,  don't add it
-                for (shingle_hash ridshingle: mine_rid[shingle.first + shingle.second * 2]) {
-                    if (shingle == ridshingle or !conceredPool[shingle.groupID]) break;
-                    theirTree[shingle.lvl].push_back(shingle);
-                }
-            }
-
-        }
-    }        //Their Tree is now complete
-
-    for (shingle_hash shingle : shingle_hash_theirs) { // put their shingles in their shingle tree at my locol host
+    for (shingle_hash shingle:shingle_hash_theirs) { // put what i learnt from set recon in their tree
         theirTree[shingle.lvl].push_back(shingle);
+        my_group_of_query[shingle.groupID] = 1; // first time editing
+        isExist[shingle] = true;
     }
 
-    return unique_substr_hash(theirTree.back());
+
+    for(shingle_hash shingle : shingle_hash_mine){
+        rid_shingles[shingle] = true;
+    }
+
+    for (auto tree_lvl : myTree) { // if it is the same ID, put the shingle in their tree
+        for (shingle_hash shingle: tree_lvl) {
+            if (!isExist[shingle] and !rid_shingles[shingle] and my_group_of_query[shingle.groupID] > 0) {
+                theirTree[shingle.lvl].push_back(shingle);
+            }
+            else if (my_group_of_query[shingle.groupID] == 0){
+                my_group_of_query.erase(shingle.groupID);
+            }
+
+        }
+    }
+
+    if (myTree.front().size()!=theirTree.front().size()) cout<<"Our tree top are not the same, Set sync might have failed"<<endl;
+//
+//    for (shingle_hash shingle : shingle_hash_mine) { // put my shingles no in their tree in a map for letter to get rid off
+//        mine_rid[shingle.first + shingle.second * 2].push_back(shingle);
+//    }
+//
+//    map<size_t, bool> conceredPool;
+//    for (shingle_hash shingle : shingle_hash_theirs) {
+//        conceredPool[shingle.groupID] = true;
+//    }
+//    for (auto id :  conceredPool) {
+//        groupIDs.push_back(id.first);
+//    }
+//
+//
+//    for (auto tree_lvl : myTree) { // transfer tree
+//        for (shingle_hash shingle: tree_lvl) {
+//            if (mine_rid[shingle.first + shingle.second * 2].empty() and
+//                conceredPool[shingle.groupID]) { // if it is not in the rid list and it is part of concerned gropup: add it in
+//                theirTree[shingle.lvl].push_back(shingle);
+//            } else { // else, if we are sure,  don't add it
+//                for (shingle_hash ridshingle: mine_rid[shingle.first + shingle.second * 2]) {
+//                    if (shingle == ridshingle or !conceredPool[shingle.groupID]) break;
+//                    theirTree[shingle.lvl].push_back(shingle);
+//                }
+//            }
+//
+//        }
+//    }        //Their Tree is now complete
+//
+//    for (shingle_hash shingle : shingle_hash_theirs) { // put their shingles in their shingle tree at my locol host
+//        theirTree[shingle.lvl].push_back(shingle);
+//    }
+//
+//    return unique_substr_hash(theirTree.back());
 
 }
 
-void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level, bool isComputeCyc) {
+// what they are missing, and i will prepare to send them
+void SetsOfContent::single_out_concerns(vector<shingle_hash> shingle_hash_theirs, vector<shingle_hash> shingle_hash_mine) {
+
+    // figure out what they are missing, on cycles and dictionary
+    // later send the information over
+//map<shingle_hash,bool> mine_unique_MAP;
+    for (shingle_hash shingle : shingle_hash_mine) {
+        my_group_of_concern[shingle.groupID] = true; // record all group ids from mine - theirs pile
+        if (shingle.lvl==myTree.size()-1) { // get all the shingles first , then delete from commons
+            my_dic_of_concern[shingle.first] = true;
+            my_dic_of_concern[shingle.second] = true;
+        }
+//        mine_unique_MAP[shingle] = true;
+    }
+    //TODO: need to prove that it does no harm by first make this work and enable it
+//    cout<<"my_dic_of_concern: "<<my_dic_of_concern.size()<<endl;
+//    for (auto tree_lvl : myTree) { // get rid of dictionaries that is known by the other side
+//        for (shingle_hash shingle: tree_lvl) {
+//            if (!mine_unique_MAP[shingle]) {
+//                 my_dic_of_concern.erase(shingle.first);
+//                my_dic_of_concern.erase(shingle.second);
+//            }
+//        }
+//    }
+//    cout<<"my_dic_of_concern: "<<my_dic_of_concern.size()<<endl;
+
+}
+
+void SetsOfContent::update_tree(vector<size_t> hash_vector, int level, bool isComputeCyc) {
     if (myTree.size() <= level) throw invalid_argument("We have exceeded the levels of the tree");
     if (hash_vector.size() > 100)
         cout
-                << "It is advised to not excceed 50 partitions for fast backtracking at Level: " + to_string(level) +
+                << "It is advised to not excceed 100 partitions for fast backtracking at Level: " + to_string(level) +
                    " Current set size: " + to_string(hash_vector.size()) << endl;
     if (hash_vector.empty())
         throw invalid_argument("hash_vector is zero at level:" + to_string(level) +
                                ". All termianl strgins to be passed down to the bottom level");
 
-    map<pair<size_t, size_t>, size_t> tmp;
+    map<pair<size_t, size_t>, int> tmp;
     for (int i = 0; i < hash_vector.size() - 1; ++i) {
         if (tmp[{hash_vector[i], hash_vector[i + 1]}])
             tmp[{hash_vector[i], hash_vector[i + 1]}]++;
@@ -221,6 +272,11 @@ void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level, bool i
         if (hash_vector.empty()) throw invalid_argument("inherited empty hash vector at level: " + to_string(level));
         myTree[level].emplace_back(
                 shingle_hash{.first = hash_vector.back(), .second = 0, .occurr = 1, .groupID = group_id, .cycleVal = 1, .lvl = level});
+
+        if (isComputeCyc and my_group_of_concern[group_id] ) {
+            my_group_of_concern_tosend[group_id] = 1; // set the cycle number at the head shingle
+        }
+
         return;
     }
 
@@ -231,8 +287,8 @@ void SetsOfContent::update_tree(vector<size_t> hash_vector, size_t level, bool i
                 shingle_hash{.first = item->first.first, .second = item->first.second, .groupID = group_id, .occurr = item->second, .cycleVal = 0, .lvl = level});
     }
 
-    if (isComputeCyc and Rev_Group[group_id]) {
-        send_Cyc.push_back(set_cyc_val(lst, hash_vector)); // set the cycle number at the head shingle
+    if (isComputeCyc and my_group_of_concern[group_id] ) {
+        my_group_of_concern_tosend[group_id] = set_cyc_val(lst, hash_vector); // set the cycle number at the head shingle
     }
 
 
@@ -266,8 +322,9 @@ vector<string> SetsOfContent::getTerminalDiffStr(vector<shingle_hash> diff_shing
 
 
 // functions for backtracking
-bool SetsOfContent::shingle2hash_train(vector<shingle_hash> shingle_set, size_t &str_order,
+bool SetsOfContent::shingle2hash_train(vector<shingle_hash> shingle_set, int &str_order,
                                                                     vector<size_t>& final_str) {
+
     // edge case if there is only one shinlge in the set
     if (shingle_set.empty()) throw invalid_argument("Nothing is passed into shingle2hash_train");
 
@@ -302,6 +359,8 @@ bool SetsOfContent::shingle2hash_train(vector<shingle_hash> shingle_set, size_t 
     } else {// else find head is already inserted (we are retrieving string)
         curEdge = final_str[1];
     }
+    Resources initRes;
+    initResources(initRes); // initiate Recourses tracking
 
 
     // Init Original state
@@ -324,7 +383,7 @@ bool SetsOfContent::shingle2hash_train(vector<shingle_hash> shingle_set, size_t 
 
             stateStack.pop_back();
             //(!stateStack.empty()) ? stateStack.push_back(stateStack.back()) : stateStack.push_back(origiState);
-        } else if (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1 and
+        } else if (!stateStack.empty() and stateStack.size() == nxtEdgeStack.size() + 1 and !nxtEdgeStack.empty() and
                    nxtEdgeStack.back().empty()) {// if this state is dead and we should look back a state
             if (!str.empty()) str.pop_back();
             // look back a state or multiple if we have empty nxt choice (unique nxt edge)
@@ -352,6 +411,9 @@ bool SetsOfContent::shingle2hash_train(vector<shingle_hash> shingle_set, size_t 
         stateStack.back()[nxt_idx].occurr--;
 
         curEdge = shingle_set[nxt_idx].second;
+
+        if (!resourceMonitor( initRes, MAX_TIME, MAX_VM_SIZE))
+            return false;
 
         // if we reached a stop point
         if (empty_state(stateStack.back())) {
@@ -388,9 +450,11 @@ vector<size_t> SetsOfContent::get_nxt_edge_idx(size_t current_edge, vector<shing
 
 size_t SetsOfContent::set_cyc_val(vector<shingle_hash> &shingle_set,
                                           vector<size_t> strordered_substr_hash) {
-    size_t cycnum = 0;
+    int cycnum = 0;
 
     shingle2hash_train(shingle_set,cycnum,strordered_substr_hash); // get the cycnum
+    if (cycnum == 264)
+        cout<<"My 256 size: "<<strordered_substr_hash.size()<<endl;
 
     for(shingle_hash& shingle : shingle_set){
         if(shingle.first==strordered_substr_hash[0] and shingle.second==strordered_substr_hash[1]){
@@ -405,13 +469,16 @@ string SetsOfContent::get_str_from(vector<shingle_hash> shingle_set) {
     string recovered_str;
     for (shingle_hash& shingle : shingle_set){
         if (shingle.cycleVal>0) { // this means it is the head
+
+            if (shingle.cycleVal == 264)
+                cout<<"My 256 size: "<<shingle_set.size()<<endl;
             shingle.occurr--;
             final_str.push_back(shingle.first);
             final_str.push_back(shingle.second);
-            auto ptr = &final_str;
             shingle2hash_train(shingle_set,shingle.cycleVal,final_str);
             final_str.insert(final_str.begin(),shingle.second);
             final_str.insert(final_str.begin(),shingle.first);
+            if (shingle.cycleVal == 264) for (auto ss : final_str) cout<<"Did it again here"<<ss<<endl;
             break; // there should not be any other shingles that has it
         }
     }
@@ -448,40 +515,18 @@ string SetsOfContent::retriveString() {
 
 // functions for  SyncMethods
 bool SetsOfContent::addStr(DataObject *str_p, vector<DataObject *> &datum, bool sync) {
-    string str = str_p->to_string();
+    myString = str_p->to_string();
     SyncMethod::addStr(str_p, datum, sync);
-    if (str.empty()) return false;
-    myString = str;
-    // using Floor will let the terminal string tolerate up to 10 times of string size
-    // should obey the rules of p^l >/< n/t , where p = partition, l = levels, n=string size, and t=terminal string size
-    if (Levels == NOT_SET) {
-        Partition = 10;
-        Levels = floor((log2(str.size()) - log2(TermStrSize)) / log2(Partition));
-    } else {
-        Partition = floor(pow(2, (log2(str.size()) - log2(TermStrSize)) / Levels));
-    }
+    if (myString.empty()) return false;
+
+    if (myString.size()/pow(Partition,Levels)< 1) throw invalid_argument("Terminal String size would end up less than 1, please consider lessen the levels");
+
     if (Levels == NOT_SET) throw invalid_argument("Consider set a Level value bigger than 0");
 
-    size_t shingle_size = floor(log2(str.size()));
-    size_t space = TermStrSize * 126; //126 for ascii content
 
-    // fill up the tree and dictionary
-    myTree.resize(Levels);
+    go_through_tree(false);
 
-    auto first_level = create_HashSet(str, floor((str.size() / Partition) / 2), space, shingle_size);
-    update_tree(first_level, 0, false);
 
-    for (int l = 1; l < Levels; ++l) {
-        space = floor((space / Partition) / 2);
-        shingle_size = floor(shingle_size / 2);
-        for (auto substr_hash:unique_substr_hash(myTree[l - 1])) {
-            string substring = dictionary[substr_hash];
-            auto tmp_level = create_HashSet(substring, floor((substring.size() / Partition) / 2),
-                                            space, shingle_size);
-            update_tree(tmp_level, l, false);
-        }
-
-    }
     for (DataObject* dop : setPointers) delete dop;
     for (ZZ item : getShingles_ZZ()){
         setPointers.push_back(new DataObject(item));
@@ -535,10 +580,25 @@ bool SetsOfContent::SyncServer(const shared_ptr<Communicant> &commSync, shared_p
     Logger::gLog(Logger::METHOD, "Entering SetsOfContent::SyncServer");
 
     commSync->commListen();
+    long mbar;
+    if(GenSync::SyncProtocol::IBLTSyncSetDiff == baseSyncProtocol){
+        StrataEst est = StrataEst(sizeof(shingle_hash));
+
+        for (auto item : setPointers) {
+            est.insert(item);
+        }
+
+        // since Kshingling are the same, Strata Est parameters would also be the same.
+        auto theirStarata = commSync->commRecv_Strata();
+        mbar = (est -= theirStarata).estimate();
+        commSync->commSend(mbar); // Dangerous cast
+    }
+
+
     RecvSyncParam(commSync);
     SyncMethod::SyncServer(commSync, setHost);
 
-    configure(setHost);
+    configure(setHost, mbar);
 
     for (DataObject *dop : setPointers) {
         setHost->addElem(dop); // Add to GenSync
@@ -550,61 +610,54 @@ bool SetsOfContent::SyncServer(const shared_ptr<Communicant> &commSync, shared_p
     for (auto shingle : others) theirs_hash.push_back(ZZtoShingleHash(shingle->to_ZZ()));
     for (auto shingle : mine) mine_hash.push_back(ZZtoShingleHash(shingle->to_ZZ()));
 
-//    Req_Dict = single_out(theirs_hash, mine_hash, Req_Group);
+    cout<<"Server has: "<<mine.size()<<"other: "<<others.size()<<endl;
 
-//    configure(setHost,GenSync::SyncProtocol::FullSync);
+    // get request
+//    size_t group_Size = commSync->commRecv_size_t();
+//    size_t dict_Size = commSync->commRecv_size_t();
+//    for (int i = 0; i < dict_Size; ++i) {
+//        Rev_Dict.push_back(commSync->commRecv_size_t());
+//    }
+//    for (int i = 0; i < group_Size; ++i) {
+//        Rev_Group[commSync->commRecv_size_t()] = true;
+//    }
 
-//    for (int i = 0; i < ; ++i) {
+    single_out_concerns(theirs_hash,mine_hash);
+
+    go_through_tree(true);
+
+    for (auto groupcyc : my_group_of_concern_tosend){
+        commSync->commSend(groupcyc.second);
+        cout<<groupcyc.first<<":"<<groupcyc.second<<endl;
+    }
+    int dic_size = my_dic_of_concern.size();
+    commSync->commSend(dic_size);
+    for (auto dic : my_dic_of_concern) {
+        if (!dictionary[dic.first].empty())
+            commSync->commSend(dictionary[dic.first]);
+        else
+            commSync->commSend("$");
+    }
+//
+//    commSync->commSend((size_t) Dif_Group.size());
+//    commSync->commSend((size_t) Dif_Dict.size());
+//
+//    for (long cyc : Dif_Group) {
+//        commSync->commSend(cyc);
+//    }
+//    for (auto dic : Dif_Dict) {
+//        string tmp = dictionary[dic];
+//        if (!tmp.empty())commSync->commSend(tmp);
+//        else commSync->commSend("$");
 //
 //    }
-//    for(auto dop: mine) delete dop;
-//    for(auto dop: others) delete dop;
-//    setHost->SyncServer(commSync,mine, others);
-    // get request
-    size_t group_Size = commSync->commRecv_size_t();
-    size_t dict_Size = commSync->commRecv_size_t();
-    for (int i = 0; i < dict_Size; ++i) {
-        Rev_Dict.push_back(commSync->commRecv_size_t());
-    }
-    for (int i = 0; i < group_Size; ++i) {
-////            Rev_Dict.push_back(commSync->commRecv_size_t());
-        Rev_Group[commSync->commRecv_size_t()] = true;
-    }
-
-
-//        auto send = new FullSync();
-////        for(auto id : Req_Group)
-////            send->addElem(new DataObject(id));
-////        for(auto dic : Req_Dict)
-////            send->addElem(new DataObject(dic));
-//
-//        list<DataObject*> theirs, mine;
-//        send->SyncServer(commSync,theirs,mine);
-//        // get the value
-
-
-
-
-    auto cycles = get_string_cycles();
-    for (long cyc : cycles) {
-        commSync->commSend(cyc);
-    }
-    for (auto dic : Rev_Dict) {
-        string tmp = dictionary[dic];
-        cout<<"we sent: "<<tmp.size()<<endl;
-        if(!tmp.empty())commSync->commSend(tmp);
-        else commSync->commSend("$");
-
-    }
 
 
 //
-//        //send the request
-//        for (auto id : send_Cyc) commSync->commSend((size_t) id);
-//        for (auto dic : send_Dict) commSync->commSend(dic);
-//    success=(SYNC_SUCCESS==commSync->commRecv_int());
+
+    success=(SYNC_SUCCESS==commSync->commRecv_int());
 //    commSync->commSend(SYNC_SUCCESS);
-//    cout<<"Server Close"<<endl;
+    cout<<"Server Close"<<endl;
     Logger::gLog(Logger::METHOD, "SetOfCeontent Done");
     commSync->commClose();
     return success;
@@ -616,10 +669,26 @@ bool SetsOfContent::SyncClient(const shared_ptr<Communicant> &commSync, shared_p
     Logger::gLog(Logger::METHOD, "Entering SetsOfContent::SyncClient");
 
     commSync->commConnect();
+    long mbar;
+
+    if (GenSync::SyncProtocol::IBLTSyncSetDiff == baseSyncProtocol){
+        StrataEst est = StrataEst(sizeof(shingle_hash));
+
+        for (auto item :setPointers) {
+            est.insert(item); // Add to estimator
+        }
+
+        // since Kshingling are the same, Strata Est parameters would also be the same.
+        commSync->commSend(est.getStrata(), false);
+
+        mbar = commSync->commRecv_long(); // cast long to long long
+
+    }
+
     SendSyncParam(commSync);
     SyncMethod::SyncClient(commSync, setHost);
 
-    configure(setHost);
+    configure(setHost, mbar);
 
     for (DataObject *dop : setPointers) {
         setHost->addElem(dop); // Add to GenSync
@@ -631,68 +700,43 @@ bool SetsOfContent::SyncClient(const shared_ptr<Communicant> &commSync, shared_p
     for (auto shingle : others) theirs_hash.push_back(ZZtoShingleHash(shingle->to_ZZ()));
     for (auto shingle : mine) mine_hash.push_back(ZZtoShingleHash(shingle->to_ZZ()));
 
-    Req_Dict = single_out(theirs_hash, mine_hash, Req_Group);
+    cout<<"Client has: "<<mine.size()<<"other: "<<others.size()<<endl;
 
-//    configure(setHost,GenSync::SyncProtocol::FullSync);
-
-//    for(size_t item : Req_Dict){
-//        cout<<item<<endl;
-//        commSync->commSend(conv<ZZ>(item));
-//
-//    }
-//    for(auto dop: mine) delete dop;
-//    for(auto dop: others) delete dop;
-//    setHost->SyncClient(commSync,mine, others);
-// im requesting and getting it
-
-    commSync->commSend((size_t) Req_Group.size());
-    commSync->commSend((size_t) Req_Dict.size());
-    for (size_t dic : Req_Dict)
-        commSync->commSend(dic);
-    for (size_t id : Req_Group)
-        commSync->commSend(id);
+    single_out_querys(theirs_hash,mine_hash);
 
 
-//        for(auto dic : Req_Dict) commSync->commSend((size_t)dic);
-//        auto send = new IBLTSync_SetDiff(Req_Group.size()+Req_Dict.size(),sizeof(ZZ),true);
-//        for(auto id : Req_Group)
-//            send->addElem(new DataObject(to_ZZ(id)));
-//        for(auto dic : Req_Dict)
-//            send->addElem(new DataObject(to_ZZ(dic)));
-//
-//        list<DataObject*> theirs, mine;
-//        send->SyncClient(commSync,theirs,mine);
-//        //recv my stuff
-//
-//        for (int i = 0; i < Req_Group.size(); ++i) {
-//            get_Cyc.push_back(commSync->commRecv_size_t());
-//        }
 
-    for (int i = 0; i < Req_Group.size(); ++i) {
-        get_Cyc.push_back(commSync->commRecv_long());
+    for(auto& cyc:my_group_of_query){
+        cyc.second = commSync->commRecv_int();
+//        cout<<cyc.first<<":"<<cyc.second<<endl;
     }
-    for (int i = 0; i < Req_Dict.size(); ++i) {
+
+    size_t dict_Size = commSync->commRecv_int();
+//    for (int i = 0; i < Rev_Group.size(); ++i) {
+//        get_Cyc.push_back(commSync->commRecv_long());
+//    }
+    for (int i = 0; i < dict_Size; ++i) {
         auto tmp = commSync->commRecv_string();
-        if(tmp!="$")
-        add_to_dictionary(tmp);
-        cout<<"We got string size: "<<tmp.size()<<endl;
+        if (tmp != "$")
+            add_to_dictionary(tmp);
     }
-// commSync->commSend(SYNC_SUCCESS);
+
+
+    commSync->commSend(SYNC_SUCCESS);
+    success = true;
 //    success=(SYNC_SUCCESS==commSync->commRecv_int());
-// cout<<"Client Close"<<endl;
-//    }
+    cout<<"Client Close"<<endl;
     Logger::gLog(Logger::METHOD, "SetOfCeontent Done");
     commSync->commClose();
     return success;
 }
 
 
-void SetsOfContent::configure(shared_ptr<SyncMethod>& setHost, GenSync::SyncProtocol SyncProtocol) {
-if(GenSync::SyncProtocol::IBLTSyncSetDiff == SyncProtocol)
-    setHost = make_shared<IBLTSync_SetDiff>(200, sizeof(shingle_hash), true);
-//    setHost = make_shared<InterCPISync>(5, sizeof(shingle_hash)*7, 8,3,true);
-else if (GenSync::SyncProtocol::FullSync == SyncProtocol)
-        setHost = make_shared<FullSync>(true);
+void SetsOfContent::configure(shared_ptr<SyncMethod>& setHost, long mbar) {
+    if (GenSync::SyncProtocol::IBLTSyncSetDiff == baseSyncProtocol)
+        setHost = make_shared<IBLTSync_SetDiff>(mbar, sizeof(shingle_hash), true);
+    else if (GenSync::SyncProtocol::InteractiveCPISync == baseSyncProtocol)
+        setHost = make_shared<InterCPISync>(5, sizeof(shingle_hash) * 8, 8, 7, true);
 }
 
 bool SetsOfContent::reconstructString(DataObject *&recovered_string, const list<DataObject *> &theirsMinusMine,

@@ -101,6 +101,83 @@ void PerformanceData::kshingle3D(GenSync::SyncProtocol setReconProto, vector<int
 }
 
 
+void PerformanceData::setsofcontent(GenSync::SyncProtocol setReconProto, vector<int> edit_distRange,
+                                 vector<int> str_sizeRange, int confidence, string (*stringInput)(int), int portnum) {
+    string protoName, str_type;
+    if (GenSync::SyncProtocol::IBLTSyncSetDiff == setReconProto) protoName = "IBLTSyncSetDiff";
+    if (GenSync::SyncProtocol::InteractiveCPISync == setReconProto) protoName = "InteractiveCPISync";
+
+    if (*stringInput == randAsciiStr) str_type = "RandAscii";
+    if (*stringInput == randSampleTxt) str_type = "RandText";
+    if (*stringInput == randSampleCode) str_type = "RandCode";
+
+    PlotRegister plot = PlotRegister("Sets of Content " + protoName + " " + str_type,
+                                     {"Str Size", "Edit Diff", "Comm (bits)", "Time Set(s)", "Time Str(s)",
+                                      "Space (bits)", "Set Recon True", "Str Recon True"});
+    //TODO: Separate Comm, and Time, Separate Faile rate.
+
+    for (int str_size : str_sizeRange) {
+        cout << to_string(str_size) << endl;
+        edit_distRange.clear();
+        for (int i = 1; i <= tesPts; ++i) edit_distRange.push_back((int) ((str_size * i) / 400));
+        for (int edit_dist : edit_distRange) {
+
+//            int shingle_len = ceil(log2(str_size));
+
+            for (int con = 0; con < confidence; ++con) {
+                try {
+                    size_t terminalStrSize = (log10(str_size))*50;
+                    GenSync Alice = GenSync::Builder().
+                            setStringProto(GenSync::StringSyncProtocol::SetsOfContent).
+                            setProtocol(setReconProto).
+                            setComm(GenSync::SyncComm::socket).
+                            setTerminalStrSize(200).
+                            setNumPartitions(10).
+                            setlvl(1).
+                            setPort(portnum).
+                            build();
+
+
+                    DataObject *Alicetxt = new DataObject(stringInput(str_size));
+
+                    Alice.addStr(Alicetxt, false);
+
+                    GenSync Bob = GenSync::Builder().
+                            setStringProto(GenSync::StringSyncProtocol::SetsOfContent).
+                            setProtocol(setReconProto).
+                            setComm(GenSync::SyncComm::socket).
+                            setTerminalStrSize(200).
+                            setNumPartitions(10).
+                            setlvl(1).
+                            setPort(portnum).
+                            build();
+
+
+                    DataObject *Bobtxt = new DataObject(randStringEditBurst((*Alicetxt).to_string(), edit_dist));
+
+                    Bob.addStr(Bobtxt, false);
+
+
+
+                    forkHandleReport report = forkHandle(Alice, Bob, false);
+
+                    bool success_StrRecon = (Alice.dumpString()->to_string() == Bobtxt->to_string());
+
+
+                    plot.add({to_string(str_size), to_string(edit_dist), to_string(report.bytesTot+report.bytesRTot),
+                              to_string(report.CPUtime), to_string(success_StrRecon)});
+
+                    delete Alicetxt;
+                    delete Bobtxt;
+                } catch (std::exception) {
+                    cout << "we failed once" << endl;
+                }
+            }
+        }
+        plot.update();
+    }
+}
+
 
 
 void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {

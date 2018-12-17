@@ -465,7 +465,7 @@ GenSync GenSync::Builder::build() {
             myMeth = make_shared<kshinglingSync>(proto, shingleLen, stopWord);
             break;
         case StringSyncProtocol ::SetsOfContent:
-            myMeth = make_shared<SetsOfContent>(TerminalStrSize,lvl);
+            myMeth = make_shared<SetsOfContent>(TerminalStrSize,lvl,numParts,proto);
             break;
         default: // do nothing
             break;

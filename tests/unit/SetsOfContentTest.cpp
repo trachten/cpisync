@@ -12,7 +12,7 @@ void SetsOfContentTest::setDiff() {
     CPPUNIT_ASSERT(Shingle_A == ZZtoShingleHash(ShingleHashtoZZ(Shingle_A)));
     CPPUNIT_ASSERT(Shingle_A < Shingle_B);
 
-    string alicetxt = randSampleTxt(1000000); // 20MB is top on MAC
+    string alicetxt = randSampleTxt(2000000); // 20MB is top on MAC
 
     DataObject *atxt = new DataObject(alicetxt);
 //    auto Alice = SetsOfContent(100);
@@ -20,11 +20,11 @@ void SetsOfContentTest::setDiff() {
 
     GenSync Alice = GenSync::Builder().
             setStringProto(GenSync::StringSyncProtocol::SetsOfContent).
-            setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
+            setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
             setComm(GenSync::SyncComm::socket).
-            setTerminalStrSize(300).
+            setTerminalStrSize(100).
             setNumPartitions(10).
-            setlvl(1).
+            setlvl(2).
             setPort(8001).
             build();
 
@@ -38,11 +38,11 @@ void SetsOfContentTest::setDiff() {
 //    Bob.injectString(bobtxt);
     GenSync Bob = GenSync::Builder().
             setStringProto(GenSync::StringSyncProtocol::SetsOfContent).
-            setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
+            setProtocol(GenSync::SyncProtocol::IBLTSyncSetDiff).
             setComm(GenSync::SyncComm::socket).
-            setTerminalStrSize(300).
+            setTerminalStrSize(100).
             setNumPartitions(10).
-            setlvl(1).
+            setlvl(2).
             setPort(8001).
             build();
 

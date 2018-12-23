@@ -16,7 +16,7 @@ CommunicantTest::~CommunicantTest() = default;
 
 void CommunicantTest::setUp() {
     const int MY_SEED = 617; // a preset seed for pseudorandom number generation
-    srand(MY_SEED); // seed the prng predictably so that the random numbers generated are predictable and reproducible
+    srand(time(NULL)); // seed the prng predictably so that the random numbers generated are predictable and reproducible
 }
 
 void CommunicantTest::tearDown() {

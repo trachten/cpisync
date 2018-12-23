@@ -71,7 +71,6 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
                          "IBLT parameters do not match up between client and server!");
             success = false;
         }
-
         // verified that our size and eltSize == theirs
         IBLT theirs = commSync->commRecv_IBLT(myIBLT.size(), myIBLT.eltSize());
 
@@ -92,6 +91,7 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
             selfMinusOther.push_back(new DataObject(pair.first));
         }
 
+
         if(!oneWay) {
             commSync->commSend(selfMinusOther);
             commSync->commSend(otherMinusSelf);
@@ -108,6 +108,7 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         throw (s);
     } // might not need the try-catch
 }
+
 bool IBLTSync::addElem(DataObject* datum){
     // call parent add
     SyncMethod::addElem(datum);

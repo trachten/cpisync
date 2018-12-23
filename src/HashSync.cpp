@@ -57,7 +57,7 @@ bool HashSync::SyncClient(const shared_ptr<Communicant>& commSync,
   commSync->commSend(selfMinusOther);
 
   // receive unhashed elements from the server
-  otherMinusSelf = commSync->commRecv_DataObject_List(); // possible data leak of otherMinusSelf DataObjects?
+  otherMinusSelf = commSync->commRecv_DataObject_List(); // possible data leak of otherMinusSelf DataObjects? Yes... it leaks....
 
   commSync->commClose();
 

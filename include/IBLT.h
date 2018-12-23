@@ -44,6 +44,7 @@ public:
     // Communicant needs to access the internal representation of an IBLT to send and receive it
     friend class Communicant;
 
+
     /**
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT

@@ -96,18 +96,31 @@ public:
         addElem(newDO);
     }
 
+    bool addStr(DataObject* newStr, bool backtrack);
+
+    template <typename T>
+    bool addStr(T* newStr, bool backtrack) {
+        Logger::gLog(Logger::METHOD, "Entering GenSync::addStr");
+        return addStr(new DataObject(*newStr), backtrack);
+    }
+
     /**
      * Deletes a given element from the GenSync data structure
      * Not currently implemented.
      * @unimplemented
      */
-    void delElem(DataObject* newDatum);
+    void delElemGroup(list<DataObject*> newDatumList);
 
     /**
      * @return a list of pointers to the elements stored in the data structure
      */// get a data object element from data list
     const list<DataObject *> dumpElements();
 
+    /**
+     * get recovered string
+     * @return a pointer to the string stored in the data structure
+     */
+    const DataObject* dumpString();
 
     // COMMUNICANT MANIPULATION
     /* Communicants are entities that can communicate [and thus sync] with this GenSync object.
@@ -186,7 +199,7 @@ public:
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return true iff all synchronizations were completed successfully
      */
-    bool listenSync(int sync_num = 0);
+    bool listenSync(int sync_num = 0, bool isRecon= true);
 
     /**
      * Sequentially sends a specific synchronization request to each communicant.  If sync is successful,
@@ -196,7 +209,7 @@ public:
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return  true iff all synchronizations were completed successfully
      */
-    bool startSync(int sync_num);
+    bool startSync(int sync_num, bool isRecon= true);
 
 
 
@@ -216,6 +229,18 @@ public:
 
     /**
      * @param commIndex The index of the Communicant to query (in the order that they were added)
+     * @return The number of bytes transmitted by the Communicant and index #commIndex.
+     */
+    const long getXmitBytesTot(int commIndex) const;
+
+    /**
+     * @param commIndex The index of the Communicant to query (in the order that they were added)
+     * @return The number of bytes received by the Communicant and index #commIndex.
+     */
+    const long getRecvBytesTot(int commIndex) const;
+
+    /**
+     * @param commIndex The index of the Communicant to query (in the order that they were added)
      * @return The amount of CPU time (in seconds) since the last sync request by the Communicant and index #commIndex.
      *          if there was no sync request, the creation time is used.
      */
@@ -228,12 +253,15 @@ public:
      * */
     int getPort(int commIndex);
 
+    const long getVirMem(int commIndex) const;
+
     /**
      * Displays some internal information about this method
      */
     virtual string getName() {
         return "I am a GenSync object";
-    }
+    };
+
 
     /**
      * Destructor - clears out all memory
@@ -262,7 +290,16 @@ public:
         FullSync,
         IBLTSync,
         OneWayIBLTSync,
+        IBLTSyncSetDiff,
         END     // one after the end of iterable options
+    };
+
+    enum class StringSyncProtocol {
+        UNDEFINED,
+        BEGIN,
+        kshinglingSync=BEGIN,
+        SetsOfContent,
+        END
     };
 
     enum class SyncComm {
@@ -283,7 +320,10 @@ private:
 
     // FIELDS
     /** A container for the data stored by this GenSync object. */
-    list<DataObject*> myData;
+    list<DataObject*> myData, myDiff;
+
+    /** A container for the string stored by this GenSync object. */
+    DataObject* myString;
 
     /** A vector of communicants registered to be able to sync with this GenSync object. */
     vector<shared_ptr<Communicant>> myCommVec;
@@ -313,7 +353,13 @@ public:
     mbar(DFT_MBAR),
     bits(DFT_BITS),
     numParts(DFT_PARTS),
-    numExpElem(DFT_EXPELEMS){
+    stringProto(DFT_STRPROTO),
+    stopWord(DFT_STOPWORD),
+    editDistance(DFT_MBAR),
+    shingleLen(DFT_SHINGLELEN),
+    numExpElem(DFT_EXPELEMS),
+    TerminalStrSize(TERMINAL_STR_SIZE),
+    lvl(NOT_SET){
         myComm = nullptr;
         myMeth = nullptr;
     }
@@ -329,6 +375,36 @@ public:
      */
     Builder& setProtocol(SyncProtocol theProto) {
         this->proto = theProto;
+        return *this;
+    }
+
+    Builder& setStringProto(StringSyncProtocol theStringProto) {
+        this->stringProto = theStringProto;
+        return *this;
+        }
+
+    Builder& setShingleLen(size_t theShingleLen) {
+        this->shingleLen = theShingleLen;
+        return *this;
+    }
+
+    Builder& setEditDistance(long theEditDistance) {
+        this->editDistance = theEditDistance;
+        return *this;
+    }
+
+    Builder& setStopWord(long theStopWord) {
+        this->stopWord = theStopWord;
+        return *this;
+    }
+
+    Builder& setTerminalStrSize(size_t theTerminalStrSize) {
+        this->TerminalStrSize = theTerminalStrSize;
+        return *this;
+    }
+
+    Builder& setlvl(size_t thelvl){
+        this->lvl = thelvl;
         return *this;
     }
 
@@ -400,6 +476,11 @@ public:
         this->numExpElem = theNumExpElems;
         return *this;
     }
+
+    Builder& setNumExpectedDifference(size_t theNumeExpDiffs){
+        this->mbar = theNumeExpDiffs;
+        return *this;
+    }
     
     /**
      * Destructor - clear up any possibly allocated internal variables
@@ -423,7 +504,11 @@ private:
     long bits; /** the number of bits per element of data */
     int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
     size_t numExpElem; /** the number of expected elements to be stored in an IBLT */
-
+    size_t shingleLen; /** each of k-shingle length */
+    StringSyncProtocol stringProto; /** string recon protocol */
+    long editDistance; /** edit distnace upper bound, can be used as mbar */
+    char stopWord;
+    size_t lvl, TerminalStrSize;
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
     shared_ptr<SyncMethod> myMeth;
@@ -431,9 +516,10 @@ private:
     // DEFAULT constants
     static const long UNDEFINED = -1;
     static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;
+    static const StringSyncProtocol DFT_STRPROTO = StringSyncProtocol::UNDEFINED;
     static const int DFT_PRT = 8001;
     static const bool DFT_BASE64 = true;
-    static const long DFT_MBAR = UNDEFINED; // this parameter *must* be specified for sync to work
+    static const long DFT_MBAR = 0;//UNDEFINED; // this parameter *must* be specified for sync to work
     static const long DFT_BITS = 32;
     static const int DFT_PARTS = 2;
     static const size_t DFT_EXPELEMS = 50;
@@ -441,6 +527,10 @@ private:
     static const string DFT_HOST;
     static const string DFT_IO;
     static const int DFT_ERROR;
+    static const size_t DFT_SHINGLELEN = 2;
+    static const char DFT_STOPWORD = '$';
+    static const size_t TERMINAL_STR_SIZE = 100;
+    static const size_t NOT_SET = 0;
 };
 
 #endif

@@ -51,6 +51,29 @@ void AuxiliaryTest::testToStr() {
     std::string expectedZZpStr = "12";
     std::string resultZZpStr = toStr(static_cast<ZZ_p>(12));
     CPPUNIT_ASSERT(resultZZpStr.compare(expectedZZpStr) == 0);
+
+    string s = randAsciiStr(20);
+    string ss = ZZtoStr(StrtoZZ(s));
+    CPPUNIT_ASSERT(ZZtoStr(StrtoZZ(s))==s);
+    CPPUNIT_ASSERT(StrtoZZ(s)==StrtoZZ(s));
+}
+
+void AuxiliaryTest::testStringEditing() {
+    std::string origI= randAsciiStr(5);
+    std::string inserted = randStringInsert(origI,3);
+    CPPUNIT_ASSERT(origI.size()+3==inserted.size());
+
+    std::string deleted = randStringDel(origI,4);
+    CPPUNIT_ASSERT(origI.size()-4==deleted.size());
+
+    std::string edited = randStringEdit(origI,4);
+    CPPUNIT_ASSERT(origI != edited);
+
+    std::string burstEdited = randStringEditBurst(origI,4,2);
+    CPPUNIT_ASSERT(origI != burstEdited);
+
+    std::string bookTxt = scanTxtFromFile("./tests/SampleTxt.txt",2000);
+    CPPUNIT_ASSERT(bookTxt.size()==2000);
 }
 
 void AuxiliaryTest::testBase64_encode() {

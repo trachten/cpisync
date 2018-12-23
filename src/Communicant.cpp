@@ -74,7 +74,7 @@ bool Communicant::establishModSend(bool oneWay /* = false */) {
     commSend(ZZ_p::modulus());
     MOD_SIZE = NumBytes(ZZ_p::modulus());
     if (oneWay)
-        return true;  // i.e. don't want for a response
+        return true;  // i.e. don't wait for a response
     else
         return (commRecv_byte() != SYNC_FAIL_FLAG);
 }
@@ -88,6 +88,7 @@ bool Communicant::establishIBLTSend(size_t size, size_t eltSize, bool oneWay /* 
         return (commRecv_byte() != SYNC_FAIL_FLAG);
 }
 
+
 bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* = false */) {
     // receive other size and eltSize. both must be read, even if the first parameter is wrong
     long otherSize = commRecv_long();
@@ -100,6 +101,39 @@ bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* 
     } else {
         Logger::gLog(Logger::COMM, "IBLT params do not match: mine(size=" + toStr(size) + ", eltSize="
         + toStr(eltSize) + ") vs other(size=" + toStr(otherSize) + ", eltSize=" + toStr(otherEltSize) + ").");
+        if(!oneWay)
+            commSend(SYNC_FAIL_FLAG);
+        return false;
+    }
+}
+
+
+bool Communicant::establishKshingleSend(size_t kshingle_size, char stop_word, bool oneWay /* = false */) {
+    commSend((long) kshingle_size);
+    commSend(string(1, stop_word));
+    if (oneWay)
+        return true;  // i.e. don't wait for a response
+    else
+        return (commRecv_byte() != SYNC_FAIL_FLAG);
+}
+
+bool Communicant::establishKshingleRecv(size_t kshingle_size, char stop_word, bool oneWay /* = false */) {
+    // receive other size and eltSize. both must be read, even if the first parameter is wrong
+    long otherKshingleSize = commRecv_long();
+    string temStopWord = commRecv_string();
+    if (temStopWord.size()>1 or temStopWord.empty()){
+        Logger::gLog(Logger::COMM, "otherStopWord is not a single char");
+        return false;
+    }
+    char otherStopWord = temStopWord[0]; // stopword is a single char
+
+    if(kshingle_size == otherKshingleSize && stop_word == otherStopWord) {
+        if(!oneWay)
+            commSend(SYNC_OK_FLAG);
+        return true;
+    } else {
+        Logger::gLog(Logger::COMM, "Kshingle params do not match: mine(shingle size=" + toStr(kshingle_size) + ", stop_word="
+                                   + toStr(stop_word) + ") vs other(size=" + toStr(otherKshingleSize) + ", eltSize=" + toStr(otherStopWord) + ").");
         if(!oneWay)
             commSend(SYNC_FAIL_FLAG);
         return false;
@@ -183,6 +217,21 @@ void Communicant::commSend(const long num) {
     commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
 }
 
+//void Communicant::commSend(size_t num) {
+//    unsigned char toSend[sizeof(size_t)];
+//    BytesFromZZ(toSend, to_ZZ(num), sizeof(size_t));
+//    Logger::gLog(Logger::COMM, "... attempting to send: hashVal " + toStr(num));
+//    commSend(ustring(toSend, sizeof(size_t)), sizeof(size_t));
+//}
+
+void Communicant::commSend(const hashVal num) {
+
+    unsigned char toSend[XMIT_LONG];
+    BytesFromZZ(toSend, to_ZZ(num), XMIT_LONG);
+    Logger::gLog(Logger::COMM, "... attempting to send: hashVal " + toStr(num));
+    commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
+}
+
 void Communicant::commSend(const byte bt) {
 
     Logger::gLog(Logger::COMM, string("... attempting to send: byte num ") + toStr((int) bt));
@@ -251,9 +300,20 @@ void Communicant::commSend(const IBLT& iblt, bool sync) {
     }
 }
 
+void Communicant::commSend(const vector<IBLT>& strata, bool sync) {
+    if (!sync) {
+        commSend((long) strata.size());
+    }
+
+    // Access the iblt to serialize it
+    for (const IBLT &iblt : strata) {
+        commSend(iblt, sync);
+    }
+}
+
 void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
     commSend(hte.count);
-    commSend((long) hte.keyCheck);
+    commSend((unsigned long) hte.keyCheck);
     commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
     commSend(hte.valueSum, (unsigned int) eltSize);
 }
@@ -366,6 +426,14 @@ long Communicant::commRecv_long() {
     return to_long(num);
 }
 
+size_t Communicant::commRecv_size_t() {
+    ustring received = commRecv_ustring(sizeof(size_t));
+    ZZ num = ZZFromBytes(received.data(), sizeof(size_t));
+    Logger::gLog(Logger::COMM, "... received long " + toStr(num));
+
+    return to_ulong(num);
+}
+
 int Communicant::commRecv_int() {
     ustring received = commRecv_ustring(XMIT_INT);
     ZZ num = ZZFromBytes(received.data(), XMIT_INT);
@@ -428,6 +496,24 @@ IBLT Communicant::commRecv_IBLT(size_t size, size_t eltSize) {
     }
 
     return theirs;
+}
+
+StrataEst Communicant::commRecv_Strata(size_t size){
+    size_t numSize;
+
+    if (size == NOT_SET){
+        numSize = (size_t) commRecv_long();
+    } else{
+        numSize = size;
+    }
+
+    vector<IBLT> theirs;
+
+    for(int ii = 0; ii < numSize; ++ii) {
+        theirs.push_back(commRecv_IBLT());
+    }
+
+    return StrataEst(theirs);
 }
 
 IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {

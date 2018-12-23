@@ -45,6 +45,9 @@ enum class SYNC_TYPE : byte {
   Interactive_CPISync,
   Priority_CPISync,
   HashSync,
+  SetsOfContent,
+  kshinglingSync,
+  IBLTSync_SetDiff,
   FullSync,
   IBLTSync,
   IBLTSync_HalfRound

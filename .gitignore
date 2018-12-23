@@ -64,6 +64,8 @@ nbactions.xml
 *Test
 *Test.exe
 
+# Ignore Mac folder files
+*Icon?
 
 # Created by https://www.gitignore.io/api/eclipse
 

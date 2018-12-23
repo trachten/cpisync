@@ -58,6 +58,34 @@ public:
         return true;
     }
 
+    // String Sync
+    /**
+     * Connect as a client to a specific communicant and computes differences between the two (without actually updating them).
+     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
+     * %R:  Sync_Server must have been called at that communicant.
+     *
+     * @param commSync The communicant to whom to connect.
+     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
+     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
+     * @return true iff the connection and subsequent synchronization appear to be successful.
+     */
+    virtual bool SyncClient(const shared_ptr<Communicant>& commSync,shared_ptr<SyncMethod> & setHost) {
+        commSync->resetCommCounters();
+        return true;
+    }
+
+    /**
+     * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
+     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
+     *      *
+     * @param commSync The communicant to whom to connect.
+     * @return true iff the connection and subsequent synchronization appear to be successful.
+     */
+    virtual bool SyncServer(const shared_ptr<Communicant>& commSync, shared_ptr<SyncMethod> & setHost) {
+        commSync->resetCommCounters();
+        return true;
+    }
+
     // MANIPULATE DATA
     /**
      * Add an element to the data structure that will be performing the synchronization.
@@ -78,16 +106,37 @@ public:
         return before > elements.size(); // true iff there were more elements before removal than after
     };
 
+    /**
+     * Update string from the data structure
+     * Add a set to Set Recon Method
+     * @param str
+     * @return
+     */
+    virtual bool addStr(DataObject* str, vector<DataObject*> &datum,  bool backtrack){
+        originStr = str;
+        isStringRecon = true;
+        return true;
+    }
+
     // INFORMATIONAL
     /**
      * @return A human-readable name for the synchronization method.
      */
     virtual string getName() = 0;
 
+    virtual long getVirMem(){return 0;};
+
+    virtual bool reconstructString(DataObject* & recovered_string, const list<DataObject *> & theirsMinusMine, const list<DataObject *> & mineMinusTheirs){
+        return true;
+    }
+
+
     /** Accessor methods */
     long getNumElem() const {
         return elements.size();
     }
+
+    SYNC_TYPE getSyncType() const { return SyncID;}
 
     /**
      * @return An iterator pointing to the first element in the data structure
@@ -98,7 +147,11 @@ public:
      * @return An iterator pointing just past the last element in the data structure
      */
     vector<DataObject*>::const_iterator endElements() { return elements.end();}
-    
+
+    bool isStringReconMethod(){return isStringRecon;};
+
+
+
 protected:
     
     /**
@@ -124,6 +177,10 @@ protected:
     
 private:
     vector<DataObject *> elements; /** Pointers to the elements stored in the data structure. */
+
+    DataObject* originStr; /** Pointers to the string stored in the data structure. */
+
+    bool isStringRecon = false; /**falg for if it is string reconciliation. */
 };
 
 

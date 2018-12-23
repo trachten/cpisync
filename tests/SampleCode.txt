@@ -1,0 +1,3315 @@
+class K_Shingle {
+public:
+    // Communicant needs to access the internal representation of an kshingle to send it and receive it
+    friend class Communicant;
+
+    /**
+     * Construct a K_Shingle set object with k as each shingle size
+     * @param k fixing shingle size to be k
+     */
+    K_Shingle(const size_t shingle_size, const char stop_word = '');
+
+    // Default deconstructor
+    ~K_Shingle();
+
+    bool inject(const string str) {
+        clear_shingleSet();
+        orig_string = stopword + str + stopword;
+        return create(str);
+    };
+
+    /**
+     * Increment the edge count of the ShingleSet, Creates no copy
+     * Works on object
+     * @param ver shingle
+     */
+    void incrementEdgeCount(const string ver, map<string, idx_t> &shingle_map);
+
+
+    /**
+     * 0 Based order
+     * Reconstruct a string from object's shingle set
+     * Using backtracking algorithm
+     * input order of string to retreive that
+     * @param Input int,
+     * @return String if input int, int if input string
+     * Fail to return a string, second would be 0
+     */
+    pair<string, idx_t> reconstructStringBacktracking(idx_t str_coll_tar = 0);
+
+    // get methods
+    /**
+     * @return The number of element in she shingle set
+     */
+    size_t getSetSize() const {
+        return shingleSet.size();
+    }
+
+    /**
+     * @return The bit size of a shingle set
+     */
+    size_t getElemSize() const {
+        //return sizeof(DataObject*);
+        int act_size = k+(floor(log(floor(orig_string.size()/k)))+2);
+        return sizeof(ZZ)*(floor(act_size/sizeof(ZZ)) + ((act_size%sizeof(DataObject*)>0)? 1:0));
+        //return StrtoZZ(randAsciiStr(k+(floor(log(floor(orig_string.size()/k)))+2))).size();
+    }
+
+    char getStopWord() const {
+        return stopword;
+    }
+
+
+    string getOriginString() {
+        if (orig_string.empty() || orig_string == "") return "";
+        return orig_string.substr(1, orig_string.size() - 2);
+    }
+
+    vector<pair<string, idx_t>> getShingleSet() {
+        return shingleSet;
+    }
+
+    /**
+     * Interact with sending set elements as string
+     * @return
+     */
+    vector<string> getShingleSet_str() { return shingleSet_str; };
+
+    size_t getshinglelen_str() {return shingleSet_str.back().size();};
+
+    /**
+     * Interact with reciving set element update as string
+     */
+    void updateShingleSet_str(string shingle); //change here - send pair
+
+    // Delete and reinsert
+    void clear_shingleSet() {
+        shingleSet.clear();
+        shingleSet_str.clear();
+    };
+
+    long long virtualMemUsed(){ return currentVM-initVM;};
+
+private:
+    // local data
+
+    //default constructor
+    K_Shingle();
+
+    long long currentVM = 0, initVM = 0; // keeps track of Ram usage
+
+    // k and stopword better be the same between two hosts, or should be transferred.
+    size_t k;  //shingle size
+
+    const char stopword;  // default stop word is ""
+
+    // resetable parameters
+    vector<pair<string, idx_t>> shingleSet; // transfer shingleSet to other host
+    vector<string> shingleSet_str; // mirror variable, used to sedn to another hose in string format
+
+    string orig_string;  // original string with stopwords on both ends
+
+    /**
+     * GET THE NEXT POSSIBLE EDGES
+     * @param changed_shingleSet pair<edge idx,edge occurrence>
+     * @return index of next edges to look at
+     */
+    vector<idx_t> getEdgeIdx(const string verStart, vector<idx_t> changed_shingleOccur);
+
+    /**
+     * Iterative function reconstructing string from a shingle set
+     * Operation returns multiple strings if Eulerian Cycle exists in the modified De Brujin Graph representation of the shingle set
+     * @param changed_shingleSet a set of shingles available at a recursive stage
+     * @param curEdge current edge vertex sting
+     * @param strColl a vector of strings that is returnable from the shingle set, Returnable object
+     * @param str current string
+     * @return whether this process is successfully.
+     */
+    bool shingle2string(vector<pair<string, idx_t>> changed_shingleOccur, string curEdge, idx_t &strCollect_ind,
+                        idx_t &str_order, string &final_str, string str = "");
+
+    /**
+     * create a set of k-shingles from String str
+     * This operation always succeed
+     * @param str Original string
+     */
+    bool create(const string str);
+
+    inline bool emptyState(vector<idx_t> state) {
+        for (idx_t i = 0; i < state.size(); ++i) {
+            if (state[i] > 0) return false;
+        }
+        return true;
+    }
+
+    void insert(pair<string, idx_t> Elem) {
+        shingleSet.push_back(Elem);
+    };
+};
+
+#endif //CPISYNCLIB_KSHINGLING_H
+
+//
+// Created by Bowen on 10/3/18.
+//
+
+#include "AdjMtx.h"
+
+AdjMtx::AdjMtx() = default;
+AdjMtx::~AdjMtx() = default;
+
+void AdjMtx::create(vector<ZZ> _ver) {
+    for (auto vex : _ver) {
+        addNewVex(vex);
+    }
+    vertex = _ver;
+}
+
+void AdjMtx::create(vector<string> _ver) {
+    for (auto vex : _ver) {
+        addNewVex(StrtoZZ(vex));
+    }
+}
+
+bool AdjMtx::addNewVex(ZZ shingle) {
+    for (auto item :vertex) {
+        if (shingle == item) {
+            return false;
+        }
+    }
+    vertex.push_back(shingle);
+    return true;
+}
+
+bool AdjMtx::addNewVex(string shingle) {
+//    auto v = new DataObject(shingle);
+//    return addNewVex(v->to_ZZ());
+    return addNewVex(StrtoZZ(shingle));
+}
+
+bool AdjMtx::addWeigth(ZZ vfrom, ZZ vto, int add_weight){
+    if (contains(vto) and contains(vfrom)) {
+        pair<ZZ, ZZ> vexpair = make_pair(vfrom, vto);
+        auto temp = graph.find(vexpair);
+        if (temp != graph.end()) {
+            temp->second += add_weight;
+        }else{
+            graph.insert(make_pair(vexpair,add_weight));
+        }
+        return true;
+    }
+    return false;
+}
+
+void AdjMtx::sortVex(){
+    sort(vertex.begin(),vertex.end());
+}
+
+bool AdjMtx::setWeight(ZZ vfrom, ZZ vto, int set_weight){
+    if (contains(vto) and contains(vfrom)) {
+        pair<ZZ, ZZ> vexpair = make_pair(vfrom, vto);
+        auto temp = graph.find(vexpair);
+        if (temp != graph.end()) {
+            temp->second = set_weight;
+        } else{
+            graph.insert(make_pair(vexpair,set_weight));
+        }
+        return true;
+    }
+    return false;
+}
+
+bool AdjMtx::delWeigth(ZZ vfrom, ZZ vto, int del_weight){
+    if (contains(vto) and contains(vfrom)) {
+        pair<ZZ, ZZ> vexpair = make_pair(vfrom, vto);
+        auto temp = graph.find(vexpair);
+        if (temp != graph.end()) {
+            temp->second -= del_weight;
+        } else{
+            graph.insert(make_pair(vexpair,-del_weight));
+        }
+        return true;
+    }
+    return false;
+}
+
+
+void AdjMtx::printGraph(vector<ZZ> print_vertex){
+    cout << "   ";
+    for (auto vex: print_vertex) {
+        cout << ZZtoStr(vex)<< "|";
+    }
+    cout << "\n";
+    for (auto vexi: print_vertex){
+        cout << ZZtoStr(vexi)<< "|";
+        for (auto vexj: print_vertex){
+            cout << getWeight(vexi,vexj)<< "|";
+        }
+        cout << "\n";
+    }
+}
+
+void AdjMtx::printGraph(){
+    printGraph(vertex);
+}
+
+int AdjMtx::getWeight(ZZ vfrom, ZZ vto) {
+    pair<ZZ,ZZ> vexpair = make_pair(vfrom,vto);
+    auto temp = graph.find(vexpair);
+    if (temp != graph.end()){
+        return temp->second;
+    }
+    return 0;
+}
+/* This code is part of the CPISync project developed at Boston University.
+ * Please see the README for use and references. */
+
+#include <sys/socket.h>
+#include <sstream>
+#include <algorithm>
+#include <string>
+#include <thread>
+#include <utility>
+#include "Auxiliary.h"
+#include "CommSocket.h"
+#include "Logger.h"
+
+CommSocket::CommSocket() = default;
+
+CommSocket::CommSocket(int port, string host) : Communicant() {
+    remoteHost = std::move(host);
+    remotePort = port;
+
+    my_fd = -1;  // no socket currently open
+    state = Idle;
+    Logger::gLog(Logger::METHOD, string("Setting up host ") + toStr(remoteHost) + " on port " + toStr(remotePort));
+}
+
+CommSocket::~CommSocket() {
+    commClose();  // make sure that the socket has been closed
+}
+
+void CommSocket::commListen() {
+    // variable initialization
+    state = Listening;
+
+    // create a new socket, return the file descriptor
+    int sockDesc = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockDesc == -1) {
+        Logger::error_and_quit("Could not open socket on port " + toStr(remotePort));
+    }
+
+    // set the socket option to allow socket reuse
+    int yes = 1;
+    if (setsockopt(sockDesc, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int)) == -1) {
+        Logger::error_and_quit("setsockopt failure");
+    }
+
+    // sockaddr_in contains Internet address defined in netinet/in.h
+    struct sockaddr_in myAddr{}, otherAddr{};
+    myAddr.sin_family = AF_INET;
+    myAddr.sin_port = htons(remotePort);  // converts nPort from host byte order to network byte order
+    myAddr.sin_addr.s_addr = INADDR_ANY;
+
+    // binds the socket to the current host and port
+    if (::bind(sockDesc, (struct sockaddr *) &myAddr, sizeof (myAddr)) == -1) {
+      Logger::error_and_quit("Could not bind to a Communicant!");
+
+      // Keep trying to bind for a short time ... (currently disabled)
+//      int count = 0;
+//      while (bind(sockDesc, (struct sockaddr *) &myAddr, sizeof(struct sockaddr)) == -1 && count < MAX_CONNECTS) {
+//        sleep(20);
+//        count++;
+//      }
+    }
+
+
+    // listen on the socket for connections, one at a time
+    if (listen(sockDesc, 1) == -1) {
+        Logger::error_and_quit("Listen attempt failed!");
+    }
+
+    // wait for connection, causes the process to block until a client connects to the server
+    socklen_t sin_size = sizeof (struct sockaddr_in);
+    if ((my_fd = accept(sockDesc, (struct sockaddr *) &otherAddr, &sin_size)) == -1) {
+        Logger::error_and_quit("Failed to accept a connection!");
+    }
+
+    // Initialization data
+    resetCommCounters();  // reset all transmission counters
+
+    Logger::gLog(Logger::METHOD, "Listening on port " + toStr(remotePort));
+}
+
+void CommSocket::commConnect() {
+    // variables initialization
+    state = Connecting;
+
+    // create a new socket
+    int sockDesc = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockDesc == -1) {
+        Logger::error_and_quit("Cannot create a socket");
+    }
+
+    // set the socket option to allow socket reuse
+    int yes = 1;
+    if (setsockopt(sockDesc, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int)) == -1) {
+        Logger::error_and_quit("setsockopt problem");
+    }
+
+    // sockaddr_in contains internet address defined in netinet/in.h
+    struct sockaddr_in myAddr{}, otherAddr{};
+    // myAddr structure contains address of my server
+    myAddr.sin_family = AF_INET;
+    myAddr.sin_port = htons(remotePort);
+    myAddr.sin_addr.s_addr = INADDR_ANY;
+
+    // otherAddr structure contains address of the remote party
+    otherAddr.sin_family = AF_INET;
+    otherAddr.sin_port = htons(remotePort);
+
+    if (!remoteHost.empty()) {
+        // defines a host computer on the Internet
+        struct hostent *he;
+        // get the IP from the host computer
+        if ((he = gethostbyname(remoteHost.c_str())) == nullptr)
+            Logger::error_and_quit("Could not resolve hostname " + remoteHost);
+
+        // copy the network address to the sockaddr_in structure which is passed to connect()
+        memcpy(&otherAddr.sin_addr, he->h_addr_list[0], static_cast<size_t>(he->h_length));
+    } else {
+        // means we are going to use LocalHost
+        otherAddr.sin_addr.s_addr = INADDR_ANY;
+    }
+    memset(&otherAddr.sin_zero, '\0', 8);
+
+    // establish a connection to the host computer
+    my_fd = sockDesc;  // no new socket descriptors made
+    int count = 0;
+    while (connect(my_fd, (struct sockaddr *) &otherAddr, sizeof (struct sockaddr))
+            == -1) {  // keep trying to connect until the connection is made
+        Logger::gLog(Logger::COMM, "Connecting to server " + toStr(count));
+        count++;  // keep track of the number of connection attempts
+        if (count > MAX_CONNECTS)
+            Logger::error_and_quit("Could not establish a connection to " + remoteHost + ":" + toStr(remotePort));
+
+        // close the connection and try again
+        int result = close(my_fd);
+        if (result == -1)
+            Logger::error_and_quit("Could not close the socket");
+
+        // repoen the socket
+        sockDesc = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockDesc == -1)
+            Logger::error_and_quit("socket");
+        if (setsockopt(sockDesc, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof (int)) == -1)
+            Logger::error_and_quit("setsockopt");
+        my_fd = sockDesc;
+
+        // wait a little before retrying to connect
+        int reconnectMS = DFT_SOCKET_WAIT_MS;
+        std::this_thread::sleep_for(std::chrono::milliseconds(reconnectMS));
+    }
+
+    // Initialization data
+    resetCommCounters();  // reset all transmission counters
+    Logger::gLog(Logger::METHOD, "Connected to host " + remoteHost + " on port " + toStr(remotePort));
+}
+
+void CommSocket::commClose() {
+    Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
+    if (my_fd == -1) {
+        Logger::gLog(Logger::METHOD, "Attempted closing of socket that is not connected to anything.");
+    } else {
+        shutdown(my_fd, SHUT_RDWR);
+        int result = close(my_fd);
+        if (result == -1)
+            Logger::error_and_quit("close");
+        my_fd = -1;  // no socket active now
+    }
+}
+
+void CommSocket::commSend(const char* toSend, const int len) {
+    Logger::gLog(Logger::COMM_DETAILS, "<RAW SEND> " + toStr(len) + string(" bytes sending (base64): ")
+            + base64_encode(toSend, len));
+
+    if (my_fd == -1)
+        Logger::error_and_quit("Not connected to a socket!");
+
+    long numBytes = (len == 0 ? strlen(toSend) + 1 : len);  // the size of the string to be sent, including "\0"
+    long numSent;
+
+    bool doAgain;
+    do {
+        if ((numSent = send(my_fd, toSend, numBytes * sizeof (char), 0)) == -1) {
+            string numBytesString;
+            string stateString;
+
+            Logger::error_and_quit(toStr(state) + " encountered error in send"
+                    + " numBytes is: " + toStr(numBytes));
+        }
+        if (numSent != numBytes) {
+            Logger::gLog(Logger::COMM_DETAILS,
+                    "!!! Send packet fragmentation. numSent: " + toStr(numSent) + " of numBytes " + toStr(numBytes));
+            doAgain = true;
+            if (numBytes > numSent) {
+                numBytes -= numSent;
+                toSend += numSent;
+            } else {
+                Logger::error_and_quit("Reached an impossible state in commSend - sent more bytes than requested!");
+            }
+        } else {
+            doAgain = false;
+        }
+        addXmitBytes(numBytes);  // update the byte transfer counter
+    } while (doAgain);
+}
+
+string CommSocket::commRecv(unsigned long numBytes) {
+       if (my_fd == -1)
+        Logger::error_and_quit("Not connected to a socket!");
+
+    long numRecv = 0;  // number of bytes received in this call
+    auto tmpBuf = new char[numBytes];  // buffer into which received bytes are placed
+
+    // wait until the buffer has been filled
+    if ((numRecv = recv(my_fd, tmpBuf, numBytes * sizeof (char), MSG_WAITALL)) < 0)
+        Logger::error_and_quit("Error receiving data on the socket!");
+    if (numRecv != numBytes)
+        Logger::error_and_quit("Received less or more than the prescribed number of characters in commRecv.");
+
+    addRecvBytes(numRecv);  // update the received byte counter
+
+    // clean up
+    string result(tmpBuf, numRecv);
+    delete[] tmpBuf;
+        Logger::gLog(Logger::COMM_DETAILS, "<RAW RECV> " + toStr(numRecv) + string(" bytes received (base64): ")
+            + base64_encode(result, numRecv));
+
+    return result;
+}
+
+
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
+/*
+ * File:   CommString.cpp
+ * Created on November 5, 2011, 8:49 PM
+ */
+
+#include "Auxiliary.h"
+#include "CommString.h"
+
+CommString::CommString(string initial, bool base64) {
+    if (base64)
+        stream = new stringstream(base64_decode(initial), stringstream::out | stringstream::in);
+    else
+        stream = new stringstream(initial, stringstream::out | stringstream::in);
+}
+
+CommString::~CommString() {
+    delete stream;
+}
+
+string CommString::getString() {
+    return stream->str();
+}
+
+void CommString::commConnect() {
+} // nothing needed to connect to a string
+
+void CommString::commListen() {
+}// nothing needed to listen from a string
+
+void CommString::commClose() {
+    stream->flush();
+}
+
+void CommString::commSend(const char *toSend, const int numBytes) {
+    // save the next bytes to the string stream
+    stream->write(toSend, numBytes);
+    addXmitBytes(numBytes); // update the byte transfer counter
+}
+
+string CommString::commRecv(unsigned long numBytes) {
+    // returns the next few bytes from the string stream
+
+    auto *tmpBuf = new char[numBytes]; // buffer into which received bytes are placed
+    stream->read(tmpBuf, numBytes);
+
+    addRecvBytes(numBytes); // update the received byte counter
+
+    return string(tmpBuf, numBytes);
+}
+
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
+#include <NTL/RR.h>
+#include <Communicant.h>
+
+#include "Auxiliary.h"
+#include "Communicant.h"
+#include "CommSocket.h"
+#include "Logger.h"
+#include "DataObject.h"
+#include "DataPriorityObject.h"
+
+Communicant::Communicant() {
+    resetCommCounters();
+    xferBytesTot = recvBytesTot = 0;
+    createTime = clock();
+    MOD_SIZE = NOT_SET;
+}
+
+Communicant::~Communicant() = default;
+
+void Communicant::resetCommCounters() {
+    xferBytes = recvBytes = 0;
+    resetTime = clock();
+}
+
+string Communicant::getName() {
+    return "No name available";
+}
+
+long Communicant::getXmitBytes() const {
+    return xferBytes;
+}
+
+long Communicant::getRecvBytes() {
+    return recvBytes;
+}
+
+long Communicant::getXmitBytesTot() {
+    return xferBytesTot;
+}
+
+long Communicant::getRecvBytesTot() {
+    return recvBytesTot;
+}
+
+clock_t Communicant::getResetTime() {
+    return resetTime;
+}
+
+clock_t Communicant::getTotalTime() {
+    return createTime;
+}
+
+void Communicant::addXmitBytes(long numBytes) {
+    xferBytes += numBytes;
+    xferBytesTot += numBytes;
+}
+
+void Communicant::addRecvBytes(long numBytes) {
+    recvBytes += numBytes;
+    recvBytesTot += numBytes;
+}
+
+bool Communicant::establishModRecv(bool oneWay /* = false */) {
+    ZZ otherModulus = commRecv_ZZ();
+
+    if (otherModulus != ZZ_p::modulus()) {
+        Logger::gLog(Logger::COMM, "ZZ_p moduli do not match: " + toStr(ZZ_p::modulus) + " (mine) vs " + toStr(otherModulus) + " (other).");
+        if (!oneWay) // one way reconciliation does not send any data
+            commSend(SYNC_FAIL_FLAG);
+        return false;
+    }
+    MOD_SIZE = NumBytes(ZZ_p::modulus()); // record the modulus size
+    if (!oneWay)
+        commSend(SYNC_OK_FLAG);
+    return true;
+}
+
+bool Communicant::establishModSend(bool oneWay /* = false */) {
+    commSend(ZZ_p::modulus());
+    MOD_SIZE = NumBytes(ZZ_p::modulus());
+    if (oneWay)
+        return true;  // i.e. don't wait for a response
+    else
+        return (commRecv_byte() != SYNC_FAIL_FLAG);
+}
+
+bool Communicant::establishIBLTSend(size_t size, size_t eltSize, bool oneWay /* = false */) {
+    commSend((long) size);
+    commSend((long) eltSize);
+    if (oneWay)
+        return true;  // i.e. don't wait for a response
+    else
+        return (commRecv_byte() != SYNC_FAIL_FLAG);
+}
+
+
+bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* = false */) {
+    // receive other size and eltSize. both must be read, even if the first parameter is wrong
+    long otherSize = commRecv_long();
+    long otherEltSize = commRecv_long();
+
+    if(otherSize == size && otherEltSize == eltSize) {
+        if(!oneWay)
+            commSend(SYNC_OK_FLAG);
+        return true;
+    } else {
+        Logger::gLog(Logger::COMM, "IBLT params do not match: mine(size=" + toStr(size) + ", eltSize="
+        + toStr(eltSize) + ") vs other(size=" + toStr(otherSize) + ", eltSize=" + toStr(otherEltSize) + ").");
+        if(!oneWay)
+            commSend(SYNC_FAIL_FLAG);
+        return false;
+    }
+}
+
+
+bool Communicant::establishKshingleSend(size_t kshingle_size, char stop_word, bool oneWay /* = false */) {
+    commSend((long) kshingle_size);
+    commSend(string(1, stop_word));
+    if (oneWay)
+        return true;  // i.e. don't wait for a response
+    else
+        return (commRecv_byte() != SYNC_FAIL_FLAG);
+}
+
+bool Communicant::establishKshingleRecv(size_t kshingle_size, char stop_word, bool oneWay /* = false */) {
+    // receive other size and eltSize. both must be read, even if the first parameter is wrong
+    long otherKshingleSize = commRecv_long();
+    string temStopWord = commRecv_string();
+    if (temStopWord.size()>1 or temStopWord.empty()){
+        Logger::gLog(Logger::COMM, "otherStopWord is not a single char");
+        return false;
+    }
+    char otherStopWord = temStopWord[0]; // stopword is a single char
+
+    if(kshingle_size == otherKshingleSize && stop_word == otherStopWord) {
+        if(!oneWay)
+            commSend(SYNC_OK_FLAG);
+        return true;
+    } else {
+        Logger::gLog(Logger::COMM, "Kshingle params do not match: mine(shingle size=" + toStr(kshingle_size) + ", stop_word="
+                                   + toStr(stop_word) + ") vs other(size=" + toStr(otherKshingleSize) + ", eltSize=" + toStr(otherStopWord) + ").");
+        if(!oneWay)
+            commSend(SYNC_FAIL_FLAG);
+        return false;
+    }
+}
+
+
+void Communicant::commSend(const ustring toSend, const unsigned int numBytes) {
+    Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
+            + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
+
+    auto sendptr = reinterpret_cast<const char *> ((unsigned char *) toSend.data());
+    commSend(sendptr, numBytes);
+}
+
+void Communicant::commSend(const string str) {
+    Logger::gLog(Logger::COMM, "... attempting to send: string " + str);
+    commSend((long) str.length());
+    commSend(str.data(), str.length());
+}
+
+void Communicant::commSend(const ustring ustr) {
+
+    Logger::gLog(Logger::COMM, "... attempting to send: ustring " + ustrToStr(ustr));
+    commSend((long) ustr.length());
+    commSend(ustr, ustr.length());
+}
+
+void Communicant::commSend(DataObject& dob) {
+
+    Logger::gLog(Logger::COMM, "... attempting to send: DataObject " + dob.to_string());
+
+    // for now, just send the data object as a string ... this can be optimized
+    commSend(dob.to_string());
+}
+
+void Communicant::commSend(list<DataObject *> &dob) {
+  // send the size of the list
+  commSend((long) dob.size());
+
+  // then every entry in it
+  for (DataObject *&dop : dob) {
+    commSend(*dop); // request the data object
+  }
+}
+
+void Communicant::commSend(DataPriorityObject& dob) {
+
+    Logger::gLog(Logger::COMM, "... attempting to send: DataObject " + dob.to_priority_string());
+
+    // for now, just send the data object as a string ... this can be optimized
+    commSend(dob.to_priority_string());
+}
+
+void Communicant::commSend(const list<DataObject*> &lst) {
+    Logger::gLog(Logger::COMM, "... attempting to send: DataObject list ...");
+
+    list<DataObject*>::const_iterator it;
+    commSend((long) lst.size()); // the number of elements in the list
+
+    for (it = lst.begin(); it != lst.end(); it++)
+        commSend(**it);
+}
+
+void Communicant::commSend(double num) {
+    // Convert to an RR type and send mantissa and exponent
+
+    Logger::gLog(Logger::COMM, "... attempting to send: double " + toStr(num));
+
+    RR num_RR;
+    num_RR = num;
+    commSend(num_RR.mantissa());
+    commSend(-num_RR.exponent()); // exponent should always be negative or 0
+}
+
+void Communicant::commSend(const long num) {
+
+    unsigned char toSend[XMIT_LONG];
+    BytesFromZZ(toSend, to_ZZ(num), XMIT_LONG);
+    Logger::gLog(Logger::COMM, "... attempting to send: long " + toStr(num));
+    commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
+}
+
+void Communicant::commSend(const hashVal num) {
+
+    unsigned char toSend[XMIT_LONG];
+    BytesFromZZ(toSend, to_ZZ(num), XMIT_LONG);
+    Logger::gLog(Logger::COMM, "... attempting to send: hashVal " + toStr(num));
+    commSend(ustring(toSend, XMIT_LONG), XMIT_LONG);
+}
+
+void Communicant::commSend(const byte bt) {
+
+    Logger::gLog(Logger::COMM, string("... attempting to send: byte num ") + toStr((int) bt));
+    commSend(&bt, 1);
+}
+
+void Communicant::commSend(const int num) {
+
+    unsigned char toSend[XMIT_INT];
+    BytesFromZZ(toSend, to_ZZ(num), XMIT_INT);
+    Logger::gLog(Logger::COMM, "... attempting to send: int " + toStr(num));
+    commSend(ustring(toSend, XMIT_INT), XMIT_INT);
+}
+
+void Communicant::commSend(const ZZ_p& num) {
+
+    Logger::gLog(Logger::COMM, "... attempting to send: ZZ_p " + toStr(num));
+
+    // send like a ZZ, but with a known size
+    unsigned char toSend[MOD_SIZE];
+
+    BytesFromZZ(toSend, rep(num), MOD_SIZE);
+    commSend(ustring(toSend, MOD_SIZE), MOD_SIZE);
+}
+
+void Communicant::commSend(const vec_ZZ_p& vec) {
+    Logger::gLog(Logger::COMM, "... attempting to send: vec_ZZ_p " + toStr(vec));
+
+    // pack the vec_ZZ_p into a big ZZ and send it along
+    ZZ result;
+    result = 0;
+
+    for (int ii = vec.length() - 1; ii >= 0; ii--) // append in reverse order to make decoding easier
+        result = (result * (ZZ_p::modulus()+1)) + rep(vec[ii])+1; // added 1 to avoid insignificant 0's in the lead of the vector
+    commSend(result);
+}
+
+vec_ZZ_p Communicant::commRecv_vec_ZZ_p() {
+    // unpack the received ZZ into a vec_ZZ_p
+    ZZ received = commRecv_ZZ();
+    vec_ZZ_p result;
+
+
+    while (received != 0) {
+        ZZ divisor, remainder;
+        DivRem(divisor, remainder, received, ZZ_p::modulus()+1);
+
+        append(result, to_ZZ_p(remainder-1)); // subtract back the 1 that was added when sent
+        received = divisor;
+    }
+
+    Logger::gLog(Logger::COMM, "... received vec_ZZ_p " + toStr(result));
+
+    return result;
+}
+
+void Communicant::commSend(const IBLT& iblt, bool sync) {
+    if (!sync) {
+        commSend((long) iblt.size());
+        commSend((long) iblt.eltSize());
+    }
+
+    // Access the hashTable representation of iblt to serialize it
+    for(const IBLT::HashTableEntry& hte : iblt.hashTable) {
+        commSend(hte, iblt.eltSize());
+    }
+}
+
+void Communicant::commSend(const vector<IBLT>& strata, bool sync) {
+    if (!sync) {
+        commSend((long) strata.size());
+    }
+
+    // Access the iblt to serialize it
+    for (const IBLT &iblt : strata) {
+        commSend(iblt, sync);
+    }
+}
+
+void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
+    commSend(hte.count);
+    commSend((unsigned long) hte.keyCheck);
+    commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
+    commSend(hte.valueSum, (unsigned int) eltSize);
+}
+
+void Communicant::commSend(const ZZ& num, int size) {
+    Logger::gLog(Logger::COMM, "... attempting to send: ZZ " + toStr(num));
+
+    auto num_size = (unsigned int) (size == NOT_SET ? NumBytes(num) : size);
+    if (num_size == 0) num_size = 1; // special case for sending the integer 0 - need one bit
+    unsigned char toSend[num_size];
+
+    if (size == NOT_SET) // first send the number of bytes represented by the ZZ
+        commSend((int) num_size);
+
+    // next send the actual number, as a byte sequence
+    BytesFromZZ(toSend, num, num_size);
+
+    commSend(ustring(toSend, num_size), num_size);
+
+}
+
+ustring Communicant::commRecv_ustring(unsigned int numBytes) {
+    string received = commRecv(numBytes);
+    ustring result((const unsigned char *) (received.data()), numBytes);
+    Logger::gLog(Logger::COMM_DETAILS, "... received ustring: " +
+            base64_encode(reinterpret_cast<const char *>(result.data()), numBytes));
+
+    return (result); // return the result as a ustring
+}
+
+string Communicant::commRecv_string() {
+    long sz = commRecv_long();
+    string str = commRecv(sz);
+
+    Logger::gLog(Logger::COMM, "... received: string " + str);
+
+    return str;
+}
+
+ustring Communicant::commRecv_ustring() {
+    long sz = commRecv_long();
+    ustring ustr = commRecv_ustring(sz);
+
+    Logger::gLog(Logger::COMM, "... received: ustring " + ustrToStr(ustr));
+
+    return ustr;
+}
+
+DataObject* Communicant::commRecv_DataObject() {
+    DataObject *res = new DataObject(commRecv_string());
+    Logger::gLog(Logger::COMM, "... received: DataObject " + res->to_string());
+
+    return res;
+}
+
+list<DataObject *> Communicant::commRecv_DataObject_List() {
+  list<DataObject *> result;
+
+  // receive the size of the list
+  long size = commRecv_long();
+
+  // then every entry in it
+  for (int ii=0; ii<size; ii++) {
+    result.push_back(commRecv_DataObject()); // receive the data object
+  }
+
+  return result;
+}
+
+DataPriorityObject * Communicant::commRecv_DataObject_Priority() {
+    string str = commRecv_string();
+    string prio = str.substr(0, str.find(','));
+    str = str.substr(str.find(',') + 1);
+    auto * res = new DataPriorityObject(str);
+    res->setPriority(strTo<ZZ > (prio));
+    Logger::gLog(Logger::COMM, "... received: DataPriorityObject " + res->to_string());
+    return res;
+}
+
+// receives a list of data objects
+
+list<DataObject*> Communicant::commRecv_DoList() {
+    list<DataObject*> result;
+
+    long numDiffs = commRecv_long();
+    for (long ii = 0; ii < numDiffs; ii++) {
+        DataObject *dobp = commRecv_DataObject();
+        result.push_back(dobp);
+    }
+
+    Logger::gLog(Logger::COMM, "... received: DataObject list ...");
+
+    return result;
+}
+
+double Communicant::commRecv_double() {
+    ZZ mantissa = commRecv_ZZ();
+    long exponent = -commRecv_long();
+    RR result_RR = MakeRR(mantissa, exponent);
+    Logger::gLog(Logger::COMM, "... received double " + toStr(result_RR));
+
+    return to_double(result_RR);
+}
+
+long Communicant::commRecv_long() {
+    ustring received = commRecv_ustring(XMIT_LONG);
+    ZZ num = ZZFromBytes(received.data(), XMIT_LONG);
+    Logger::gLog(Logger::COMM, "... received long " + toStr(num));
+
+    return to_long(num);
+}
+
+int Communicant::commRecv_int() {
+    ustring received = commRecv_ustring(XMIT_INT);
+    ZZ num = ZZFromBytes(received.data(), XMIT_INT);
+    Logger::gLog(Logger::COMM, "... received int " + toStr(num));
+
+    return to_int(num);
+}
+
+byte Communicant::commRecv_byte() {
+    string received = commRecv(1);
+    Logger::gLog(Logger::COMM, string("... received byte num ") + toStr((int) received[0]));
+
+    return received[0];
+}
+
+ZZ_p Communicant::commRecv_ZZ_p() {
+    // the size is fixed by the connection initialization phase
+    ustring received = commRecv_ustring(MOD_SIZE);
+    ZZ_p result = to_ZZ_p(ZZFromBytes(received.data(), MOD_SIZE));
+
+    Logger::gLog(Logger::COMM, "... received ZZ_p " + toStr(result));
+
+    return result;
+}
+
+ZZ Communicant::commRecv_ZZ(int size) {
+    int num_size;
+    ustring received;
+    if (size == 0)
+        num_size = commRecv_int(); // first receive the number of bytes represented by the ZZ
+    else
+        num_size = size;
+
+    // second receive the actual ZZ
+    received = commRecv_ustring(num_size);
+
+    ZZ result = ZZFromBytes(received.data(), num_size);
+    Logger::gLog(Logger::COMM, "... received ZZ " + toStr(result));
+
+    return result;
+}
+
+IBLT Communicant::commRecv_IBLT(size_t size, size_t eltSize) {
+    size_t numSize;
+    size_t numEltSize;
+
+    if(size == NOT_SET || eltSize == NOT_SET) {
+        numSize = (size_t) commRecv_long();
+        numEltSize = (size_t) commRecv_long();
+    } else {
+        numSize = size;
+        numEltSize = eltSize;
+    }
+
+    IBLT theirs;
+    theirs.valueSize = numEltSize;
+
+    for(int ii = 0; ii < numSize; ii++) {
+        theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
+    }
+
+    return theirs;
+}
+
+StrataEst Communicant::commRecv_Strata(size_t size){
+    size_t numSize;
+
+    if (size == NOT_SET){
+        numSize = (size_t) commRecv_long();
+    } else{
+        numSize = size;
+    }
+
+    vector<IBLT> theirs;
+
+    for(int ii = 0; ii < numSize; ++ii) {
+        theirs.push_back(commRecv_IBLT());
+    }
+
+    return StrataEst(theirs);
+}
+
+IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
+    IBLT::HashTableEntry hte;
+
+    hte.count = commRecv_long();
+    hte.keyCheck = (hashVal) commRecv_long();
+    hte.keySum = commRecv_ZZ();
+    hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
+
+    return hte;
+}
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
+// standard libraries
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <iterator>
+#include <NTL/RR.h>
+#include <NTL/ZZ_p.h>
+#include <NTL/ZZ_pX.h>
+#include <NTL/vec_ZZ_p.h>
+#include <NTL/mat_ZZ_p.h>
+#include <NTL/ZZ_pXFactoring.h>
+
+// project libraries
+#include "Auxiliary.h"
+#include "SyncMethod.h"
+#include "CPISync.h"
+#include "Logger.h"
+#include "Exceptions.h"
+#include "Communicant.h"
+#include "DataObject.h"
+
+// namespaces
+
+using namespace NTL;
+
+// helper procedures
+void CPISync::initData(int num) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::initData");
+    // set the lengths
+    sampleLoc.SetLength(num);
+    CPI_evals.SetLength(num);
+
+    // populate the arrays
+    for (int ii = 0; ii < num; ii++) {
+        sampleLoc[ii] = to_ZZ_p(DATA_MAX) + ii + 1; // i.e. from the region outside where valid data might lie
+        CPI_evals[ii] = 1;
+    }
+
+    probCPI = oneWay = keepAlive = false; // assume not OneWay or Probabilistic synchronization unless otherwise stated, and manage our own communicant connections
+    SyncID = SYNC_TYPE::CPISync;
+}
+
+CPISync::CPISync(long m_bar, long bits, int epsilon, int redundant, bool hashes /* = false */) :
+maxDiff(m_bar), probEps(epsilon), hashQ(hashes) {
+Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
+    // set default parameters
+    if (hashQ) {
+      /* if hashes are being used, we have to account for the probability of a collision by
+      ** by splitting the error probability between hash collisions and sync failures.
+      ** The former is controlled by lengthening the effective bit-representation of strings.
+      */
+      bitNum = 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
+    /*
+     *  The analysis here is based on the birthday paradox.
+     *  The probability of a collision for (at most) 2^bits elements chosen from
+     *  a space of 2^x is bounded by roughly 1-exp(-2^(2*bits)/(2^(x+1)).  Setting
+     *  this upper bounded by 2^-(epsilon+1) yields the above value
+     */
+
+      epsilon = epsilon + 1; // half the prob. error for the sync failure probability below
+      Logger::gLog(Logger::METHOD_DETAILS," ... upping bitNum to "+toStr(bitNum));
+    }
+    else
+      bitNum = bits;
+
+    currDiff = maxDiff;
+
+    if (redundant == 0) // i.e. use the probability of error to calculate redundancy
+        redundant_k = to_long(CeilToZZ(to_RR(epsilon) / bitNum));
+    else { // compute the probability of error
+        redundant_k = redundant;
+        probEps = redundant * bitNum;
+    }
+
+    if (redundant_k <= 0) //k at least 1
+        redundant_k = 1;
+
+    DATA_MAX = power(ZZ_TWO, bitNum);
+    fieldSize = NextPrime(DATA_MAX + maxDiff + redundant_k);
+    ZZ_p::init(fieldSize);
+
+    initData(maxDiff + redundant_k); // initialize sample locations and metadata
+}
+
+CPISync::~CPISync() {
+    sampleLoc.kill();
+    CPI_hash.clear();
+    CPI_evals.kill();
+}
+
+string CPISync::getName() {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::getName");
+    string methodName;
+    if (!probCPI) {
+        methodName = "   Basic CPI Sync   ";
+    } else {
+        methodName = "   Probabilistic CPI Sync   ";
+    }
+
+    ostringstream result;
+    result << "I am a " + methodName + " object over a base field of size " << fieldSize << " with parameters:\n";
+    result << "   * mbar=" << maxDiff << endl << "   * b=" << bitNum << endl << "   * epsilon=" << probEps << endl;
+    return result.str();
+}
+
+bool CPISync::ratFuncInterp(const vec_ZZ_p& evals, long mA, long mB, vec_ZZ_p& P_vec, vec_ZZ_p& Q_vec) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::ratFuncInterp");
+    /* The coding attempts to follow the notation in
+     ** Y. Minsky, A. Trachtenberg, and R. Zippel,
+     **   Set Reconciliation with Nearly Optimal Communication Complexity,
+     **   IEEE Trans. Inf. Theory 49:9, pp. 2213-2218 (see page 7, for example).
+     */
+
+    // local variables
+    long ii, jj;
+    long mbar = evals.length(), mAbar, mBbar, rank;
+    long delta = mA - mB;
+
+    vec_ZZ_p coefficient_vec;
+
+    // 0. Compute bounds on one-sided set differences
+    mAbar = (mbar + delta) / 2; /** (Upper bound on the degree of the numerator polynomial)+1:
+                               * ((mbar + delta) % 2 == 0) ? (mbar + delta - 1) / 2 : (mbar + delta) / 2; */
+    mBbar = (mbar - delta) / 2; /** (Upper bound on the degree of the denominator polynomial)+1:
+                               * ((mbar - delta) % 2 == 0) ? (mbar - delta - 1) / 2 : (mbar - delta) / 2; */
+
+    // ... sanity checks
+    if ((mAbar < 0) || (mBbar < 0)) {
+        Logger::gLog(Logger::METHOD, "0. function interpolation failed, more sample points needed.\n");
+        return false;
+    }
+
+    // 1. Construct and solve a linear equations that produces the interpolation
+    // van_matrix is, in terms of the article referenced above:
+    //    k_i ^{d1-1} ... 1 | - f_i k_i^{d2-1} ... -f_i || f_i k_i^d2 - k_i^d1
+    //    A || B, where Ax = B yields x = p_{d1-1} ... p_0 | q_{d2-1} ... q0
+    //    The solution x is stored in coefficient_vec below.
+
+    mat_ZZ_p van_matrix; // a concatenation of Vandermonde matrices
+    van_matrix.SetDims(mbar, mAbar + mBbar + 1);
+    for (ii = 0; ii < mbar; ii++) {
+        // might be possible to streamline for large mAbar/mBbar
+        for (jj = 0; jj < mAbar; jj++)
+            van_matrix[ii][jj] = power(sampleLoc[ii], mAbar - jj - 1);
+        for (jj = 0; jj < mBbar; jj++)
+            van_matrix[ii][jj + mAbar] = -evals[ii] * power(sampleLoc[ii], mBbar - jj - 1);
+        van_matrix[ii][mAbar + mBbar] = evals[ii] * power(sampleLoc[ii], mBbar) - power(sampleLoc[ii], mAbar);
+    }
+
+    mat_ZZ_p copyv_matrix(van_matrix); // unadulterated copy of van_matrix
+    rank = gauss(van_matrix, mAbar + mBbar); // the last column just goes along for the ride
+
+    // compare # of independent variables (rank) to total permitted degree of the interpolated function
+    if (rank > mAbar + mBbar) { // case 1.  rank > tot. degree => error
+        Logger::gLog(Logger::METHOD, "1. function interpolation failed, more sample points needed.\n");
+        return false;
+    } else if (rank < mAbar + mBbar) {
+        // case 2. rank is smaller than tot. degree => recreate the matrix with the correct size
+        // ... we do this by taking mAbar - mDiff columns from among the first mAbar
+        // ...                  and mBbar - mDiff columns from index mAbar to mAbar-mBar -1
+        // ...                  and the last column of the matrix
+        long mDiff = mAbar + mBbar - rank; // difference between rank and upper bounds
+        // ... adjust upper bounds mAbar and mBbar accordingly
+        mAbar -= mDiff;
+        mBbar -= mDiff;
+
+        van_matrix.SetDims(mAbar + mBbar, mAbar + mBbar + 1);
+
+        // recreate based on the original matrix computations
+        for (ii = 0; ii < mAbar + mBbar; ii++) {
+            for (jj = 0; jj < mAbar; jj++)
+                van_matrix[ii][jj] = copyv_matrix[ii][jj + mDiff];
+            for (jj = 0; jj < mBbar; jj++)
+                van_matrix[ii][jj + mAbar] = copyv_matrix[ii][jj + mAbar + mDiff + mDiff];
+            van_matrix[ii][mAbar + mBbar] = evals[ii] * power(sampleLoc[ii], mBbar) - power(sampleLoc[ii], mAbar);
+        }
+
+        // row-reduce the resulting matrix
+        rank = gauss(van_matrix, mAbar + mBbar); // the last column just goes along for the ride
+    }
+
+    // store the solution to the linear system in coefficient_vec
+    coefficient_vec.SetLength(rank);
+    for (ii = rank - 1; ii >= 0; ii--) {
+        coefficient_vec[ii] = van_matrix[ii][mAbar + mBbar] / van_matrix[ii][ii];
+        for (jj = 0; jj < ii; jj++) // subtract out the coefficient from the previous entries
+            van_matrix[jj][mAbar + mBbar] -= coefficient_vec[ii] * van_matrix[jj][ii];
+    }
+
+    // 2. Store the result of the interpolation in P_vec and Q_vec
+    P_vec.SetLength(mAbar + 1); // adding 1 is for p0 and q0
+    Q_vec.SetLength(mBbar + 1);
+
+    // the first mAbar coefficients (in reverse order) are P_vec
+    P_vec[mAbar] = 1;
+    for (ii = 0; ii < mAbar; ii++)
+        P_vec[ii] = coefficient_vec[mAbar - ii - 1];
+
+    // the next mBbar coefficients (in reverse order) are Q_vec
+    Q_vec[mBbar] = 1;
+    for (ii = 0; ii < rank - mAbar; ii++)
+        Q_vec[ii] = coefficient_vec[rank - ii - 1];
+
+    // 3. Free up memory and return
+    coefficient_vec.kill();
+    van_matrix.kill();
+    copyv_matrix.kill();
+
+    return true;
+}
+
+bool CPISync::find_roots(vec_ZZ_p& P_vec, vec_ZZ_p& Q_vec, vec_ZZ_p& numerator, vec_ZZ_p& denominator) {
+Logger::gLog(Logger::METHOD,"Entering CPISync::find_roots");
+    // 0. initialization
+    ZZ_pX P_poly, Q_poly, gcd_poly;
+
+    // ... convert to ZZ_pX polynomials
+    conv(P_poly, P_vec);
+    conv(Q_poly, Q_vec);
+
+    // ... bring to a fraction in lowest terms
+    gcd_poly = GCD(P_poly, Q_poly);
+    if (deg(gcd_poly) > 0) {
+        P_poly = P_poly / gcd_poly;
+        Q_poly = Q_poly / gcd_poly;
+    }
+    gcd_poly.kill(); // free up its memory
+
+    // 1. Check that the polynomials are square free - is gcd(poly, derivative(poly))==1?
+    if (!IsOne(GCD(P_poly, diff(P_poly))) ||
+            !IsOne(GCD(Q_poly, diff(Q_poly)))) {
+        Logger::gLog(Logger::METHOD, "Polynomial is not square free!\n");
+        return false;
+    }
+
+    // 2. Factor the two polynomials
+    // SFBerlekamp function defined in ZZ_pXFactoring module - "Berlekamp" factoring approach [Shoup, J. Symbolic Comp. 20:363-397, 1995].
+    vec_ZZ_pX nn, dd;
+    nn = SFBerlekamp(P_poly);
+    if (nn.length() > 0)
+        for (const ZZ_pX& fact : nn)
+            if (deg(fact) > 1) { // ended with a non-linear factor
+                Logger::gLog(Logger::METHOD, "Cannot reduce P_poly to linear factors..\n");
+                return false;
+            }
+
+    dd = SFBerlekamp(Q_poly);
+    if (dd.length() > 0)
+        for (const ZZ_pX& fact : dd)
+            if (deg(fact) > 1) { // ended with a non-linear factor
+                Logger::gLog(Logger::METHOD, "Cannot reduce Q_poly to linear factors.\n");
+                return false;
+            }
+
+    // 3. Put the results into the numerator and denominator vectors and return
+    numerator.SetLength(deg(P_poly));
+    denominator.SetLength(deg(Q_poly));
+
+    for (int ii = 0; ii < nn.length(); ii++)
+        numerator[ii] = -ConstTerm(nn[ii]);
+    for (int ii = 0; ii < dd.length(); ii++)
+        denominator[ii] = -ConstTerm(dd[ii]);
+
+    // free up memory
+    P_poly.kill();
+    Q_poly.kill();
+
+    nn.kill();
+    dd.kill();
+
+    return true;
+}
+
+bool CPISync::set_reconcile(const long otherSetSize, const vec_ZZ_p &otherEvals, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
+Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
+    if (otherSetSize < 1) {
+        // Jin's optimization:  if the other set has nothing, just send over my evaluations
+        map<ZZ, DataObject * >::iterator itCPI;
+
+        for (itCPI = CPI_hash.begin(); itCPI != CPI_hash.end(); itCPI++)
+            append(delta_self, to_ZZ_p(itCPI->first));
+    } else // otherSetSize >=1 - the other set has something
+        if (CPI_hash.empty()) { // I have nothing new
+        return true;
+    } else { // we both have something new
+        vec_ZZ_p coefficient_P, coefficient_Q;
+
+        // compute rational function evals
+        vec_ZZ_p ratFuncEvals;
+        long metalength = min(otherEvals.length(), currDiff);
+        for (long ii = 0; ii < metalength; ii++)
+          append(ratFuncEvals, otherEvals[ii] / CPI_evals[ii]);
+
+        // attempt to interpolate based on these evals
+        if (!ratFuncInterp(ratFuncEvals, otherSetSize, CPI_hash.size(), coefficient_P, coefficient_Q))
+            return false;
+
+        // attempt to find roots of the numerator and denominator of the rational function
+        vec_ZZ_p numerator, denominator;
+        if (!find_roots(coefficient_P, coefficient_Q, numerator, denominator))
+            return false;
+        append(delta_other, numerator);
+        append(delta_self, denominator);
+
+        coefficient_P.kill();
+        coefficient_Q.kill();
+    }
+    return true;
+}
+
+void CPISync::sendSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, ZZ_p element) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::sendSetElem");
+    if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
+        selfMinusOther.push_back(invHash(element));
+    else {
+        // Translate to an actual string and send it to the client
+        DataObject *dop = CPI_hash[rep(element)];
+        if (dop == nullptr)
+            throw SyncFailureException("Element not found - decrease probability of error requirement for sync.");
+        commSync->commSend(*dop);
+
+        Logger::gLog(Logger::METHOD, string("Translating ") + toStr(element) + " to " + dop->to_string());
+        selfMinusOther.push_back(dop); // save the string
+    }
+}
+
+void CPISync::recvSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf, ZZ_p element) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::recvSetElem");
+    if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
+        otherMinusSelf.push_back(invHash(element));
+    else {
+        // receive the actual string from the client
+        DataObject *dop = commSync->commRecv_DataObject();
+
+        Logger::gLog(Logger::METHOD, string("Received string " + dop->to_string()));
+        otherMinusSelf.push_back(dop);
+    }
+}
+
+void CPISync::makeStructures(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::makeStructures");
+    // Send self minus other
+    try {
+        for (const ZZ_p& dop : delta_self)
+            sendSetElem(commSync, selfMinusOther, dop);
+    } catch (const SyncFailureException& s) {
+        throw (s); // rethrow the exception onward
+    }
+
+    // Receive other minus self
+    for (const auto &ii : delta_other)
+        recvSetElem(commSync, otherMinusSelf, ii);
+}
+
+void CPISync::SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::SendSyncParam");
+    // take care of parent sync method
+    SyncMethod::SendSyncParam(commSync, oneWay);
+
+    // ... sync ID, mbar, bits, and epsilon
+    commSync->commSend(enumToByte(SyncID));
+    commSync->commSend(maxDiff);
+    commSync->commSend(bitNum);
+    commSync->commSend(probEps);
+    if (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG))
+        throw SyncFailureException("Sync parameters do not match.");
+    Logger::gLog(Logger::COMM, "Sync parameters match");
+}
+
+void CPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::RecvSyncParam");
+    // take care of parent sync method
+    SyncMethod::RecvSyncParam(commSync, oneWay);
+
+    // ... sync ID, mbar, bits, and epsilon
+    byte theSyncID = commSync->commRecv_byte();
+    long mbarClient = commSync->commRecv_long();
+    long bitsClient = commSync->commRecv_long();
+    int epsilonClient = commSync->commRecv_int();
+
+    if (theSyncID != enumToByte(SyncID) ||
+            mbarClient != maxDiff ||
+            bitsClient != bitNum ||
+            epsilonClient != probEps) {
+        // report a failure to establish sync parameters
+        if (!oneWay)
+            commSync->commSend(SYNC_FAIL_FLAG);
+        Logger::gLog(Logger::COMM, "Sync parameters differ from client to server: Client has (" +
+                toStr(mbarClient) + "," + toStr(bitsClient) + "," + toStr(epsilonClient) +
+                ").  Server has (" + toStr(maxDiff) + "," + toStr(bitNum) + "," + toStr(probEps) + ").");
+        throw SyncFailureException("Sync parameters do not match.");
+    }
+    if (!oneWay)
+        commSync->commSend(SYNC_OK_FLAG);
+    Logger::gLog(Logger::COMM, "Sync parameters match");
+}
+
+bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::SyncClient");
+    // local variables
+    vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
+            delta_other; /** items the other has that I do not, based on the last synchronization. */
+
+    // 0. Initialization;
+    try {
+        SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf); // call the base method - sets some fields to 0
+
+        // 0.5  verify commonality initial parameters
+        // ... connect to the other party
+        if (!keepAlive) {
+            commSync->commConnect();
+
+            // ... check that the other side is doing the same synchronization
+            SendSyncParam(commSync, oneWay);
+        }
+
+        // 1. Transmit characteristic polynomial values
+        commSync->commSend((long) CPI_hash.size()); // ... first outputs how many set elements the client has
+
+        // ... produce the values in a list:  [x1 x2 x3 ... ]
+        vec_ZZ_p valList;
+        for (int ii = 0; ii < currDiff; ii++)
+            append(valList, CPI_evals[ii]);
+        for (int ii = 0; ii < redundant_k; ii++)
+            append(valList, CPI_evals[currDiff + ii]);
+        commSync->commSend(valList);
+        valList.kill();
+
+        // 2. Get more characteristic polynomial values if needed
+        while (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG)) {
+            if (!probCPI || currDiff == maxDiff) {
+                // CPISync failed
+                delta_other.kill();
+                delta_self.kill();
+                if (!keepAlive)
+                    commSync->commClose();
+                return false;
+            } else {
+                // Send more samples and try again
+                vec_ZZ_p tmp_vec;
+                for (long ii = 0; ii < min(currDiff, maxDiff - currDiff); ii++)
+                    append(tmp_vec, CPI_evals[currDiff +redundant_k + ii]);
+                commSync->commSend(tmp_vec);
+                currDiff = min(currDiff * 2, maxDiff);
+                tmp_vec.kill();
+            }
+        }
+
+        if (!oneWay) {
+            delta_other = commSync->commRecv_vec_ZZ_p();
+            delta_self = commSync->commRecv_vec_ZZ_p();
+
+            Logger::gLog(Logger::METHOD, string("CPISync succeeded.\n")
+                    + "   self - other =  " + toStr<vec_ZZ_p > (delta_self) + "\n"
+                    + "   other - self =  " + toStr<vec_ZZ_p > (delta_other) + "\n"
+                    + "\n");
+	    string results= string("... results:\n")
+                        + "   self - other =  " + toStr<vec_ZZ_p > (delta_self) + "\n"
+                        + "   other - self =  " + toStr<vec_ZZ_p > (delta_other) + "\n"
+                        + "\n";
+		//cout<<results;
+
+        }
+
+        // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
+        makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
+        delta_self.kill();
+        delta_other.kill();
+        if (!keepAlive)
+            commSync->commClose();
+
+        return true;
+    } catch (SyncFailureException s) {
+        Logger::gLog(Logger::METHOD_DETAILS, s.what());
+        throw (s);
+    }
+}
+
+bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::SyncServer");
+    string mystring;
+    vector<long> self_hash;
+    vector<long> recv_hash;
+    vec_ZZ_p recv_meta;
+    clock_t serverStart = clock();
+    long otherSetSize;
+
+    vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
+            delta_other; /** items the other has that I do not, based on the last synchronization. */
+
+    SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf); // call the base method - sets some fields to 0
+
+    // Verify commonality initial parameters
+    if (!keepAlive) {
+        // Set up listening on the port
+        Logger::gLog(Logger::METHOD, "Server: Started listening to: " + commSync->getName());
+//        commSync->state==Listern
+        commSync->commListen();
+
+        // ... verify sync parameters
+        RecvSyncParam(commSync, oneWay);
+    }
+
+
+    // Perform synchronization
+    // .. listen for data
+    otherSetSize = commSync->commRecv_long();
+    recv_meta = commSync->commRecv_vec_ZZ_p();
+
+    bool result = true; // continues looping while result is true
+    do {
+        delta_other.kill();
+        delta_self.kill();
+
+        vec_ZZ_p meta_other, meta_self;
+        for (long ii = 0; ii < redundant_k; ii++) {
+                append(meta_other, recv_meta[currDiff + ii]);
+                append(meta_self, CPI_evals[currDiff + ii]);
+        }
+
+        // attempt to reconcile with the presumed number of differences
+        bool succeed = set_reconcile(otherSetSize, recv_meta, delta_self, delta_other);
+        if (succeed) { // the node reconciliation might have been successful
+
+            // PERFORM some added checks
+            vec_ZZ_p value_self = meta_self;
+            vec_ZZ_p value_other = meta_other;
+            // perform a check with the redundant data
+            for (long jj = 0; jj < redundant_k; jj++) {
+                for (const auto &ii : delta_other) {
+                    //value_self[jj] *= (sampleLoc[maxDiff + jj] - delta_other[ii]);
+                     value_self[jj] *= (sampleLoc[currDiff + jj] - ii);
+                }
+            }
+
+            for (long jj = 0; jj < redundant_k; jj++) {
+                for (const auto &ii : delta_self) {
+                    //value_other[jj] *= (sampleLoc[maxDiff + jj] - delta_self[ii]);
+                    value_other[jj] *= (sampleLoc[currDiff + jj] - ii);
+                }
+            }
+
+            for (long jj = 0; jj < redundant_k; jj++) {
+                if (value_self[jj] != value_other[jj]) {
+                    succeed = false;
+                    break; // no need to keep going
+                }
+            }
+            value_other.kill();
+            value_self.kill();
+
+            if (succeed) { // only do this if reconciliation has succeeded
+                Logger::gLog(Logger::METHOD, "CPISync succeeded.\n");
+
+                if (!oneWay)
+                    commSync->commSend(SYNC_OK_FLAG); // sync succeeded
+
+                if (!oneWay) {
+                    commSync->commSend(delta_self);
+                    commSync->commSend(delta_other);
+                }
+
+                Logger::gLog(Logger::METHOD, string("... results:\n")
+                        + "   self - other =  " + toStr<vec_ZZ_p > (delta_self) + "\n"
+                        + "   other - self =  " + toStr<vec_ZZ_p > (delta_other) + "\n"
+                        + "\n");
+
+                // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
+                try {
+                    makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
+                } catch (SyncFailureException s) {
+                    Logger::gLog(Logger::METHOD_DETAILS, s.what());
+                    throw (s);
+                }
+
+                break; // break out of the while loop - this has been settled
+            }
+        }
+
+        if (!succeed) { // if synchronization has failed for some reason
+            Logger::gLog(Logger::METHOD, "Not successfully synced!\n");
+            if (!oneWay)
+                commSync->commSend(SYNC_FAIL_FLAG); // send just one character with the flag
+            if (!probCPI || currDiff == maxDiff) {
+                result = false;
+                break;
+            } else {
+                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p();
+                append(recv_meta, recv_new);
+                currDiff = min(currDiff * 2, maxDiff);
+            }
+        }
+        meta_self.kill();
+        meta_other.kill();
+    } while (result); //end of while
+
+
+    if (!keepAlive)
+        commSync->commClose();
+    delta_other.kill();
+    delta_self.kill();
+    self_hash.clear();
+    recv_hash.clear();
+
+    return result;
+}
+
+void CPISync::sendAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::sendAllElem");
+    commSync->commSend((long) CPI_hash.size()); // first send the size
+
+    map< ZZ, DataObject * >::iterator it;
+    for (it = CPI_hash.begin();
+            it != CPI_hash.end();
+            it++) {
+        commSync->commSend(*(it->second));
+        selfMinusOther.push_back(it->second);
+        Logger::gLog(Logger::COMM_DETAILS, "Sent all node elements.");
+    }
+}
+
+void CPISync::receiveAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::receiveAllElem");
+    long size = commSync->commRecv_long();
+
+    for (int ii = 0; ii < size; ii++) {
+        DataObject* dop = commSync->commRecv_DataObject();
+        otherMinusSelf.push_back(dop);
+    }
+
+    Logger::gLog(Logger::COMM_DETAILS, "Received all node elements.");
+}
+
+DataObject * CPISync::invHash(const ZZ_p num) const {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::invHash");
+    const ZZ &numZZ = rep(num);
+    auto *result = new DataObject(numZZ);
+    return result;
+}
+
+ZZ_p CPISync::makeData(ZZ_p num) const {
+    return to_ZZ_p(rep(num) % DATA_MAX);
+}
+
+ZZ_p CPISync::hash(const DataObject * datum) const {
+    ZZ num = datum->to_ZZ(); // convert the datum to a ZZ
+
+    if (!hashQ && (num >= DATA_MAX))
+        Logger::error_and_quit("Cannot add element (" + datum->to_string() + ") "
+            + " whose encoding (" + toStr(num) + ") is larger than  (" + toStr(DATA_MAX) + " - max field element) "
+            + " when using nohash synchronization.  Please increase modulus to at least " + toStr(ceil(log(DATA_MAX + redundant_k) / log(2))) + " bit elements.");
+
+    return to_ZZ_p(num % (DATA_MAX)); // reduce to bit_num bits and make into a ZZ_p
+}
+
+ZZ_p CPISync::hash2(const long num) const {
+    return to_ZZ_p(to_ZZ(num)*101 % (DATA_MAX));
+}
+
+// update metadata when add an element
+
+bool CPISync::addElem(DataObject * datum) {
+    Logger::gLog(Logger::METHOD,"Entering CPISync::addElem");
+    int ii;
+
+    // call the parent class to take care of bookkeeping
+    bool result = SyncMethod::addElem(datum);
+
+    // put real data into the hash table
+    ZZ_p hashID;
+    ZZ hashNum;
+    int count = 0;
+    do {
+        if (hashQ) {
+            hashID = makeData(hash(datum) + hash2(count++)); // a double hash to allow repeated elements
+            hashNum = rep(hashID);
+        } else { // noHash is enabled
+            hashID = hash(datum); // a simpler, potentially reversable hash
+            hashNum = rep(hashID);
+            if (CPI_hash.find(hashNum) != CPI_hash.end()) { // an item with this hash already exists
+                Logger::error("Item with hash " + toStr(hashNum) + " already exists in the set.  Under the noHash option, duplicate elements are not permitted.");
+                return false;
+            }
+        }
+    } while (CPI_hash.find(hashNum) != CPI_hash.end() && // keep looking until a hash entry is found that is not currently in use
+            CPI_hash.size() < DATA_MAX); // or the map is full
+
+    if (CPI_hash.size() >= DATA_MAX) {
+        Logger::gLog(Logger::METHOD, " Unable to add item " + datum->to_string() + "; please increase number of bits per element.");
+        return false;
+    }
+
+    CPI_hash[hashNum] = datum;
+
+    for (ii = 0; ii < sampleLoc.length(); ii++)
+        CPI_evals[ii] *= (sampleLoc[ii] - hashID);
+
+    Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) added item " + datum->to_string() + " with hash = " + toStr(hashNum));
+
+    return result;
+}
+
+// update metadata when delete an element by index
+
+bool CPISync::delElem(DataObject * newDatum) {
+    Logger::gLog(Logger::METHOD, "Entering CPISync::delElem");
+
+    // call the parent method to take care of bookkeeping
+    if(!SyncMethod::delElem(newDatum)) {
+	Logger::error("Couldn't find " + newDatum->to_string() + ".");
+	return false;
+    }
+
+    ZZ_p hashID;
+    // remove data from the hash table. to find the value, a linear search is required
+    for(auto iter = CPI_hash.begin(); iter != CPI_hash.end(); iter++) {
+        if(iter->second == newDatum) {
+            hashID = to_ZZ_p(iter->first);
+            CPI_hash.erase(iter);
+            break; // edit we are deleting one thing anyway
+        }
+    }
+
+    // update cpi evals
+    for(int ii = 0; ii < sampleLoc.length(); ii++) {
+        CPI_evals[ii] /= (sampleLoc[ii] - hashID);
+    }
+
+    Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) removed item " + newDatum->print() + ".");
+    return true; //edit You never returned anything
+}
+
+// for debugging
+
+void showVec(const vec_ZZ_p &vec) {
+
+    cout << vec << endl;
+}
+
+void showNum(const ZZ_p &num) {
+    cout << num << endl;
+}
+
+string CPISync::printElem() {
+    stringstream result("");
+
+    map< ZZ, DataObject * >::iterator it;
+    for (it = CPI_hash.begin(); it != CPI_hash.end(); it++)
+        result << (it->second)->to_string() << " [hash=" << (it->first) << "], ";
+    return result.str();
+}
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
+#include "DataObject.h"
+#include "Auxiliary.h"
+#include "NTL/mat_ZZ_p.h"
+#include "NTL/ZZ_pXFactoring.h"
+
+// namespaces
+using namespace NTL;
+
+bool DataObject::RepIsInt = false; /** How DataObject handles strings. */
+
+DataObject::DataObject()  : UID()
+{
+    myBuffer = 0; timestamp=clock();
+
+} // myBuffer should be initially empty
+
+DataObject::DataObject(const ZZ &datum)  : DataObject() {
+    myBuffer = datum;
+
+}
+
+DataObject::DataObject(const string str) : DataObject() {
+    myBuffer = RepIsInt?strTo<ZZ>(str):pack(str);
+}
+
+ZZ DataObject::pack(const string theStr) {
+    return ZZFromBytes(reinterpret_cast<const unsigned char*>(theStr.data()), theStr.length());
+}
+
+string DataObject::unpack(const ZZ num) {
+    int size = NumBytes(num);
+    auto *rawResult = new unsigned char[size];
+    BytesFromZZ(rawResult, num, size);
+    const auto *result = reinterpret_cast<const char *> (rawResult);
+    string result_str(result,size);
+    delete[] result;
+    return result_str;
+}
+
+ZZ DataObject::to_ZZ() const {
+    return myBuffer;
+}
+
+string DataObject::to_string() const {
+    return RepIsInt?toStr(myBuffer):unpack(myBuffer);
+}
+
+const char *DataObject::to_char_array(long &len) const {
+    len = NumBytes(myBuffer);
+    return strndup(to_string().data(), len);
+}
+
+string DataObject::print() const {
+    string str = to_string();
+    if (RepIsInt)
+      return str;
+    else
+      return base64_encode(str.data(), str.length());
+}
+
+ostream& operator<<( ostream &out, const DataObject &datum)
+{
+ out << datum.to_string();
+ return out;
+}
+
+
+clock_t DataObject::getTimeStamp() {
+    return timestamp;
+}
+
+void DataObject::setTimeStamp(clock_t ts) {
+    timestamp = ts;
+}
+
+
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
+#include <iostream>
+#include <fstream>
+#include <memory>
+#include <string>
+
+#include "GenSync.h"
+#include "Exceptions.h"
+#include "Communicant.h"
+#include "DataObject.h"
+#include "SyncMethod.h"
+#include "Logger.h"
+#include "Auxiliary.h"
+#include "CPISync.h"
+#include "CommSocket.h"
+#include "CommString.h"
+#include "ProbCPISync.h"
+#include "InterCPISync.h"
+#include "IBLTSync.h"
+#include "IBLTSync_HalfRound.h"
+#include "CPISync_HalfRound.h"
+#include "FullSync.h"
+#include "IBLTSync_SetDiff.h"
+#include "kshinglingSync.h"
+
+/**
+ * Construct a default GenSync object - communicants and objects will have to be added later
+ */
+GenSync::GenSync() = default;
+
+/**
+ * Construct a specific GenSync object
+ */
+GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject*> &data) {
+    myCommVec = cVec;
+    mySyncVec = mVec;
+    outFile = nullptr; // no output file is being used
+    // add each datum one by one
+    auto itData = data.begin();
+    for (; itData != data.end(); itData++)
+        addElem(*itData);
+}
+
+GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName) {
+    myCommVec = cVec;
+    mySyncVec = mVec;
+    outFile = nullptr; // add elements without writing to the file at first
+    Logger::gLog(Logger::METHOD, "Entering GenSync::GenSync");
+    // read data from a file
+    Logger::gLog(Logger::METHOD, "Utilizing file: " + fileName);
+    ifstream inFile(fileName.c_str());
+    string str;
+    for (getline(inFile, str); inFile.good(); getline(inFile, str)) {
+        addElem(new DataObject(str)); // add this datum to our list
+        Logger::gLog(Logger::METHOD_DETAILS, "... added set element " + str);
+    }
+    inFile.close();
+
+    // register the file to which new data should be appended
+    outFile = std::make_shared<ofstream>(fileName.c_str(), ios::app);
+
+}
+
+// destruct a gensync object
+
+GenSync::~GenSync() {
+    // clear out memory
+    myData.clear();
+
+    //    vector<shared_ptr<SyncMethod>>::iterator itAgt = mySyncVec.begin();
+    //    for (; itAgt != mySyncVec.end(); itAgt++) {
+    //        delete *itAgt;
+    //    }
+    mySyncVec.clear();
+
+    //    vector<shared_ptr<Communicant>>::iterator itComm = myCommVec.begin();
+    //    for (; itComm != myCommVec.end(); itComm++) {
+    //        delete *itComm;
+    //    }
+    myCommVec.clear();
+
+    // close and free the output file
+    if (outFile != nullptr) {
+        outFile->close();
+        outFile.reset();
+    }
+
+}
+
+
+// listen, receive data and conduct synchronization
+
+bool GenSync::listenSync(int method_num,bool isRecon) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::listenSync");
+    // find the right syncAgent
+    auto syncAgent = mySyncVec.begin();
+    advance(syncAgent, method_num);
+
+    bool syncSuccess = true; // true if all syncs so far were successful
+
+    // ask each communicant to listen, one by one
+    vector<shared_ptr<Communicant>>::iterator itComm;
+    list<DataObject *> selfMinusOther, otherMinusSelf;
+    DataObject selfStr, otherStr;
+
+    for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
+        // initialize variables
+        selfMinusOther.clear();
+        otherMinusSelf.clear();
+        shared_ptr<SyncMethod> setSync;
+
+        try {
+            if ((*syncAgent)->isStringReconMethod()) {
+                syncSuccess &= (*syncAgent)->SyncServer(*itComm, setSync, selfStr, otherStr);
+                syncSuccess &= setSync->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
+            }else{
+                syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
+            }
+
+        } catch (SyncFailureException s) {
+            Logger::error_and_quit(s.what());
+            return false;
+        }
+
+        // add any items that were found in the reconciliation
+        list<DataObject *>::iterator itDO;
+        for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++) {
+            addElem(*itDO);
+        }
+
+        if (!isRecon) {
+//        // newly added --- worked for general test
+            delElemGroup(selfMinusOther);
+        }
+
+        if ((*syncAgent)->isStringReconMethod()) { // If it is string reconciliation
+            syncSuccess = (*syncAgent)->reconstructString(
+                    myString,dumpElements()); // reconstruct the string based on the new information from set reconciliation
+        }
+    }
+
+    return syncSuccess;
+}
+
+// request connection, send data and get the result
+bool GenSync::startSync(int method_num,bool isRecon) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::startSync");
+    // find the right syncAgent
+    auto syncAgentIt = mySyncVec.begin();
+    advance(syncAgentIt, method_num);
+
+    bool syncSuccess = true; // true if all syncs so far were successful
+    vector<shared_ptr<Communicant>>::iterator itComm;
+    list<DataObject *> selfMinusOther, otherMinusSelf;
+    DataObject selfStr, otherStr;
+
+    for (itComm = myCommVec.begin(); itComm != myCommVec.end(); ++itComm) {
+        // initialize variables
+        selfMinusOther.clear();
+        otherMinusSelf.clear();
+
+        // do the sync
+        try {
+            // if String Recon,
+            if ((*syncAgentIt)->isStringReconMethod()) {
+                shared_ptr<SyncMethod> setSync;
+                syncSuccess &= (*syncAgentIt)->SyncClient(*itComm, setSync, selfStr, otherStr);
+                syncSuccess &= setSync->SyncClient(*itComm, selfMinusOther, otherMinusSelf);
+            } else {
+                if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf)) {
+                    Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
+                    syncSuccess = false;
+                }
+            }
+        } catch (SyncFailureException s) {
+            Logger::error_and_quit(s.what());
+            return false;
+        }
+
+        // add any items that were found in the reconciliation
+        list<DataObject *>::iterator itDO;
+        for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
+            addElem(*itDO);
+
+        if (!isRecon) {
+            // newly added --- worked for general test
+            delElemGroup(selfMinusOther);
+        }
+
+        if ((*syncAgentIt)->isStringReconMethod()) { // If it is string reconciliation
+            syncSuccess = (*syncAgentIt)->reconstructString(
+                    myString, dumpElements()); // reconstruct the string based on the new information from set reconciliation
+        }
+
+    }
+
+    Logger::gLog(Logger::METHOD, "Sync succeeded:  " + toStr(syncSuccess));
+    return syncSuccess;
+
+}
+
+// add element
+
+void GenSync::addElem(DataObject* newDatum) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
+    // store locally
+    myData.push_back(newDatum);
+
+    // update synch methods' metadata
+    vector<shared_ptr<SyncMethod>>::iterator itAgt;
+    for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
+        if (!(*itAgt)->addElem(newDatum))
+            Logger::error_and_quit("Could not add item " + newDatum->to_string() +
+                                   ".  Please considering increasing the number of bits per set element.");
+    }
+
+    // update file
+    if (outFile != nullptr)
+        (*outFile) << newDatum->to_string() << endl;
+}
+
+// add string
+
+void GenSync::addStr(DataObject *newStr) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addStr");
+    // store locally
+    myString = newStr;
+
+    // update synch methods' metadata
+    vector<shared_ptr<SyncMethod>>::iterator itAgt;
+    for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
+        vector<DataObject*> Elems = (*itAgt)->addStr(newStr);
+        for (auto item : Elems) addElem(item);
+    }
+
+    // update file
+    if (outFile != nullptr)
+        (*outFile) << newStr->to_string() << endl;
+}
+// delete element
+
+void GenSync::delElemGroup(list<DataObject *> newDatumList) {
+    //throw new UnimplementedMethodException("GenSync::delElem");
+    // There are only 2 types, numbes of strings (check fact) handle both
+    Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
+
+    vector<ZZ> delList;
+    for (auto it : newDatumList) {
+        delList.push_back(it->to_ZZ());
+    }
+    sort(delList.begin(), delList.end());
+
+    list<DataObject *> lst;
+    for (auto item : myData) {
+        if (binary_search(delList.begin(), delList.end(), item->to_ZZ())) {
+            lst.push_back(item);
+            for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
+                if (!(*itAgt)->delElem(item)) {
+                    Logger::error_and_quit("Could not del item . check if item is first inserted.");
+                }
+            }
+        }
+    }
+
+    for (auto it = lst.begin(); it != lst.end(); ++it) {
+        myData.remove(*it);
+    }
+
+}
+
+
+
+// insert a communicant in the vector at the index position
+
+void GenSync::addComm(shared_ptr<Communicant> newComm, int index) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addComm");
+    vector<shared_ptr<Communicant>>::iterator itComm;
+
+    itComm = myCommVec.begin();
+    if (index == 0) {
+        myCommVec.push_back(newComm);
+    } else {
+        advance(itComm, index - 1);
+        myCommVec.insert(itComm, newComm);
+    }
+
+}
+
+/**
+ *  delete a communicant from the vector at the index position
+ * */
+void GenSync::delComm(int index) {
+    vector<shared_ptr<Communicant>>::iterator itComm;
+
+    itComm = myCommVec.begin();
+    if (index == 0) {
+        myCommVec.erase(itComm);
+    } else {
+        advance(itComm, index - 1);
+        myCommVec.erase(itComm);
+    }
+
+}
+
+void GenSync::delComm(shared_ptr<Communicant> oldComm) {
+    myCommVec.erase(std::remove(myCommVec.begin(), myCommVec.end(), oldComm), myCommVec.end());
+}
+
+int GenSync::numComm() {
+    return myCommVec.size();
+}
+
+// insert a syncmethod in the vector at the index position
+void GenSync::addSyncAgt(shared_ptr<SyncMethod> newAgt, int index) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::addSyncAgt");
+    // create and populate the new agent
+    list<DataObject*>::iterator itData;
+    for (itData = myData.begin(); itData != myData.end(); itData++)
+        if (!newAgt->addElem(*itData))
+            Logger::error_and_quit("Was not able to add an item to the next syncagent.");
+
+    // add the agent to the sync agents vector
+    auto idxIter = mySyncVec.begin();
+    advance(idxIter, index);
+    mySyncVec.insert(idxIter, newAgt);
+}
+
+
+// delete a syncmethod from the vector at the index position
+
+void GenSync::delSyncAgt(int index) {
+    mySyncVec.erase(getSyncAgt(index));
+}
+
+vector<shared_ptr<SyncMethod>>::iterator GenSync::getSyncAgt(int index) {
+    vector<shared_ptr<SyncMethod>>::iterator itAgt;
+
+    itAgt = mySyncVec.begin();
+    advance(itAgt, index);
+
+    return itAgt;
+}
+
+const list<DataObject *> GenSync::dumpElements() {
+    return myData;
+}
+
+const DataObject* GenSync::dumpString() {
+    return myString;
+}
+
+const long GenSync::getXmitBytes(int commIndex) const {
+    return myCommVec[commIndex]->getXmitBytes();
+}
+
+const long GenSync::getRecvBytes(int commIndex) const {
+    return myCommVec[commIndex]->getRecvBytes();
+}
+
+const long GenSync::getXmitBytesTot(int commIndex) const {
+    return myCommVec[commIndex]->getXmitBytesTot();
+}
+
+const long GenSync::getRecvBytesTot(int commIndex) const {
+    return myCommVec[commIndex]->getRecvBytesTot();
+}
+
+const double GenSync::getSyncTime(int commIndex) const {
+    shared_ptr<Communicant> comm = myCommVec[commIndex];
+
+    // true iff there has been a sync (since sync resets comm counters)
+    if(comm->getTotalTime() != comm->getResetTime()) {
+        return (double) (clock() - comm->getResetTime()) / CLOCKS_PER_SEC;
+    } else {
+        return (double) comm->getTotalTime() / CLOCKS_PER_SEC;
+    }
+
+}
+
+int GenSync::getPort(int commIndex) {
+    // null iff comm isn't a CommSocket
+    if (auto cs = dynamic_cast<CommSocket*>(myCommVec[commIndex].get())) {
+        return cs->getPort();
+    } else {
+        return -1;
+    }
+
+}
+
+const long GenSync::getVirMem(int syncIndex) const {
+    return mySyncVec[syncIndex]->getVirMem();
+}
+
+// Builder methods
+
+GenSync GenSync::Builder::build() {
+    // variables of possible use
+    vector<shared_ptr<Communicant>> theComms;
+    vector<shared_ptr<SyncMethod>> theMeths;
+
+    // check pre-conditions
+    if (proto == SyncProtocol::UNDEFINED)
+        throw invalid_argument("The synchronization protocol has not been defined.");
+    if (comm == SyncComm::UNDEFINED)
+        throw invalid_argument("No communication protocol defined.");
+    if (stringProto != StringSyncProtocol::UNDEFINED and proto == SyncProtocol::UNDEFINED)
+        throw invalid_argument("String synchronization protocol requires base set sync protocol.");
+
+    // setup
+    switch (comm) {
+        case SyncComm::socket:
+            myComm = make_shared<CommSocket>(port, host);
+            Logger::gLog(Logger::METHOD, "Connecting to host " + host + " on port " + toStr(port));
+            break;
+        case SyncComm::string:
+            myComm = make_shared<CommString>(ioStr, base64);
+            Logger::gLog(Logger::METHOD, "Connecting to " + toStr(base64 ? "base64" : "") + " string " + ioStr);
+            break;
+        default:
+            throw invalid_argument("I don't know how to set up communication through the provided requested mode.");
+    }
+    theComms.push_back(myComm);
+
+    invalid_argument noMbar("Must define <mbar> explicitly for this sync.");
+    switch (proto) {
+        case SyncProtocol::CPISync:
+            if (mbar == Builder::UNDEFINED)
+                throw noMbar;
+            myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb);
+            break;
+        case SyncProtocol::InteractiveCPISync:
+            if (mbar == Builder::UNDEFINED)
+                throw noMbar;
+            myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts);
+            break;
+        case SyncProtocol::OneWayCPISync:
+            if (mbar == Builder::UNDEFINED)
+                throw noMbar;
+            myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
+            break;
+        case SyncProtocol::FullSync:
+            myMeth = make_shared<FullSync>();
+            break;
+        case SyncProtocol::IBLTSync:
+            myMeth = make_shared<IBLTSync>(numExpElem, bits);
+            break;
+        case SyncProtocol::OneWayIBLTSync:
+            myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
+            break;
+        case SyncProtocol::IBLTSyncSetDiff:
+            myMeth = make_shared<IBLTSync_SetDiff>(mbar, bits);
+            break;
+        default:
+            throw invalid_argument("I don't know how to synchronize with this protocol.");
+    }
+
+    switch (stringProto) {
+        case StringSyncProtocol::kshinglingSync:
+            myMeth = make_shared<kshinglingSync>(proto, shingleLen, stopWord);
+            break;
+        default: // do nothing
+            break;
+    }
+
+    theMeths.push_back(myMeth);
+
+    return GenSync(theComms, theMeths);
+}
+
+// static consts
+
+const string GenSync::Builder::DFT_HOST = "localhost";
+const string GenSync::Builder::DFT_IO;
+const int GenSync::Builder::DFT_ERROR = 8;
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
+/*
+ * File:   IncreCPI.cpp
+ * Author: arit
+ *
+ * Created on November 30, 2011, 10:46 PM
+ */
+
+#include "Auxiliary.h"
+#include "Communicant.h"
+#include "Exceptions.h"
+#include "Logger.h"
+#include "DataObject.h"
+#include "CPISync.h"
+#include "InterCPISync.h"
+#include "CPISync_HalfRound.h"
+#include "CPISync_HalfRound_Hashed.h"
+
+// might be a bug with epsilon... getting passed a double but receives an int
+InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition)
+: maxDiff(m_bar), bitNum(bits), probEps(epsilon + bits), pFactor(partition) {
+  Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
+  // setup ZZ_p field size
+  redundant_k = to_long(CeilToZZ(to_RR(probEps) / bitNum)); //
+  if (redundant_k <= 0) //k at least 1
+    redundant_k = 1;
+
+  DATA_MAX = power(ZZ_TWO, bitNum);
+  ZZ fieldSize = NextPrime(DATA_MAX + maxDiff + redundant_k);
+  ZZ_p::init(fieldSize);
+
+  DATA_MAX = power(ZZ_TWO, bitNum); // maximum data element for the multiset
+  treeNode = nullptr;
+  useExisting=false;
+  SyncID = SYNC_TYPE::Interactive_CPISync; // the synchronization type
+}
+
+InterCPISync::~InterCPISync() {
+  // clean out the CPISync tree
+  deleteTree(treeNode);
+}
+
+void InterCPISync::deleteTree(pTree *treeNode) {
+  Logger::gLog(Logger::METHOD,"Entering InterCPISync::deleteTree");
+    if (treeNode == nullptr)
+      return; // i.e. nothing to do
+    else {
+      for (int ii = 0; ii < pFactor; ii++) {
+        deleteTree(treeNode->child[ii]);
+      }
+    delete treeNode;
+  }
+}
+
+bool InterCPISync::delElem(DataObject* datum) {
+    return SyncMethod::delElem(datum); // run the parent's version first
+  //throw new UnimplementedMethodException("InterCPISync delete element");
+}
+
+bool InterCPISync::addElem(DataObject* newDatum) {
+  /* recursively add an element to all appropriate nodes until:
+   * 1.  We reach a leaf node with <m_bar entries.
+   * 2.  We reach a node with range < m_bar
+   * Assuming there are no hash collisions, we should always end at one
+   * of these two options.  Otherwise, we report an error by returning false.
+   */
+  Logger::gLog(Logger::METHOD,"Entering InterCPISync::AddElem");
+  if (!SyncMethod::addElem(newDatum)) // run the parent's version first
+    return false;
+
+  addElemHashID = rep(hash(newDatum)); // compute the hash of the item for use in the recursive addElem
+
+  Logger::gLog(Logger::METHOD_DETAILS, ". (InterCPISync) adding item " + newDatum->print() + " with representation = " + toStr(addElemHashID)); // log the action
+
+  if(treeNode == nullptr)
+  {
+	 treeNode = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k), pFactor);
+  }
+  CPISync *curr = treeNode->getDatum();
+  return curr->addElem(newDatum);
+//  return addElem(newDatum, treeNode, NULL, ZZ_ZERO, DATA_MAX); // use the recursive helper method
+}
+
+ZZ_p InterCPISync::hash(DataObject* datum) const {
+  ZZ num = datum->to_ZZ(); // convert the datum to a ZZ
+
+  return to_ZZ_p(num % DATA_MAX); // reduce to bit_num bits and make into a ZZ_p
+}
+
+bool InterCPISync::createTreeNode(pTree * &treeNode, pTree * parent, const ZZ &begRange, const ZZ &endRange) {
+  Logger::gLog(Logger::METHOD,"Entering InterCPISync::createTreeNode");
+    treeNode = new pTree(
+          new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),
+          pFactor);
+
+  CPISync *curr = treeNode->getDatum(); // the current node
+
+  if (parent != nullptr) {
+    // add all appropriate parent info
+    CPISync *par = parent->getDatum(); // the parent node
+      auto elem = par->beginElements();
+    for (; elem != par->endElements(); elem++) {
+      ZZ elemZZ = rep(hash(*elem));
+      if (elemZZ >= begRange && elemZZ < endRange) // element is in the range
+        if (!curr->addElem(*elem))
+          return false;
+    }
+  }
+  return true;
+}
+
+bool InterCPISync::addElem(DataObject* newDatum, pTree * &treeNode, pTree * parent, const ZZ &begRange, const ZZ &endRange) {
+  Logger::gLog(Logger::METHOD,"Entering InterCPISync::addElem");
+    CPISync *curr;
+
+  Logger::gLog(Logger::METHOD_DETAILS, ".  (InterCPISync) adding in range " + toStr(begRange) + " - " + toStr(endRange));
+
+  // if the current node is empty, create it
+  if (treeNode == nullptr) {
+    createTreeNode(treeNode, parent, begRange, endRange); // create a new tree node here
+    curr = treeNode->getDatum();
+
+    if (parent == nullptr) // I'm at the root of the tree ... nothing was propagated, so add the new datum
+      if (!curr->addElem(newDatum))
+        return false;
+  } else { // treeNode was not null ... just add the newDatum
+    // add to this node
+    curr = treeNode->getDatum(); // the current node
+    if (!curr->addElem(newDatum))
+      return false;
+  }
+
+  // do we need to add to its children as well?
+  if (curr->getNumElem() > 0 && endRange - begRange > 1) { // keep dividing until we have no elements or we reach a cell with only one value in its range
+    // find the correct child
+    ZZ step = (endRange - begRange) / pFactor;
+
+    if (step == 0) { // minimum step size is 1 - this will leave some partitions unused
+      step=1;
+    }
+    long childPos = to_long((addElemHashID - begRange) / step);
+    if (childPos >= pFactor)
+      childPos = pFactor - 1; // lump all final elements into the last child
+
+    ZZ newBegin = begRange + childPos * step; // beginning point of the range of the appropriate child
+    ZZ newEnd = (childPos == pFactor - 1) ?
+            endRange : // last elements lumped into the last child
+            min(newBegin + step, endRange); // don't overrun the end range of the parent node
+
+    // recursively add newDatum to the appropriate child
+    if (!addElem(newDatum, treeNode->child[childPos], treeNode, newBegin, newEnd))
+      return false;
+    // create nodes for all NULL children
+    for (long ii = 0; ii < pFactor - 1; ii++)
+      if (treeNode->child[ii] == nullptr)
+        createTreeNode(treeNode->child[ii], treeNode, begRange + ii * step, begRange + (ii + 1) * step);
+    if (treeNode->child[pFactor - 1] == nullptr) // last case is special
+      createTreeNode(treeNode->child[pFactor - 1], treeNode, begRange + (pFactor - 1) * step, endRange);
+  }
+
+  return true;
+}
+
+void InterCPISync::SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
+  Logger::gLog(Logger::METHOD,"Entering InterCPISync::SendSyncParam");
+    // take care of parent sync method
+  SyncMethod::SendSyncParam(commSync);
+
+  commSync->commSend(enumToByte(SyncID));
+  commSync->commSend(maxDiff);
+  commSync->commSend(bitNum);
+  commSync->commSend(probEps);
+  commSync->commSend(pFactor);
+  if (commSync->commRecv_byte() == SYNC_FAIL_FLAG)
+    throw SyncFailureException("Sync parameters do not match.");
+  Logger::gLog(Logger::COMM, "Sync parameters match");
+}
+
+bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
+    Logger::gLog(Logger::METHOD, "Entering InterCPISync::SyncClient");
+  // 0. Set up communicants
+    if(!useExisting)
+      commSync->commConnect();
+  // ... check that the other side is doing the same synchronization
+    SendSyncParam(commSync);
+
+
+  // 1. Do the sync
+  //Original Code
+/*
+  bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
+          && SyncClient(commSync, selfMinusOther, otherMinusSelf, treeNode);*/
+  pTree *parentNode = treeNode;//Create a copy of the root node - Just to make sure that it is not deleted
+  bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
+          && SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode,ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges
+  if (result) { // Sync succeeded
+    Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
+            + "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
+            + "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
+            + "\n");
+  } else
+    Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
+
+  // Close communicants
+  if(!useExisting)
+    commSync->commClose();
+
+    return result;
+}
+
+// Recursive helper function for SyncClient
+
+bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncClient");
+  try {
+    // Declare whether we have an empty node or not
+    int response; // the other's declaration
+    if (treeNode == nullptr) {// Case 0:  I've got nothing; the other must have something
+      Logger::gLog(Logger::METHOD_DETAILS, "My node is empty");
+      commSync->commSend(SYNC_NO_INFO);
+      response = commSync->commRecv_byte(); // get the other Communicant's initial declaration
+
+      if (response != SYNC_NO_INFO) // it is not the case that both nodes are empty
+        CPISync::receiveAllElem(commSync, otherMinusSelf);
+      return true;
+    } else
+      commSync->commSend(SYNC_SOME_INFO); // I have some elements
+
+    // Otherwise, I have something in this node
+    CPISync *node = treeNode->getDatum(); // the current node
+    response = commSync->commRecv_byte(); // get the other Communicants initial declaration
+
+    Logger::gLog(Logger::METHOD_DETAILS, "My node has " + toStr(node->getNumElem()) + " elements.");
+    Logger::gLog(Logger::COMM, " ... data is " + node->printElem());
+    if (response == SYNC_NO_INFO) {// Case 1:  I have something; the other has nothing
+      node->sendAllElem(commSync, selfMinusOther); // send all I've got
+      return true;
+    } else { // Case 2: We both have something
+      // synchronize the current node
+      node->SyncClient(commSync, selfMinusOther, otherMinusSelf); // attempt synchroniztion
+      if (commSync->commRecv_byte() == SYNC_FAIL_FLAG) { // i.e. the sync is reported by the Server to have failed; recurse
+
+        Logger::gLog(Logger::METHOD_DETAILS, " > dividing into children");
+        // synchronize the children, in order
+        for (int ii = 0; ii < pFactor; ii++) {
+          Logger::gLog(Logger::METHOD_DETAILS, "  CHILD: " + toStr(ii));
+          SyncClient(commSync, selfMinusOther, otherMinusSelf, treeNode->child[ii]);
+        }
+        Logger::gLog(Logger::METHOD_DETAILS, "< returning from division");
+      }
+      return true;
+    }
+  } catch (const SyncFailureException& s) {
+    Logger::gLog(Logger::METHOD_DETAILS, s.what());
+    commSync->commClose();
+    throw (s);
+  }
+}
+
+void InterCPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::RecvSyncParam");
+  // take care of parent sync method
+  SyncMethod::RecvSyncParam(commSync);
+
+  byte theSyncID = commSync->commRecv_byte();
+  long mbarClient = commSync->commRecv_long();
+  long bitsClient = commSync->commRecv_long();
+  int epsilonClient = commSync->commRecv_int();
+  long pFactorClient = commSync->commRecv_long();
+
+  if (theSyncID != enumToByte(SyncID) ||
+          mbarClient != maxDiff ||
+          bitsClient != bitNum ||
+          epsilonClient != probEps ||
+          pFactor != pFactorClient) {
+    // report a failure to establish sync parameters
+    commSync->commSend(SYNC_FAIL_FLAG);
+    Logger::gLog(Logger::COMM, "Sync parameters differ from client to server: Client has (" +
+            toStr(mbarClient) + "," + toStr(bitsClient) + "," + toStr(epsilonClient) + "," + toStr(pFactorClient) +
+            ").  Server has (" + toStr(maxDiff) + "," + toStr(bitNum) + "," + toStr(probEps) + "," + toStr(pFactor) + ").");
+    throw SyncFailureException("Sync parameters do not match.");
+  }
+  commSync->commSend(SYNC_OK_FLAG);
+  Logger::gLog(Logger::COMM, "Sync parameters match");
+}
+
+bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
+  // 0. Set up communicants
+    if(!useExisting)
+      commSync->commListen();
+
+  // ... verify sync parameters
+    RecvSyncParam(commSync);
+
+  // 1. Do the sync
+//Original Sync
+/*  bool result = SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
+          && SyncServer(commSync, selfMinusOther, otherMinusSelf, treeNode);*/
+ pTree * parentNode = treeNode;
+ bool result = SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
+          && SyncServer(commSync, selfMinusOther, otherMinusSelf, parentNode,ZZ_ZERO, DATA_MAX);
+  if (result) { // Sync succeeded
+    Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
+            + "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
+            + "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
+            + "\n");
+  } else
+    Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
+
+
+
+  // 2. Close communicants
+  if(!useExisting)
+    commSync->commClose();
+
+  return result;
+}
+
+// Recursive helper function for SyncServer
+
+bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
+  // Declare whether we have an empty node or not
+   // printf("SyncLevel = [%d]\n",syncLevel);
+  int response; // the other's declaration
+  if (treeNode == nullptr || treeNode->getDatum()->getNumElem() == 0) {// Case 0:  I've got nothing; the other must have something
+    Logger::gLog(Logger::METHOD_DETAILS, "My node is empty");
+    commSync->commSend(SYNC_NO_INFO);
+    response = commSync->commRecv_byte(); // get the other Communicants initial declaration
+
+    if (response != SYNC_NO_INFO) // it is not the case that both nodes are empty
+      CPISync::receiveAllElem(commSync, otherMinusSelf);
+    return true;
+  } else
+    commSync->commSend(SYNC_SOME_INFO); // I have some elements
+
+  // Otherwise, I have something in this node
+  CPISync *node = treeNode->getDatum(); // the current node
+
+  response = commSync->commRecv_byte(); // get the other Communicants initial declaration
+
+  Logger::gLog(Logger::METHOD_DETAILS, "My node has " + toStr(node->getNumElem()) + " elements.");
+  Logger::gLog(Logger::COMM, " ... data is " + node->printElem());
+  if (response == SYNC_NO_INFO) {// Case 1:  I have something; the other has nothing
+    node->sendAllElem(commSync, selfMinusOther); // send all I've got
+    return true;
+  } else { // Case 2: We both have something
+    // synchronize the current node
+    if (!node->SyncServer(commSync, selfMinusOther, otherMinusSelf)) { // sync failure - go on with children
+      commSync->commSend(SYNC_FAIL_FLAG); // notify the client to try the children
+
+      Logger::gLog(Logger::METHOD_DETAILS, " > dividing into children");
+      // synchronize the children, in order
+      for (int ii = 0; ii < pFactor; ii++) {
+        Logger::gLog(Logger::METHOD_DETAILS, "  CHILD: " + toStr(ii));
+        SyncServer(commSync, selfMinusOther, otherMinusSelf, treeNode->child[ii]);
+      }
+      Logger::gLog(Logger::METHOD_DETAILS, "< returning from division");
+
+    } else {
+      commSync->commSend(SYNC_OK_FLAG); // notify the client that sync succeeded ... do not recurse
+    }
+
+    return true; // should always return true
+  }
+}
+bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ begRange, const ZZ endRange)
+{
+        //Establish initial Handshakes - Check If I have nothing or If Client has nothing
+	int response;
+	if(parentNode == nullptr || parentNode->getDatum()->getNumElem() == 0){
+		commSync->commSend(SYNC_NO_INFO);
+		response = commSync->commRecv_byte();
+		if(response!=SYNC_NO_INFO)
+			CPISync::receiveAllElem(commSync, otherMinusSelf);
+		return true;
+	}
+	else
+		commSync->commSend(SYNC_SOME_INFO);
+
+	CPISync * node = parentNode->getDatum();
+	response = commSync->commRecv_byte();
+	if(response == SYNC_NO_INFO)
+	{
+		node->sendAllElem(commSync, selfMinusOther); // send all I've got
+		return true;
+	}
+	else
+	{
+                //Attempt Sync on current node
+		if (!node->SyncServer(commSync, selfMinusOther, otherMinusSelf)) { // sync failure - create Children and go try to syn
+			commSync->commSend(SYNC_FAIL_FLAG);
+
+            auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),pFactor);
+			createChildren(parentNode, tempTree, begRange, endRange);//Create child Nodes;
+			if(parentNode != treeNode) delete parentNode;				     //Delete the previous parent node
+			parentNode = tempTree;				    //Update the current parent node(parent node only used for referencing the child nodes)
+			ZZ step = (endRange - begRange)/pFactor;
+			//if(step ==0) step = 1;
+			for(int ii=0;ii<pFactor-1;ii++)
+			{
+				SyncServer(commSync, selfMinusOther, otherMinusSelf, parentNode->child[ii], begRange+(ii*step), begRange + (ii + 1)*step);
+			}//Last child needs to handle odd pFactors
+			SyncServer(commSync, selfMinusOther, otherMinusSelf, parentNode->child[pFactor-1], begRange+((pFactor-1)*step), endRange);
+		}
+		else
+		{
+			commSync->commSend(SYNC_OK_FLAG);
+		}
+		return true;
+	}
+}
+void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ begRange, const ZZ endRange)
+{
+
+	ZZ step = (endRange - begRange)/pFactor;//Get the step size of the node to establish bin sizes
+	if(step ==0) step = 1;                  //Set minimum step size to 1 to avoid divide errors
+	int pos;
+	CPISync * nodes[pFactor];
+	if(endRange != begRange){
+		for(int ii=0;ii<pFactor;ii++)
+		{
+			tempTree->child[ii] =  new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),pFactor);//Create child nodes for parent
+			nodes[ii] = tempTree->child[ii]->getDatum();//Create references for the child nodes(used for insertion)
+		}
+		CPISync * parent = parentNode->getDatum();//Get the parent node
+        auto elem = parent->beginElements();
+		for(;elem!=parent->endElements();elem++){    //Iterate through all parent information
+			ZZ elemZZ = rep(hash(*elem));
+                        pos = pFactor-1;
+                        for(int jj=0;jj<pFactor-1;jj++)
+                        {
+                            if((elemZZ >= (begRange +(jj*step))) && (elemZZ < (begRange + (jj+1)*step)))
+                            {
+                                pos = jj;
+                                break;
+                            }
+                        }
+
+                        /*ZZ dival;
+			div(dival,elemZZ,begRange+step);     //Calculate the bin
+                        conv(pos,dival);// Which child node to add data from parent
+                        if(pos >= pFactor) pos = pFactor-1; // For odd pFactors put the edge data into the last bin
+			*/
+                        //cout<<"Elem = "<<toStr(elemZZ)<<" Begin Range = "<<toStr(begRange)<<" End Range = "<<toStr(endRange)<<" Step = "<<toStr(step)<<" ZZ Pos = "<<toStr(dival)<<"Int Pos = "<<pos<<endl;
+                        //cout<<"Elem = "<<toStr(elemZZ)<<" Begin Range = "<<toStr(begRange)<<" End Range = "<<toStr(endRange)<<" Step = "<<toStr(step)<<" Int Pos = "<<pos<<endl;
+			nodes[pos]->addElem(*elem);//Add to appropriate child
+		}
+	}
+}
+
+////
+//// Created by Bowen on 10/9/18.
+////
+
+#include "PerformanceData.h"
+
+
+PerformanceData::~PerformanceData() = default;
+//
+//
+//
+//int PerformanceData::setdiff(int shingle_len, int str_size, int edit_dist){
+//    K_Shingle Alice = K_Shingle(shingle_len),Bob = K_Shingle(shingle_len);
+//
+//    auto Alice_txt = randAsciiStr(str_size);
+//    auto Bob_txt = randStringEdit(Alice_txt, edit_dist);
+//    return multisetDiff(Alice.getShingleSet_str(Alice_txt), Bob.getShingleSet_str(Bob_txt)).size();
+//}
+//
+//void PerformanceData::StrKDif3D(pair<int,int> str_sizeRange,pair<int,int> shingle_lenRange, int edit_dist) {
+//    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+//    int shingle_leninterval = 1;
+//
+//    for (int str_size = str_sizeRange.first; str_size < str_sizeRange.second; str_size += str_sizeinterval) {
+//        for (int shingle_len = shingle_lenRange.first;
+//             shingle_len < shingle_lenRange.second; shingle_len += shingle_leninterval) {
+//            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+//            plot3D("SetDiff3D-Edit Dist=" + to_string(edit_dist) + ":Kshingle:Str Len:Shingle Len:Set Diff", str_size,
+//                   shingle_len, set_diff);
+//        }
+//    }
+//}
+//
+//void PerformanceData::StrEDDif3D(pair<int,int> str_sizeRange,pair<int,int> edit_distRange, int shingle_len) {
+//    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+//    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+//
+//    for (int str_size = str_sizeRange.first; str_size < str_sizeRange.second; str_size += str_sizeinterval) {
+//        for (int edit_dist = edit_distRange.first; edit_dist < edit_distRange.second; edit_dist += edit_distinterval) {
+//            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+//            plot3D("SetDiff3D-Shingle Len=" + to_string(shingle_len) + ":Kshingle:Str Len:Edit Dist:Set Diff", str_size,
+//                   edit_dist, set_diff);
+//        }
+//    }
+//}
+//
+//void PerformanceData::EDKDif3D(pair<int,int> edit_distRange,pair<int,int> shingle_lenRange, int str_size) {
+//    int shingle_leninterval = 1;
+//    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+//
+//    for (int edit_dist = edit_distRange.first; edit_dist < edit_distRange.second; edit_dist += edit_distinterval) {
+//        for (int shingle_len = shingle_lenRange.first;
+//             shingle_len < shingle_lenRange.second; shingle_len += shingle_leninterval) {
+//            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+//            plot3D("SetDiff3D-Str Size" + to_string(str_size) + ":Kshingle:Edit Dist:Shingle Len:Set Diff", edit_dist,
+//                   shingle_len, set_diff);
+//        }
+//    }
+//}
+//
+//void PerformanceData::KDif2D(pair<int, int> shingle_lenRange, int str_size, int edit_dist, int confidence) {
+//    int shingle_leninterval = 1;
+//
+//    for (int shingle_len = shingle_lenRange.first; shingle_len < shingle_lenRange.second; shingle_len+=shingle_leninterval){
+//        for (int conf = 0; conf < confidence; ++conf) {
+//            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+//            plot2D("SetDiff2D-Str="+to_string(str_size)+"-ED="+to_string(edit_dist)+":Kshingle:Shingle Len:Set Diff",shingle_len,set_diff);
+//        }
+//    }
+//}
+//
+//void PerformanceData::EDDif2D(pair<int, int> edit_distRange, int str_size, int shingle_len, int confidence) {
+//    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+//
+//    for (int edit_dist = edit_distRange.first; edit_dist < edit_distRange.second; edit_dist+=edit_distinterval){
+//        for (int conf = 0; conf < confidence; ++conf) {
+//            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+//            plot2D("SetDiff2D-Str="+to_string(str_size)+"-Shingle Len="+to_string(shingle_len)+":Kshingle:Edit Dist:Set Diff",edit_dist,set_diff);
+//        }
+//    }
+//}
+//
+//void PerformanceData::StrDif2D(pair<int, int> str_sizeRange, int shingle_len, int edit_dist, int confidence) {
+//    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+//
+//    for (int str_size = str_sizeRange.first; str_size < str_sizeRange.second; str_size+=str_sizeinterval){
+//        for (int conf = 0; conf < confidence; ++conf) {
+//            auto set_diff = setdiff(shingle_len, str_size, edit_dist);
+//            plot2D("SetDiff2D-ED="+to_string(edit_dist)+"-Shingle Len="+to_string(shingle_len)+":Kshingle:Str Size:Set Diff",str_size,set_diff);
+//        }
+//    }
+//}
+//
+//// Parameters setting
+//void PerformanceData::prepareStringRecon(int string_size, int shingle_len, int edit_distance, string Alice_txt, string Bob_txt){
+//    //init Parameters
+//    editDist = edit_distance;
+//    mbar = edit_distance;
+//    bits = 8;
+//    stringSize = string_size;
+//    shingleLen = shingle_len;
+//
+//    // random input
+//    if (Alice_txt == "" and Bob_txt == "") {
+//        AliceTxt = randAsciiStr(stringSize);
+//        BobTxt = randStringEdit(AliceTxt, editDist);
+//    } else {
+//        AliceTxt = Alice_txt;
+//        BobTxt = Bob_txt;
+//    }
+//}
+//
+//// Prepare oarameters for specific set recon and genrate strings
+//void PerformanceData::prepareSetComm(StringReconProtocol string_recon_proto, GenSync::SyncProtocol base_set_proto) {
+//    baseSetProto = base_set_proto;
+//    stringReconProto = string_recon_proto;
+//
+//
+//    // quote a mbar, else to try and double method
+//    switch (stringReconProto) {
+//        case StringReconProtocol::KshinglingSync: {
+//            K_Shingle Alice_content = K_Shingle(shingleLen);
+//            K_Shingle Bob_content = K_Shingle(shingleLen);
+//
+//            auto Alice_set = Alice_content.getShingleSet_str(AliceTxt);
+//            auto Bob_set = Bob_content.getShingleSet_str(BobTxt);
+//            mbar = multisetDiff(Alice_set, Bob_set).size(); // Still need the actual set difference for set recon
+//            break;
+//        }
+//        default:
+//            throw invalid_argument("Not Implemented string recon Protocol");
+//    }
+//
+//
+//    switch (baseSetProto) {
+//        case GenSync::SyncProtocol::CPISync: // not used
+//            setReconProtoName = "CPI";
+//            bits = 14 + (shingleLen + 2) * 8;//sqaure bits
+//            mbar = mbar + mbar + ceil(mbar * 0.3);
+//            break;
+//
+//        case GenSync::SyncProtocol::InteractiveCPISync:
+//            setReconProtoName = "InterCPI";
+//            bits = 14 + (shingleLen + 2) * 6;//sqaure bits
+//            mbar = 7;  //need mbar -- fixed
+//            numParts = 3;  //setNumPartitions -- fixed
+//            break;
+////                case GenSync::SyncProtocol::FullSync:
+////                    G_legend.push_back("FullSync");//G_legend
+////                    break;
+//
+//        case GenSync::SyncProtocol::IBLTSyncSetDiff:
+//            setReconProtoName = "IBLT";
+//            //mbar; // can be exactly like the number of set difference
+//            bits = sizeof(DataObject*);
+//            break;
+//        default:
+//            throw invalid_argument("Not Implemented set recon Protocol");
+//    }
+//}
+//
+//
+//// can start timing
+//forkHandleReport PerformanceData::calCostReport(PlotType plot_type,bool check_outcome) {
+//    forkHandleReport res;
+//    bool success = false;
+//    // while not success, we increase the edit distance
+//
+//
+//    double time = clock(); // init clock
+//    double time_final=0;
+//
+//
+//    switch (stringReconProto) {
+//        case StringReconProtocol::KshinglingSync:
+//            stringReconProtoName = "Kshingle";
+//            while (!success) { // adjust mbar if recon not success
+//
+//                // Prepare to Sync Alice
+//                // TODO: Enable IBLT and fill up the last parameter
+//                kshinglingSync kshingling = kshinglingSync(baseSetProto, GenSync::SyncComm::socket, bits, mbar,
+//                                                           numParts, 0);
+//
+//                K_Shingle Alice_content = K_Shingle(shingleLen);
+//                GenSync Alice = kshingling.SyncHost(AliceTxt, Alice_content);
+//                time_final =  (double)(clock() - time)/CLOCKS_PER_SEC ;
+//                // Prepare Bob
+//                K_Shingle Bob_content = K_Shingle(shingleLen);
+//                GenSync Bob = kshingling.SyncHost(BobTxt, Bob_content);
+//
+//                res = kshingling.SyncNreport(Alice, Bob);
+//
+//                mbar += mbar;  // expected mbar may not be enough, therefore adding 1 or doubling
+//
+//
+//
+//
+//                if (check_outcome) {
+//                    time = clock(); // adding the time to piece info back together
+//                    try {
+//                        string tmpstr = kshingling.getString(Alice, Alice_content);
+//                        success = (tmpstr == BobTxt);
+//                    }catch(exception&s){
+//                        success = check_outcome;
+//                        res.CPUtime = 0;
+//                        res.bytesTot = 0;
+//                        res.bytesRTot = 0;
+//                        cout<<"failed at:"+to_string(editDist)+":"+ to_string(mbar/2)+":"+to_string(stringSize)<<endl;
+//                    }
+//                    time_final += (double) (clock() - time) / CLOCKS_PER_SEC;
+//
+//
+//                } else {
+//                    success = check_outcome;
+//                }
+//            }
+//            break;
+//        default:
+//            break;
+//    }
+//    res.CPUtime+=time_final;
+//    return res;
+////    long comm_cost = res.bytesTot;
+////    //for Interactive CPI we care bout the total comm cost
+////    if (baseSetProto==GenSync::SyncProtocol::InteractiveCPISync) comm_cost +=res.bytesRTot;
+////
+////    if (plot_type == PlotType::PLOT2D || plot_type == PlotType::BOTH) {
+////        // cpu time plot
+////        plot2D("CPUTime:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize)
+////                , editDist, res.CPUtime+time_final);
+////        // comm plot
+////        plot2D("CommCost:" + stringReconProtoName + "-" + setReconProtoName + "-str=" + to_string(stringSize),
+////               editDist, comm_cost);
+////
+////        if (baseSetProto!=GenSync::SyncProtocol::InteractiveCPISync) {
+////            plot2D("CommCost(ED=setDiff):" + stringReconProtoName + "-" + setReconProtoName + "-str=" +
+////                   to_string(stringSize),
+////                   mbar, comm_cost);
+////
+////            plot2D("EditDistNSetDiff:str=" + to_string(stringSize), editDist, mbar); // mbar is actual set difference
+////        }
+////
+////        plot2D("CommCost:FullSync-str=" + to_string(stringSize), editDist, 14 + (stringSize) * 8);
+////    }
+////
+////    if (plot_type == PlotType::PLOT3D || plot_type == PlotType::BOTH) {
+////        //
+////        plot3D("CommCost:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize, comm_cost);
+////
+////
+////        plot3D("CPUTime:" + stringReconProtoName + "-" + setReconProtoName, editDist, stringSize,
+////               res.CPUtime+time_final);
+////        if (baseSetProto!=GenSync::SyncProtocol::InteractiveCPISync){
+////            plot3D("CommCost(ED=setDiff):" + stringReconProtoName + "-" + setReconProtoName, mbar, stringSize, comm_cost);
+////
+////            plot3D("EditDistNSetDiff:", editDist, stringSize, mbar); // mbar is actual set difference
+////        }
+////
+////        plot3D("CommCost:FullSync", editDist, stringSize, 14 + (stringSize) * 8);
+////    }
+//}
+//
+//void PerformanceData::kshingle2D(list<GenSync::SyncProtocol> setReconProto,pair<int,int> edit_distRange,
+//        int shingle_len,int str_size,int target_confidence) {
+//    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+//
+//    for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+//        cout << to_string(edit_dist) + ":" + to_string(str_size) << endl;
+//        int confidence = target_confidence;
+//        if (edit_dist > 40) { confidence = 1; }
+//
+//        for (int conf = 0; conf < confidence; ++conf) {
+//            prepareStringRecon(str_size, shingle_len, edit_dist);
+//
+//            for (auto setRecon:setReconProto) {
+//                prepareSetComm(StringReconProtocol::KshinglingSync, setRecon);
+//                forkHandleReport res = calCostReport(PerformanceData::PlotType::PLOT3D);
+//                double comm_cost = res.bytesTot;
+//                //for Interactive CPI we care bout the total comm cost
+//                if (baseSetProto == GenSync::SyncProtocol::InteractiveCPISync) comm_cost += res.bytesRTot;
+//
+//                plot3D("Comm Cost of Kshingle Str=" + to_string(str_size) + ":" + setReconProtoName +
+//                       ":Edit Dist:Comm Cost(Bytes):Set Diff",
+//                       edit_dist, comm_cost, mbar / 2);
+//                plot3D("CPU Time of Kshingle Str=" + to_string(str_size) + ":" + setReconProtoName +
+//                       ":Edit Dist:CPU Time(s):Set Diff",
+//                       edit_dist, res.CPUtime, mbar / 2);
+//            }
+//        }
+//    }
+//}
+//
+//void PerformanceData::kshingleStr2D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> strSizeRange,
+//                                    int shingle_len, int edit_dist, int target_confidence) {
+//    int strSizeinterval = floor((strSizeRange.second - strSizeRange.first) / tesPts);
+//
+//    for (int str_size = strSizeRange.first; str_size <= strSizeRange.second; str_size += strSizeinterval) {
+//        cout << "kshingleStr2D:" + to_string(str_size) << endl;
+//        int confidence = target_confidence;
+//
+//        for (int conf = 0; conf < confidence; ++conf) {
+//            prepareStringRecon(str_size, shingle_len, edit_dist);
+//
+//            for (auto setRecon:setReconProto) {
+//                prepareSetComm(StringReconProtocol::KshinglingSync, setRecon);
+//                forkHandleReport res = calCostReport(PerformanceData::PlotType::PLOT3D);
+//                double comm_cost = res.bytesTot;
+//                //for Interactive CPI we care bout the total comm cost
+//                if (baseSetProto == GenSync::SyncProtocol::InteractiveCPISync) comm_cost += res.bytesRTot;
+//
+//                plot3D("Comm Cost of Kshingle k=" + to_string(shingle_len) + "ED=" + to_string(edit_dist) + ":" +
+//                       setReconProtoName + ":Str Size:Comm Cost(Bytes):Set Diff", str_size, comm_cost, mbar / 2);
+//                plot3D("CPU Time of Kshingle k=" + to_string(shingle_len) + "ED=" + to_string(edit_dist) + ":" +
+//                       setReconProtoName + ":Str Size:CPU Time(s):Set Diff", edit_dist, res.CPUtime, mbar / 2);
+//            }
+//        }
+//    }
+//}
+//
+//void PerformanceData::kshingle3D(list<GenSync::SyncProtocol> setReconProto, pair<int, int> edit_distRange,
+//                                 pair<int,int> str_sizeRange, int shingle_len) {
+//    int edit_distinterval = floor((edit_distRange.second - edit_distRange.first) / tesPts);
+//    int str_sizeinterval = floor((str_sizeRange.second - str_sizeRange.first) / tesPts);
+//
+//    for (int str_size = str_sizeRange.first; str_size <= str_sizeRange.second; str_size += str_sizeinterval) {
+//        cout << to_string(str_size) << endl;
+//
+//        for (int edit_dist = edit_distRange.first; edit_dist <= edit_distRange.second; edit_dist += edit_distinterval) {
+//            prepareStringRecon(str_size, shingle_len, edit_dist);
+//
+//            for (auto setRecon:setReconProto) {
+//                prepareSetComm(StringReconProtocol::KshinglingSync, setRecon);
+//                forkHandleReport res = calCostReport(PerformanceData::PlotType::PLOT3D);
+//                double comm_cost = res.bytesTot;
+//                //for Interactive CPI we care bout the total comm cost
+//                if (baseSetProto == GenSync::SyncProtocol::InteractiveCPISync) comm_cost += res.bytesRTot;
+//
+//                plot4D("Comm Cost of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:Comm Cost(Bytes):Set Diff",
+//                       str_size, edit_dist, comm_cost, mbar / 2);
+//                plot4D("CPU Time of Kshingle:" + setReconProtoName + ":Str Size:Edit Dist:CPU Time(s):Set Diff",
+//                       str_size, edit_dist, res.CPUtime, mbar / 2);
+//            }
+//        }
+//    }
+//}
+//
+//
+void PerformanceData::strataEst3D(pair<size_t, size_t> set_sizeRange, int confidence) {
+    int set_sizeinterval = floor((set_sizeRange.second - set_sizeRange.first) / tesPts);
+#if __APPLE__
+    confidence /=omp_get_max_threads();
+//#pragma omp parallel num_threads(omp_get_max_threads())
+#endif
+
+    for (int set_size = set_sizeRange.first; set_size <= set_sizeRange.second; set_size += set_sizeinterval) {
+    (set_size < set_sizeRange.first + (set_sizeRange.second-set_sizeRange.first)/2) ? confidence : confidence=5;
+    cout<<"Current Set Size:"+to_string(set_size)<<endl;
+        int top_set_diff = set_size / 10;
+        int set_diffinterval = floor((top_set_diff) / tesPts);
+
+        for (int set_diff = 0; set_diff <= top_set_diff; set_diff += set_diffinterval) {
+#if __APPLE__
+//#pragma omp critical
+#endif
+            printMemUsage();
+            for (int conf = 0; conf < confidence; ++conf) {
+
+
+                StrataEst Alice = StrataEst(sizeof(DataObject *));
+                StrataEst Bob = StrataEst(sizeof(DataObject *));
+
+                for (int j = 0; j < set_size; ++j) {
+                    auto tmp = randZZ();
+                    Alice.insert(new DataObject(tmp));
+                    if (j >= set_diff) {
+                        Bob.insert(new DataObject(tmp));
+                    }
+                }
+                plot3D("Strata Est:Set Size:Set Diff: Est", set_size, set_diff, (Alice -= Bob).estimate());
+
+            }
+        }
+
+	write2file("Strata"+to_string(set_size)+".txt");
+    }
+}
+
+void PerformanceData::plot2D(string label, double X, double Y){
+    if (data2D.find(label)==data2D.end()) { // if no label of such kind is in there
+        vector<double> tmp(2);
+        tmp[0] = X;
+        tmp[1] = Y;
+        vector<vector<double>> init;
+        init.push_back(tmp);
+        data2D.insert(make_pair(label,init));
+    } else{
+        vector<double> tmp(2);
+        tmp[0] = X;
+        tmp[1] = Y;
+        data2D[label].push_back(tmp);
+    }
+
+}
+
+void PerformanceData::plot3D(string label, double X, double Y, double Z){
+    if (data3D.find(label)==data3D.end()) { // if no label of such kind is in there
+        vector<double> tmp(3);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        vector<vector<double>> init;
+        init.push_back(tmp);
+        data3D.insert(make_pair(label,init));
+    } else{
+        vector<double> tmp(3);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        data3D[label].push_back(tmp);
+    }
+}
+
+void PerformanceData::plot4D(string label, double X, double Y, double Z, double A){
+    if (data4D.find(label)==data4D.end()) { // if no label of such kind is in there
+        vector<double> tmp(4);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        tmp[3] = A;
+        vector<vector<double>> init;
+        init.push_back(tmp);
+        data4D.insert(make_pair(label,init));
+    } else{
+        vector<double> tmp(4);
+        tmp[0] = X;
+        tmp[1] = Y;
+        tmp[2] = Z;
+        tmp[3] = A;
+        data4D[label].push_back(tmp);
+    }
+}
+
+void PerformanceData::write2file(string file_name) {
+    ofstream myfile;
+    //TODO: do soemthing about the directories, this hard coding is not a long term solution
+    myfile.open(file_name + ".txt");
+
+    for (auto item : data4D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy, tmpz, tmpa;
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
+            tmpz += to_string(num[2]) + " ";
+            tmpa += to_string(num[3]) + " ";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+        myfile << "Z:" + tmpz + "\n";
+        myfile << "A:" + tmpa + "\n";
+    }
+
+    for (auto item : data3D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy, tmpz;
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
+            tmpz += to_string(num[2]) + " ";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+        myfile << "Z:" + tmpz + "\n";
+    }
+
+    for (auto item : data2D) {
+        myfile << "Label:" + item.first + "\n";
+        string tmpx, tmpy;
+        for (auto num : item.second) {
+            tmpx += to_string(num[0]) + " ";
+            tmpy += to_string(num[1]) + " ";
+        }
+        myfile << "X:" + tmpx + "\n";
+        myfile << "Y:" + tmpy + "\n";
+    }
+
+    myfile.close();
+}
+
+
+

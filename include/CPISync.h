@@ -49,7 +49,7 @@ public:
    *    that an internal hash does not collide, and that there be at least 2 items
    *    in the union of the two sets that are being synchronized int.
    */
-  CPISync(long m_bar, long bits, int epsilon, int redundant = 0, bool hashes = false);
+  CPISync(long m_bar, long bits, int epsilon, int redundant = 0, bool hashes = false, bool use_existing = false);
 
   /**
    * General class destructor

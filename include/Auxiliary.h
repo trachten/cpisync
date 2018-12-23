@@ -28,6 +28,8 @@
 #include <cstring>
 #include "ConstantsAndTypes.h"
 #include "Logger.h"
+#include <iostream>
+#include <fstream>
 
 // some standard names
 using std::cout;
@@ -62,6 +64,18 @@ inline vector<byte> StrToVec(const string& data) {
 
     return result;
 }
+
+inline string ZZtoStr(const ZZ& zz){
+    string str;
+    str.resize(NumBytes(zz),0);
+    BytesFromZZ((uint8_t *) &str[0],zz,str.size());
+    return str;
+}
+
+inline ZZ StrtoZZ(const string& str) {
+    return ZZFromBytes((const uint8_t *) str.data(), str.size());
+}
+
 
 /**
  * Converts a vector of bytes into a string.  The opposite of StrToVec.
@@ -106,6 +120,7 @@ inline string toStr(T item) {
     tmp << item;
     return tmp.str();
 }
+
 
 /**
  * Reinterprets a ustring into a string
@@ -334,6 +349,10 @@ inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
 
 inline string base64_decode(std::string const& encoded_string) {
     int in_len = encoded_string.length();
+
+    if (in_len<=0){
+        return "";
+    } // edit
     char tmp[in_len];
     strncpy(tmp, encoded_string.data(), in_len);
 
@@ -424,6 +443,128 @@ inline string randString(int lower=0, int upper=10) {
         str << (char) randByte(); // generate a random character and add to the stringstream
 
     return str.str();
+}
+
+inline string randAsciiStr(int len = 10) {
+    string str;
+
+    for (int jj = 0; jj < len; ++jj) {
+        auto intchar = rand() % 126;  // avoid random string to be "$" changed to "%"
+        if (intchar == 36 || intchar ==0)intchar++;// avoid random string to be "$" changed to "%" and avoid \0 which is NULL
+        str += toascii(intchar);
+
+    }
+    return str;
+}
+
+
+inline string scanTxtFromFile(string dir, int len) {
+    std::string line;
+    std::ifstream myfile(dir); //"./tests/SampleTxt.txt"
+    ostringstream txt;
+    long long str_len = 0;
+    if (myfile.is_open()) {
+        while (getline(myfile, line) and (str_len += line.size()) < len) txt << line;
+        txt << line.substr(0, len-str_len+line.size());
+        myfile.close();
+    } else{
+        throw invalid_argument("Directory " + dir + " does not exist.-");
+    }
+    return txt.str();
+}
+
+inline string randSampleTxt(int len) {
+    // max at 1 million characters
+    int MAX_LEN = (int) 2e6; // the sample file is 8e5 characters long
+    if (len > MAX_LEN) throw invalid_argument("rand Sample Txt can not be more than " + to_string(MAX_LEN));
+    string full_txt = scanTxtFromFile("./tests/SampleTxt.txt", MAX_LEN);
+    int start_pt = randLenBetween(0,full_txt.size()-len);
+
+    return full_txt.substr(start_pt,len);
+
+}
+
+inline string randSampleCode(int len) {
+    int MAX_LEN = (int) 1e5; // the sample file is 1e5 characters long
+    if (len > MAX_LEN) throw invalid_argument("rand Sample Code can not be more than " + to_string(MAX_LEN));
+    string full_txt = scanTxtFromFile("./tests/SampleCode.txt", MAX_LEN);
+    if (len == MAX_LEN) return  full_txt;
+    int start_pt = randLenBetween(0,full_txt.size()-len-1);
+
+    return full_txt.substr(start_pt,len);
+}
+
+/**
+ * Generate a string with upperI number of random insertions of the original string
+ * @param upperI number of insertion upper bound
+ * @return Edited string with upperI insertions away from the original string
+ */
+inline string randStringInsert(string str, int upperI) {
+    for (int jj = 0; jj < upperI; jj++) {
+        //pick a place to edit
+        int pos;
+        if (str == "")pos = 0;
+        else pos = randLenBetween(0, str.size() - 1);
+
+        str = str.substr(0, pos) + randAsciiStr(1) + str.substr(pos);
+    }
+    return str;
+}
+
+/**
+ * Generate a string with upperD number of random deletions of the original string
+ * @param upperD number of deletion upper bound
+ * @return Edited string with upperD deletions away from the original string
+ */
+inline string randStringDel(string str, int upperD) {
+    if (str.size() <= upperD) {
+        return "";
+    }
+
+    for (int jj = 0; jj < upperD; jj++) {
+        //pick a place to edit
+        int pos = randLenBetween(0, str.size() - 1);
+
+        str = str.substr(0, pos) + str.substr(pos + 1);
+    }
+    return str;
+}
+
+/**
+ * Generate a string with upperE number of random edits of the original string
+ * @param upperE Edit upper bound
+ * @return Edited string upperE edit distance away from the original string
+ */
+inline string randStringEdit(string str, int upperE) {
+    for (int jj = 0; jj < upperE; jj++) {
+        str = (rand() % 2 == 0) ? randStringDel(str, 1) : randStringInsert(str, 1);
+    }
+    return str;
+}
+
+/**
+ * Generate a string with upperE number of random edits at random numLoc places of the original string
+ * @param numLoc number of locations to have the edit burst
+ * @param upperE Edit upper bound
+ * @return Edited string upperE edit distance away from the original string
+ */
+inline string randStringEditBurst(string str, int burstE, int numLoc) {
+    for (int ii = 0; ii < numLoc; ++ii) {
+        int tmpBurst = (burstE>str.size()) ? str.size() : burstE;
+        int pos = randLenBetween(0, str.size() - tmpBurst);
+
+        str = str.substr(0,pos)+randStringEdit(str.substr(pos,tmpBurst),burstE)+str.substr(pos+tmpBurst);
+    }
+    return str;
+}
+
+inline string randStringEditBurst(string str, int upperE) {
+    while (upperE > 0) {
+        int burst = randLenBetween(1, upperE);
+        upperE -= burst;
+        str = randStringEditBurst(str, burst, 1);
+    }
+    return str;
 }
 
 /**

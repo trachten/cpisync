@@ -35,10 +35,14 @@
  * Report structure for a forkHandle run
   */
 struct forkHandleReport {
-    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
-    long bytes;       // the number of bytes communicated
-    double CPUtime;   // the amount of CPU time used
-    double totalTime; // total time used
+    forkHandleReport() : bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
+
+    long bytes = -1;       // the number of bytes communicated
+    long bytesRTot = -1;    // the number of bytes from total comm
+    long bytesTot = -1;      // the total number of bytes communicated
+    long bytesVM = -1;       // the amount of virtual memory used for reconstruction
+    double CPUtime = -1;   // the amount of CPU time used
+    double totalTime = -1; // total time used
     bool success;     // true iff the sync completed successfully
 };
 
@@ -47,9 +51,10 @@ struct forkHandleReport {
  * client is modified to reflect reconciliation, whereas server is not.
  * @param client The GenSync object that plays the role of client in the sync.
  * @param server The GenSync object that plays the role of server in the sync.
+ * @param isRecon is adding element only, flag false for deleting element as well
  * @return Synchronization statistics as reported by the client.
  */
-inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
+inline forkHandleReport forkHandle(GenSync& client, GenSync server, bool isRecon= true) {
     int err = 1;
     int chld_state;
     int my_opt = 0;
@@ -61,7 +66,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
         if (pID == 0) {
             signal(SIGCHLD, SIG_IGN);
             Logger::gLog(Logger::COMM,"created a server process");
-            server.listenSync(method_num);
+            server.listenSync(method_num,isRecon);
             exit(0);
         } else if (pID < 0) {
             //handle_error("error to fork a child process");
@@ -69,14 +74,16 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
             throw err;
         } else {
             Logger::gLog(Logger::COMM,"created a client process");
-            client.startSync(method_num);
+            client.startSync(method_num,isRecon);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
             result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            result.bytesRTot = client.getRecvBytesTot(method_num);
+            result.bytesVM = client.getVirMem(method_num);
+            result.bytesTot = client.getXmitBytesTot(method_num);
             result.bytes = client.getXmitBytes(method_num);
             waitpid(pID, &chld_state, my_opt);
             result.success=true;
         }
-
     } catch (int& err) {
         sleep(1); // why?
         cout << "handle_error caught" << endl;
@@ -91,6 +98,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
  * server is modified to reflect reconciliation, whereas client is not.
  * @param server The GenSync object that plays the role of server in the sync.
  * @param client The GenSync object that plays the role of client in the sync.
+ * @param isRecon is adding element only, flag false for deleting element as well
  * @return Synchronization statistics as reported by the server.
  */
 
@@ -98,7 +106,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
  * Known bug: The server doesn't close communicant connection after sync, causing port-in-use errors.
  * A more in-depth discussion can be found in BUGS.txt
  */
-inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
+inline forkHandleReport forkHandleServer(GenSync& server, GenSync client, bool isRecon= true) {
     int err = 1;
     int chld_state;
     int my_opt = 0;
@@ -110,7 +118,7 @@ inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
         if (pID == 0) {
             signal(SIGCHLD, SIG_IGN);
             Logger::gLog(Logger::COMM,"created a client process");
-            client.startSync(method_num);
+            client.startSync(method_num,isRecon);
             exit(0);
         } else if (pID < 0) {
             //handle_error("error to fork a child process");
@@ -118,7 +126,7 @@ inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
             throw err;
         } else {
             Logger::gLog(Logger::COMM,"created a server process");
-            server.listenSync(method_num);
+            server.listenSync(method_num,isRecon);
             result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
             result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);

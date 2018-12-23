@@ -15,6 +15,7 @@
 #include "DataObject.h"
 #include "DataPriorityObject.h"
 #include "IBLT.h"
+#include "StrataEst.h"
 
 // namespace imports
 using namespace NTL;
@@ -91,6 +92,38 @@ public:
     bool establishIBLTRecv(const size_t size, const size_t eltSize, bool oneWay = false);
 
     /**
+
+     * Establishes common Kshingling parameters with another connected Communicant.
+     * @param kshingle_size the length of a shingle
+     * @param stop_word stopword of Kshingling class
+     * @param oneWay If true, verification of common parameters is sent to the other communicant.
+     * @require an active connection via commConnect
+     * @return true iff common parameters were verified
+     */
+    bool establishKshingleSend(const size_t kshingle_size, const char stop_word, bool oneWay = false);
+
+    /**
+     * Establishes common Kshingling parameters with another connected Communicant.
+     * @param kshingle_size the length of a shingle
+     * @param stop_word stopword of Kshingling class
+     * @param oneWay If true, verification of common parameters is sent to the other communicant.
+     * @require an active connection via commConnect
+     * @return true iff common parameters were verified
+     */
+    bool establishKshingleRecv(const size_t kshingle_size, const char stop_word, bool oneWay = false);
+
+
+    /**
+     * Primitive for sending data over an existing connection.  All other sending methods
+       * eventually call this.
+     * @param str The string to be transmitted.
+     * @param numBytes The number of characters in the string.  If set to 0, then this length is computed.
+     * @require listen or connect must have been called to establish a connection.
+     * @modify updates xferBytes buffer with the amount of data actually transmitted.
+     */  
+    virtual void commSend(const char* toSend, int numBytes)=0;
+    
+   /**
     * Primitive for sending data over an existing connection.  All other sending methods
     * eventually call this.
     * @param str The string to be transmitted.
@@ -150,6 +183,13 @@ public:
      */
     void commSend(long num);
 
+
+    /**
+     * Sends a hashVal integer over the line
+     * @param num The number to send
+     */
+    void commSend(hashVal num);
+
     /**
      * Sends an integer over the line
      * @param num The number to send
@@ -197,6 +237,14 @@ public:
      * @param sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the IBLT's size and eltSize
      */
     void commSend(const IBLT &iblt, bool sync = false);
+
+    /**
+
+     * Send a Strata
+     * @param strata vector of IBLTs
+     * @param sync sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the number of IBLTs
+     */
+    void commSend(const vector<IBLT>& strata, bool sync);
 
     /**
      * Receives up to MAX_BUF_SIZE characters from the socket.
@@ -265,6 +313,8 @@ public:
     int commRecv_int();
 
     double commRecv_double();
+  
+    size_t commRecv_size_t();
 
     byte commRecv_byte();
 
@@ -275,6 +325,13 @@ public:
      * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLT, false) was used to send the IBLT
      */
     IBLT commRecv_IBLT(size_t size = NOT_SET, size_t eltSize = NOT_SET);
+
+    /**
+     * Recived a vector of iblts
+     * @param size number of iblt in the vector
+     * @return vector<IBLT> as Strata
+     */
+    StrataEst commRecv_Strata(size_t size=NOT_SET);
 
     // Informational
 

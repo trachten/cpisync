@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="cpisynclib"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="UnitTest">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/UnitTest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 UnitTest"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="UnitTest/fast">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/UnitTest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 UnitTest/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Performance">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/Performance" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 Performance"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Performance/fast">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/Performance" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 Performance/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="SystemLongTest">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/SystemLongTest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 SystemLongTest"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="SystemLongTest/fast">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/SystemLongTest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 SystemLongTest/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="cpisynclib">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/libcpisynclib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 cpisynclib"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="cpisynclib/fast">
+				<Option output="/Users/bowen/Documents/cpisync/cmake-build-debug/libcpisynclib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/bowen/Documents/cpisync/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/bowen/Documents/cpisync/include"/>
+					<Add directory="/Users/bowen/Documents/cpisync/tests"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/9.1.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 cpisynclib/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/bowen/Documents/cpisync/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/AdjMtx.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/CPISync.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/CommDummy.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/CommSocket.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/CommString.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/Communicant.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/DataObject.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/FullSync.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/GenSync.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/HashSync.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/IBLT.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/IBLTSync.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/IBLTSync_SetDiff.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/InterCPISync.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/Logger.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/PerformanceData.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/StrataEst.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/SyncMethod.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/UID.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/UniqueDecode.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/kshingling.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/kshinglingSync.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/src/probCPISync.cpp">
+			<Option target="cpisynclib"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/perf/kshinglingSyncPerfTest.cpp">
+			<Option target="Performance"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/perf/kshinglingSyncPerfTest.h">
+			<Option target="Performance"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/sys/long/GenericSyncTests.cpp">
+			<Option target="SystemLongTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/sys/long/GenericSyncTests.h">
+			<Option target="SystemLongTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/testRunner.cpp">
+			<Option target="UnitTest"/>
+			<Option target="Performance"/>
+			<Option target="SystemLongTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AdjMtxTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AdjMtxTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AuxiliaryTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/AuxiliaryTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/CommStringTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/CommStringTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/CommunicantTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/CommunicantTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/DataObjectTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/DataObjectTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/DataPriorityObjectTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/DataPriorityObjectTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/FullSyncTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/FullSyncTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncDiffTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncDiffTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTSyncTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/IBLTTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/UniqueDecodeTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/UniqueDecodeTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingSyncTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingSyncTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingTest.cpp">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/tests/unit/kshinglingTest.h">
+			<Option target="UnitTest"/>
+		</Unit>
+		<Unit filename="/Users/bowen/Documents/cpisync/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

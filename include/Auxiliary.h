@@ -228,6 +228,14 @@ public:
     }
 };
 
+/**
+ * Calculates the set-difference of two containers of pointers, [begA, endA] - [begB, endB].
+ * The set-difference is calculated using the cmp functor as a way to order the container
+ * Results are appended to coll.
+ * @param [begA, endA] Iterators pointing to the beginning and end of the first container.
+ * @param [begB, endB] Iterators pointing to the beginning and end of the second container.
+ * @param coll Iterator onto which the results of the set difference will be pushed.
+ */
 template <class IteratorA, class IteratorB, class IteratorOut>
 void rangeDiff(IteratorA begA, IteratorA endA, IteratorB begB, IteratorB endB, IteratorOut coll) {
     typedef typename std::iterator_traits<IteratorA>::value_type T;

@@ -1,14 +1,13 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 /*
  * File:   CommStringTest.cpp
- * Author: kaets
+ * Author: Eliezer Pearl
  *
  * Created on May 18, 2018, 10:52:33 AM
  */
 
 #include "CommStringTest.h"
 #include "CommString.h"
-#include "Auxiliary.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommStringTest);
 

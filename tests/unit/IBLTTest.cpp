@@ -1,3 +1,4 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 //
 // Created by eliez on 7/17/2018.
 //

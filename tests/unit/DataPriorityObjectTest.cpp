@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 /*
  * File:   DataObjectTest.cpp
- * Author: trachten
+ * Author: Ari Trachtenberg
  *
  * Created on August 3, 2018
  */

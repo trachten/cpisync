@@ -2,7 +2,7 @@
 
 /* 
  * File:   FullSyncTest.h
- * Author: kaets
+ * Author: Eliezer Pearl
  *
  * Created on June 27, 2018, 9:49 AM
  */

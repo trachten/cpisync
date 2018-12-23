@@ -1,3 +1,5 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
 // Created by Eliezer Pearl on 7/9/18.
 // Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
@@ -20,10 +22,14 @@ using std::stringstream;
 using std::pair;
 using namespace NTL;
 
+// The number of hashes used per insert
 const long N_HASH = 4;
+
+// The number hash used to create the hash-check for each entry
 const long N_HASHCHECK = 11;
 
-typedef unsigned long int hashVal;
+// Shorthand for the hash type
+typedef unsigned long int hash_t;
 
 /*
  * IBLT (Invertible Bloom Lookup Table) is a data-structure designed to add
@@ -33,16 +39,16 @@ typedef unsigned long int hashVal;
  * Goodrich, Michael T., and Michael Mitzenmacher. "Invertible bloom lookup tables." 
  * arXiv preprint arXiv:1101.2245 (2011).
  */
-
 class IBLT {
 public:
-    // Communicant needs to access the internal representation of an IBLT to send it and receive it
+    // Communicant needs to access the internal representation of an IBLT to send and receive it
     friend class Communicant;
 
 
     /**
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
+     * @param _valueSize The size of the values being added, in bits
      */
     IBLT(size_t expectedNumEntries, size_t _valueSize);
     
@@ -69,7 +75,8 @@ public:
     /**
      * Produces the value s.t. (key, value) is in the IBLT.
      * This operation doesn't always succeed.
-     * This operation is destructive.
+     * This operation is destructive, as entries must be "peeled" away in order to find an element, i.e.
+     * entries with only one key-value pair are subtracted from the IBLT until (key, value) is found.
      * @param key The key corresponding to the value returned by this function
      * @param result The resulting value corresponding with the key, if found.
      * If not found, result will be set to 0. result is unchanged iff the operation returns false.
@@ -80,7 +87,8 @@ public:
     /**
      * Produces a list of all the key-value pairs in the IBLT.
      * With a low, constant probability, only partial lists will be produced
-     * Listing is destructive. Will remove all key-value pairs from the IBLT that are listed.
+     * Listing is destructive, as the same peeling technique used in the get method is used.
+     * Will remove all key-value pairs from the IBLT that are listed.
      * @param positive All the elements that could be inserted.
      * @param negative All the elements that were removed without being inserted first.
      * @return true iff the operation has successfully recovered the entire list
@@ -90,6 +98,7 @@ public:
     /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
+     * @param other The IBLT that will be subtracted from this IBLT
      * @require IBLT must have the same number of entries and the values must be of the same size
      */
     IBLT operator-(const IBLT& other) const;
@@ -114,8 +123,8 @@ private:
     void _insert(long plusOrMinus, ZZ key, ZZ value);
 
     // Returns the kk-th unique hash of the zz that produced initial.
-    static hashVal hashK(const ZZ& item, long kk);
-    static hashVal _hash(const hashVal& initial, long kk);
+    static hash_t hashK(const ZZ& item, long kk);
+    static hash_t _hash(const hash_t& initial, long kk);
 
     // Represents each entry in the iblt
     class HashTableEntry
@@ -128,7 +137,7 @@ private:
         ZZ keySum;
 
         // The bitwise xor-sum of all keySum checksums at each allocation
-        hashVal keyCheck;
+        hash_t keyCheck;
 
         // The bitwise xor-sum of all values mapped to this cell
         ZZ valueSum;
@@ -142,6 +151,8 @@ private:
 
     // vector of all entries
     vector<HashTableEntry> hashTable;
+
+    // the value size, in bits
     size_t valueSize;
 };
 

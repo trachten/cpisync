@@ -140,13 +140,6 @@ private:
     // METHODS
 
     /**
-     * Computes the number of redundant bits needed per CPISync call
-     * to get an overall probability of error at most 2^-probEps.
-     * @return The number of redundant bits needed.
-     */
-    int computeRedundant(int epsilon);
-
-    /**
      * Deletes all memory associate with the given tree.
      * @param treeNode A pointer to the root of a tree.
      */

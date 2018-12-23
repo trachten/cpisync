@@ -2,7 +2,7 @@
 
 /* 
  * File:   FullSync.cpp
- * Author: kaets
+ * Author: Eliezer Pearl
  * 
  * Created on June 27, 2018, 9:37 AM
  */

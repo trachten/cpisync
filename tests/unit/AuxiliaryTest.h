@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 /*
  * File:   AuxiliaryTest.h
- * Author: trachten
+ * Author: Ari Trachtenberg
  *
  * Created on Jun 21, 2017, 4:17:10 PM
  */

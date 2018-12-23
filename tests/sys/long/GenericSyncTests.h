@@ -1,5 +1,7 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
-// Created by eliez on 7/23/2018.
+// Created by Eliezer Pearl on 7/23/2018.
 //
 
 #ifndef CPISYNCLIB_GENSYNCTESTS_H

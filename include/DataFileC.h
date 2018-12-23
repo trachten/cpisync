@@ -28,9 +28,9 @@ public:
 	// delete a data object by index
 	void delObj(int index);
         
-        list<DataObject *> dump() {
-            throw new UnimplementedMethodException("Not yet implemented!");
-        }
+	list<DataObject *> dump() {
+		throw new UnimplementedMethodException("Not yet implemented!");
+	}
 
 private:
 	// the name of the file 

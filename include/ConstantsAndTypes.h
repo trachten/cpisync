@@ -48,6 +48,9 @@ enum class SYNC_TYPE : byte {
   SetsOfContent,
   kshinglingSync,
   IBLTSync_SetDiff,
+  FullSync,
+  IBLTSync,
+  IBLTSync_HalfRound
 };
 
 // ... Error constants

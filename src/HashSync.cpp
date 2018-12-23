@@ -1,10 +1,11 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
 // Created by Ari Trachtenberg on 7/18/18.
 //
 
 #include "Logger.h"
 #include "HashSync.h"
-#include <utility>
 
 HashSync::HashSync(shared_ptr<SyncMethod> theSyncObject, int theHashUB) : SyncMethod(),
                                                  hashUB(theHashUB)
@@ -19,7 +20,7 @@ bool HashSync::addElem(DataObject *newDatum) {
 
   // create and remember the hashed entry
   ZZ hashed = hash(newDatum);
-    auto *hashedDatumPtr = new DataObject(hashed);
+  auto *hashedDatumPtr = new DataObject(hashed);
   myHashMap[hashed]=std::pair<DataObject*,DataObject *>(hashedDatumPtr,newDatum);
 
   return syncObject->addElem(hashedDatumPtr);
@@ -48,7 +49,7 @@ bool HashSync::SyncClient(const shared_ptr<Communicant>& commSync,
   // translate the selfMinusOther items we know
   std::transform(selfMinusOther.begin(),selfMinusOther.end(),selfMinusOther.begin(),std::bind1st(std::mem_fun(&HashSync::mapHashToOrig), this));
 
-  // open up another connection for the hash transalation
+  // open up another connection for the hash translation
   commSync->commConnect();
   RecvSyncParam(commSync);
 
@@ -70,7 +71,7 @@ bool HashSync::SyncServer(const shared_ptr<Communicant>& commSync,
   // first do the underlying sync
   bool result = syncObject->SyncServer(commSync,selfMinusOther,otherMinusSelf);
 
-  // open up another connection for the hash transalation
+  // open up another connection for the hash translation
   commSync->commConnect();
   SendSyncParam(commSync);
 

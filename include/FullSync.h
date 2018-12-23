@@ -2,7 +2,11 @@
 
 /* 
  * File:   FullSync.h
- * Author: kaets
+ * Author: Eliezer Pearl
+ *
+ * A class that stores and reconciles collections of data. Unlike CPISync, which
+ * efficiently reconciles multi-sets, FullSync simply exchanges entire collections
+ * from one peer to another for reconciliation.
  *
  * Created on June 27, 2018, 9:37 AM
  */
@@ -22,11 +26,6 @@
 // namespaces
 using namespace NTL;
 
-/**
- * A class that stores and reconciles collections of data. Unlike CPISync, which
- * efficiently reconciles multi-sets, FullSync simply exchanges entire collections
- * from one peer to another for reconciliation.
- */
 class FullSync : public SyncMethod {
 public:
     

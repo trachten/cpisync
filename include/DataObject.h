@@ -70,8 +70,7 @@ public:
      *         The string could have null bytes and non-printable characters.
      */
     string to_string() const;
-    string to_priority_string() const;
-    
+
     /**
      * @param len Stores the length of the char array (upon return)
      * @return A char array version of the contents of this data object.

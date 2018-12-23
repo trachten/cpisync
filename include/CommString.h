@@ -18,6 +18,7 @@
 
 class CommString : public Communicant {
 public:
+
     /**
      * Constructs a CommString based on an arbitrary string
      * @param initial The string with which to seed the CommString
@@ -26,12 +27,12 @@ public:
      */
     explicit CommString(string initial = "", bool base64 = false);
     
-    /**
-     * Destructor
-     */
+
+     // Destructor
     ~CommString() override;
 
     // Accessors
+
     /**
      * @return the internal string of the class, potentially including ASCII escape characters.
      */

@@ -54,6 +54,8 @@ Relevant applications and extensions can be found at:
   @ Alexander Smirnov
 
   @ [Eliezer Pearl](http://eliezer.tk) 
+  
+  @ [Bowen Song](https://www.linkedin.com/in/songbowen/)
 
 ------------------------------
 

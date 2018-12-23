@@ -65,6 +65,7 @@ This project has the following dependencies:
    * NTL - A library for doing Number Theory - http://www.shoup.net/ntl/
    * cppunit - For testing
    * cmake - For building
+   * Gperftool - For heap profiling
 
 ------------------------------
 

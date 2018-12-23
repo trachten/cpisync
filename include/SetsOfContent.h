@@ -176,7 +176,7 @@ private:
 
     // extract the unique substring hashes from the shingle_hash vector
     vector<size_t> unique_substr_hash(vector<shingle_hash> hash_set){
-        set<size_t> tmp;
+        std::set<size_t> tmp;
         for(shingle_hash item : hash_set){
             tmp.insert(item.first);
             tmp.insert(item.second);

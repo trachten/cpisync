@@ -1,6 +1,7 @@
 #include "CommSocket.h"
 #include "CommSocketTest.h"
 #include "TestAuxiliary.h"
+#include "Auxiliary.h"
 #include <string>
 #include <thread>
 
@@ -47,7 +48,6 @@ void CommSocketTest::GetSocketInfo() {
 
 void CommSocketTest::SocketSendAndRecieveTest() {
 
-
 	//Initialize one client and one server socket
 	CommSocket serverSocket(port);
 	CommSocket clientSocket(port,host);
@@ -58,34 +58,27 @@ void CommSocketTest::SocketSendAndRecieveTest() {
 	thread threadServer(enableListen,serverPtr);
 	thread threadClient(enableConnect,clientPtr);
 
-	// Once both threads have completed, continue with the rest of the code
+	// Once the client and server have connected, continue with the rest of the code
 	threadServer.join();
 	threadClient.join();
 
-	//Tests sending and recieving 100 random strings of varying lengths
 	string sendString;
-	string recvString;
+	string returnString;
 
-	for(int i = 0; i < 100; i++){
+	const int TIMES = 100;
+	const int LENGTH_LOW = 1;
+	const int LENGTH_HIGH = 100;
 
-		int length = rand()%100 + 1;
-		char* sendStringChar = new char[length + 1];
+	//Tests sending and recieving 100 random strings of random lengths between (1 - 100)
+	for(int ii = 0; ii < TIMES; ii++){
 
-		//Creates a character array of random characters (only lowercase ASCII characters for testing)
-		for(int j = 0; j < length;j++){
-			sendStringChar[j] = (char)(rand()%26 + 97);
-		}
+		sendString = randString(LENGTH_LOW,LENGTH_HIGH);
 
-		sendStringChar[length] = '\0';
+		//Send and recieve the string through the socket
+		clientSocket.commSend(sendString.c_str(),sendString.length());
+		returnString = serverSocket.commRecv(sendString.length());
 
-		//Send and recieve the character array through the socket
-		clientSocket.commSend(sendStringChar,length);
-		recvString = serverSocket.commRecv(length);
-		sendString = string(sendStringChar);
-
-		CPPUNIT_ASSERT_EQUAL(sendString,recvString);
-
-		delete[] sendStringChar;
+		CPPUNIT_ASSERT_EQUAL(sendString,returnString);
 	}
 
 	clientSocket.commClose();

@@ -2,8 +2,10 @@
 #include "CommSocketTest.h"
 #include "TestAuxiliary.h"
 #include "Auxiliary.h"
+#include "Logger.h"
 #include <string>
 #include <thread>
+#include <time.h>
 
 
 
@@ -47,6 +49,10 @@ void CommSocketTest::GetSocketInfo() {
 }
 
 void CommSocketTest::SocketSendAndRecieveTest() {
+	const int TIMES = 100; //Cycles of the test to run
+	const int LENGTH_LOW = 1; //Lower limit of string length for testing
+	const int LENGTH_HIGH = 100; //Upper limit of string length for testing
+	const int WAIT_TIME = 5; //Amount seconds to wait after attempting to connect before
 
 	//Initialize one client and one server socket
 	CommSocket serverSocket(port);
@@ -58,26 +64,28 @@ void CommSocketTest::SocketSendAndRecieveTest() {
 	thread threadServer(enableListen,serverPtr);
 	thread threadClient(enableConnect,clientPtr);
 
-	// Once the client and server have connected, continue with the rest of the code
-	threadServer.join();
-	threadClient.join();
+
+	int timeStart = clock();
+	while(true){
+		//If threads complete, continue with code
+		if(threadServer.joinable() && threadClient.joinable()){
+			threadServer.join();
+			threadClient.join();
+			break;
+		}
+		//If 5 seconds pass without threads becoming joinable log an error and exit
+		else if((clock() - timeStart)/ CLOCKS_PER_SEC >= WAIT_TIME){
+			Logger::error_and_quit("Server and client sockets failed to connect");
+		}
+	}
 
 	string sendString;
 	string returnString;
 
-	const int TIMES = 100;
-	const int LENGTH_LOW = 1;
-	const int LENGTH_HIGH = 100;
-
 	//Tests sending and recieving 100 random strings of random lengths between (1 - 100)
 	for(int ii = 0; ii < TIMES; ii++){
-
 		sendString = randString(LENGTH_LOW,LENGTH_HIGH);
-
-		//Send and recieve the string through the socket
-		clientSocket.commSend(sendString.c_str(),sendString.length());
-		returnString = serverSocket.commRecv(sendString.length());
-
+		returnString = socketSendRecieve(clientPtr,serverPtr,sendString);
 		CPPUNIT_ASSERT_EQUAL(sendString,returnString);
 	}
 

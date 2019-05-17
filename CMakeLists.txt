@@ -52,7 +52,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit gmp)
+        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit gmp pthread)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

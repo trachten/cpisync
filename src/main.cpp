@@ -46,6 +46,7 @@ static const int CPISYNC = 0; /** Standard, interactive CPISync. */
 static const int ONEWAY_CPISYNC = 1; /** One-way (non-interactive) CPISync. */
 static const int PROB_CPISYNC = 2; /** Probabilistic CPISync. */
 static const int INTER_CPISYNC = 3; /** Interactive, expected-linear-time/comm CPISYNC. */
+static const int IBLT_CPISYNC = 4; /** IBLT-based sync. */
 static int sync_flag = INTER_CPISYNC; /** Defaults to InterCPISync. */
 static int nohash_flag = 0; /** Defaults to 0 = do not allow hashing. */
 static int int_flag = 0;    /** Defaults to 0 = do *not* parse string data as big Integers. */
@@ -56,21 +57,21 @@ timespec diff(timespec start, timespec end);
 // Command-line options
 static struct option long_options[] = {
         // Comm mode
-        {"client", no_argument, &comm_flag, CLIENT},
-        {"server", no_argument, &comm_flag, SERVER},
+        {"client", no_argument, &comm_flag,   CLIENT},
+        {"server", no_argument, &comm_flag,   SERVER},
 
         // Sync mode
-        {"cpi", no_argument, &sync_flag, GenSync::SyncProtocol::CPISync},
-        {"oneway", no_argument, &sync_flag, GenSync::SyncProtocol::OneWayCPISync},
-        {"prob", no_argument, &sync_flag, GenSync::SyncProtocol::ProbCPISync},
-        {"inter", no_argument, &sync_flag, GenSync::SyncProtocol::InteractiveCPISync},
-        {"iblt", no_argument, &sync_flag, GenSync::SyncProtocol::IBLTSync},
+        {"cpi", no_argument, &sync_flag,      static_cast<int>(GenSync::SyncProtocol::CPISync)},
+        {"oneway", no_argument, &sync_flag,   static_cast<int>(GenSync::SyncProtocol::OneWayCPISync)},
+        {"prob", no_argument, &sync_flag,     static_cast<int>(GenSync::SyncProtocol::ProbCPISync)},
+        {"inter", no_argument, &sync_flag,    static_cast<int>(GenSync::SyncProtocol::InteractiveCPISync)},
+        {"iblt", no_argument, &sync_flag,     static_cast<int>(GenSync::SyncProtocol::IBLTSync)},
         {"nohash", no_argument, &nohash_flag, 1}, // if set, then no hashing is done to reduce the element size to a fixed bitlength
-        {"integer", no_argument, &int_flag, 1},   // if set, then all set element strings are parsed as arbitrarily-sized Integers
+        {"integer", no_argument, &int_flag,   1},   // if set, then all set element strings are parsed as arbitrarily-sized Integers
 
-        {"file", required_argument, 0, 'f'}, // a file from which to get elements to be synced
-        {"string", required_argument, 0, 's'}, // a string from which to get a sync hash to which to synchronize
-        {"host", required_argument, 0, 'h'}, // a host to which to synchronize
+        {"file", required_argument, 0,        'f'}, // a file from which to get elements to be synced
+        {"string", required_argument, 0,      's'}, // a string from which to get a sync hash to which to synchronize
+        {"host", required_argument, 0,        'h'}, // a host to which to synchronize
         {"port", required_argument, 0, 'o'}, // a port to which to synchronize or on which to list for other synchronizing clients
 
         // sync parameters
@@ -78,7 +79,7 @@ static struct option long_options[] = {
         {"mbar", required_argument, 0, 'm'}, // maximum number of differences in an atomic sync operation
         {"bits", required_argument, 0, 'b'}, // number of bits used to represent each set element internally
         {"partition", required_argument, 0, 'p'}, // the number of partitions in interactive CPISync
-        {"numElems", required_argument, 0, "n"},  // maximum number of elements expected in the sync object (esp. for IBLT)
+        {"numElems", required_argument, 0, 'n'},  // maximum number of elements expected in the sync object (esp. for IBLT)
 
         // other
         {"help", no_argument, &help_flag, 1} // get help
@@ -129,7 +130,7 @@ int main(int argc, char *argv[]) {
 
     // ... default values
     list<DataObject*> data;
-    string cStr = NULL; // initially unused
+    string cStr = ""; // initially unused
     string host = ""; // for Communication Sockets
     int port = 10000; // default port for Communication Sockets
     double perr = 0.00005; // max error probability
@@ -156,9 +157,10 @@ int main(int argc, char *argv[]) {
                 string str;
                 break;
             }
-            case 's': // read sync hash info from a base64 string
-                cStr = new CommString(optarg, true);
-                break;
+            // broken below:
+            //case 's': // read sync hash info from a base64 string
+            //    cStr = new CommString(optarg, true);
+            //    break;
 
             case 'h':
                 host = optarg;
@@ -226,17 +228,17 @@ int main(int argc, char *argv[]) {
             proto=GenSync::SyncProtocol::ProbCPISync;
             break;
         case INTER_CPISYNC:
-            proto=GenSync::SyncProtocol::InterCPISync;
+            proto=GenSync::SyncProtocol::InteractiveCPISync;
             break;
         case IBLT_CPISYNC:
             proto=GenSync::SyncProtocol::OneWayIBLTSync;
     };
-    Logger::gLog(Logger::METHOD, "Sync Method:  " + proto.getName());
+    //Logger::gLog(Logger::METHOD, "Sync Method:  " + toStr(proto));
 
 
     // ... communicants
     GenSync::SyncComm comm;
-    if (cStr != NULL) // are we syncing with a string
+    if (cStr != "") // are we syncing with a string
         comm=GenSync::SyncComm::string; // cStr contains the string
     else // we are syncing with a socket
         comm=GenSync::SyncComm::socket;
@@ -253,7 +255,7 @@ int main(int argc, char *argv[]) {
             setMbar(mbar).
             setBits(bits).
             setNumPartitions(pFactor).
-            setNumExpectedElements(expectElems).
+            //setNumExpectedElements(expectElems).
             setDataFile(fileName).
             build();
 
@@ -265,7 +267,7 @@ int main(int argc, char *argv[]) {
         cout << "Set element #0: ";
         getline(cin, str);
         while (str != "") {
-            genSync.addElem(new DataObject(str)); // add this datum to our list
+            theSync.addElem(new DataObject(str)); // add this datum to our list
             cout << "Set element #" << ++ii << ": ";
             getline(cin, str);
         }
@@ -275,10 +277,10 @@ int main(int argc, char *argv[]) {
     bool syncSuccess;
     if (comm_flag == CLIENT) {
         Logger::gLog(Logger::METHOD, "\n[CLIENT]");
-        syncSuccess = theSync->startSync(0);
+        syncSuccess = theSync.startSync(0);
     } else {
         Logger::gLog(Logger::METHOD, "\n[SERVER]");
-        syncSuccess = theSync->listenSync(0);
+        syncSuccess = theSync.listenSync(0);
     }
 
     // 4. Results
@@ -288,11 +290,11 @@ int main(int argc, char *argv[]) {
         //clock_gettime(CLOCK_REALTIME, &timerEnd);
         timespec timeTaken = diff(timerStart, timerEnd);
         double totalTime = (timeTaken.tv_sec)+ (double)((double)timeTaken.tv_nsec/1000000000);
-        // Report statistics
-        cout << endl << "   Data transferred: " << comm->getXferBytesTot() << " bytes" << endl
-             << "   Data received:    " << comm->getRecvBytesTot() << " bytes" << endl
-             << "   Total Time elapsed:    " << (double) totalTime <<" seconds." <<endl
-             << "   CPU Time elapsed:      " << (double) (clock() - comm->getLastTimeTot()) / CLOCKS_PER_SEC << " seconds." << endl;
+//        // Report statistics
+//        cout << endl << "   Data transferred: " << comm->getXferBytesTot() << " bytes" << endl
+//             << "   Data received:    " << comm->getRecvBytesTot() << " bytes" << endl
+//             << "   Total Time elapsed:    " << (double) totalTime <<" seconds." <<endl
+//             << "   CPU Time elapsed:      " << (double) (clock() - comm->getLastTimeTot()) / CLOCKS_PER_SEC << " seconds." << endl;
         exit(SYNC_SUCCESS);
     }
     else

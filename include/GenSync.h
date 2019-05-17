@@ -257,6 +257,8 @@ public:
         BEGIN, // beginning of iterable option
         // CPISync and variants
         CPISync=BEGIN,
+        CPISync_OneLessRound,
+        CPISync_HalfRound,
         ProbCPISync,
         InteractiveCPISync,
         OneWayCPISync,

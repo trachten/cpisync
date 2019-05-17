@@ -60,7 +60,7 @@ Relevant applications and extensions can be found at:
 ## Compilation:
 
 This project has the following dependencies:
-   * NTL - A library for doing Number Theory - http://www.shoup.net/ntl/
+   * NTL - A library for doing Number Theory (>9.5) - http://www.shoup.net/ntl/
    * cppunit - For testing
    * cmake - For building
 

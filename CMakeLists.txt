@@ -36,9 +36,14 @@ set(SOURCE_FILES
         ${SRC_DIR}/IBLTSync.cpp
         ${SRC_DIR}/FullSync.cpp src/main.cpp)
 
-#cppunit
 include_directories(include)
 include_directories(tests)
+
+# external libraries - update path accordingly
+include_directories("/usr/local/Cellar/ntl/11.3.2/include")
+include_directories("/usr/local/Cellar/cppunit/1.14.0/include")
+link_directories("/usr/local/Cellar/ntl/11.3.2/lib/")
+link_directories("/usr/local/Cellar/cppunit/1.14.0/lib/")
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} src/main.cpp)
@@ -56,7 +61,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit gmp)
+        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

@@ -37,7 +37,7 @@ public:
             priority = pri;
         };
 
-    string to_priority_string() const{
+    string to_priority_string() const {
         return toStr(priority) + "," + (RepIsInt?toStr(myBuffer):unpack(myBuffer));
     }
 

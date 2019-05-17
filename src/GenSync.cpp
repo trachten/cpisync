@@ -7,20 +7,15 @@
 
 #include "GenSync.h"
 #include "Exceptions.h"
-#include "Communicant.h"
-#include "DataObject.h"
-#include "SyncMethod.h"
-#include "Logger.h"
-#include "Auxiliary.h"
 #include "CPISync.h"
 #include "CommSocket.h"
 #include "CommString.h"
 #include "ProbCPISync.h"
 #include "InterCPISync.h"
+#include "FullSync.h"
 #include "IBLTSync.h"
 #include "IBLTSync_HalfRound.h"
 #include "CPISync_HalfRound.h"
-#include "FullSync.h"
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later

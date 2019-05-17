@@ -15,9 +15,7 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
-#include <cppunit/Test.h>
 #include <cppunit/TestFailure.h>
-#include <cppunit/portability/Stream.h>
 
 class ProgressListener : public CPPUNIT_NS::TestListener {
 public:

@@ -1,5 +1,7 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
-// Created by eliez on 8/3/2018.
+// Created by Eliezer Pearl on 8/3/2018.
 //
 
 #include <Exceptions.h>
@@ -114,8 +116,7 @@ bool IBLTSync::addElem(DataObject* datum){
 }
 bool IBLTSync::delElem(DataObject* datum){
     // call parent delete
-    // TODO: uncomment when parent delete method is implemented
-//    SyncMethod::delElem(datum);
+    SyncMethod::delElem(datum);
     myIBLT.erase(datum->to_ZZ(), datum->to_ZZ());
     return true;
 }

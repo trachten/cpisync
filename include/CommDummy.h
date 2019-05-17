@@ -1,7 +1,12 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
-/* 
+
+/*
+ * This communicant communicates to and from a queue of characters. The queue is external so it can be used as
+ * a shared resource between two CommDummys. This communicant is meant for use in tests/unit/CommunicantTest.cpp;
+ * as such, it has not been integrated as a formal communicant with GenSync.
+ *
  * File:   CommDummy.h
- * Author: kaets
+ * Author: Eliezer Pearl
  *
  * Created on May 24, 2018, 10:13 AM
  */
@@ -41,11 +46,11 @@ public:
 
     void commSend(const char* toSend, int numBytes) override;
     string commRecv(unsigned long numBytes) override ;
-    inline string getName() override { return "dummy"; }
+    inline string getName() override { return "CommDummy"; }
 
 protected:
     
-    // Instance variable that stores a pointer to intermediate.
+    // Instance variable that stores a pointer to an intermediate queue of characters.
     queue<char>* intermediate;
 };
 

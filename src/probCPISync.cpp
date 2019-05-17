@@ -2,13 +2,8 @@
 #include <NTL/RR.h>
 
 // project libraries
-#include "Auxiliary.h"
-#include "Communicant.h"
-#include "DataObject.h"
 #include "SyncMethod.h"
 #include "CPISync.h"
-#include "Logger.h"
-#include "Exceptions.h"
 #include "ProbCPISync.h"
 
 ProbCPISync::ProbCPISync(long m_bar, long bits, int epsilon) :

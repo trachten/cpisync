@@ -3,13 +3,6 @@
 #include <NTL/RR.h>
 #include <Communicant.h>
 
-#include "Auxiliary.h"
-#include "Communicant.h"
-#include "CommSocket.h"
-#include "Logger.h"
-#include "DataObject.h"
-#include "DataPriorityObject.h"
-
 Communicant::Communicant() {
     resetCommCounters();
     xferBytesTot = recvBytesTot = 0;
@@ -441,7 +434,7 @@ IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
     IBLT::HashTableEntry hte;
 
     hte.count = commRecv_long();
-    hte.keyCheck = (hashVal) commRecv_long();
+    hte.keyCheck = (hash_t) commRecv_long();
     hte.keySum = commRecv_ZZ();
     hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
 

@@ -1,3 +1,5 @@
+/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
+
 //
 // Created by Eliezer Pearl on 7/9/18.
 // Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
@@ -18,13 +20,13 @@ IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize)
     hashTable.resize(nEntries);
 }
 
-hashVal IBLT::_hash(const hashVal& initial, long kk) {
+hash_t IBLT::_hash(const hash_t& initial, long kk) {
     if(kk == -1) return initial;
     std::hash<std::string> shash;
     return _hash(shash(toStr(initial)), kk-1);
 }
 
-hashVal IBLT::hashK(const ZZ& item, long kk) {
+hash_t IBLT::hashK(const ZZ& item, long kk) {
     std::hash<std::string> shash; // stl uses MurmurHashUnaligned2 for calculating the hash of a string
     return _hash(shash(toStr(item)), kk-1);
 }
@@ -38,7 +40,7 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     }
 
     for(int ii=0; ii < N_HASH; ii++){
-        hashVal hk = hashK(key, ii);
+        hash_t hk = hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
         IBLT::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
 
@@ -113,7 +115,7 @@ bool IBLT::get(ZZ key, ZZ& result){
 bool IBLT::HashTableEntry::isPure() const
 {
     if (count == 1 || count == -1) {
-        hashVal check = hashK(keySum, N_HASHCHECK);
+        hash_t check = hashK(keySum, N_HASHCHECK);
         return (keyCheck == check);
     }
     return false;

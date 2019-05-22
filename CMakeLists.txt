@@ -9,6 +9,11 @@ set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST")
 
 # Set project directory strucuture
 set(SRC_DIR src)
+set(AUX_DIR ${SRC_DIR}/Aux)
+set(DATA_DIR ${SRC_DIR}/Data)
+set(COMM_DIR ${SRC_DIR}/Communicants)
+set(SYNC_DIR ${SRC_DIR}/Syncs)
+
 set(TEST_DIR tests)
 set(UNIT_TEST_DIR ${TEST_DIR}/unit)
 #set(SYSSHORT_TEST_DIR ${TEST_DIR}/sys/short)
@@ -19,22 +24,28 @@ set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
 
 # Set file config
 set(SOURCE_FILES
-        ${SRC_DIR}/CommSocket.cpp
-        ${SRC_DIR}/CommString.cpp
-        ${SRC_DIR}/Communicant.cpp
-        ${SRC_DIR}/CPISync.cpp
-        ${SRC_DIR}/DataObject.cpp
-        ${SRC_DIR}/GenSync.cpp
-        ${SRC_DIR}/InterCPISync.cpp
-        ${SRC_DIR}/Logger.cpp
-        ${SRC_DIR}/probCPISync.cpp
-        ${SRC_DIR}/SyncMethod.cpp
-        ${SRC_DIR}/UID.cpp
-	 	${SRC_DIR}/HashSync.cpp
-        ${SRC_DIR}/CommDummy.cpp
-        ${SRC_DIR}/IBLT.cpp
-        ${SRC_DIR}/IBLTSync.cpp
-        ${SRC_DIR}/FullSync.cpp src/main.cpp)
+
+        ${AUX_DIR}/Logger.cpp
+        ${AUX_DIR}/UID.cpp
+        ${AUX_DIR}/SyncMethod.cpp
+
+        ${DATA_DIR}/DataObject.cpp
+
+        ${COMM_DIR}/CommSocket.cpp
+        ${COMM_DIR}/CommString.cpp
+        ${COMM_DIR}/Communicant.cpp
+        ${COMM_DIR}/CommDummy.cpp
+
+        ${SYNC_DIR}/CPISync.cpp
+        ${SYNC_DIR}/GenSync.cpp
+        ${SYNC_DIR}/InterCPISync.cpp
+        ${SYNC_DIR}/probCPISync.cpp
+	 	${SYNC_DIR}/HashSync.cpp
+        ${SYNC_DIR}/IBLT.cpp
+        ${SYNC_DIR}/IBLTSync.cpp
+        ${SYNC_DIR}/FullSync.cpp
+
+        ${SRC_DIR}/main.cpp)
 
 include_directories(include)
 include_directories(tests)
@@ -45,7 +56,7 @@ include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 
 # Add libs and executables
-add_library(cpisynclib ${SOURCE_FILES} src/main.cpp)
+add_library(cpisynclib ${SOURCE_FILES} ${SRC_DIR}/main.cpp)
 
 # Add the TryMe executable
 add_executable(cpisync ${SRC_DIR}/main.cpp)

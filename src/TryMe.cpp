@@ -6,8 +6,8 @@
 
 #include <iostream>
 #include <string>
-#include <GenSync.h>
-#include <DataObject.h>
+#include <Syncs/GenSync.h>
+#include <Data/DataObject.h>
 
 using std::cout;
 using std::endl;

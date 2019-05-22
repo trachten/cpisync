@@ -4,16 +4,16 @@
 // Created by Eliezer Pearl on 7/23/2018.
 //
 
-#include <CommSocket.h>
-#include <CPISync.h>
-#include <ProbCPISync.h>
-#include <InterCPISync.h>
-#include <CommString.h>
+#include <Communicants/CommSocket.h>
+#include <Syncs/CPISync.h>
+#include <Syncs/ProbCPISync.h>
+#include <Syncs/InterCPISync.h>
+#include <Communicants/CommString.h>
 #include <cstdlib>
 #include "GenericSyncTests.h"
-#include "GenSync.h"
-#include "CommDummy.h"
-#include "Auxiliary.h"
+#include "Syncs/GenSync.h"
+#include "Communicants/CommDummy.h"
+#include "Aux/Auxiliary.h"
 #include "TestAuxiliary.h"
 
 

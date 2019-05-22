@@ -40,12 +40,17 @@ set(SOURCE_FILES
 include_directories(include)
 include_directories(tests)
 
+# for external libraries
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+
+
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} )
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
-target_link_libraries(TryMe cpisynclib ntl)
+target_link_libraries(TryMe cpisynclib ntl cppunit)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add

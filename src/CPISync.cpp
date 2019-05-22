@@ -699,7 +699,6 @@ bool CPISync::addElem(DataObject * datum) {
 }
 
 // update metadata when delete an element by index
-
 bool CPISync::delElem(DataObject * newDatum) {
     Logger::gLog(Logger::METHOD, "Entering CPISync::delElem");
 
@@ -724,6 +723,7 @@ bool CPISync::delElem(DataObject * newDatum) {
     }
 
     Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) removed item " + newDatum->print() + ".");
+    return true;
 }
 
 // for debugging

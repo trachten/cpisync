@@ -7,7 +7,7 @@ class CommSocketTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(CommSocketTest);
 
     CPPUNIT_TEST(GetSocketInfo);
-    CPPUNIT_TEST(SocketSendAndRecieveTest);
+    CPPUNIT_TEST(SocketSendAndReceiveTest);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -22,8 +22,8 @@ private:
   	// Tests getName and getHost functions ensuring that constructor is working as intended
     void GetSocketInfo();
 
-	// Tests sending and recieving a string of characters through a socket
-    void SocketSendAndRecieveTest();
+	// Tests sending and receiving a string of characters through a socket
+    void SocketSendAndReceiveTest();
 
 };
 

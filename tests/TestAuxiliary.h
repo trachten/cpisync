@@ -27,7 +27,7 @@ const int mBar = UCHAR_MAX*2; // max differences between client and server in sy
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
 const string host = "localhost"; // host for CommSocket
-const unsigned int port = 8001; // port for CommSocket
+const int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
@@ -469,7 +469,7 @@ inline void syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncSer
     _syncTest(GenSyncClient, GenSyncServer, false, true);
 }
 
-inline string socketSendRecieve(CommSocket* clientPtr,CommSocket* serverPtr,string sendString){
+inline string socketSendReceive(shared_ptr<CommSocket> clientPtr,shared_ptr<CommSocket> serverPtr,string sendString){
   clientPtr->commSend(sendString.c_str(),sendString.length());
   return serverPtr->commRecv(sendString.length());
 }

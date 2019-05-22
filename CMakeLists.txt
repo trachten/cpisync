@@ -39,11 +39,10 @@ set(SOURCE_FILES
 include_directories(include)
 include_directories(tests)
 
-# external libraries - update path accordingly
-include_directories("/usr/local/Cellar/ntl/11.3.2/include")
-include_directories("/usr/local/Cellar/cppunit/1.14.0/include")
-link_directories("/usr/local/Cellar/ntl/11.3.2/lib/")
-link_directories("/usr/local/Cellar/cppunit/1.14.0/lib/")
+
+# for external libraries
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
 
 # Add libs and executables
 add_library(cpisynclib ${SOURCE_FILES} src/main.cpp)
@@ -53,6 +52,10 @@ add_executable(cpisync ${SRC_DIR}/main.cpp)
 add_executable(tryMe ${SRC_DIR}/TryMe.cpp)
 target_link_libraries(cpisync cpisynclib ntl)
 target_link_libraries(tryMe cpisynclib ntl)
+
+# Add the TryMe executable
+add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
+target_link_libraries(TryMe cpisynclib ntl cppunit)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add

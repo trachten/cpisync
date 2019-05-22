@@ -362,3 +362,4 @@ GenSync GenSync::Builder::build() {
 const string GenSync::Builder::DFT_HOST = "localhost";
 const string GenSync::Builder::DFT_IO;
 const int GenSync::Builder::DFT_ERROR = 8;
+const string GenSync::Builder::UNDEF_STR = string(); // an empty string

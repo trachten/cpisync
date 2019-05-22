@@ -49,8 +49,10 @@ link_directories("/usr/local/Cellar/cppunit/1.14.0/lib/")
 add_library(cpisynclib ${SOURCE_FILES} src/main.cpp)
 
 # Add the TryMe executable
-add_executable(TryMe ${SRC_DIR}/main.cpp)
-target_link_libraries(TryMe cpisynclib ntl)
+add_executable(cpisync ${SRC_DIR}/main.cpp)
+add_executable(tryMe ${SRC_DIR}/TryMe.cpp)
+target_link_libraries(cpisync cpisynclib ntl)
+target_link_libraries(tryMe cpisynclib ntl)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add

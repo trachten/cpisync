@@ -447,7 +447,7 @@ private:
 
     // DEFAULT constants
     static const long UNDEF_NUM = -1;
-    static constexpr const char* UNDEF_STR = "UNDEFINED";
+    static const string UNDEF_STR;
     static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;
     static const int DFT_PRT = 8001;
     static const bool DFT_BASE64 = true;

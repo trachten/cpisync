@@ -257,6 +257,9 @@ public:
         BEGIN, // beginning of iterable option
         // CPISync and variants
         CPISync=BEGIN,
+        CPISync_OneLessRound,
+        CPISync_HalfRound,
+        ProbCPISync,
         InteractiveCPISync,
         OneWayCPISync,
         FullSync,
@@ -358,6 +361,7 @@ public:
 
     /**
      * Sets an upper bound on the desired error probability for the synchronization.
+     * @param theErrorProb This is negative log of the maximum error probability to be tolerated.
      */
     Builder& setErr(int theErrorProb) {
         this->errorProb = theErrorProb;
@@ -396,11 +400,23 @@ public:
         return *this;
     }
 
+    /**
+     * The number of elements expected to be in the sync data structure.  Some sync objects work are targeted toward
+     * a specific number of elements.
+     */
     Builder& setNumExpectedElements(size_t theNumExpElems) {
         this->numExpElem = theNumExpElems;
         return *this;
     }
-    
+
+    /**
+     * @param theFileName A file name from which data is to be drawn for the initial population of the sync object.
+     */
+    Builder& setDataFile(string theFileName) {
+        this->fileName=theFileName;
+        return *this;
+    }
+
     /**
      * Destructor - clear up any possibly allocated internal variables
      */
@@ -419,21 +435,23 @@ private:
     int errorProb; /** negative log of the upper bound on the probability of error tolerance of the sync */
     const bool base64; /** whether or not ioStr represents a base64 string */
     string ioStr; /** the string with which to communicate input/output for string-based sync. */
-    long mbar; /** an upper estimate on the number of differences between synchronizing data multisets. */
-    long bits; /** the number of bits per element of data */
-    int numParts; /** the number of partitions into which to divide recursively for interactive methods. */
-    size_t numExpElem; /** the number of expected elements to be stored in an IBLT */
+    long mbar=Builder::UNDEF_NUM; /** an upper estimate on the number of differences between synchronizing data multisets. */
+    long bits=Builder::UNDEF_NUM; /** the number of bits per element of data */
+    int numParts=Builder::UNDEF_NUM; /** the number of partitions into which to divide recursively for interactive methods. */
+    size_t numExpElem=Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
+    string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
     shared_ptr<SyncMethod> myMeth;
 
     // DEFAULT constants
-    static const long UNDEFINED = -1;
+    static const long UNDEF_NUM = -1;
+    static const string UNDEF_STR;
     static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;
     static const int DFT_PRT = 8001;
     static const bool DFT_BASE64 = true;
-    static const long DFT_MBAR = UNDEFINED; // this parameter *must* be specified for sync to work
+    static const long DFT_MBAR = UNDEF_NUM; // this parameter *must* be specified for sync to work
     static const long DFT_BITS = 32;
     static const int DFT_PARTS = 2;
     static const size_t DFT_EXPELEMS = 50;

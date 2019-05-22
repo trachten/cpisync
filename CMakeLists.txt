@@ -34,19 +34,24 @@ set(SOURCE_FILES
         ${SRC_DIR}/CommDummy.cpp
         ${SRC_DIR}/IBLT.cpp
         ${SRC_DIR}/IBLTSync.cpp
-        ${SRC_DIR}/FullSync.cpp)
+        ${SRC_DIR}/FullSync.cpp src/main.cpp)
 
-#cppunit
 include_directories(include)
 include_directories(tests)
+
 
 # for external libraries
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 
-
 # Add libs and executables
-add_library(cpisynclib ${SOURCE_FILES} )
+add_library(cpisynclib ${SOURCE_FILES} src/main.cpp)
+
+# Add the TryMe executable
+add_executable(cpisync ${SRC_DIR}/main.cpp)
+add_executable(tryMe ${SRC_DIR}/TryMe.cpp)
+target_link_libraries(cpisync cpisynclib ntl)
+target_link_libraries(tryMe cpisynclib ntl)
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
@@ -61,7 +66,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit gmp)
+        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

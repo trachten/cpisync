@@ -1,8 +1,8 @@
-#include "CommSocket.h"
+#include "Communicants/CommSocket.h"
 #include "CommSocketTest.h"
 #include "TestAuxiliary.h"
-#include "Auxiliary.h"
-#include "Logger.h"
+#include "Aux/Auxiliary.h"
+#include "Aux/Logger.h"
 #include <string>
 #include <thread>
 #include <time.h>

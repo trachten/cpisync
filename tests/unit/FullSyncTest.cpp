@@ -9,7 +9,7 @@
 
 #include <climits>
 #include "FullSyncTest.h"
-#include "FullSync.h"
+#include "Syncs/FullSync.h"
 #include "TestAuxiliary.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(FullSyncTest);
@@ -27,6 +27,7 @@ void FullSyncTest::tearDown() {
 }
 
 void FullSyncTest::justSyncTest() {
+    CPPUNIT_FAIL("Not yet functioning");
     GenSync GenSyncServer = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::FullSync).
             setComm(GenSync::SyncComm::socket).

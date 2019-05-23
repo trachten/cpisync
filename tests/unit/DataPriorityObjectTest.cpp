@@ -7,7 +7,7 @@
  */
 
 #include "DataPriorityObjectTest.h"
-#include "DataPriorityObject.h"
+#include "Data/DataPriorityObject.h"
 
 
 using namespace std;

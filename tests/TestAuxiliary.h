@@ -3,17 +3,17 @@
 // Created by eliez on 8/6/2018.
 //
 
-#include <IBLTSync.h>
-#include <IBLTSync_HalfRound.h>
-#include "ProbCPISync.h"
-#include "CPISync_HalfRound.h"
-#include "InterCPISync.h"
-#include "CommString.h"
-#include "CommSocket.h"
-#include "Auxiliary.h"
-#include "GenSync.h"
-#include "FullSync.h"
-#include "ForkHandle.h"
+#include <Syncs/IBLTSync.h>
+#include <Syncs/IBLTSync_HalfRound.h>
+#include "Syncs/ProbCPISync.h"
+#include "Syncs/CPISync_HalfRound.h"
+#include "Syncs/InterCPISync.h"
+#include "Communicants/CommString.h"
+#include "Communicants/CommSocket.h"
+#include "Aux/Auxiliary.h"
+#include "Syncs/GenSync.h"
+#include "Syncs/FullSync.h"
+#include "Aux/ForkHandle.h"
 
 #ifndef CPISYNCLIB_GENERIC_SYNC_TESTS_H
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H

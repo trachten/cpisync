@@ -7,7 +7,7 @@
  * Created on Jun 21, 2017, 4:17:10 PM
  */
 
-#include "Auxiliary.h"
+#include "Aux/Auxiliary.h"
 #include "AuxiliaryTest.h"
 #include <string>
 #include <NTL/ZZ_p.h>

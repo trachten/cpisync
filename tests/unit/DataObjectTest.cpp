@@ -7,7 +7,7 @@
  */
 
 #include "DataObjectTest.h"
-#include "DataObject.h"
+#include "Data/DataObject.h"
 
 using namespace std;
 

@@ -15,6 +15,7 @@ class IBLTSyncTest : public CPPUNIT_NS::TestFixture {
         CPPUNIT_TEST(justSyncTest);
         CPPUNIT_TEST(testAddDelElem);
         CPPUNIT_TEST(testGetStrings);
+        CPPUNIT_TEST(failConditionTest);
 
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -32,6 +33,9 @@ public:
 
     // Test that printElem() and getName() return some nonempty string
     void testGetStrings();
+
+	// Test that the fail conditions for IBLTSync are functioning correctly
+	void failConditionTest();
 };
 
 #endif //CPISYNCLIB_IBLTSYNCTEST_H

@@ -27,7 +27,7 @@ const int mBar = UCHAR_MAX*2; // max differences between client and server in sy
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
 const string host = "localhost"; // host for CommSocket
-const int port = 8001; // port for CommSocket
+const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
@@ -432,6 +432,91 @@ inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
     }
 }
 
+/**
+ * Runs tests assuring that two GenSync objects successfully sync via two-way communication
+ * @return true if all tests fail
+ * @param oneWay true iff the sync will be one way (only server is reconciled)
+ * @param GenSyncServer Server GenSync
+ * @param GenSyncClient Client GenSync
+ */
+inline void _syncFailTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false) {
+	for(int jj = 0; jj < NUM_TESTS; jj++) {
+		// setup DataObjects
+		const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
+		const unsigned char CLIENT_MINUS_SERVER = randByte(); // amt of elems unique to client
+		const unsigned char SERVER_MINUS_CLIENT = randByte(); // amt of elems unique to server
+
+		vector<DataObject *> objectsPtr;
+
+		for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER -
+										1; ii++) {
+			objectsPtr.push_back(new DataObject(randZZ()));
+		}
+		ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested
+		objectsPtr.push_back(new DataObject(*last));
+
+		// ... add data objects unique to the server
+		for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {
+			GenSyncServer.addElem(*iter);
+		}
+
+		// ... add data objects unique to the client
+		for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT;
+			 iter != objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; iter++) {
+			GenSyncClient.addElem(*iter);
+		}
+
+		// add common data objects to both
+		for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
+			 iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
+			GenSyncClient.addElem(*iter);
+			GenSyncServer.addElem(*iter);
+		}
+
+		// ensure that adding a object that fits the generic type T works
+		GenSyncClient.addElem(last);
+		GenSyncServer.addElem(last);
+
+		// create the expected reconciled multiset
+		multiset<string> reconciled;
+		for (auto dop : objectsPtr) {
+			reconciled.insert(dop->print());
+		}
+
+		// create two processes to test successful reconciliation. the parent process tests the server; the child, the client.
+		int err = 1;
+		int chld_state;
+		int my_opt = 0;
+		pid_t pID = fork();
+		if (pID == 0) {
+			signal(SIGCHLD, SIG_IGN);
+
+			// in oneWay mode, we only care about the results from the server-side sync
+			if(!oneWay) {
+				forkHandleReport resultClient = forkHandle(GenSyncClient, GenSyncServer);
+				CPPUNIT_ASSERT(!resultClient.success);
+			}
+			exit(0);
+		} else if (pID < 0) {
+			cout << "throw out err = " << err << endl;
+			throw err;
+		} else {
+			// wait for child process to complete
+			waitpid(pID, &chld_state, my_opt);
+
+			// reconcile server with client
+			// TODO: replace with forkHandleServer once bugs are fixed w/ it
+			forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
+			CPPUNIT_ASSERT(!resultServer.success);
+
+			// convert reconciled elements into string representation
+			multiset<string> resServer;
+			for (auto dop : GenSyncServer.dumpElements()) {
+				resServer.insert(dop->print());
+			}
+		}
+	}
+}
 
 /**
  * One way synctest

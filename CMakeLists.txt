@@ -47,8 +47,24 @@ set(SOURCE_FILES
 
         ${SRC_DIR}/main.cpp)
 
-include_directories(include)
-include_directories(tests)
+        ${DATA_DIR}/DataObject.cpp
+
+        ${COMM_DIR}/CommSocket.cpp
+        ${COMM_DIR}/CommString.cpp
+        ${COMM_DIR}/Communicant.cpp
+        ${COMM_DIR}/CommDummy.cpp
+
+        ${SYNC_DIR}/CPISync.cpp
+        ${SYNC_DIR}/GenSync.cpp
+        ${SYNC_DIR}/InterCPISync.cpp
+        ${SYNC_DIR}/probCPISync.cpp
+        ${SYNC_DIR}/HashSync.cpp
+        ${SYNC_DIR}/IBLT.cpp
+        ${SYNC_DIR}/IBLTSync.cpp
+        ${SYNC_DIR}/FullSync.cpp
+
+        ${SRC_DIR}/main.cpp)
+
 
 
 # for external libraries
@@ -77,7 +93,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit)
+        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit pthread)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

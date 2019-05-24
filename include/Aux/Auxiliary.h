@@ -57,7 +57,7 @@ inline vector<byte> StrToVec(const string& data) {
     vector<byte> result; // where we will be build the result to be returned
 
     const char *data_c_str = data.c_str();
-    for (int ii = 0; ii < (int) data.length(); ii++)
+    result.reserve((int) data.length()); result.reserve((int) data.length()); for (int ii = 0; ii < (int) data.length(); ii++)
         result.push_back(data_c_str[ii]);
 
     return result;
@@ -69,7 +69,7 @@ inline vector<byte> StrToVec(const string& data) {
  * @require vector must have fewer than MAXINT characters
  * @return The string whose characters correspond, one by one, to the bytes of data.
  */
-inline string VecToStr(vector<byte> data) {
+inline string VecToStr(vector<byte>&& data) {
     string result;
     for (unsigned char ii : data)
         result.push_back(ii);
@@ -85,7 +85,7 @@ inline string VecToStr(vector<byte> data) {
  * for a ZZ_p)
  */
 template <class T>
-inline T strTo(string str) {
+inline T strTo(const string str) {
     if (str.empty())
         throw invalid_argument(str);
 
@@ -101,7 +101,7 @@ inline T strTo(string str) {
  * @return A string representing the number
  */
 template <class T>
-inline string toStr(T item) {
+inline string toStr(const T item) {
     ostringstream tmp;
     tmp << item;
     return tmp.str();
@@ -310,7 +310,7 @@ inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
     int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
     // every 3 ASCII characters get converted into four base64 characters
     for (int ii = 0; ii < round3; ii += 3) {
-        int group = signed_shift + bytes_to_encode[ii] +
+        unsigned int group = signed_shift + bytes_to_encode[ii] +
                 256 * (ii + 1 >= (int) in_len ? 0 : signed_shift + bytes_to_encode[ii + 1]) +
                 256 * 256 * (ii + 2 >= (int) in_len ? 0 : signed_shift + bytes_to_encode[ii + 2]);
         ret += (char) min_base64 + group % 64;
@@ -348,9 +348,11 @@ inline string base64_decode(std::string const& encoded_string) {
         tmp[in_len - 2] = min_base64;
     }
 
-    string ret = "";
+    string ret;
     for (int ii = 0; ii < in_len; ii += 4) {
-        unsigned long group = (tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) + 64 * 64 * (tmp[ii + 2] - min_base64) + 64 * 64 * 64 * (tmp[ii + 3] - min_base64);
+        unsigned long group = static_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
+                                                         64 * 64 * (tmp[ii + 2] - min_base64) +
+                                                         64 * 64 * 64 * (tmp[ii + 3] - min_base64));
         ret += (char) (group % 256) - signed_shift;
         ret += (char) ((group >> 8) % 256) - signed_shift;
         ret += (char) ((group >> 16) % 256) - signed_shift;

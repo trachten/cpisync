@@ -5,14 +5,14 @@
  */
 
 #include <ctime>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <fcntl.h>
 #include <iostream>
 #include <vector>
 #include <cstring>
 #include <getopt.h>
-#include <time.h>
+#include <ctime>
 
 #include "Aux/Auxiliary.h"
 #include "Aux/SyncMethod.h"
@@ -130,8 +130,8 @@ int main(int argc, char *argv[]) {
 
     // ... default values
     list<DataObject*> data;
-    string cStr = ""; // initially unused
-    string host = ""; // for Communication Sockets
+    string cStr; // initially unused
+    string host; // for Communication Sockets
     int port = 10000; // default port for Communication Sockets
     double perr = 0.00005; // max error probability
     long mbar = 5;
@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
     long pFactor = 2;
     long numExpected; // the maximum number of elements expected in the data structure
     bool dataInFile = false;
-    string fileName = ""; // the file to tie to the synchronization
+    string fileName; // the file to tie to the synchronization
 
     // 0. Parse the command-line options
     do {
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
         Logger::error_and_quit(args + "\n" + display_usage(argv[0]));
     }
     // ... check for command-line conflicts
-    if (!cStr.empty() && (host != ""))
+    if (!cStr.empty() && (!host.empty()))
         Logger::error_and_quit("Cannot specify both sync hash string AND host. " + display_usage(argv[0]));
 
     // 2. Set up the sync
@@ -232,13 +232,14 @@ int main(int argc, char *argv[]) {
             break;
         case IBLT_CPISYNC:
             proto=GenSync::SyncProtocol::OneWayIBLTSync;
-    };
+            break;
+    }
     //Logger::gLog(Logger::METHOD, "Sync Method:  " + toStr(proto));
 
 
     // ... communicants
     GenSync::SyncComm comm;
-    if (cStr != "") // are we syncing with a string
+    if (!cStr.empty()) // are we syncing with a string
         comm=GenSync::SyncComm::string; // cStr contains the string
     else // we are syncing with a socket
         comm=GenSync::SyncComm::socket;
@@ -266,7 +267,7 @@ int main(int argc, char *argv[]) {
         int ii = 0;
         cout << "Set element #0: ";
         getline(cin, str);
-        while (str != "") {
+        while (!str.empty()) {
             theSync.addElem(new DataObject(str)); // add this datum to our list
             cout << "Set element #" << ++ii << ": ";
             getline(cin, str);
@@ -289,7 +290,7 @@ int main(int argc, char *argv[]) {
             cout << "Current string contents: " << ((CommString *) comm)->getString() << endl;
         //clock_gettime(CLOCK_REALTIME, &timerEnd);
         timespec timeTaken = diff(timerStart, timerEnd);
-        double totalTime = (timeTaken.tv_sec)+ (double)((double)timeTaken.tv_nsec/1000000000);
+        double totalTime = (timeTaken.tv_sec) + (double) timeTaken.tv_nsec / 1000000000;
 //        // Report statistics
 //        cout << endl << "   Data transferred: " << comm->getXferBytesTot() << " bytes" << endl
 //             << "   Data received:    " << comm->getRecvBytesTot() << " bytes" << endl
@@ -303,7 +304,7 @@ int main(int argc, char *argv[]) {
 
 timespec diff(timespec start, timespec end)
 {
-    timespec temp;
+    timespec temp{};
     if ((end.tv_nsec-start.tv_nsec)<0) {
         temp.tv_sec = end.tv_sec-start.tv_sec-1;
         temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;

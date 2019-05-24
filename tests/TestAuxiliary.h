@@ -21,7 +21,7 @@
 // constants
 const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
-const size_t eltSizeSq = pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
+const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
 const int mBar = UCHAR_MAX*2; // max differences between client and server in sync tests
 const string iostr; // initial string used to construct CommString

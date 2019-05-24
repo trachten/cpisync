@@ -34,15 +34,15 @@ public:
     void tearDown() override;
 
 private:
-    void testStrTo();
-    void testToStr();
-    void testBase64_encode();
-    void testBase64_decode();
-    void testStrToVecToStr();
-    void testMultisetIntersect();
-    void testMultisetDiff();
-    void testMultisetUnion();
-    void testMultisetSubset();
+    static void testStrTo();
+    static void testToStr();
+    static void testBase64_encode();
+    static void testBase64_decode();
+    static void testStrToVecToStr();
+    static void testMultisetIntersect();
+    static void testMultisetDiff();
+    static void testMultisetUnion();
+    static void testMultisetSubset();
 };
 
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( AuxiliaryTest, AuxiliaryTest );

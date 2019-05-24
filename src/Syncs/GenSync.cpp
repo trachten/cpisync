@@ -36,7 +36,7 @@ GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<share
         addElem(*itData);
 }
 
-GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName) {
+GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string& fileName) {
     myCommVec = cVec;
     mySyncVec = mVec;
     outFile = nullptr; // add elements without writing to the file at first
@@ -103,7 +103,7 @@ bool GenSync::listenSync(int method_num) {
 
         try {
             syncSuccess &= (*syncAgent)->SyncServer(*itComm, selfMinusOther, otherMinusSelf);
-        } catch (SyncFailureException s) {
+        } catch (SyncFailureException& s) {
             Logger::error_and_quit(s.what());
             return false;
         }
@@ -140,7 +140,7 @@ bool GenSync::startSync(int method_num) {
                 Logger::gLog(Logger::METHOD, "Sync to " + (*itComm)->getName() + " failed!");
                 syncSuccess = false;
             }
-        } catch (SyncFailureException s) {
+        } catch (SyncFailureException& s) {
             Logger::error_and_quit(s.what());
             return false;
         }
@@ -178,14 +178,14 @@ void GenSync::addElem(DataObject* newDatum) {
 // delete element
 
 void GenSync::delElem(DataObject* newDatum) {
-    throw new UnimplementedMethodException("GenSync::delElem");
+    throw UnimplementedMethodException("GenSync::delElem");
 }
 
 
 
 // insert a communicant in the vector at the index position
 
-void GenSync::addComm(shared_ptr<Communicant> newComm, int index) {
+void GenSync::addComm(const shared_ptr<Communicant>& newComm, int index) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addComm");
     vector<shared_ptr<Communicant>>::iterator itComm;
 
@@ -215,7 +215,7 @@ void GenSync::delComm(int index) {
 
 }
 
-void GenSync::delComm(shared_ptr<Communicant> oldComm) {
+void GenSync::delComm(const shared_ptr<Communicant>& oldComm) {
     myCommVec.erase(std::remove(myCommVec.begin(), myCommVec.end(), oldComm), myCommVec.end());
 }
 
@@ -224,7 +224,7 @@ int GenSync::numComm() {
 }
 
 // insert a syncmethod in the vector at the index position
-void GenSync::addSyncAgt(shared_ptr<SyncMethod> newAgt, int index) {
+void GenSync::addSyncAgt(const shared_ptr<SyncMethod>& newAgt, int index) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addSyncAgt");
     // create and populate the new agent
     list<DataObject*>::iterator itData;

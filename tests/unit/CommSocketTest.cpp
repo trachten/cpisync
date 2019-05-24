@@ -53,7 +53,7 @@ void CommSocketTest::SocketSendAndReceiveTest() {
 	const int LENGTH_LOW = 1; //Lower limit of string length for testing
 	const int LENGTH_HIGH = 100; //Upper limit of string length for testing
 	const int WAIT_TIME = 5; //Amount seconds to wait after attempting to connect before
-	//TODO: switch back to port after port close issue is resolved
+	//TODO: switch back to "port" after port close issue is resolved
 	const int PORT = 8080;
 
 	//Initialize one client and one server socket

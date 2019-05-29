@@ -22,7 +22,7 @@ class AuxiliaryTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testMultisetIntersect);
     CPPUNIT_TEST(testMultisetDiff);
     CPPUNIT_TEST(testMultisetUnion);
-    CPPUNIT_TEST(testMultisetSubset); 
+    CPPUNIT_TEST(testMultisetSubset);
 
     CPPUNIT_TEST_SUITE_END();
 

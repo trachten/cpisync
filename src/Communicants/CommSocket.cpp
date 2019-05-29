@@ -149,7 +149,6 @@ void CommSocket::commConnect() {
 }
 
 void CommSocket::commClose() {
-    Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
     if (my_fd == -1) {
         Logger::gLog(Logger::METHOD, "Attempted closing of socket that is not connected to anything.");
     } else {
@@ -157,7 +156,9 @@ void CommSocket::commClose() {
         int result = close(my_fd);
         if (result == -1)
             Logger::error_and_quit("close");
-        my_fd = -1;  // no socket active now
+		else
+			Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
+		my_fd = -1;  // no socket active now
     }
 }
 

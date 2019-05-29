@@ -48,43 +48,37 @@ void CommSocketTest::GetSocketInfo() {
 }
 
 void CommSocketTest::SocketSendAndReceiveTest() {
-	const int TIMES = 100; //Cycles of the test to run
-	const int LENGTH_LOW = 1; //Lower limit of string length for testing
-	const int LENGTH_HIGH = 100; //Upper limit of string length for testing
+	int status;
 
-	vector<string> sampleData;
-
-	for(int ii = 0; ii < TIMES; ii++){
-		sampleData.push_back(randString(LENGTH_LOW,LENGTH_HIGH));
+	//Wrap the test in a timer that terminates if it has not completed in under WAIT_TIME seconds
+	pid_t timer_pid = fork();
+	if(timer_pid < 0 ){
+		Logger::error_and_quit("Error in forking SocketSendAndRecieveTest");
+	}
+	//Test process
+	else if(timer_pid == 0) {
+		CPPUNIT_ASSERT(socketSendRecieveTest());
+	}
+	//Timer process
+	else if(timer_pid > 0 ){
+		int timeStart = clock();
+		while(true){
+			pid_t result = waitpid(timer_pid, &status, WNOHANG); //0 -> child alive, -1 -> error, else child completed
+			if(result == 0) {
+				//If WAIT_TIME seconds have passed without socketSendRecieveTest() finishing then log an error and exit
+				if ((clock() - timeStart) / CLOCKS_PER_SEC >= WAIT_TIME) {
+					Logger::error_and_quit("Client and server socket did not connect in time");
+				}
+			}
+			else if(result == -1){
+				Logger::error_and_quit("Error in forking SocketSendAndRecieveTest");
+			}
+			//If socketSendRecieveTest() has finished then break out of the loop
+			else{
+				break;
+			}
+		}
 	}
 
-	int chld_state;
-	pid_t pID = fork();
-	if (pID == 0) {
-		signal(SIGCHLD, SIG_IGN);
-		Logger::gLog(Logger::COMM,"created a server socket process");
-		CommSocket serverSocket(port,host);
-		//CommSocket serverSocket(port+1,host);
-		serverSocket.commListen();
-
-		//Asserts the equality of the string recieved from commRecv to the string in the sampleData vector
-		for(int ii = 0; ii < TIMES; ii++)
-			CPPUNIT_ASSERT_EQUAL(serverSocket.commRecv(sampleData.at(ii).length()), sampleData.at(ii));
-
-		serverSocket.commClose();
-		exit(0);
-	} else if (pID < 0) {
-		Logger::error("Error forking in CommSocketTest");
-	} else {
-		Logger::gLog(Logger::COMM,"created a client socket process");
-		CommSocket clientSocket(port,host);
-		clientSocket.commConnect();
-
-		//Send each string from sampleData through the socket
-		for(int ii = 0; ii < TIMES; ii++)
-			clientSocket.commSend(sampleData.at(ii).c_str(),sampleData.at(ii).length());
-
-		clientSocket.commClose();
-		waitpid(pID, &chld_state, 0);
-	}
 }
+

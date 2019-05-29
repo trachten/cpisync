@@ -9,6 +9,6 @@ void Logger::error(string msg) {
 }
 
 void Logger::error_and_quit(const string& msg) {
-    error(msg);
+    perror(msg.c_str());
     exit(GENERAL_ERROR);
 }

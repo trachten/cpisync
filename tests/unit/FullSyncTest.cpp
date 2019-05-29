@@ -37,7 +37,7 @@ void FullSyncTest::justSyncTest() {
             setComm(GenSync::SyncComm::socket).
             build();
 
-    syncTest(GenSyncServer, GenSyncClient);
+    CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient));
 }
 
 void FullSyncTest::testAddDelElem() {

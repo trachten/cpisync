@@ -321,7 +321,7 @@ inline vector<GenSync> fileCombos() {
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
  */
-inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false,bool largeSync=false) {
+inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false) {
     for(int jj = 0; jj < NUM_TESTS; jj++) {
         // setup DataObjects
         const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
@@ -359,164 +359,69 @@ inline void _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
         GenSyncClient.addElem(last);
         GenSyncServer.addElem(last);
 
-        // create the expected reconciled multiset
-        multiset<string> reconciled;
-        for (auto dop : objectsPtr) {
-            reconciled.insert(dop->print());
-        }
-
-        // create two processes to test successful reconciliation. the parent process tests the server; the child, the client.
-        int err = 1;
-        int chld_state;
-        int my_opt = 0;
-        pid_t pID = fork();
-        if (pID == 0) {
-            signal(SIGCHLD, SIG_IGN);
-
-            // in oneWay mode, we only care about the results from the server-side sync
-            if(!oneWay) {
-                // reconcile client with server
-                forkHandleReport resultClient = forkHandle(GenSyncClient, GenSyncServer);
-
-                // check reasonable statistics
-                CPPUNIT_ASSERT(resultClient.success);
-                CPPUNIT_ASSERT(resultClient.bytes > 0);
-
-                // convert reconciled elements into string representation
-                multiset<string> resClient;
-                for (auto dop : GenSyncClient.dumpElements()) {
-                    resClient.insert(dop->print());
-                }
-
-                if(!probSync) {
-                    // check that expected and resultant reconciled sets match up in both size and contents
-                    CPPUNIT_ASSERT_EQUAL(reconciled.size(), resClient.size());
-                    CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).empty());
-                } else {
-                    // True iff the reconciled set contains at least one more element than it did before reconciliation
-                    CPPUNIT_ASSERT(resClient.size() > SIMILAR + CLIENT_MINUS_SERVER);
-
-                    // True iff the elements added during reconciliation were elements that the client was lacking that the server had
-                    CPPUNIT_ASSERT(multisetDiff(reconciled, resClient).size() < CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
-                }
-            }
-            exit(0);
-        } else if (pID < 0) {
-            cout << "throw out err = " << err << endl;
-            throw err;
-        } else {
-            // wait for child process to complete
-            waitpid(pID, &chld_state, my_opt);
-
-            // reconcile server with client
-            // TODO: replace with forkHandleServer once bugs are fixed w/ it
-            forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
-
-            // check reasonable statistics
-            CPPUNIT_ASSERT(resultServer.success);
-            CPPUNIT_ASSERT(resultServer.bytes > 0);
-
-            // convert reconciled elements into string representation
-            multiset<string> resServer;
-            for (auto dop : GenSyncServer.dumpElements()) {
-                resServer.insert(dop->print());
-            }
-
-            if(!probSync) {
-                // check that expected and resultant reconciled sets match up in both size and contents
-                CPPUNIT_ASSERT_EQUAL(reconciled.size(), resServer.size());
-                CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).empty());
-            } else {
-                // True iff the reconciled set contains at least one more element than it did before reconciliation
-                CPPUNIT_ASSERT(resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
-
-                // True iff the elements added during reconciliation were elements that the server was lacking that the client had
-                CPPUNIT_ASSERT(multisetDiff(reconciled, resServer).size() < CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
-            }
-        }
-    }
-}
-
-/**
- * Runs tests assuring that two GenSync objects with paramters that do not match terminate properly
- * @return true if all tests fail
- * @param oneWay true iff the sync will be one way (only server is reconciled)
- * @param GenSyncServer Server GenSync
- * @param GenSyncClient Client GenSync
- */
-inline void _syncFailTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false) {
-	for(int jj = 0; jj < NUM_TESTS; jj++) {
-		// setup DataObjects
-		const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
-		const unsigned char CLIENT_MINUS_SERVER = randByte(); // amt of elems unique to client
-		const unsigned char SERVER_MINUS_CLIENT = randByte(); // amt of elems unique to server
-
-		vector<DataObject *> objectsPtr;
-
-		for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
-			objectsPtr.push_back(new DataObject(randZZ()));
-		}
-		ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested
-		objectsPtr.push_back(new DataObject(*last));
-
-		// ... add data objects unique to the server
-		for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {
-			GenSyncServer.addElem(*iter);
-		}
-
-		// ... add data objects unique to the client
-		for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT;
-			 iter != objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; iter++) {
-			GenSyncClient.addElem(*iter);
-		}
-
-		// add common data objects to both
-		for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
-			 iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
-			GenSyncClient.addElem(*iter);
-			GenSyncServer.addElem(*iter);
-		}
-
-		// ensure that adding a object that fits the generic type T works
-		GenSyncClient.addElem(last);
-		GenSyncServer.addElem(last);
-
 		// create the expected reconciled multiset
 		multiset<string> reconciled;
 		for (auto dop : objectsPtr) {
 			reconciled.insert(dop->print());
 		}
 
-		// create two processes to test successful reconciliation. the parent process tests the server; the child, the client.
-		int err = 1;
-		int chld_state;
-		int my_opt = 0;
-		pid_t pID = fork();
-		if (pID == 0) {
+        // create two processes to test successful reconciliation. the parent process tests the server; the child, the client.
+		bool success_signal;
+        int chld_state;
+        int my_opt = 0;
+        pid_t pID = fork();
+        if (pID == 0) {
+			bool clientReconcileSuccess = true;
 			signal(SIGCHLD, SIG_IGN);
+			if (!oneWay) {
+				// reconcile client with server
+				forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
-			// in oneWay mode, we only care about the results from the server-side sync
-			if(!oneWay) {
-				forkHandleReport resultClient = forkHandle(GenSyncClient, GenSyncServer);
-				CPPUNIT_ASSERT(!resultClient.success);
+
+				multiset<string> resClient;
+				for (auto dop : GenSyncClient.dumpElements()) {
+					resClient.insert(dop->print());
+				}
+
+				clientReconcileSuccess = clientReport.success;
+
+				if (probSync) {
+					// True iff the reconciled set contains at least one more element than it did before reconciliation
+					// and the elements added during reconciliation were elements that the client was lacking that the server had
+					clientReconcileSuccess &= resClient.size() > (SIMILAR + CLIENT_MINUS_SERVER) &&
+							multisetDiff(reconciled, resClient).size() < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
+				} else {
+					clientReconcileSuccess &= (resClient == reconciled);
+				}
 			}
-			exit(0);
-		} else if (pID < 0) {
-			cout << "throw out err = " << err << endl;
-			throw err;
-		} else {
+            exit(clientReconcileSuccess);
+        }
+        else if (pID < 0) {
+        	Logger::error_and_quit("Fork error in sync test");
+        }
+        else {
 			// wait for child process to complete
 			waitpid(pID, &chld_state, my_opt);
-
+			//chld_state will be nonzero if clientReconcileSuccess is nonzero
+			success_signal = chld_state;
 			// reconcile server with client
-			// TODO: replace with forkHandleServer once bugs are fixed w/ it
-			forkHandleReport resultServer = forkHandle(GenSyncServer, GenSyncClient);
-			CPPUNIT_ASSERT(!resultServer.success);
-
-			// convert reconciled elements into string representation
+			forkHandleReport serverReport = forkHandle(GenSyncServer, GenSyncClient);
 			multiset<string> resServer;
 			for (auto dop : GenSyncServer.dumpElements()) {
 				resServer.insert(dop->print());
+			}
+
+			if (probSync) {
+				// True iff the reconciled set contains at least one more element than it did before reconciliation
+				// and the elements added during reconciliation were elements that the server was lacking that the client had
+				bool serverReconcileSuccess = resServer.size() > (SIMILAR + SERVER_MINUS_CLIENT) &&
+						multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && serverReport.success;
+
+				if (oneWay) return (serverReconcileSuccess);
+				else return (serverReconcileSuccess && success_signal);
+			} else {
+				if (oneWay) return (resServer == reconciled && serverReport.success);
+				else return ((success_signal) && (reconciled == resServer) && serverReport.success);
 			}
 		}
 	}
@@ -527,8 +432,8 @@ inline void _syncFailTest(GenSync GenSyncServer, GenSync GenSyncClient, bool one
  * @param GenSyncClient
  * @param GenSyncServer
  */
-inline void syncTestOneWay(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
-    _syncTest(GenSyncClient, GenSyncServer, true);
+inline bool syncTestOneWay(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
+    return _syncTest(GenSyncClient, GenSyncServer, true,false);
 }
 
 /**
@@ -536,8 +441,8 @@ inline void syncTestOneWay(const GenSync &GenSyncClient, const GenSync &GenSyncS
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
  */
-inline void syncTest(const GenSync &GenSyncServer, const GenSync &GenSyncClient) {
-    _syncTest(GenSyncServer, GenSyncClient, false);
+inline bool syncTest(const GenSync &GenSyncServer, const GenSync &GenSyncClient) {
+    return _syncTest(GenSyncServer, GenSyncClient, false,false);
 }
 
 /**
@@ -545,8 +450,8 @@ inline void syncTest(const GenSync &GenSyncServer, const GenSync &GenSyncClient)
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
  */
-inline void syncTestOneWayProb(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
-    _syncTest(GenSyncClient, GenSyncServer, true, true);
+inline bool syncTestOneWayProb(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
+    return _syncTest(GenSyncClient, GenSyncServer, true, true);
 }
 
 /**
@@ -554,8 +459,8 @@ inline void syncTestOneWayProb(const GenSync &GenSyncClient, const GenSync &GenS
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
  */
-inline void syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
-    _syncTest(GenSyncClient, GenSyncServer, false, true);
+inline bool syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
+    return _syncTest(GenSyncClient, GenSyncServer, false, true);
 }
 
 inline bool socketSendReceiveTest(){

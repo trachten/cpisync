@@ -558,7 +558,7 @@ inline void syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncSer
     _syncTest(GenSyncClient, GenSyncServer, false, true);
 }
 
-inline bool socketSendRecieveTest(){
+inline bool socketSendReceiveTest(){
 	vector<string> sampleData;
 
 	for(int ii = 0; ii < TIMES; ii++){

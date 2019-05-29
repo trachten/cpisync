@@ -57,7 +57,7 @@ void CommSocketTest::SocketSendAndReceiveTest() {
 	}
 	//Test process
 	else if(timer_pid == 0) {
-		CPPUNIT_ASSERT(socketSendRecieveTest());
+		CPPUNIT_ASSERT(socketSendReceiveTest());
 	}
 	//Timer process
 	else if(timer_pid > 0 ){

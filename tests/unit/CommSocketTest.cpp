@@ -7,24 +7,6 @@
 #include <thread>
 #include <time.h>
 
-
-
-//enableListen and enableConnect are called by threads in order to allow them to exeucte in parallel
-
-/**
- *@param a pointer to the serverSocket that you wish to begin listening
- */
-void enableListen(shared_ptr<CommSocket> serverSocket){
-	serverSocket->commListen();
-}
-/**
- * @param a pointer to the clientSocket that you wish to attempt to connect
- */
-void enableConnect(shared_ptr<CommSocket> clientSocket){
-	clientSocket->commConnect();
-}
-
-
 CPPUNIT_TEST_SUITE_REGISTRATION(CommSocketTest);
 
 

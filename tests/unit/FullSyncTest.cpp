@@ -27,6 +27,7 @@ void FullSyncTest::tearDown() {
 }
 
 void FullSyncTest::justSyncTest() {
+    CPPUNIT_FAIL("Not yet functioning");
     GenSync GenSyncServer = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::FullSync).
             setComm(GenSync::SyncComm::socket).

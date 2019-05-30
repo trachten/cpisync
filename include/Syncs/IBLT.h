@@ -157,7 +157,7 @@ private:
     void _insert(long plusOrMinus, ZZ key, ZZ value);
 
     // Returns the kk-th unique hash of the zz that produced initial.
-    static hash_t hashK(const ZZ& item, long kk);
+    static hash_t _hashK(const ZZ &item, long kk);
     static hash_t _hash(const hash_t& initial, long kk);
 
     // vector of all entries

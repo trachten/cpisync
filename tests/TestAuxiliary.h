@@ -31,6 +31,9 @@ const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
+const int TIMES = 100;
+const int LENGTH_LOW = 1;
+const int LENGTH_HIGH = 100;
 
 // helpers
 
@@ -470,3 +473,5 @@ inline void syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncSer
 }
 
 #endif //CPISYNCLIB_GENERIC_SYNC_TESTS_H
+
+

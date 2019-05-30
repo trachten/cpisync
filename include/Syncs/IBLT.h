@@ -42,7 +42,6 @@ typedef unsigned long int hash_t;
 class IBLT {
 public:
     // Communicant needs to access the internal representation of an IBLT to send and receive it
-    friend class Communicant;
 
     /**
      * Constructs an IBLT object with size relative to expectedNumEntries.
@@ -112,6 +111,42 @@ public:
      * @return the size of a value stored in the IBLT.
      */
     size_t eltSize() const;
+
+
+
+	// Represents each entry in the iblt
+	class HashTableEntry
+	{
+	public:
+		// Net insertions and deletions that mapped to this cell
+		long count;
+
+		// The bitwise xor-sum of all keys mapped to this cell
+		ZZ keySum;
+
+		// The bitwise xor-sum of all keySum checksums at each allocation
+		hash_t keyCheck;
+
+		// The bitwise xor-sum of all values mapped to this cell
+		ZZ valueSum;
+
+		// Returns whether the entry contains just one insertion or deletion
+		bool isPure() const;
+
+		// Returns whether the entry is empty
+		bool empty() const;
+	};
+
+	/**
+ 	* @result pushes back the new HashTableEntry into hashTable
+ 	*/
+	void insertToHashTable(HashTableEntry entry);
+
+    /**
+     * @return this IBLT's hash table
+     */
+    vector<HashTableEntry> getHashTable() const;
+
 private:
     // local data
 
@@ -124,29 +159,6 @@ private:
     // Returns the kk-th unique hash of the zz that produced initial.
     static hash_t hashK(const ZZ& item, long kk);
     static hash_t _hash(const hash_t& initial, long kk);
-
-    // Represents each entry in the iblt
-    class HashTableEntry
-    {
-    public:
-        // Net insertions and deletions that mapped to this cell
-        long count;
-
-        // The bitwise xor-sum of all keys mapped to this cell
-        ZZ keySum;
-
-        // The bitwise xor-sum of all keySum checksums at each allocation
-        hash_t keyCheck;
-
-        // The bitwise xor-sum of all values mapped to this cell
-        ZZ valueSum;
-
-        // Returns whether the entry contains just one insertion or deletion
-        bool isPure() const;
-
-        // Returns whether the entry is empty
-        bool empty() const;
-    };
 
     // vector of all entries
     vector<HashTableEntry> hashTable;

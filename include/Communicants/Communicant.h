@@ -108,7 +108,7 @@ public:
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(const ustring& str, unsigned int numBytes);
+	void commSend(const ustring& str, unsigned int numBytes);
 
     /**
      * Sends a data object over the line

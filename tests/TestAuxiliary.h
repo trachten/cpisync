@@ -472,9 +472,4 @@ inline void syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncSer
     _syncTest(GenSyncClient, GenSyncServer, false, true);
 }
 
-inline string socketSendRecieve(CommSocket* clientPtr,CommSocket* serverPtr,string sendString){
-  clientPtr->commSend(sendString.c_str(),sendString.length());
-  return serverPtr->commRecv(sendString.length());
-}
-
 #endif //CPISYNCLIB_GENERIC_SYNC_TESTS_H

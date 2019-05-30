@@ -40,7 +40,7 @@ set(SOURCE_FILES
         ${SYNC_DIR}/GenSync.cpp
         ${SYNC_DIR}/InterCPISync.cpp
         ${SYNC_DIR}/probCPISync.cpp
-	 	${SYNC_DIR}/HashSync.cpp
+        ${SYNC_DIR}/HashSync.cpp
         ${SYNC_DIR}/IBLT.cpp
         ${SYNC_DIR}/IBLTSync.cpp
         ${SYNC_DIR}/FullSync.cpp

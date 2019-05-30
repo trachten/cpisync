@@ -9,7 +9,6 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommSocketTest);
 
-
 CommSocketTest::CommSocketTest() = default;
 CommSocketTest::~CommSocketTest() = default;
 

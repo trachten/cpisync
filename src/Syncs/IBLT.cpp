@@ -26,7 +26,7 @@ hash_t IBLT::_hash(const hash_t& initial, long kk) {
     return _hash(shash(toStr(initial)), kk-1);
 }
 
-hash_t IBLT::hashK(const ZZ& item, long kk) {
+hash_t IBLT::_hashK(const ZZ &item, long kk) {
     std::hash<std::string> shash; // stl uses MurmurHashUnaligned2 for calculating the hash of a string
     return _hash(shash(toStr(item)), kk-1);
 }
@@ -40,13 +40,13 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     }
 
     for(int ii=0; ii < N_HASH; ii++){
-        hash_t hk = hashK(key, ii);
+        hash_t hk = _hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
         HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
 
         entry.count += plusOrMinus;
         entry.keySum ^= key;
-        entry.keyCheck ^= hashK(key, N_HASHCHECK);
+        entry.keyCheck ^= _hashK(key, N_HASHCHECK);
         if (entry.empty()) {
             entry.valueSum.kill();
         }
@@ -70,7 +70,7 @@ bool IBLT::get(ZZ key, ZZ& result){
     long bucketsPerHash = hashTable.size()/N_HASH;
     for (long ii = 0; ii < N_HASH; ii++) {
         long startEntry = ii*bucketsPerHash;
-        unsigned long hk = hashK(key, ii);
+        unsigned long hk = _hashK(key, ii);
         const HashTableEntry& entry = hashTable[startEntry + (hk%bucketsPerHash)];
 
         if (entry.empty()) {
@@ -115,7 +115,7 @@ bool IBLT::get(ZZ key, ZZ& result){
 bool IBLT::HashTableEntry::isPure() const
 {
     if (count == 1 || count == -1) {
-        hash_t check = hashK(keySum, N_HASHCHECK);
+        hash_t check = _hashK(keySum, N_HASHCHECK);
         return (keyCheck == check);
     }
     return false;

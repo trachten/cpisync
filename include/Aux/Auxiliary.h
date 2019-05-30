@@ -284,15 +284,15 @@ public:
 		delete datum; /** The payload of the current node. */
 	}
 
-    /** Accessor */
-    T *getDatum() {
-        return datum;
-    }
+	/** Accessor */
+	T *getDatum() {
+		return datum;
+	}
 
-    paryTree<T> **child; /** Full access to all the children of the node. */
+	paryTree<T> **child; /** Full access to all the children of the node. */
 private:
-    long arity;
-    T *datum;
+	long arity;
+	T *datum;
 };
 
 const int min_base64 = 62; // first character of base-64 text
@@ -341,31 +341,31 @@ inline string base64_decode(std::string const& encoded_string) {
     char tmp[in_len];
     strncpy(tmp, encoded_string.data(), in_len);
 
-    // record how much padding was in the string, and remove it
-    int rem = 0;
-    if (tmp[in_len - 1] == '=') {
-        rem++;
-        tmp[in_len - 1] = min_base64;
-    }
-    if (tmp[in_len - 2] == '=') {
-        rem++;
-        tmp[in_len - 2] = min_base64;
-    }
+	// record how much padding was in the string, and remove it
+	int rem = 0;
+	if (tmp[in_len - 1] == '=') {
+		rem++;
+		tmp[in_len - 1] = min_base64;
+	}
+	if (tmp[in_len - 2] == '=') {
+		rem++;
+		tmp[in_len - 2] = min_base64;
+	}
 
-    string ret;
-    for (int ii = 0; ii < in_len; ii += 4) {
-        unsigned long group = static_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
-                                                         64 * 64 * (tmp[ii + 2] - min_base64) +
-                                                         64 * 64 * 64 * (tmp[ii + 3] - min_base64));
-        ret += (char) (group % 256) - signed_shift;
-        ret += (char) ((group >> 8) % 256) - signed_shift;
-        ret += (char) ((group >> 16) % 256) - signed_shift;
-    }
+	string ret;
+	for (int ii = 0; ii < in_len; ii += 4) {
+		unsigned long group = static_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
+														 64 * 64 * (tmp[ii + 2] - min_base64) +
+														 64 * 64 * 64 * (tmp[ii + 3] - min_base64));
+		ret += (char) (group % 256) - signed_shift;
+		ret += (char) ((group >> 8) % 256) - signed_shift;
+		ret += (char) ((group >> 16) % 256) - signed_shift;
+	}
 
-    if (rem > 0)
-        ret.erase(ret.length() - rem); // erase the last few characters, depending on the number of ='s in the base64 string
+	if (rem > 0)
+		ret.erase(ret.length() - rem); // erase the last few characters, depending on the number of ='s in the base64 string
 
-    return ret;
+	return ret;
 }
 
 // additions
@@ -376,18 +376,18 @@ inline string base64_decode(std::string const& encoded_string) {
  * @return 
  */
 inline string base64_encode(const string bytes, unsigned int in_len) {
-    string foo = base64_encode(bytes.data(), in_len);
-    return foo;
+	string foo = base64_encode(bytes.data(), in_len);
+	return foo;
 }
 
 /**
  * @return The minimum of two NTL ZZ objects
  */
 inline ZZ min(const ZZ& aa, const ZZ& bb) {
-    if (compare(aa,bb)==1) // (aa>?bb)
-        return aa;
-    else
-        return bb;
+	if (compare(aa,bb)==1) // (aa>?bb)
+		return aa;
+	else
+		return bb;
 }
 
 /**
@@ -405,7 +405,7 @@ inline int randLenBetween(int lower, int upper) {
  * @require srand() must've been called
  */
 inline long randLong() {
-    return (static_cast<long>(rand()) << (sizeof(int) * CHAR_BIT)) | rand(); // lshift the amount of bits in an int and then bitwise or a random int
+	return (static_cast<long>(rand()) << (sizeof(int) * CHAR_BIT)) | rand(); // lshift the amount of bits in an int and then bitwise or a random int
 }
 
 /**
@@ -413,7 +413,7 @@ inline long randLong() {
  * @require srand() must've been called
  */
 inline byte randByte() {
-    return (byte) (rand() % (int) pow(2, CHAR_BIT));
+	return (byte) (rand() % (int) pow(2, CHAR_BIT));
 }
 
 /**
@@ -421,15 +421,15 @@ inline byte randByte() {
  * @require srand() must've been called
  */
 inline string randString(int lower=0, int upper=10) {
-    stringstream str;
+	stringstream str;
 
-    // pick a length in between lower and upper, inclusive
-    int length = randLenBetween(lower, upper);
+	// pick a length in between lower and upper, inclusive
+	int length = randLenBetween(lower, upper);
 
-    for(int jj = 0; jj < length; jj++)
-        str << (char) randByte(); // generate a random character and add to the stringstream
+	for(int jj = 0; jj < length; jj++)
+		str << (char) randByte(); // generate a random character and add to the stringstream
 
-    return str.str();
+	return str.str();
 }
 
 /**
@@ -437,7 +437,7 @@ inline string randString(int lower=0, int upper=10) {
  * @require srand() must've been called
  */
 inline string randIntString() {
-    return toStr(rand());
+	return toStr(rand());
 }
 
 /**
@@ -445,7 +445,7 @@ inline string randIntString() {
  * @require srand() must've been called
  */
 inline double randDouble(double lower=0.0, double upper=1.0) {
-    return ((double)rand() * (upper - lower)) / (double)RAND_MAX + lower;
+	return ((double)rand() * (upper - lower)) / (double)RAND_MAX + lower;
 }
 
 /**
@@ -453,7 +453,7 @@ inline double randDouble(double lower=0.0, double upper=1.0) {
  * @require srand() must've been called
  */
 inline ZZ randZZ() {
-    return ZZ(randLong());
+	return ZZ(randLong());
 }
 
 /**
@@ -461,9 +461,9 @@ inline ZZ randZZ() {
  */
 template <class T>
 inline byte enumToByte(T theEnum) {
-    static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
-        "Underlying enum class is not byte - cannot convert to byte!");
-    return static_cast< byte >(theEnum);
+	static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
+				  "Underlying enum class is not byte - cannot convert to byte!");
+	return static_cast< byte >(theEnum);
 };
 
 /**
@@ -473,8 +473,8 @@ inline byte enumToByte(T theEnum) {
  */
 template <typename T>
 inline T &operator++(T& curr) {
-    curr = (T)(((int) (curr) + 1));
-    return curr;
+	curr = (T)(((int) (curr) + 1));
+	return curr;
 }
 
 /**
@@ -483,20 +483,20 @@ inline T &operator++(T& curr) {
  * @return path to temp directory
  */
 inline string temporaryDir() {
-    // possible environment variables containing path to temp directory
-    const char* opts[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
+	// possible environment variables containing path to temp directory
+	const char* opts[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
 
-    // return the first defined env var in opts
-    for(const char* ss : opts) {
+	// return the first defined env var in opts
+	for(const char* ss : opts) {
 
-        // true iff ss is an env var
-        if(const char* path = getenv(ss)) {
-            return string(path);
-        }
-    }
+		// true iff ss is an env var
+		if(const char* path = getenv(ss)) {
+			return string(path);
+		}
+	}
 
-    // default temp directory if no env var is found
-    return "/tmp";
+	// default temp directory if no env var is found
+	return "/tmp";
 }
 
 #endif	/* AUX_H */

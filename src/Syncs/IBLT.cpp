@@ -42,7 +42,7 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     for(int ii=0; ii < N_HASH; ii++){
         hash_t hk = hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
-        IBLT::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
+        HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
 
         entry.count += plusOrMinus;
         entry.keySum ^= key;
@@ -71,7 +71,7 @@ bool IBLT::get(ZZ key, ZZ& result){
     for (long ii = 0; ii < N_HASH; ii++) {
         long startEntry = ii*bucketsPerHash;
         unsigned long hk = hashK(key, ii);
-        const IBLT::HashTableEntry& entry = hashTable[startEntry + (hk%bucketsPerHash)];
+        const HashTableEntry& entry = hashTable[startEntry + (hk%bucketsPerHash)];
 
         if (entry.empty()) {
             // Definitely not in table. Leave
@@ -97,7 +97,7 @@ bool IBLT::get(ZZ key, ZZ& result){
     long nErased;
     do {
         nErased = 0;
-        for (IBLT::HashTableEntry &entry : this->hashTable) {
+        for (HashTableEntry &entry : this->hashTable) {
             if (entry.isPure()) {
                 if (entry.keySum == key) {
                     string s = toStr(entry.valueSum);
@@ -146,7 +146,7 @@ bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &neg
 
     // If any buckets for one of the hash functions is not empty,
     // then we didn't peel them all:
-    for (IBLT::HashTableEntry& entry : this->hashTable) {
+    for (HashTableEntry& entry : this->hashTable) {
         if (!entry.empty()) return false;
     }
     return true;
@@ -161,8 +161,8 @@ IBLT& IBLT::operator-=(const IBLT& other) {
         + toStr(hashTable.size()) + ". Theirs: " + toStr(other.valueSize));
 
     for (unsigned long ii = 0; ii < hashTable.size(); ii++) {
-        IBLT::HashTableEntry& e1 = this->hashTable.at(ii);
-        const IBLT::HashTableEntry& e2 = other.hashTable.at(ii);
+        HashTableEntry& e1 = this->hashTable.at(ii);
+        const HashTableEntry& e2 = other.hashTable.at(ii);
         e1.count -= e2.count;
         e1.keySum ^= e2.keySum;
         e1.keyCheck ^= e2.keyCheck;
@@ -187,4 +187,12 @@ size_t IBLT::size() const {
 
 size_t IBLT::eltSize() const {
     return valueSize;
+}
+
+vector<IBLT::HashTableEntry> IBLT::getHashTable() const{
+	return hashTable;
+}
+
+void IBLT::insertToHashTable(const HashTableEntry entry){
+	this->hashTable.push_back(entry);
 }

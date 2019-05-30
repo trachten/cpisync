@@ -7,25 +7,6 @@
 #include <thread>
 #include <time.h>
 
-
-
-//enableListen and enableConnect are called by threads in order to allow them to exeucte in parallel
-
-/**
- *@param a pointer to the serverSocket that you wish to begin listening
- */
-void enableListen(shared_ptr<CommSocket> serverSocket){
-	serverSocket->commListen();
-};
-/**
- * @param a pointer to the clientSocket that you wish to attempt to connect
- */
-void enableConnect(shared_ptr<CommSocket> clientSocket){
-	clientSocket->commConnect();
-};
-
-
-
 CPPUNIT_TEST_SUITE_REGISTRATION(CommSocketTest);
 
 
@@ -49,46 +30,37 @@ void CommSocketTest::GetSocketInfo() {
 }
 
 void CommSocketTest::SocketSendAndReceiveTest() {
-	const int TIMES = 100; //Cycles of the test to run
-	const int LENGTH_LOW = 1; //Lower limit of string length for testing
-	const int LENGTH_HIGH = 100; //Upper limit of string length for testing
-	const int WAIT_TIME = 5; //Amount seconds to wait after attempting to connect before
-	//TODO: switch back to port after port close issue is resolved
-	const int PORT = 8080;
+	int status;
 
-	//Initialize one client and one server socket
-	shared_ptr<CommSocket> clientPtr = make_shared<CommSocket>(PORT);
-	shared_ptr<CommSocket> serverPtr = make_shared<CommSocket>(PORT);
-
-	// Set server to listen and client to connect in parallel
-	thread threadServer(enableListen,serverPtr);
-	thread threadClient(enableConnect,clientPtr);
-
-
-	int timeStart = clock();
-	while(true){
-		//If threads complete, continue with code
-		if(threadServer.joinable() && threadClient.joinable()){
-			threadServer.join();
-			threadClient.join();
-			break;
-		}
-			//If 5 seconds pass without threads becoming joinable log an error and exit
-		else if((clock() - timeStart)/ CLOCKS_PER_SEC >= WAIT_TIME){
-			Logger::error_and_quit("Server and client sockets failed to connect");
+	//Wrap the test in a timer that terminates if it has not completed in under WAIT_TIME seconds
+	pid_t timer_pid = fork();
+	if(timer_pid < 0 ){
+		Logger::error_and_quit("Error in forking SocketSendAndRecieveTest");
+	}
+	//Test process
+	else if(timer_pid == 0) {
+		CPPUNIT_ASSERT(socketSendReceiveTest());
+	}
+	//Timer process
+	else if(timer_pid > 0 ){
+		int timeStart = clock();
+		while(true){
+			pid_t result = waitpid(timer_pid, &status, WNOHANG); //0 -> child alive, -1 -> error, else child completed
+			if(result == 0) {
+				//If WAIT_TIME seconds have passed without socketSendRecieveTest() finishing then log an error and exit
+				if ((clock() - timeStart) / CLOCKS_PER_SEC >= WAIT_TIME) {
+					Logger::error_and_quit("Client and server socket did not connect in time");
+				}
+			}
+			else if(result == -1){
+				Logger::error_and_quit("Error in forking SocketSendAndRecieveTest");
+			}
+			//If socketSendRecieveTest() has finished then break out of the loop
+			else{
+				break;
+			}
 		}
 	}
 
-	string sendString;
-	string returnString;
-
-	//Tests sending and recieving 100 random strings of random lengths between (1 - 100)
-	for(int ii = 0; ii < TIMES; ii++){
-		sendString = randString(LENGTH_LOW,LENGTH_HIGH);
-		returnString = socketSendReceive(clientPtr,serverPtr,sendString);
-		CPPUNIT_ASSERT_EQUAL(sendString,returnString);
-	}
-
-	clientPtr->commClose();
-	serverPtr->commClose();
 }
+

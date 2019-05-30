@@ -30,7 +30,7 @@ void CommString::commListen() {
 }// nothing needed to listen from a string
 
 void CommString::commClose() {
-    stream->flush();
+	stream->flush();
 }
 
 void CommString::commSend(const char *toSend, const int numBytes) {

@@ -39,7 +39,7 @@ void IBLTSyncTest::justSyncTest() {
             setNumExpectedElements(EXP_ELEM).
             build();
 
-    syncTestProb(GenSyncServer, GenSyncClient);
+	CPPUNIT_ASSERT(syncTestProb(GenSyncClient,GenSyncServer));
 }
 
 void IBLTSyncTest::testAddDelElem() {

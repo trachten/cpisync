@@ -246,7 +246,7 @@ void Communicant::commSend(const IBLT& iblt, bool sync) {
     }
 
     // Access the hashTable representation of iblt to serialize it
-    for(const IBLT::HashTableEntry& hte : iblt.hashTable) {
+    for(const IBLT::HashTableEntry& hte : iblt.getHashTable()) {
         commSend(hte, iblt.eltSize());
     }
 }
@@ -420,11 +420,10 @@ IBLT Communicant::commRecv_IBLT(size_t size, size_t eltSize) {
         numEltSize = eltSize;
     }
 
-    IBLT theirs;
-    theirs.valueSize = numEltSize;
+    IBLT theirs(0,numEltSize);
 
     for(int ii = 0; ii < numSize; ii++) {
-        theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
+        theirs.insertToHashTable(commRecv_HashTableEntry(numEltSize));
     }
 
     return theirs;

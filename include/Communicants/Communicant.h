@@ -108,7 +108,7 @@ public:
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(ustring str, unsigned int numBytes);
+    void commSend(const ustring& str, unsigned int numBytes);
 
     /**
      * Sends a data object over the line
@@ -130,13 +130,13 @@ public:
      * Sends a string over the line.
      * @param str The string to send.
      */
-    void commSend(string str);
+    void commSend(const string& str);
 
     /**
  * Sends a ustring over the line.
  * @param str The ustring to send.
  */
-    void commSend(ustring ustr);
+    void commSend(const ustring& ustr);
 
     /**
      * Sends a double over the line.  The recipient must have the same representation of floats.

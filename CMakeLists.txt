@@ -40,7 +40,7 @@ set(SOURCE_FILES
         ${SYNC_DIR}/GenSync.cpp
         ${SYNC_DIR}/InterCPISync.cpp
         ${SYNC_DIR}/probCPISync.cpp
-        ${SYNC_DIR}/HashSync.cpp
+	 	${SYNC_DIR}/HashSync.cpp
         ${SYNC_DIR}/IBLT.cpp
         ${SYNC_DIR}/IBLTSync.cpp
         ${SYNC_DIR}/FullSync.cpp
@@ -77,7 +77,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit pthread)
+        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

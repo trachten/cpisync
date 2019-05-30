@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 // standard libraries
-#include <vector>
+#include <utility> #include <vector>
 #include <fstream>
 #include <sstream>
 #include <map>
@@ -47,7 +47,7 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
       ** by splitting the error probability between hash collisions and sync failures.
       ** The former is controlled by lengthening the effective bit-representation of strings.
       */
-      bitNum = 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;      
+      bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
     /*
      *  The analysis here is based on the birthday paradox.
      *  The probability of a collision for (at most) 2^bits elements chosen from
@@ -306,7 +306,7 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
     return true;
 }
 
-void CPISync::sendSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, ZZ_p element) {
+void CPISync::sendSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, const ZZ_p& element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
         selfMinusOther.push_back(invHash(element));
@@ -322,10 +322,10 @@ void CPISync::sendSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &s
     }
 }
 
-void CPISync::recvSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf, ZZ_p element) {
+void CPISync::recvSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf, ZZ_p element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::recvSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
-        otherMinusSelf.push_back(invHash(element));
+        otherMinusSelf.push_back(invHash(std::move(element)));
     else {
         // receive the actual string from the client
         DataObject *dop = commSync->commRecv_DataObject();
@@ -335,7 +335,7 @@ void CPISync::recvSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &o
     }
 }
 
-void CPISync::makeStructures(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
+void CPISync::makeStructures(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::makeStructures");
     // Send self minus other
     try {
@@ -468,7 +468,7 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
             commSync->commClose();
 
         return true;
-    } catch (SyncFailureException s) {
+    } catch (SyncFailureException& s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
         throw (s);
     }
@@ -566,7 +566,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
                 // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
                 try {
                     makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
-                } catch (SyncFailureException s) {
+                } catch (SyncFailureException& s) {
                     Logger::gLog(Logger::METHOD_DETAILS, s.what());
                     throw (s);
                 }
@@ -603,7 +603,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
     return result;
 }
 
-void CPISync::sendAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther) {
+void CPISync::sendAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendAllElem");
     commSync->commSend((long) CPI_hash.size()); // first send the size
 
@@ -617,7 +617,7 @@ void CPISync::sendAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &s
     }
 }
 
-void CPISync::receiveAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf) {
+void CPISync::receiveAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::receiveAllElem");
     long size = commSync->commRecv_long();
 

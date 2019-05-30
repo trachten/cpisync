@@ -51,7 +51,7 @@ void InterCPISync::deleteTree(pTree *treeNode) {
 
 bool InterCPISync::delElem(DataObject* datum) {
   SyncMethod::delElem(datum); // run the parent's version first
-  throw new UnimplementedMethodException("InterCPISync delete element");
+  throw UnimplementedMethodException("InterCPISync delete element");
 }
 
 bool InterCPISync::addElem(DataObject* newDatum) {
@@ -362,7 +362,7 @@ bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<Data
     return true; // should always return true
   }
 }
-bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ begRange, const ZZ endRange)
+bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ& begRange, const ZZ& endRange)
 {
         //Establish initial Handshakes - Check If I have nothing or If Client has nothing
 	int response;
@@ -408,7 +408,7 @@ bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<Data
 		return true;
 	}
 } 
-void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ begRange, const ZZ endRange)
+void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ& begRange, const ZZ& endRange)
 {
 	
 	ZZ step = (endRange - begRange)/pFactor;//Get the step size of the node to establish bin sizes
@@ -446,7 +446,7 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
 		}
 	}
 }
-bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ begRange, const ZZ endRange)
+bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *parentNode,const ZZ& begRange, const ZZ& endRange)
 {
 	try{
 	    //Initial Handshakes - Check if I have nothing or server has nothing

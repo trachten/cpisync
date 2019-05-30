@@ -42,7 +42,7 @@ public:
      * Constructs a data object that contains the given string (in an encoded format).
      * @param data The string to place in the DataObject.
      */
-    explicit DataObject(string str);
+    explicit DataObject(const string& str);
     
     /**
      * Constructs a data object that contains the given object of type T, which must
@@ -114,7 +114,7 @@ protected:
   * @param num
   * @return
   */
-    static string unpack(ZZ num);
+    static string unpack(const ZZ& num);
 
 private:
     /**
@@ -122,7 +122,7 @@ private:
      * @param theStr The string to pack
      * @return a ZZ representing the string
      */
-    static ZZ pack(string theStr);
+    static ZZ pack(const string& theStr);
 
 };
 #endif

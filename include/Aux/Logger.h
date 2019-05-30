@@ -63,7 +63,7 @@ public:
      * Outputs and error message and continues.
      * @param msg The error message.
      */
-    static void error(string msg);
+    static void error(const string& msg);
     
     /**
      * Outputs an error message and stops execution.

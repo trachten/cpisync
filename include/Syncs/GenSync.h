@@ -71,7 +71,7 @@ public:
      *                   this data structure.  As elements are added to this data structure, they
      *                   are also stored in the file.
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName);
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string& fileName);
 
     // DATA MANIPULATION
     /**
@@ -92,7 +92,7 @@ public:
     template <typename T>
     void addElem(T* newDatum) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
-        DataObject *newDO = new DataObject(*newDatum);
+        auto *newDO = new DataObject(*newDatum);
         addElem(newDO);
     }
 
@@ -101,7 +101,7 @@ public:
      * Not currently implemented.
      * @unimplemented
      */
-    void delElem(DataObject* newDatum);
+    static void delElem(DataObject* newDatum);
 
     /**
      * @return a list of pointers to the elements stored in the data structure
@@ -123,13 +123,13 @@ public:
      *                  synchronized upon a synchronization call.
      *                  By default, new communicants are added to the back of the vector
      */
-    void addComm(shared_ptr<Communicant> newComm, int index = 0);
+    void addComm(const shared_ptr<Communicant>& newComm, int index = 0);
 
     /**
      * Delete all communicants oldComm (i.e. stored at the same memory address) from the communicant vector.
      * @param oldComm  A pointer to the desired communicant.
      */
-    void delComm(shared_ptr<Communicant> oldComm);
+    void delComm(const shared_ptr<Communicant>& oldComm);
 
     /**
      * Delete the communicant at the given index in the communicant vector.
@@ -157,7 +157,7 @@ public:
      *                  The order of agents is not significant.
      *                  By default, new agents are added to the back of the sync vector
      */
-    void addSyncAgt(shared_ptr<SyncMethod> newAgt, int index = 0);
+    void addSyncAgt(const shared_ptr<SyncMethod>& newAgt, int index = 0);
 
     /**
      * Delete the agent at the given index in the agent vector.
@@ -256,7 +256,7 @@ public:
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
         // CPISync and variants
-        CPISync=BEGIN,
+        CPISync= static_cast<int>(BEGIN),
         CPISync_OneLessRound,
         CPISync_HalfRound,
         ProbCPISync,
@@ -271,7 +271,7 @@ public:
     enum class SyncComm {
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
-        socket=BEGIN, //socket-based communication
+        socket= static_cast<int>(BEGIN), //socket-based communication
         string, // communication recorded in a string
         END     // one after the end of iterable options
     };
@@ -413,7 +413,7 @@ public:
      * @param theFileName A file name from which data is to be drawn for the initial population of the sync object.
      */
     Builder& setDataFile(string theFileName) {
-        this->fileName=theFileName;
+        this->fileName=std::move(theFileName);
         return *this;
     }
 

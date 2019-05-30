@@ -24,7 +24,7 @@ public:
     CPISync_OneLessRound(long m_bar, long bits, int epsilon, int redundant=0) : CPISync(m_bar, bits, epsilon, redundant, false)
     { hashQ=false; SyncID = SYNC_TYPE::CPISync_OneLessRound; }
     
-    string getName() {return CPISync::getName() + "   * no hashes\n";}
+    string getName() override {return CPISync::getName() + "   * no hashes\n";}
 };
 
 #endif	/* CPISYNC_NOHASH_H */

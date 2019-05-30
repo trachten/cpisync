@@ -135,7 +135,7 @@ protected:
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
     void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
-    void createChildren(pTree * treeNode, pTree * tempTree, ZZ begRange, ZZ endRange);
+    void createChildren(pTree * treeNode, pTree * tempTree, const ZZ& begRange, const ZZ& endRange);
 private:
     // METHODS
 
@@ -166,8 +166,8 @@ private:
     bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
 
     bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,
-                    ZZ begRange,
-                    ZZ endRange);
+                    const ZZ& begRange,
+                    const ZZ& endRange);
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
      * @see Sync_Server(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
@@ -179,8 +179,8 @@ private:
     bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
 
     bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,
-                    ZZ begRange,
-                    ZZ endRange);
+                    const ZZ& begRange,
+                    const ZZ& endRange);
 
     
     /**

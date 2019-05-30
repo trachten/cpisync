@@ -21,7 +21,7 @@
 // constants
 const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
-const size_t eltSizeSq = pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
+const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
 const int mBar = UCHAR_MAX*2; // max differences between client and server in sync tests
 const string iostr; // initial string used to construct CommString
@@ -31,6 +31,9 @@ const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
+const int TIMES = 100;
+const int LENGTH_LOW = 1;
+const int LENGTH_HIGH = 100;
 
 // helpers
 

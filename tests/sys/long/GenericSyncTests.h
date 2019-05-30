@@ -34,34 +34,34 @@ public:
     void tearDown() override;
 
     // Test that GenSyncs constructed using GenSync::Builder create equivalent GenSyncs to those constructed using the standard constructor
-    void testBuilder();
+    static void testBuilder();
 
     // Test syncing GenSyncs with two-way SyncMethods
-    void testTwoWaySync();
+    static void testTwoWaySync();
 
     // Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
-    void testTwoWayProbSync();
+    static void testTwoWayProbSync();
 
     // Test syncing GenSyncs with one-way SyncMethods
-    void testOneWaySync();
+    static void testOneWaySync();
 
     // Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
-    void testOneWayProbSync();
+    static void testOneWayProbSync();
 
     // Test that GenSync::getName returns some nonempty string
-    void testGetName();
+    static void testGetName();
 
     // Test adding and removing data from GenSync
     void testAddRemoveElems();
 
     // Test adding and removing SyncMethods and Communicants from GenSync
-    void testAddRemoveSyncMethodAndComm();
+    static void testAddRemoveSyncMethodAndComm();
 
     // Test sync time and bytes-exchanged counters
-    void testCounters();
+    static void testCounters();
 
     // Tests getPort
-    void testPort();
+    static void testPort();
 
 private:
     // constants

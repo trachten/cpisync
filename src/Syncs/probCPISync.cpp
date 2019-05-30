@@ -7,7 +7,7 @@
 #include "Syncs/ProbCPISync.h"
 
 ProbCPISync::ProbCPISync(long m_bar, long bits, int epsilon) :
-CPISync(m_bar, bits, epsilon + ceil(log(bits) / log(2))) // adding lg(b) gives an equivalent probability of error for CPISync
+CPISync(m_bar, bits, (int) epsilon + ceil(log(bits) / log(2))) // adding lg(b) gives an equivalent probability of error for CPISync
 {
 
   // tweak parameters of CPISync for probabilistic implementation

@@ -51,7 +51,7 @@ public:
 private:
     void testToZZAndInitZZ();
     void testToStringAndInitString();
-    void testToStringAndInitEmpty();
+    static void testToStringAndInitEmpty();
     void testToCharArray();
     void testPrint();
     void testStreamInsertion();

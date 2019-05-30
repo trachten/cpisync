@@ -107,7 +107,7 @@ bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* 
 }
 
 
-void Communicant::commSend(const ustring toSend, const unsigned int numBytes) {
+void Communicant::commSend(const ustring& toSend, const unsigned int numBytes) {
     Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
             + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
 
@@ -115,13 +115,13 @@ void Communicant::commSend(const ustring toSend, const unsigned int numBytes) {
     commSend(sendptr, numBytes);
 }
 
-void Communicant::commSend(const string str) {
+void Communicant::commSend(const string& str) {
     Logger::gLog(Logger::COMM, "... attempting to send: string " + str);
     commSend((long) str.length());
     commSend(str.data(), str.length());
 }
 
-void Communicant::commSend(const ustring ustr) {
+void Communicant::commSend(const ustring& ustr) {
 
     Logger::gLog(Logger::COMM, "... attempting to send: ustring " + ustrToStr(ustr));
     commSend((long) ustr.length());

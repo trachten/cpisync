@@ -48,7 +48,7 @@ bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
             Logger::gLog(Logger::METHOD, msg.str());
         }
         return success;
-    } catch (SyncFailureException s) {
+    } catch (SyncFailureException& s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
         throw (s);
     } // might not need the try-catch
@@ -84,11 +84,11 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         }
 
         // store values because they're what we care about
-        for(auto pair : positive) {
+        for(const auto& pair : positive) {
             otherMinusSelf.push_back(new DataObject(pair.second));
         }
 
-        for(auto pair : negative) {
+        for(const auto& pair : negative) {
             selfMinusOther.push_back(new DataObject(pair.first));
         }
 
@@ -103,7 +103,7 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
         Logger::gLog(Logger::METHOD, msg.str());
         return success;
-    } catch (SyncFailureException s) {
+    } catch (SyncFailureException& s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
         throw (s);
     } // might not need the try-catch

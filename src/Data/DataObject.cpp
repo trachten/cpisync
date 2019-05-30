@@ -16,18 +16,17 @@ DataObject::DataObject()  : UID()
 
 DataObject::DataObject(const ZZ &datum)  : DataObject() {
     myBuffer = datum;
-    
 }
 
-DataObject::DataObject(const string str) : DataObject() {
+DataObject::DataObject(const string& str) : DataObject() {
     myBuffer = RepIsInt?strTo<ZZ>(str):pack(str);
 }
 
-ZZ DataObject::pack(const string theStr) {
+ZZ DataObject::pack(const string& theStr) {
     return ZZFromBytes(reinterpret_cast<const unsigned char*>(theStr.data()), theStr.length());   
 } 
 
-string DataObject::unpack(const ZZ num) {
+string DataObject::unpack(const ZZ& num) {
     int size = NumBytes(num);
     auto *rawResult = new unsigned char[size];
     BytesFromZZ(rawResult, num, size);

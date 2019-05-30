@@ -25,8 +25,8 @@ public:
      * @param base64 If set to true, then the string is interpreted as a base64
      *  (ASCII armored) text.
      */
-    explicit CommString(const string& initial = "", bool base64 = false);
-    
+	explicit CommString(const string& initial = "", bool base64 = false);
+
 
      // Destructor
     ~CommString() override;

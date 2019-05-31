@@ -30,37 +30,34 @@ void CommSocketTest::GetSocketInfo() {
 }
 
 void CommSocketTest::SocketSendAndReceiveTest() {
-	int status;
-
+	int status = 0;
+	int my_opt = 0;
 	//Wrap the test in a timer that terminates if it has not completed in under WAIT_TIME seconds
 	pid_t timer_pid = fork();
-	if(timer_pid < 0 ){
+	if (timer_pid < 0) {
 		Logger::error_and_quit("Error in forking SocketSendAndRecieveTest");
 	}
-	//Test process
-	else if(timer_pid == 0) {
-		CPPUNIT_ASSERT(socketSendReceiveTest());
+		//Test process
+	else if (timer_pid == 0) {
+		bool success;
+		success = socketSendReceiveTest();
+		CPPUNIT_ASSERT(success);
+		exit(success);
 	}
-	//Timer process
-	else if(timer_pid > 0 ){
-		int timeStart = clock();
-		while(true){
-			pid_t result = waitpid(timer_pid, &status, WNOHANG); //0 -> child alive, -1 -> error, else child completed
-			if(result == 0) {
-				//If WAIT_TIME seconds have passed without socketSendRecieveTest() finishing then log an error and exit
-				if ((clock() - timeStart) / CLOCKS_PER_SEC >= WAIT_TIME) {
-					Logger::error_and_quit("Client and server socket did not connect in time");
-				}
-			}
-			else if(result == -1){
-				Logger::error_and_quit("Error in forking SocketSendAndRecieveTest");
-			}
-			//If socketSendRecieveTest() has finished then break out of the loop
-			else{
-				break;
-			}
-		}
-	}
+		//Timer process
+	else if (timer_pid > 0) {
+		sleep(WAIT_TIME);
+		pid_t result = waitpid(timer_pid, &status, WNOHANG);
 
+		//If socketSendRecieveTest() has finished successfully then kill child and break out of the loop
+		if(result == 0) {
+			CPPUNIT_FAIL("Sockets did not establish a connection in time");
+			kill(timer_pid, 0);
+		}
+		else if(result == -1) {
+			Logger::error_and_quit("Fork error in CommSocketTest::SocketSendAndRecieve");
+		}
+		//Else test has already completed and the success status has been reported
+	}
 }
 

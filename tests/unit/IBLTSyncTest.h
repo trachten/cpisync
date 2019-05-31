@@ -15,7 +15,8 @@ class IBLTSyncTest : public CPPUNIT_NS::TestFixture {
         CPPUNIT_TEST(justSyncTest);
         CPPUNIT_TEST(testAddDelElem);
         CPPUNIT_TEST(testGetStrings);
-        //CPPUNIT_TEST(largeInputTest);
+		CPPUNIT_TEST(testIBLTParamMismatch);
+		//CPPUNIT_TEST(largeInputTest);
 
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -25,16 +26,29 @@ public:
     void setUp() override;
     void tearDown() override;
 
-    // Test reconciliation
+	/**
+	 * Test reconciliation
+	 */
     void justSyncTest();
 
-    // Test adding and deleting elements
-    void testAddDelElem();
+	/**
+	 * Test adding and deleting elements
+	 */
+	void testAddDelElem();
 
-    // Test that printElem() and getName() return some nonempty string
+	/**
+ 	* Test that printElem() and getName() return some nonempty string
+ 	*/
     void testGetStrings();
 
-	// Test that IBLT Functions properly for very large inputs
+	/**
+ 	* Test that IBLT Sync reports failure properly with incompatible sync parameters (Different number of expected elements)
+ 	*/
+    void testIBLTParamMismatch();
+
+	/**
+ 	* Test that IBLT Functions properly for very large inputs
+ 	*/
 	//void largeInputTest();
 };
 

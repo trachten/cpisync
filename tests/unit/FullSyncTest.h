@@ -27,14 +27,21 @@ public:
     void setUp() override;
     void tearDown() override;
 
-    // Test reconciliation
+	/**
+ 	* Test reconciliation
+ 	*/
     void justSyncTest();
 
-    // Test adding and deleting elements
+	/**
+ 	* Test adding and deleting elements
+ 	*/
     void testAddDelElem();
 
-    // Test that printElem() and getName() return some nonempty string
+	/**
+ 	* Test that printElem() and getName() return some nonempty string
+ 	*/
     void testGetStrings();
+
 };
 
 #endif /* FULLSYNCTEST_H */

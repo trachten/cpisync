@@ -497,7 +497,6 @@ inline bool syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncSer
 }
 
 /**
- * Two way probabilistic synctest
  * @port The port that the commSockets will make a connection on (8001)
  * @host The host that the commSockets will use (localhost)
  */

@@ -38,9 +38,9 @@ class DataObjectTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 
 public:
-    const int TIMES = 50; // times to run a test
-    const int LOWER = 0;
-    const int UPPER = 50;
+    static const int TIMES = 50; // times to run a test
+    static const int LOWER = 0;
+    static const int UPPER = 50;
 
     DataObjectTest();
 
@@ -53,6 +53,11 @@ private:
  	* Tests constructing a DataObject with a ZZ and DataObject::toZZ
  	*/
     void testToZZAndInitZZ();
+
+    /**
+ * Tests DataObject::to_string and constructing a DataObject from a random string
+ */
+    static void testToStringAndInitString();
 
 	/**
  	* Tests DataObject::to_string and constructing an empty DataObject

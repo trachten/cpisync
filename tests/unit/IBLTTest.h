@@ -22,7 +22,9 @@ public:
     void setUp();
     void tearDown();
 
-    // Tests every function in IBLT together, except for size
+	/**
+ 	* Tests every function in IBLT together, except for size
+ 	*/
     static void testAll();
 };
 

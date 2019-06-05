@@ -49,12 +49,34 @@ public:
     void tearDown() override;
 
 private:
+	/**
+ 	* Tests constructing a DataObject with a ZZ and DataObject::toZZ
+ 	*/
     void testToZZAndInitZZ();
-    void testToStringAndInitString();
+
+	/**
+ 	* Tests DataObject::to_string and constructing an empty DataObject
+ 	*/
     static void testToStringAndInitEmpty();
+
+	/**
+ 	* Tests DataObject::to_char_array
+ 	*/
     void testToCharArray();
+
+	/**
+ 	* Tests DataObject::print
+ 	*/
     void testPrint();
+
+	/**
+ 	* Tests DataObject::operator<<
+ 	*/
     void testStreamInsertion();
+
+	/**
+ 	* Tests DataObject::operator<
+ 	*/
     void testLessThan();
 };
 

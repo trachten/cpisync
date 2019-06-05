@@ -27,7 +27,6 @@ void FullSyncTest::tearDown() {
 }
 
 void FullSyncTest::justSyncTest() {
-    CPPUNIT_FAIL("Not yet functioning");
     GenSync GenSyncServer = GenSync::Builder().
             setProtocol(GenSync::SyncProtocol::FullSync).
             setComm(GenSync::SyncComm::socket).
@@ -38,7 +37,7 @@ void FullSyncTest::justSyncTest() {
             setComm(GenSync::SyncComm::socket).
             build();
 
-    syncTest(GenSyncServer, GenSyncClient);
+    CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient));
 }
 
 void FullSyncTest::testAddDelElem() {

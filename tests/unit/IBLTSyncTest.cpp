@@ -39,7 +39,7 @@ void IBLTSyncTest::justSyncTest() {
             setNumExpectedElements(EXP_ELEM).
             build();
 
-    syncTestProb(GenSyncServer, GenSyncClient);
+	CPPUNIT_ASSERT(syncTestProb(GenSyncClient,GenSyncServer));
 }
 
 void IBLTSyncTest::testAddDelElem() {
@@ -75,4 +75,27 @@ void IBLTSyncTest::testGetStrings() {
     IBLTSync ibltSync(0, 0);
 
     CPPUNIT_ASSERT(!ibltSync.getName().empty());
+}
+
+void IBLTSyncTest::testIBLTParamMismatch(){
+	const int BITS = sizeof(randZZ());
+	const int EXP_ELEM = UCHAR_MAX * 2;
+	const int EXP_ELEM_OTHER = EXP_ELEM + 100;
+
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(EXP_ELEM_OTHER).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(EXP_ELEM).
+			build();
+
+	//oneWay = false, prob = true, syncParamTest = true
+	CPPUNIT_ASSERT(!(_syncTest(GenSyncClient,GenSyncServer,false,true,true)));
 }

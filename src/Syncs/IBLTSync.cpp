@@ -26,11 +26,10 @@ bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
         // connect to server
         commSync->commConnect();
 
-        // ensure that the IBLT size and eltSize equal those of the server
+        // ensure that the IBLT size and eltSize equal those of the server otherwise fail and don't continue
         if(!commSync->establishIBLTSend(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
-            Logger::gLog(Logger::METHOD_DETAILS,
-                         "IBLT parameters do not match up between client and server!");
-            success = false;
+            Logger::gLog(Logger::METHOD_DETAILS, "IBLT parameters do not match up between client and server!");
+            return false;
         }
         commSync->commSend(myIBLT, true);
 
@@ -65,11 +64,10 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         // listen for client
         commSync->commListen();
 
-        // ensure that the IBLT size and eltSize equal those of the server
+        // ensure that the IBLT size and eltSize equal those of the server otherwise fail and don't continue
         if(!commSync->establishIBLTRecv(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
-            Logger::gLog(Logger::METHOD_DETAILS,
-                         "IBLT parameters do not match up between client and server!");
-            success = false;
+            Logger::gLog(Logger::METHOD_DETAILS, "IBLT parameters do not match up between client and server!");
+            return false;
         }
 
         // verified that our size and eltSize == theirs

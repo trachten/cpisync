@@ -12,28 +12,17 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 class DataPriorityObjectTest : public CPPUNIT_NS::TestFixture {
-CPPUNIT_TEST_SUITE(DataPriorityObjectTest);
 
-        /**
-         * Tests DataObject::to_priority_string, initializing a DataObject with a generic type that can be converted into a
-         * string, and DataObject::setPriority.
-         */
+		CPPUNIT_TEST_SUITE(DataPriorityObjectTest);
+
         CPPUNIT_TEST(testToPriorityStringAndInitStringableAndSetPriority);
+        CPPUNIT_TEST(testPriority);
+        CPPUNIT_TEST(testTimeStamp);
 
-        // Tests DataObject::getPriority
-
-            // Tests DataObject::getPriority
-            CPPUNIT_TEST(testPriority);
-
-            // Tests DataObject::setTimeStamp and DataObject::getTimeStamp
-            CPPUNIT_TEST(testTimeStamp);
-
-    CPPUNIT_TEST_SUITE_END();
+    	CPPUNIT_TEST_SUITE_END();
 
 public:
     const int TIMES = 50; // times to run a test
-    const int LOWER = 0;
-    const int UPPER = 50;
 
     DataPriorityObjectTest() = default;
 
@@ -42,8 +31,18 @@ public:
     void tearDown() override {}
 
 private:
+	/**
+	 * Tests DataObject::to_priority_string, initializing a DataObject with a generic type that can be converted into a
+	 * string, and DataObject::setPriority.
+	 */
     void testToPriorityStringAndInitStringableAndSetPriority();
+	/**
+ 	* Tests DataObject::getPriority
+ 	*/
     void testPriority();
+	/**
+ 	* Tests DataObject::setTimeStamp and DataObject::getTimeStamp
+ 	*/
     void testTimeStamp();
 
     const int SEED = 617;

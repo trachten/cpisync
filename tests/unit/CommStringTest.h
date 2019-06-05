@@ -28,13 +28,19 @@ public:
     void tearDown() override;
 
 private:
-    // Tests that CommString::getString() correctly returns the string passed at construction
+	/**
+ 	* Tests that CommString::getString() correctly returns the string passed at construction
+ 	*/
     void testGetString();
 
-    // Tests that CommString::getName() correctly returns "CommString"
+	/**
+ 	* Tests that CommString::getName() correctly returns "CommString"
+ 	*/
     void testGetName();
 
-    // Tests a full round of communication
+	/**
+ 	* Tests a full round of communication
+ 	*/
     void testComm();
 
 };

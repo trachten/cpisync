@@ -316,12 +316,102 @@ inline vector<GenSync> fileCombos() {
 }
 
 /**
- * Runs tests assuring that two GenSync objects successfully sync via two-way communication
+ * Runs client (child process) and server (parent process) returning a boolean for the success or failure of the sync
+ * @param GenSyncClient The GenSync object that plays the role of client in the sync.
+ * @param GenSyncServer The GenSync object that plays the role of server in the sync.
  * @param oneWay true iff the sync will be one way (only server is reconciled)
+ * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
+ * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
+ * of the sets (For parameter mismatch testing)
+ * @param SIMILAR Amount of elements common to both genSyncs
+ * @param CLIENT_MINUS_SERVER amt of elements unique to client
+ * @param SERVER_MINUS_CLIENT amt of elements unique to server
+ * @param reconciled The expected reconciled dataset
+ * @return True if the recon appears to be successful and false otherwise (if syncParamTest = true returns the
+ * result of both forkHandles anded together)
+ */inline bool syncTestForkHandle(GenSync& GenSyncClient, GenSync& GenSyncServer,bool oneWay, bool probSync,bool syncParamTest,
+								  const unsigned char SIMILAR,const unsigned char CLIENT_MINUS_SERVER,
+								  const unsigned char SERVER_MINUS_CLIENT, multiset<string> reconciled){
+	bool success_signal;
+	int chld_state;
+	int my_opt = 0;
+	pid_t pID = fork();
+	if (pID == 0) {
+		bool clientReconcileSuccess = true;
+		signal(SIGCHLD, SIG_IGN);
+		if (!oneWay) {
+			// reconcile client with server
+			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
+
+
+			multiset<string> resClient;
+			for (auto dop : GenSyncClient.dumpElements()) {
+				resClient.insert(dop->print());
+			}
+
+			clientReconcileSuccess = clientReport.success;
+			//If syncParamTest only the result of the fork handle is relevant
+			if (!syncParamTest) {
+				if (probSync) {
+					// True iff the reconciled set contains at least one more element than it did before reconciliation
+					// and the elements added during reconciliation were elements that the client was lacking that the server had
+					clientReconcileSuccess &= resClient.size() > (SIMILAR + CLIENT_MINUS_SERVER) &&
+											  multisetDiff(reconciled, resClient).size() <
+											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
+				}
+				else {
+					clientReconcileSuccess &= (resClient == reconciled);
+				}
+			}
+		}
+		exit(clientReconcileSuccess);
+	}
+	else if (pID < 0) {
+		Logger::error_and_quit("Fork error in sync test");
+	}
+	else {
+		// wait for child process to complete
+		waitpid(pID, &chld_state, my_opt);
+		//chld_state will be nonzero if clientReconcileSuccess is nonzero
+		success_signal = chld_state;
+		// reconcile server with client
+		forkHandleReport serverReport = forkHandle(GenSyncServer, GenSyncClient);
+		multiset<string> resServer;
+		for (auto dop : GenSyncServer.dumpElements()) {
+			resServer.insert(dop->print());
+		}
+		if(!syncParamTest){
+			if (probSync) {
+				// True iff the reconciled set contains at least one more element than it did before reconciliation
+				// and the elements added during reconciliation were elements that the server was lacking that the client had
+				bool serverReconcileSuccess = resServer.size() > (SIMILAR + SERVER_MINUS_CLIENT) &&
+											  multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && serverReport.success;
+
+				if (oneWay) return (serverReconcileSuccess);
+				else return (serverReconcileSuccess && success_signal);
+			} else {
+				if (oneWay) return (resServer == reconciled && serverReport.success);
+				else return ((success_signal) && (reconciled == resServer) && serverReport.success);
+			}
+		}
+		else{
+			return serverReport.success;
+		}
+	}
+}
+
+/**
+ * Runs tests assuring that two GenSync objects successfully sync via two-way communication
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
+ * @param oneWay true iff the sync will be one way (only server is reconciled)
+ * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
+ * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
+ * of the sets (For parameter mismatch testing)
+ * @return Returns true if the recon appears to be successful and false otherwise (if syncParamTest = true returns the
+ * result of both forkHandles anded together)
  */
-inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false) {
+inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false,bool syncParamTest=false) {
     for(int jj = 0; jj < NUM_TESTS; jj++) {
         // setup DataObjects
         const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
@@ -330,8 +420,7 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 
         vector<DataObject *> objectsPtr;
 
-        for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER -
-                                        1; ii++) {
+        for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
             objectsPtr.push_back(new DataObject(randZZ()));
         }
         ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested
@@ -365,65 +454,9 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 			reconciled.insert(dop->print());
 		}
 
-        // create two processes to test successful reconciliation. the parent process tests the server; the child, the client.
-		bool success_signal;
-        int chld_state;
-        int my_opt = 0;
-        pid_t pID = fork();
-        if (pID == 0) {
-			bool clientReconcileSuccess = true;
-			signal(SIGCHLD, SIG_IGN);
-			if (!oneWay) {
-				// reconcile client with server
-				forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
-
-
-				multiset<string> resClient;
-				for (auto dop : GenSyncClient.dumpElements()) {
-					resClient.insert(dop->print());
-				}
-
-				clientReconcileSuccess = clientReport.success;
-
-				if (probSync) {
-					// True iff the reconciled set contains at least one more element than it did before reconciliation
-					// and the elements added during reconciliation were elements that the client was lacking that the server had
-					clientReconcileSuccess &= resClient.size() > (SIMILAR + CLIENT_MINUS_SERVER) &&
-							multisetDiff(reconciled, resClient).size() < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
-				} else {
-					clientReconcileSuccess &= (resClient == reconciled);
-				}
-			}
-            exit(clientReconcileSuccess);
-        }
-        else if (pID < 0) {
-        	Logger::error_and_quit("Fork error in sync test");
-        }
-        else {
-			// wait for child process to complete
-			waitpid(pID, &chld_state, my_opt);
-			//chld_state will be nonzero if clientReconcileSuccess is nonzero
-			success_signal = chld_state;
-			// reconcile server with client
-			forkHandleReport serverReport = forkHandle(GenSyncServer, GenSyncClient);
-			multiset<string> resServer;
-			for (auto dop : GenSyncServer.dumpElements()) {
-				resServer.insert(dop->print());
-			}
-
-			if (probSync) {
-				// True iff the reconciled set contains at least one more element than it did before reconciliation
-				// and the elements added during reconciliation were elements that the server was lacking that the client had
-				bool serverReconcileSuccess = resServer.size() > (SIMILAR + SERVER_MINUS_CLIENT) &&
-						multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && serverReport.success;
-
-				if (oneWay) return (serverReconcileSuccess);
-				else return (serverReconcileSuccess && success_signal);
-			} else {
-				if (oneWay) return (resServer == reconciled && serverReport.success);
-				else return ((success_signal) && (reconciled == resServer) && serverReport.success);
-			}
-		}
+		//Returns a boolean value for the success of the synchronization
+		return syncTestForkHandle(GenSyncClient,GenSyncServer,oneWay,probSync,syncParamTest,SIMILAR,CLIENT_MINUS_SERVER,
+				SERVER_MINUS_CLIENT,reconciled);
 	}
 }
 
@@ -463,6 +496,10 @@ inline bool syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncSer
     return _syncTest(GenSyncClient, GenSyncServer, false, true);
 }
 
+/**
+ * @port The port that the commSockets will make a connection on (8001)
+ * @host The host that the commSockets will use (localhost)
+ */
 inline bool socketSendReceiveTest(){
 	vector<string> sampleData;
 
@@ -480,16 +517,19 @@ inline bool socketSendReceiveTest(){
 		serverSocket.commListen();
 
 		//If any of the tests fail return false
-		for(int ii = 0; ii < TIMES; ii++)
-			if(!(serverSocket.commRecv(sampleData.at(ii).length()) == sampleData.at(ii))){
+		for(int ii = 0; ii < TIMES; ii++) {
+			if (!(serverSocket.commRecv(sampleData.at(ii).length()) == sampleData.at(ii))) {
 				serverSocket.commClose();
 				Logger::error_and_quit("Received message does not match sent message");
+				return false;
 			}
+		}
 
 		serverSocket.commClose();
 		exit(0);
 	} else if (pID < 0) {
 		Logger::error("Error forking in CommSocketTest");
+		return false;
 	} else {
 		Logger::gLog(Logger::COMM,"created a client socket process");
 		CommSocket clientSocket(port,host);

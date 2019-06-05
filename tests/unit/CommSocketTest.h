@@ -19,10 +19,14 @@ public:
     void tearDown() override;
 
 private:
-  	// Tests getName and getHost functions ensuring that constructor is working as intended
+	/**
+ 	* Tests getName and getHost functions ensuring that constructor is working as intended
+ 	*/
     void GetSocketInfo();
 
-	// Tests sending and receiving a string of characters through a socket
+	/**
+ 	* Tests sending and receiving a string of characters through a socket
+ 	*/
     void SocketSendAndReceiveTest();
 
 };

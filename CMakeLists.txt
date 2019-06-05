@@ -59,10 +59,10 @@ link_directories(/usr/local/lib)
 add_library(cpisynclib ${SOURCE_FILES} ${SRC_DIR}/main.cpp)
 
 # Add the TryMe executable
-add_executable(cpisync ${SRC_DIR}/main.cpp)
-add_executable(tryMe ${SRC_DIR}/TryMe.cpp)
-target_link_libraries(cpisync cpisynclib ntl)
-target_link_libraries(tryMe cpisynclib ntl)
+#add_executable(cpisync ${SRC_DIR}/main.cpp)
+#add_executable(tryMe ${SRC_DIR}/TryMe.cpp)
+#target_link_libraries(cpisync cpisynclib ntl)
+#target_link_libraries(tryMe cpisynclib ntl)
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)

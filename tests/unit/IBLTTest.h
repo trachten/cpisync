@@ -25,7 +25,7 @@ public:
 	/**
  	* Tests every function in IBLT together, except for size
  	*/
-    void testAll();
+    static void testAll();
 };
 
 

@@ -30,17 +30,17 @@ public:
 	/**
  	* Test reconciliation
  	*/
-    void justSyncTest();
+    static void justSyncTest();
 
 	/**
  	* Test adding and deleting elements
  	*/
-    void testAddDelElem();
+    static void testAddDelElem();
 
 	/**
  	* Test that printElem() and getName() return some nonempty string
  	*/
-    void testGetStrings();
+    static void testGetStrings();
 
 };
 

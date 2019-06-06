@@ -398,6 +398,8 @@ inline vector<GenSync> fileCombos() {
 			return serverReport.success;
 		}
 	}
+
+	return false; // should never get here
 }
 
 /**
@@ -408,8 +410,7 @@ inline vector<GenSync> fileCombos() {
  * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
  * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
  * of the sets (For parameter mismatch testing)
- * @return Returns true if the recon appears to be successful and false otherwise (if syncParamTest = true returns the
- * result of both forkHandles anded together)
+ * @return Returns true if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false,bool syncParamTest=false) {
     for(int jj = 0; jj < NUM_TESTS; jj++) {
@@ -421,9 +422,9 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
         vector<DataObject *> objectsPtr;
 
         for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
-            objectsPtr.push_back(new DataObject(randZZ()));
+            objectsPtr.push_back(new DataObject(randZZ())); //(this is a memory leak)
         }
-        ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested
+        ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested (this is a memory leak)
         objectsPtr.push_back(new DataObject(*last));
 
         // ... add data objects unique to the server
@@ -455,9 +456,11 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 		}
 
 		//Returns a boolean value for the success of the synchronization
-		return syncTestForkHandle(GenSyncClient,GenSyncServer,oneWay,probSync,syncParamTest,SIMILAR,CLIENT_MINUS_SERVER,
-				SERVER_MINUS_CLIENT,reconciled);
+		if (!syncTestForkHandle(GenSyncClient,GenSyncServer,oneWay,probSync,syncParamTest,SIMILAR,CLIENT_MINUS_SERVER,
+				SERVER_MINUS_CLIENT,reconciled))
+		    return false;
 	}
+    return true; // all tests passed
 }
 
 /**

@@ -259,7 +259,7 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
 template <typename T>
 class cmp {
 public:
-    bool operator()(T a, T b) {
+    bool operator()(const T a, const T b) const {
         return (*a) < (*b);
     }
 };

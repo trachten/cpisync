@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 /* 
- * File:   IncreCPI.cpp
+ * File:   InterCPISync.cpp
  * Author: Ari Trachtenberg
  * 
  * Created on November 30, 2011, 10:46 PM
@@ -52,6 +52,7 @@ void InterCPISync::deleteTree(pTree *treeNode) {
 bool InterCPISync::delElem(DataObject* datum) {
   SyncMethod::delElem(datum); // run the parent's version first
   throw UnimplementedMethodException("InterCPISync delete element");
+  treeNode->getDatum()->delElem(datum);
 }
 
 bool InterCPISync::addElem(DataObject* newDatum) {

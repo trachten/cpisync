@@ -181,6 +181,36 @@ void GenSync::delElem(DataObject* newDatum) {
     throw UnimplementedMethodException("GenSync::delElem");
 }
 
+/**
+ *
+ * @param deleteList A list of the elements that you would like to delete from your GenSync
+ */
+void GenSync::delElemGroup(list<DataObject *> deleteList) {
+	Logger::gLog(Logger::METHOD, "Entering GenSync::delElemGroup");
+
+	std::map<ZZ, bool> delmap;
+	for (auto it : deleteList) {
+		delmap[it->to_ZZ()] = true;
+	}
+
+	list<DataObject *> lst;
+	for (auto item : myData) {
+		if (delmap.find(item->to_ZZ()) != delmap.end()) {
+			lst.push_back(item);
+			for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
+				//Call the delElem function for the specific sync method
+				if (!(*itAgt)->delElem(item)) {
+					Logger::error("Could not delete one or more of the items requested. Check that the item is present");
+				}
+			}
+		}
+	}
+
+	for (auto it = lst.begin(); it != lst.end(); ++it) {
+		myData.remove(*it);
+	}
+}
+
 
 
 // insert a communicant in the vector at the index position

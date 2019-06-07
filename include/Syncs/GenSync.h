@@ -103,9 +103,12 @@ public:
      */
     static void delElem(DataObject* newDatum);
 
-    /**
-     * @return a list of pointers to the elements stored in the data structure
-     */// get a data object element from data list
+	void delElemGroup(list<DataObject *> deleteList);
+
+
+		/**
+		 * @return a list of pointers to the elements stored in the data structure
+		 */// get a data object element from data list
     const list<DataObject *> dumpElements();
 
 

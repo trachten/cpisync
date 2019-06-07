@@ -19,7 +19,7 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 3; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 10; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
@@ -423,10 +423,10 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
     vector<DataObject*> objectsPtr;
 
     for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
-        objectsPtr.emplace_back(new DataObject(randZZ())); //(this is a memory leak)
+        objectsPtr.push_back(new DataObject(randZZ())); //(this is a memory leak)
     }
     ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested (this is a memory leak)
-    objectsPtr.emplace_back(new DataObject(*last));
+    objectsPtr.push_back(new DataObject(*last));
 
     // ... add data objects unique to the server
     for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {

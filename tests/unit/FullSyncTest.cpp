@@ -27,17 +27,19 @@ void FullSyncTest::tearDown() {
 }
 
 void FullSyncTest::justSyncTest() {
-    GenSync GenSyncServer = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::FullSync).
-            setComm(GenSync::SyncComm::socket).
-            build();
+    for(int ii = 0; ii < NUM_TESTS; ii++) {
+        GenSync GenSyncServer = GenSync::Builder().
+                setProtocol(GenSync::SyncProtocol::FullSync).
+                setComm(GenSync::SyncComm::socket).
+                build();
 
-    GenSync GenSyncClient = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::FullSync).
-            setComm(GenSync::SyncComm::socket).
-            build();
+        GenSync GenSyncClient = GenSync::Builder().
+                setProtocol(GenSync::SyncProtocol::FullSync).
+                setComm(GenSync::SyncComm::socket).
+                build();
 
-    CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient));
+        CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient));
+    }
 }
 
 void FullSyncTest::testAddDelElem() {

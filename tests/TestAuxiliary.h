@@ -19,7 +19,7 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 3; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
@@ -34,13 +34,14 @@ const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
 const int LENGTH_LOW = 1; //Lower limit of string length for testing
 const int LENGTH_HIGH = 100; //Upper limit of string length for testing
 const int TIMES = 100; //Times to run commSocketTest
-const int WAIT_TIME = 1; // TIme to wait before terminating commSocketTest
+const int WAIT_TIME = 1; // Time to wait before terminating commSocketTest
 
 
 // helpers
 
 /**
- * returns all possible gensync configurations constructed using GenSync::Builder
+ * @return A vector of GenSyncs with every Sync Protocol/Communicant combo (With the parameters specified in TestAuxiliary)
+ * Constructed using the GenSync builder help class
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> builderCombos() {
@@ -103,7 +104,8 @@ inline vector<GenSync> builderCombos() {
 }
 
 /**
- * return a vector of GenSyncs constructed using either of the two GenSync constructors
+ * @return a vector of GenSyncs of every Sync Protocol/Communicant combination created with the Constructor (No builder helper)
+ * (With the parameters specified in TestAuxiliary)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  * @param useFile if true, GenSyncs constructed using file-based constructor. otherwise, constructed using other constructor
  */
@@ -157,7 +159,7 @@ inline vector<GenSync> constructorCombos(bool useFile) {
 }
 
 /**
- * returns gensync configurations that communicate one-way constructed using the standard way of creating GenSync objects (without a file)
+ * @return gensync configurations that communicate one-way constructed using the standard way of creating GenSync objects (without a file)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> oneWayCombos() {
@@ -190,7 +192,7 @@ inline vector<GenSync> oneWayCombos() {
 }
 
 /**
- * returns gensync configurations that communicate two ways constructed using the standard way of creating GenSync objects (without a file)
+ * @return gensync configurations that communicate two ways constructed using the standard way of creating GenSync objects (without a file)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> twoWayCombos() {
@@ -230,7 +232,7 @@ inline vector<GenSync> twoWayCombos() {
 }
 
 /**
- * returns gensync configurations that communicate two ways using syncs with probability of only partially succeeding
+ * @return gensync configurations that communicate two ways using syncs with probability of only partially succeeding
  * constructed using the standard way of creating GenSync objects (without a file)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
@@ -265,7 +267,7 @@ inline vector<GenSync> twoWayProbCombos() {
 }
 
 /**
- * returns gensync configurations that communicate one way using syncs with probability of only partially succeeding
+ * @return gensync configurations that communicate one way using syncs with probability of only partially succeeding
  * constructed using the standard way of creating GenSync objects (without a file)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
@@ -300,7 +302,7 @@ inline vector<GenSync> oneWayProbCombos() {
 }
 
 /**
- * returns all possible gensync configurations constructed using the standard way of creating GenSync objects (without a file)
+ * @return all possible gensync configurations constructed using the standard way of creating GenSync objects (without a file)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> standardCombos() {
@@ -308,7 +310,7 @@ inline vector<GenSync> standardCombos() {
 }
 
 /**
- * returns all possible gensync configurations constructed by creating GenSync objects using a file to store contents
+ * @return all possible gensync configurations constructed by creating GenSync objects using a file to store contents
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> fileCombos() {
@@ -413,54 +415,57 @@ inline vector<GenSync> fileCombos() {
  * @return Returns true if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false,bool syncParamTest=false) {
-    for(int jj = 0; jj < NUM_TESTS; jj++) {
-        // setup DataObjects
-        const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
-        const unsigned char CLIENT_MINUS_SERVER = randByte(); // amt of elems unique to client
-        const unsigned char SERVER_MINUS_CLIENT = randByte(); // amt of elems unique to server
+    // setup DataObjects
+    const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
+    const unsigned char CLIENT_MINUS_SERVER = randByte(); // amt of elems unique to client
+    const unsigned char SERVER_MINUS_CLIENT = randByte(); // amt of elems unique to server
 
-        vector<DataObject *> objectsPtr;
+    vector<DataObject*> objectsPtr;
 
-        for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
-            objectsPtr.push_back(new DataObject(randZZ())); //(this is a memory leak)
-        }
-        ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested (this is a memory leak)
-        objectsPtr.push_back(new DataObject(*last));
+    for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
+        objectsPtr.emplace_back(new DataObject(randZZ())); //(this is a memory leak)
+    }
+    ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested (this is a memory leak)
+    objectsPtr.emplace_back(new DataObject(*last));
 
-        // ... add data objects unique to the server
-        for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {
-            GenSyncServer.addElem(*iter);
-        }
+    // ... add data objects unique to the server
+    for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {
+        GenSyncServer.addElem(*iter);
+    }
 
-        // ... add data objects unique to the client
-        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT;
-             iter != objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; iter++) {
-            GenSyncClient.addElem(*iter);
-        }
+    // ... add data objects unique to the client
+    for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT;
+         iter != objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; iter++) {
+        GenSyncClient.addElem(*iter);
+    }
 
-        // add common data objects to both
-        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
-             iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
-            GenSyncClient.addElem(*iter);
-            GenSyncServer.addElem(*iter);
-        }
+    // add common data objects to both
+    for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
+         iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
+        GenSyncClient.addElem(*iter);
+        GenSyncServer.addElem(*iter);
+    }
 
-        // ensure that adding a object that fits the generic type T works
-        GenSyncClient.addElem(last);
-        GenSyncServer.addElem(last);
+    // ensure that adding a object that fits the generic type T works
+    GenSyncClient.addElem(last);
+    GenSyncServer.addElem(last);
 
-		// create the expected reconciled multiset
-		multiset<string> reconciled;
-		for (auto dop : objectsPtr) {
-			reconciled.insert(dop->print());
-		}
+    // create the expected reconciled multiset
+    multiset<string> reconciled;
+    for (auto dop : objectsPtr) {
+        reconciled.insert(dop->print());
+    }
 
-		//Returns a boolean value for the success of the synchronization
-		if (!syncTestForkHandle(GenSyncClient,GenSyncServer,oneWay,probSync,syncParamTest,SIMILAR,CLIENT_MINUS_SERVER,
-				SERVER_MINUS_CLIENT,reconciled))
-		    return false;
-	}
-    return true; // all tests passed
+    //Returns a boolean value for the success of the synchronization
+    if (!syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR, CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled))
+        return false;
+
+    //Clear all dynamically allocated memory
+    for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin(); iter++) {
+        delete *iter;
+    }
+
+    return true; // tests passed
 }
 
 /**

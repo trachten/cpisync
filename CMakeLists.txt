@@ -66,7 +66,7 @@ add_library(cpisynclib ${SOURCE_FILES} ${SRC_DIR}/main.cpp)
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
-target_link_libraries(TryMe cpisynclib ntl cppunit pthread gmp)
+target_link_libraries(TryMe cpisynclib ntl cppunit )
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add
@@ -77,7 +77,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit pthread gmp)
+        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

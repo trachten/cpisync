@@ -14,6 +14,7 @@ class CPISyncTest : public CPPUNIT_NS::TestFixture {
 
 CPPUNIT_TEST_SUITE(CPISyncTest);
 CPPUNIT_TEST(testCPIAddDelElem);
+CPPUNIT_TEST(testInterCPIAddDelElem);
 CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -27,6 +28,9 @@ public:
 	 * Test adding and deleting elements
 	 */
 	void testCPIAddDelElem();
+
+	void testInterCPIAddDelElem();
+
 };
 
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(CPISyncTest, CPISyncTest);

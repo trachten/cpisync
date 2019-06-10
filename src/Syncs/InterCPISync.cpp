@@ -53,7 +53,7 @@ bool InterCPISync::delElem(DataObject* datum) {
     Logger::gLog(Logger::METHOD,"Entering InterCPISync::delElem");
     if(!SyncMethod::delElem(datum)) return false; // run the parent's version first
 
-    Logger::gLog(Logger::METHOD_DETAILS, ". (InterCPISync) removing item " + datum->print()); // log the action
+    Logger::gLog(Logger::METHOD_DETAILS, ". (InterCPISync) removing item " + datum->print());
 
     if(treeNode == nullptr){
         Logger::error("No elements are present in this sync object");
@@ -66,7 +66,7 @@ bool InterCPISync::delElem(DataObject* datum) {
         if(treeNode->getDatum()->delElem(datum)) {
             while (temp->child[0] != NULL){
                 for(int ii = 0; ii < arity; ii++){
-                    //If delete succeeds the element that you are looking for can only be a child of that node so search its children
+                    //If delete succeeds, the element that you are looking for can only be a child of that node so search its children
                     if(temp->child[ii]->getDatum()->delElem(datum)){
                         temp = temp->child[ii];
                         break;

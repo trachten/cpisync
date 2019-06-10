@@ -19,7 +19,7 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 10; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 2; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
@@ -415,19 +415,18 @@ inline vector<GenSync> fileCombos() {
  * @return Returns true if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false,bool syncParamTest=false) {
-    for(int ii = 0; ii <2; ii++ ){
+    for(int ii = 0; ii < NUM_TESTS; ii++ ){
 		// setup DataObjects
 		const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
 		const unsigned char CLIENT_MINUS_SERVER = randByte(); // amt of elems unique to client
 		const unsigned char SERVER_MINUS_CLIENT = randByte(); // amt of elems unique to server
 
 		vector<DataObject*> objectsPtr;
-		list<DataObject*> mylist;
 
 		for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
 			objectsPtr.push_back(new DataObject(randZZ())); //(this is a memory leak)
-			mylist.push_back(objectsPtr[ii]);
 		}
+
 		ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested (this is a memory leak)
 		objectsPtr.push_back(new DataObject(*last));
 
@@ -447,7 +446,8 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 			 iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
 			GenSyncClient.addElem(*iter);
 			GenSyncServer.addElem(*iter);
-		}
+		}		GenSyncClient.delElem();
+		GenSyncServer.delElem();
 
 		// ensure that adding a object that fits the generic type T works
 		GenSyncClient.addElem(last);
@@ -465,16 +465,14 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 
 		//Clear all dynamically allocated memory
 		for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin(); iter++) {
-			delete *iter;
+            GenSyncClient.delElem(*iter);
+            GenSyncServer.delElem(*iter);
+		    delete *iter;
 		}
-
-		GenSyncClient.delElemGroup(mylist);
-		GenSyncServer.delElemGroup(mylist);
 
 		objectsPtr.clear();
 		objectsPtr.shrink_to_fit();
 
-		mylist.clear();
 	}
     return true; // tests passed
 }

@@ -203,6 +203,7 @@ bool GenSync::delElem(DataObject* delData) {
         }
     }
 
+    //Check that myData's size has decreased by 1
     int beforeSize = myData.size();
     myData.remove(deleteAddress);
     return myData.size() == beforeSize - 1;

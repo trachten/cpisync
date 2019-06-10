@@ -711,12 +711,15 @@ bool CPISync::delElem(DataObject * newDatum) {
 
     ZZ_p hashID;
     // remove data from the hash table. to find the value, a linear search is required
-    for(auto iter = CPI_hash.begin(); iter != CPI_hash.end(); iter++) {
-        if(iter->second == newDatum) {
-            hashID = to_ZZ_p(iter->first);
-            CPI_hash.erase(iter);
-        }
-    }
+	auto itr = CPI_hash.begin();
+	while (itr != CPI_hash.end()) {
+		if (itr->second == newDatum) {
+			hashID = to_ZZ_p(itr->first);
+			CPI_hash.erase(itr++);  // <--- Note the post-increment!
+		} else {
+			++itr;
+		}
+	}
 
     // update cpi evals
     for(int ii = 0; ii < sampleLoc.length(); ii++) {

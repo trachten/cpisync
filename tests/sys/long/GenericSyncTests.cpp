@@ -56,7 +56,6 @@ void GenSyncTest::testAddRemoveElems() {
 
         for (auto dop : objectsPtr) {
             genSync.addElem(dop);
-
             // store a multiset of the expected dataset's string representation
             objectsStr.insert(dop->print());
         }
@@ -73,13 +72,10 @@ void GenSyncTest::testAddRemoveElems() {
 
         CPPUNIT_ASSERT(multisetDiff(res, objectsStr).empty());
 
-        auto myObj = new DataObject(*last);
-
         for(auto elem : objectsPtr) {
             genSync.delElem(elem);
-
         }
-        genSync.delElem(myObj);
+        genSync.delElem(lastData);
         CPPUNIT_ASSERT(genSync.dumpElements().empty());
     }
 
@@ -196,7 +192,7 @@ void GenSyncTest::testTwoWaySync() {
 
     // sync every GenSync configuration with itself
     for(int ii = 0; ii < twoWayClient.size(); ii++) {
-		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii)));
+    	CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii)));
         Logger::gLog(Logger::TEST,"Test with client="+twoWayClient[ii].getName()+
         ", server="+twoWayServer[ii].getName()+") succeeded.");
     }

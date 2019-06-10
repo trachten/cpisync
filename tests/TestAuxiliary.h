@@ -362,7 +362,7 @@ inline vector<GenSync> fileCombos() {
 											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
 				}
 				else {
-					clientReconcileSuccess &= (resClient == reconciled);
+					clientReconcileSuccess = clientReconcileSuccess && (resClient == reconciled);
 				}
 			}
 		}
@@ -387,7 +387,8 @@ inline vector<GenSync> fileCombos() {
 				// True iff the reconciled set contains at least one more element than it did before reconciliation
 				// and the elements added during reconciliation were elements that the server was lacking that the client had
 				bool serverReconcileSuccess = resServer.size() > (SIMILAR + SERVER_MINUS_CLIENT) &&
-											  multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && serverReport.success;
+											  multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER +
+											  SERVER_MINUS_CLIENT) && serverReport.success;
 
 				if (oneWay) return (serverReconcileSuccess);
 				else return (serverReconcileSuccess && success_signal);
@@ -423,7 +424,7 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 
 		vector<DataObject*> objectsPtr;
 
-		for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
+		for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; jj++) {
 			objectsPtr.push_back(new DataObject(randZZ())); //(this is a memory leak)
 		}
 
@@ -446,8 +447,7 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 			 iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
 			GenSyncClient.addElem(*iter);
 			GenSyncServer.addElem(*iter);
-		}		GenSyncClient.delElem();
-		GenSyncServer.delElem();
+		}
 
 		// ensure that adding a object that fits the generic type T works
 		GenSyncClient.addElem(last);
@@ -458,16 +458,15 @@ inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=
 		for (auto dop : objectsPtr) {
 			reconciled.insert(dop->print());
 		}
-
 		//Returns a boolean value for the success of the synchronization
 		if (!syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR, CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled))
 			return false;
-
-		//Clear all dynamically allocated memory
-		for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin(); iter++) {
-            GenSyncClient.delElem(*iter);
-            GenSyncServer.delElem(*iter);
-		    delete *iter;
+		
+		//Remove elements from GenSync for reuse and clear dynamically allocated memory
+		for (auto iter : objectsPtr) {
+            GenSyncClient.GenSync::delElem(iter);
+            GenSyncServer.GenSync::delElem(iter);
+		    delete iter;
 		}
 
 		objectsPtr.clear();

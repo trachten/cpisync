@@ -157,7 +157,6 @@ bool GenSync::startSync(int method_num) {
 }
 
 // add element
-
 void GenSync::addElem(DataObject* newDatum) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
     // store locally
@@ -176,37 +175,40 @@ void GenSync::addElem(DataObject* newDatum) {
 }
 
 // delete element
-
 bool GenSync::delElem(DataObject* delData) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
+	int beforeSize = myData.size();
+	if(beforeSize != 0) {
+		//Remove data from the syncMethod
+		for (auto itAgt : mySyncVec) {
+			for (auto itr = itAgt->beginElements(); itr < itAgt->endElements(); ++itr) {
+				//Iterate through to find the address of the element to be deleted
+				if ((*itr)->to_string() == delData->to_string()) {
+					if (!(itAgt->delElem((*itr)))) {
+						Logger::error("Error deleting item. Found in genSync data but not in syncMethod data");
+						return false;
+					}
+					break;
+				}
+			}
+		}
 
-    //Remove data from the syncMethod
-    for (auto itAgt : mySyncVec) {
-        for (auto itr = itAgt->beginElements(); itr < itAgt->endElements(); ++itr) {
-            //Iterate through to find the address of the element to be deleted
-            if((*itr)->to_string() == delData->to_string()) {
-                if (!itAgt->delElem((*itr))){
-                    Logger::error("Error deleting item. Found in genSync data but not in syncMethod data");
-                    return false;
-                }
-            }
-        }
-    }
-
-    //Remove data from the genSync object
-    list<DataObject *> genSyncData = this->dumpElements();
-    DataObject* deleteAddress;
-    //Iterate through the genSyncs data and return the address of the element to be deleted
-    for (auto & itr : genSyncData){
-        if(itr->to_string() == delData->to_string()){
-            deleteAddress = itr;
-        }
-    }
-
-    //Check that myData's size has decreased by 1
-    int beforeSize = myData.size();
-    myData.remove(deleteAddress);
-    return myData.size() == beforeSize - 1;
+		//Remove data from the genSync object
+		list<DataObject *> genSyncData = this->dumpElements();
+		//Iterate through the genSyncs data and return the address of the element to be deleted
+		for (auto itr = myData.begin(); itr != myData.end(); ++itr) {
+			if ((*itr)->to_string() == delData->to_string()) {
+				itr = myData.erase(itr);
+				break;
+			}
+		}
+		//Check that myData's size has decreased by 1
+		return myData.size() == beforeSize - 1;
+	}
+	else{
+		Logger::error("genSync is empty");
+		return false;
+	}
 }
 
 // insert a communicant in the vector at the index position

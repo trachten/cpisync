@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 /* 
- * File:   InterCPISync.cpp
+ * File:   IncreCPI.cpp
  * Author: Ari Trachtenberg
  * 
  * Created on November 30, 2011, 10:46 PM
@@ -50,9 +50,35 @@ void InterCPISync::deleteTree(pTree *treeNode) {
 }
 
 bool InterCPISync::delElem(DataObject* datum) {
-  SyncMethod::delElem(datum); // run the parent's version first
-  throw UnimplementedMethodException("InterCPISync delete element");
-  treeNode->getDatum()->delElem(datum);
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::delElem");
+    if(!SyncMethod::delElem(datum)) return false; // run the parent's version first
+
+    Logger::gLog(Logger::METHOD_DETAILS, ". (InterCPISync) removing item " + datum->print()); // log the action
+
+    if(treeNode == nullptr){
+        Logger::error("No elements are present in this sync object");
+    }
+    else{
+        pTree* temp = treeNode;
+        long arity = treeNode->getArity();
+
+        //Delete from base node and move down the tree deleting from children
+        if(treeNode->getDatum()->delElem(datum)) {
+            while (temp->child[0] != NULL){
+                for(int ii = 0; ii < arity; ii++){
+                    //If delete succeeds the element that you are looking for can only be a child of that node so search its children
+                    if(temp->child[ii]->getDatum()->delElem(datum)){
+                        temp = temp->child[ii];
+                        break;
+                    }
+                }
+            }
+            //If delete succeeds on base node
+            return true;
+        }
+        //If delete fails on base node
+        else return false;
+    }
 }
 
 bool InterCPISync::addElem(DataObject* newDatum) {

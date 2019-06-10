@@ -289,6 +289,10 @@ public:
         return datum;
     }
 
+    long getArity(){
+        return arity;
+    }
+
     paryTree<T> **child; /** Full access to all the children of the node. */
 private:
     long arity;
@@ -391,7 +395,7 @@ inline ZZ min(const ZZ& aa, const ZZ& bb) {
  * @require srand() must've been called
  */
 inline int randLenBetween(int lower, int upper) {
-    int length = (rand() % (upper+1));
+    int length = (rand() % (upinper+1));
     if(length < lower) length = lower;
     return length;
 }
@@ -426,14 +430,6 @@ inline string randString(int lower=0, int upper=10) {
         str << (char) randByte(); // generate a random character and add to the stringstream
 
     return str.str();
-}
-
-/**
- * @return A random integer converted to a string
- * @require srand() must've been called
- */
-inline string randIntString() {
-    return toStr(rand());
 }
 
 /**

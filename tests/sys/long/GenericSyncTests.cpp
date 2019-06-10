@@ -39,6 +39,7 @@ void GenSyncTest::testAddRemoveElems() {
 
     // create one object that is convertible to a DataObject
     ZZ *last = new ZZ(randZZ());
+    auto lastData = new DataObject(*last);
 
     // create elts-1 random DataObjects (the last element will be `last`)
     for (unsigned long ii = 0; ii < ELTS - 1; ii++) {
@@ -50,7 +51,7 @@ void GenSyncTest::testAddRemoveElems() {
     auto file = fileCombos();
     combos.insert(combos.end(), file.begin(), file.end());
 
-    for (GenSync genSync : combos) {
+    for (auto genSync:combos) {
         multiset<string> objectsStr;
 
         for (auto dop : objectsPtr) {
@@ -62,7 +63,7 @@ void GenSyncTest::testAddRemoveElems() {
 
         // add the ZZ, thus testing the generic addElem function
         genSync.addElem(last);
-        objectsStr.insert((new DataObject(*last))->print());
+        objectsStr.insert(lastData->print());
 
         // create a multiset containing the string representation of objects stored in GenSync
         multiset<string> res;
@@ -72,13 +73,22 @@ void GenSyncTest::testAddRemoveElems() {
 
         CPPUNIT_ASSERT(multisetDiff(res, objectsStr).empty());
 
-        // TODO: uncomment when GenSync::delElem is implemented
-//        for(auto dop : objectsPtr) {
-//            genSync.delElem(dop);
-//        }
-//        CPPUNIT_ASSERT(genSync.dumpElements().empty());
+        auto myObj = new DataObject(*last);
+
+        for(auto elem : objectsPtr) {
+            genSync.delElem(elem);
+
+        }
+        genSync.delElem(myObj);
+        CPPUNIT_ASSERT(genSync.dumpElements().empty());
     }
 
+    //Mem clean-up
+    delete lastData;
+    delete last;
+    for(auto & ptr : objectsPtr){
+        delete ptr;
+    }
 }
 
 void GenSyncTest::testAddRemoveSyncMethodAndComm() {
@@ -138,7 +148,7 @@ void GenSyncTest::testCounters() {
     GenSync genSyncOther({make_shared<CommSocket>(port)}, {make_shared<ProbCPISync>(mBar, eltSizeSq, err)});
 
     // since no sync has happened yet, getSyncTime should report the time since the Communicant at idx #0's creation
-    CPPUNIT_ASSERT_DOUBLES_EQUAL((double) cs->getTotalTime() / CLOCKS_PER_SEC, genSync.getSyncTime(0), 1.0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL((double) cs->getTotalTime() / CLOCKS_PER_SEC, genSync.getSyncTime(0), 1.5);
 
     // perform the sync-tests on both GenSync objects. this will result in bytes being transmitted and received.
 

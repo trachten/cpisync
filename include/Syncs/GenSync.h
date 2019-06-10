@@ -88,7 +88,7 @@ public:
      * the global toStr templated function.
      * %R:  newDatum cannot have size larger than a long
      * %M:  If a file is associated with this object, then updates are stored in that file.
-     *      *    */
+    */
     template <typename T>
     void addElem(T* newDatum) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
@@ -97,19 +97,17 @@ public:
     }
 
     /**
-     * Deletes a given element from the GenSync data structure
-     * Not currently implemented.
-     * @unimplemented
+     * Deletes an element from the GenSync data structure
+     * and internal syncMethods by value
+     * @param delData a DataObject that contains the data that you would like to delete from the sync
+     * @return True if the delete appears to have completed successfully, false otherwise
      */
-    static void delElem(DataObject* newDatum);
+    bool delElem(DataObject* delData);
 
-	void delElemGroup(list<DataObject *> deleteList);
-
-
-		/**
-		 * @return a list of pointers to the elements stored in the data structure
-		 */// get a data object element from data list
-    const list<DataObject *> dumpElements();
+    /**
+     * @return a list of pointers to the elements stored in the data structure
+     */
+     const list<DataObject *> dumpElements();
 
 
     // COMMUNICANT MANIPULATION

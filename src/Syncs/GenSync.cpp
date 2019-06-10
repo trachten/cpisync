@@ -177,41 +177,36 @@ void GenSync::addElem(DataObject* newDatum) {
 
 // delete element
 
-void GenSync::delElem(DataObject* newDatum) {
-    throw UnimplementedMethodException("GenSync::delElem");
+bool GenSync::delElem(DataObject* delData) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
+
+    //Remove data from the syncMethod
+    for (auto itAgt : mySyncVec) {
+        for (auto itr = itAgt->beginElements(); itr < itAgt->endElements(); ++itr) {
+            //Iterate through to find the address of the element to be deleted
+            if((*itr)->to_string() == delData->to_string()) {
+                if (!itAgt->delElem((*itr))){
+                    Logger::error("Error deleting item. Found in genSync data but not in syncMethod data");
+                    return false;
+                }
+            }
+        }
+    }
+
+    //Remove data from the genSync object
+    list<DataObject *> genSyncData = this->dumpElements();
+    DataObject* deleteAddress;
+    //Iterate through the genSyncs data and return the address of the element to be deleted
+    for (auto & itr : genSyncData){
+        if(itr->to_string() == delData->to_string()){
+            deleteAddress = itr;
+        }
+    }
+
+    int beforeSize = myData.size();
+    myData.remove(deleteAddress);
+    return myData.size() == beforeSize - 1;
 }
-
-/**
- *
- * @param deleteList A list of the elements that you would like to delete from your GenSync
- */
-void GenSync::delElemGroup(list<DataObject *> deleteList) {
-	Logger::gLog(Logger::METHOD, "Entering GenSync::delElemGroup");
-
-	std::map<ZZ, bool> delmap;
-	for (auto it : deleteList) {
-		delmap[it->to_ZZ()] = true;
-	}
-
-	list<DataObject *> lst;
-	for (auto item : myData) {
-		if (delmap.find(item->to_ZZ()) != delmap.end()) {
-			lst.push_back(item);
-			for (auto itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt) {
-				//Call the delElem function for the specific sync method
-				if (!(*itAgt)->delElem(item)) {
-					Logger::error("Could not delete one or more of the items requested. Check that the item is present");
-				}
-			}
-		}
-	}
-
-	for (auto it = lst.begin(); it != lst.end(); ++it) {
-		myData.remove(*it);
-	}
-}
-
-
 
 // insert a communicant in the vector at the index position
 

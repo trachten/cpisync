@@ -82,6 +82,6 @@ void CPISyncTest::testInterCPIAddDelElem() {
 		CPPUNIT_ASSERT(interCPIsync.delElem(dop));
 	}
 
-	CPPUNIT_ASSERT((interCPIsync.getTree())->getDatum()->printElem().empty());
+	CPPUNIT_ASSERT(interCPIsync.getTree() == nullptr);
 }
 

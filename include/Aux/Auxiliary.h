@@ -289,10 +289,6 @@ public:
         return datum;
     }
 
-    long getArity(){
-        return arity;
-    }
-
     paryTree<T> **child; /** Full access to all the children of the node. */
 private:
     long arity;

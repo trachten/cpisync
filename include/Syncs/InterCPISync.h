@@ -104,11 +104,11 @@ public:
                 + ", pFactor = " + toStr(pFactor);
                
     }
-     int treeRange;
 
     pTree* getTree(){
     	return treeNode;
     }
+
 protected:
 
     pTree *treeNode; /** A tree of CPISync'ed data.  Each tree node is responsible for a specific range of the

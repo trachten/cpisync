@@ -16,7 +16,6 @@ class IBLTSyncTest : public CPPUNIT_NS::TestFixture {
         CPPUNIT_TEST(testAddDelElem);
         CPPUNIT_TEST(testGetStrings);
 		CPPUNIT_TEST(testIBLTParamMismatch);
-		//CPPUNIT_TEST(largeInputTest);
 
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -49,7 +48,6 @@ public:
 	/**
  	* Test that IBLT Functions properly for very large inputs
  	*/
-	//void largeInputTest();
 };
 
 #endif //CPISYNCLIB_IBLTSYNCTEST_H

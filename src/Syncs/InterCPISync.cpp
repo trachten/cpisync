@@ -37,16 +37,18 @@ InterCPISync::~InterCPISync() {
   deleteTree(treeNode);
 }
 
-void InterCPISync::deleteTree(pTree *treeNode) {
-  Logger::gLog(Logger::METHOD,"Entering InterCPISync::deleteTree");
-    if (treeNode == nullptr)
-      return; // i.e. nothing to do
-    else {
-      for (int ii = 0; ii < pFactor; ii++) {
-        deleteTree(treeNode->child[ii]);
-      }
-    delete treeNode;
-  }
+void InterCPISync::deleteTree(pTree *node){
+	Logger::gLog(Logger::METHOD,"Entering InterCPISync::deleteTree");
+	if (node == nullptr)
+		return; // i.e. nothing to do
+	else {
+		for (int ii = 0; ii < pFactor; ii++) {
+			if(node->child[ii] != nullptr) {
+				deleteTree(node->child[ii]);
+			}
+		}
+		delete node;
+	}
 }
 
 bool InterCPISync::delElem(DataObject* datum) {
@@ -60,23 +62,43 @@ bool InterCPISync::delElem(DataObject* datum) {
     }
     else{
         pTree* temp = treeNode;
-        long arity = treeNode->getArity();
 
         //Delete from base node and move down the tree deleting from children
         if(treeNode->getDatum()->delElem(datum)) {
-            while (temp->child[0] != NULL){
-                for(int ii = 0; ii < arity; ii++){
-                    //If delete succeeds, the element that you are looking for can only be a child of that node so search its children
-                    if(temp->child[ii]->getDatum()->delElem(datum)){
-                        temp = temp->child[ii];
-                        break;
-                    }
+        	//If the parent node is empty delete the tree and return
+        	if(treeNode->getDatum()->printElem().empty()){
+        		deleteTree(treeNode);
+        		treeNode = nullptr;
+        		return true;
+        	}
+            //Break when you reach a node with no children (or a node without the correct datum) 2nd cond shouldn't occur
+        	while (true){
+        		bool breakFlag = true;
+                //itterate through each child
+            	for(int ii = 0; ii < pFactor; ii++){
+            		//Skip over children that don't exist
+            		if(temp->child[ii] != nullptr) {
+						//If delete succeeds, search the children of that node for the relevant data
+						if (temp->child[ii]->getDatum()->delElem(datum)) {
+							//Check if a node is empty. If it is delete it and all of its children
+							if (temp->getDatum()->printElem().empty()) {
+								deleteTree(temp);
+								temp = nullptr;
+								break;
+							}
+							else{
+								temp = temp->child[ii];
+								breakFlag = false;
+								break;
+							}
+						}
+					}
                 }
+            	//Break if data was not found in one of the children
+            	if(breakFlag) break;
             }
-            //If delete succeeds on base node
             return true;
         }
-        //If delete fails on base node
         else return false;
     }
 }

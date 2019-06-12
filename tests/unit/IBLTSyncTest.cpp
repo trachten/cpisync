@@ -14,7 +14,7 @@ IBLTSyncTest::IBLTSyncTest() = default;
 IBLTSyncTest::~IBLTSyncTest() = default;
 
 void IBLTSyncTest::setUp() {
-    const int SEED = 91;
+    const int SEED = 93;
     srand(SEED);
 }
 
@@ -41,6 +41,7 @@ void IBLTSyncTest::IBLTSyncReconcileTest() {
 
 		//(oneWay = false, probSync = true)
 		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false,true));
+
 	}
 }
 

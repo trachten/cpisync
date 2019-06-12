@@ -31,7 +31,7 @@ const string host = "localhost"; // host for CommSocket
 const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
-const int numExpElem = UCHAR_MAX + 60; // max elements in an IBLT for IBLT syncs
+const int numExpElem = UCHAR_MAX + mBar; // max elements in an IBLT for IBLT syncs
 const int LENGTH_LOW = 1; //Lower limit of string length for testing
 const int LENGTH_HIGH = 100; //Upper limit of string length for testing
 const int TIMES = 100; //Times to run commSocketTest
@@ -356,10 +356,8 @@ inline vector<GenSync> fileCombos() {
 			//If syncParamTest only the result of the fork handle is relevant
 			if (!syncParamTest) {
 				if (probSync) {
-					// True iff the reconciled set contains at least one more element than it did before reconciliation
-					// and the elements added during reconciliation were elements that the client was lacking that the server had
-					clientReconcileSuccess &= resClient.size() > (SIMILAR + CLIENT_MINUS_SERVER) &&
-											  multisetDiff(reconciled, resClient).size() <
+					// True if the elements added during reconciliation were elements that the client was lacking that the server had
+					clientReconcileSuccess &= multisetDiff(reconciled, resClient).size() <
 											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
 				}
 				else {
@@ -385,10 +383,8 @@ inline vector<GenSync> fileCombos() {
 		}
 		if(!syncParamTest){
 			if (probSync) {
-				// True iff the reconciled set contains at least one more element than it did before reconciliation
-				// and the elements added during reconciliation were elements that the server was lacking that the client had
-				bool serverReconcileSuccess = resServer.size() > (SIMILAR + SERVER_MINUS_CLIENT) &&
-											  multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER +
+				// True if the elements added during reconciliation were elements that the server was lacking that the client had
+				bool serverReconcileSuccess = multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER +
 											  SERVER_MINUS_CLIENT) && serverReport.success;
 
 				if (oneWay) return (serverReconcileSuccess);
@@ -423,9 +419,16 @@ inline bool syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay =
 	const unsigned char SERVER_MINUS_CLIENT = rand() % (mBar/2) + 1; // amt of elems unique to server
 
 	vector<DataObject*> objectsPtr;
+	set<ZZ> dataSet;
 
 	for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; jj++) {
-		objectsPtr.push_back(new DataObject(randZZ()));
+		ZZ data = randZZ();
+		//Checks if elements have already been added before adding them to objectsPtr
+		while(!get<1>(dataSet.insert(data))){
+			data = randZZ();
+		}
+
+		objectsPtr.push_back(new DataObject(data));
 	}
 
 	ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested

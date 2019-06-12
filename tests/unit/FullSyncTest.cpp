@@ -19,7 +19,7 @@ FullSyncTest::FullSyncTest() = default;
 FullSyncTest::~FullSyncTest() = default;
 
 void FullSyncTest::setUp() {
-    const int SEED = 91;
+    const int SEED = 941;
     srand(SEED);
 }
 

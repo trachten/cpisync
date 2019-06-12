@@ -26,7 +26,7 @@ void FullSyncTest::setUp() {
 void FullSyncTest::tearDown() {
 }
 
-void FullSyncTest::justSyncTest() {
+void FullSyncTest::FullSyncReconcileTest() {
 	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
 		GenSync GenSyncServer = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::FullSync).
@@ -37,8 +37,8 @@ void FullSyncTest::justSyncTest() {
 				setProtocol(GenSync::SyncProtocol::FullSync).
 				setComm(GenSync::SyncComm::socket).
 				build();
-
-		CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient));
+		//(oneWay = false, probSync = false)
+		CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient, false, false));
 	}
 }
 

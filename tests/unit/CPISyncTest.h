@@ -14,7 +14,10 @@ class CPISyncTest : public CPPUNIT_NS::TestFixture {
 
 CPPUNIT_TEST_SUITE(CPISyncTest);
 CPPUNIT_TEST(testCPIAddDelElem);
+//CPPUNIT_TEST(CPISyncReconcileTest);
 CPPUNIT_TEST(testInterCPIAddDelElem);
+//CPPUNIT_TEST(InterCPISyncReconcileTest);
+
 CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -24,12 +27,30 @@ public:
 	void setUp() override;
 	void tearDown() override;
 
+	//CPISync Test Cases
+
 	/**
-	 * Test adding and deleting elements
+	 * Test adding and deleting elements from CPISync
 	 */
 	void testCPIAddDelElem();
 
+	/**
+ 	* Test a synchronization with CPISync
+ 	*/
+	void CPISyncReconcileTest();
+
+
+	//InterCPISync Test cases
+
+	/**
+ 	* Test adding and deleting elements from InterCPISync
+ 	*/
 	void testInterCPIAddDelElem();
+
+	/**
+ 	* Test a synchronization with InterCPISync
+ 	*/
+	void InterCPISyncReconcileTest();
 
 };
 

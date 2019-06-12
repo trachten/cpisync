@@ -12,7 +12,7 @@
 class IBLTSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(IBLTSyncTest);
 
-        CPPUNIT_TEST(justSyncTest);
+        CPPUNIT_TEST(IBLTSyncReconcileTest);
         CPPUNIT_TEST(testAddDelElem);
         CPPUNIT_TEST(testGetStrings);
 		CPPUNIT_TEST(testIBLTParamMismatch);
@@ -28,7 +28,7 @@ public:
 	/**
 	 * Test reconciliation
 	 */
-    void justSyncTest();
+    void IBLTSyncReconcileTest();
 
 	/**
 	 * Test adding and deleting elements

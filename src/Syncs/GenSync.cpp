@@ -179,7 +179,7 @@ bool GenSync::delElem(DataObject* delData) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
 	int beforeSize = myData.size();
 	if(beforeSize != 0) {
-		//Remove data from the syncMethod
+		//Iterate through the syncVec and find the address of the element whose data is identical to delData
 		for (auto itAgt : mySyncVec) {
 			for (auto itr = itAgt->beginElements(); itr < itAgt->endElements(); ++itr) {
 				//Iterate through to find the address of the element to be deleted

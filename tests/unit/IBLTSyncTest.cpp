@@ -21,26 +21,26 @@ void IBLTSyncTest::setUp() {
 void IBLTSyncTest::tearDown() {
 }
 
-void IBLTSyncTest::justSyncTest() {
+void IBLTSyncTest::IBLTSyncReconcileTest() {
     const int BITS = sizeof(randZZ());
-    const int EXP_ELEM = UCHAR_MAX * 2;
 
 	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
 		GenSync GenSyncServer = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::IBLTSync).
 				setComm(GenSync::SyncComm::socket).
 				setBits(BITS).
-				setNumExpectedElements(EXP_ELEM).
+				setNumExpectedElements(numExpElem).
 				build();
 
 		GenSync GenSyncClient = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::IBLTSync).
 				setComm(GenSync::SyncComm::socket).
 				setBits(BITS).
-				setNumExpectedElements(EXP_ELEM).
+				setNumExpectedElements(numExpElem).
 				build();
 
-		CPPUNIT_ASSERT(syncTestProb(GenSyncClient, GenSyncServer));
+		//(oneWay = false, probSync = true)
+		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false,true));
 	}
 }
 
@@ -81,25 +81,24 @@ void IBLTSyncTest::testGetStrings() {
 
 void IBLTSyncTest::testIBLTParamMismatch(){
     const int BITS = sizeof(randZZ());
-    const int EXP_ELEM = UCHAR_MAX * 2;
-    const int EXP_ELEM_OTHER = EXP_ELEM + 100;
 
 	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
 		GenSync GenSyncServer = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::IBLTSync).
 				setComm(GenSync::SyncComm::socket).
 				setBits(BITS).
-				setNumExpectedElements(EXP_ELEM_OTHER).
+				//Different number of expectedElements to test mismatch failure
+				setNumExpectedElements(numExpElem + 100).
 				build();
 
 		GenSync GenSyncClient = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::IBLTSync).
 				setComm(GenSync::SyncComm::socket).
 				setBits(BITS).
-				setNumExpectedElements(EXP_ELEM).
+				setNumExpectedElements(numExpElem).
 				build();
 
 		//oneWay = false, prob = true, syncParamTest = true
-		CPPUNIT_ASSERT(!(_syncTest(GenSyncClient, GenSyncServer, false, true, true)));
+		CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, true, true)));
 	}
 }

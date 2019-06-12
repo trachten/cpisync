@@ -15,7 +15,7 @@
 class FullSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(FullSyncTest);
     
-    CPPUNIT_TEST(justSyncTest);
+    CPPUNIT_TEST(FullSyncReconcileTest);
     CPPUNIT_TEST(testAddDelElem);
     CPPUNIT_TEST(testGetStrings);
             
@@ -30,7 +30,7 @@ public:
 	/**
  	* Test reconciliation
  	*/
-    static void justSyncTest();
+    static void FullSyncReconcileTest();
 
 	/**
  	* Test adding and deleting elements

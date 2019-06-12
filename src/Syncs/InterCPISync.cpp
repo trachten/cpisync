@@ -43,9 +43,7 @@ void InterCPISync::deleteTree(pTree *node){
 		return; // i.e. nothing to do
 	else {
 		for (int ii = 0; ii < pFactor; ii++) {
-			if(node->child[ii] != nullptr) {
-				deleteTree(node->child[ii]);
-			}
+			deleteTree(node->child[ii]);
 		}
 		delete node;
 	}

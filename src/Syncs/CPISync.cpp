@@ -715,7 +715,7 @@ bool CPISync::delElem(DataObject * newDatum) {
 	while (itr != CPI_hash.end()) {
 		if (itr->second == newDatum) {
 			hashID = to_ZZ_p(itr->first);
-			CPI_hash.erase(itr++);  // <--- Note the post-increment!
+			CPI_hash.erase(itr++);
 		} else {
 			++itr;
 		}

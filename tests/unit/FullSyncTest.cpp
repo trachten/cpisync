@@ -38,7 +38,7 @@ void FullSyncTest::FullSyncReconcileTest() {
 				setComm(GenSync::SyncComm::socket).
 				build();
 		//(oneWay = false, probSync = false)
-		CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient, false, false));
+		CPPUNIT_ASSERT(syncTest(GenSyncClient,GenSyncServer,false, false));
 	}
 }
 

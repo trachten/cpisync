@@ -155,7 +155,7 @@ void GenSyncTest::testCounters() {
 	//(oneWay = false, probSync = false)
 	CPPUNIT_ASSERT(syncTest(genSyncOther, genSync, false, false));
     double after = (double) clock() / CLOCKS_PER_SEC;
-    double res = genSyncOther.getSyncTime(0);
+    double res = genSync.getSyncTime(0);
 
     // check that Communicant counters == the respective GenSync counters
     CPPUNIT_ASSERT_EQUAL(cs->getXmitBytes(), genSync.getXmitBytes(0));

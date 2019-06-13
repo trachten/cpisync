@@ -346,7 +346,6 @@ inline vector<GenSync> fileCombos() {
 			// reconcile client with server
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
-
 			multiset<string> resClient;
 			for (auto dop : GenSyncClient.dumpElements()) {
 				resClient.insert(dop->print());
@@ -357,8 +356,9 @@ inline vector<GenSync> fileCombos() {
 			if (!syncParamTest) {
 				if (probSync) {
 					// True if the elements added during reconciliation were elements that the client was lacking that the server had
-					clientReconcileSuccess &= multisetDiff(reconciled, resClient).size() <
-											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
+					// and if information was transmitted during the fork
+					clientReconcileSuccess &= (multisetDiff(reconciled, resClient).size() <
+											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && (clientReport.bytes > 0));
 				}
 				else {
 					clientReconcileSuccess = clientReconcileSuccess && (resClient == reconciled);
@@ -384,8 +384,9 @@ inline vector<GenSync> fileCombos() {
 		if(!syncParamTest){
 			if (probSync) {
 				// True if the elements added during reconciliation were elements that the server was lacking that the client had
+				// and if information was transmitted during the fork
 				bool serverReconcileSuccess = multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER +
-											  SERVER_MINUS_CLIENT) && serverReport.success;
+											  SERVER_MINUS_CLIENT) && serverReport.success && (serverReport.bytes > 0);
 
 				if (oneWay) return (serverReconcileSuccess);
 				else return (serverReconcileSuccess && success_signal);
@@ -412,7 +413,7 @@ inline vector<GenSync> fileCombos() {
  * of the sets (For parameter mismatch testing)
  * @return Returns true if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
-inline bool syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay = false, bool probSync = false, bool syncParamTest = false) {
+inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false, bool syncParamTest = false) {
 	// setup DataObjects
 	const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs
 	const unsigned char CLIENT_MINUS_SERVER = rand() % (mBar/2) + 1; // amt of elems unique to client

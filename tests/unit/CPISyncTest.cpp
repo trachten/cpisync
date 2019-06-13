@@ -55,7 +55,29 @@ void CPISyncTest::testCPIAddDelElem() {
 }
 
 void CPISyncTest::CPISyncReconcileTest() {
+	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
+		GenSync GenSyncServer = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::CPISync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSizeSq).
+				setMbar(mBar).
+				setErr(err).
+				build();
 
+		GenSync GenSyncClient = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::CPISync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSizeSq).
+				setMbar(mBar).
+				setErr(err).
+				build();
+
+		//(oneWay = false, probSync = false)
+		//CPISync does have a very small probability of failure but is not a probabilistic sync because it doesn't do partial reconcilliation
+		//CPISync can also fail if mBar is smaller than the number of differences but the differences have been capped by mbar for this test
+		//probSync false does a more complete check of the functionality of CPISync and passes the first 10,000 test cases at least with this seed
+		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
+	}
 }
 
 //InterCPISync Test Cases
@@ -95,5 +117,27 @@ void CPISyncTest::testInterCPIAddDelElem() {
 }
 
 void CPISyncTest::InterCPISyncReconcileTest() {
+	const int interCPImBar = 2;
+	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
+		GenSync GenSyncServer = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSizeSq).
+				setMbar(interCPImBar).
+				setNumPartitions(numParts).
+				build();
 
+		GenSync GenSyncClient = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSizeSq).
+				setMbar(interCPImBar).
+				setNumPartitions(numParts).
+				build();
+
+		//(oneWay = false, probSync = false)
+		//probSync = false here for the same reason that it is false for CPISync. See CPISyncReconcileTest comments
+		//InterCPISync however can not fail due to mBar being too small
+		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
+	}
 }

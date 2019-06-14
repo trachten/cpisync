@@ -19,7 +19,7 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 100; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 3; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
@@ -31,7 +31,7 @@ const string host = "localhost"; // host for CommSocket
 const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
-const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs
+const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs (
 const int LENGTH_LOW = 1; //Lower limit of string length for testing
 const int LENGTH_HIGH = 100; //Upper limit of string length for testing
 const int TIMES = 100; //Times to run commSocketTest
@@ -483,6 +483,7 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 }
 
 /**
+ * This function handles the server client fork in CommSocketTest and is wrapped in a timer in the actual test
  * @port The port that the commSockets will make a connection on (8001)
  * @host The host that the commSockets will use (localhost)
  */

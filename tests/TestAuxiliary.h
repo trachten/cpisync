@@ -19,11 +19,11 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 10; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 100; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
-const int mBar = 60; // max differences between client and server in sync tests
+const int mBar = 2 * UCHAR_MAX; // max differences between client and server in sync tests
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
@@ -31,11 +31,11 @@ const string host = "localhost"; // host for CommSocket
 const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for probabilistic syncs
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
-const int numExpElem = UCHAR_MAX + mBar; // max elements in an IBLT for IBLT syncs
+const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs
 const int LENGTH_LOW = 1; //Lower limit of string length for testing
 const int LENGTH_HIGH = 100; //Upper limit of string length for testing
 const int TIMES = 100; //Times to run commSocketTest
-const int WAIT_TIME = 1; // Time to wait before terminating commSocketTest
+const int WAIT_TIME = 1; // Seconds to wait before terminating commSocketTest
 
 
 // helpers
@@ -358,7 +358,8 @@ inline vector<GenSync> fileCombos() {
 					// True if the elements added during reconciliation were elements that the client was lacking that the server had
 					// and if information was transmitted during the fork
 					clientReconcileSuccess &= (multisetDiff(reconciled, resClient).size() <
-											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && (clientReport.bytes > 0));
+											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && (clientReport.bytes > 0)
+											  && (resClient.size() > SIMILAR + CLIENT_MINUS_SERVER));
 				}
 				else {
 					clientReconcileSuccess = clientReconcileSuccess && (resClient == reconciled);
@@ -386,7 +387,8 @@ inline vector<GenSync> fileCombos() {
 				// True if the elements added during reconciliation were elements that the server was lacking that the client had
 				// and if information was transmitted during the fork
 				bool serverReconcileSuccess = multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER +
-											  SERVER_MINUS_CLIENT) && serverReport.success && (serverReport.bytes > 0);
+											  SERVER_MINUS_CLIENT) && serverReport.success && (serverReport.bytes > 0)
+											  && (resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
 
 				if (oneWay) return (serverReconcileSuccess);
 				else return (serverReconcileSuccess && success_signal);
@@ -415,9 +417,9 @@ inline vector<GenSync> fileCombos() {
  */
 inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false, bool syncParamTest = false) {
 	// setup DataObjects
-	const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs
-	const unsigned char CLIENT_MINUS_SERVER = rand() % (mBar/2) + 1; // amt of elems unique to client
-	const unsigned char SERVER_MINUS_CLIENT = rand() % (mBar/2) + 1; // amt of elems unique to server
+	const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
+	const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
+	const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
 
 	vector<DataObject*> objectsPtr;
 	set<ZZ> dataSet;

@@ -55,8 +55,8 @@ private:
     void testToZZAndInitZZ();
 
     /**
- * Tests DataObject::to_string and constructing a DataObject from a random string
- */
+ 	* Tests DataObject::to_string and constructing a DataObject from a random string
+	 */
     static void testToStringAndInitString();
 
 	/**

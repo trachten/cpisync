@@ -36,6 +36,9 @@ public:
 
 	/**
  	* Test a synchronization with CPISync
+	 * CPISync does have a very small probability of failure but is not a probabilistic sync because it doesn't do partial reconcilliation
+	 * CPISync can also fail if mBar is smaller than the number of differences but the differences have been capped by mbar for this test
+	 * probSync false does a more complete check of the functionality of CPISync and passes the first 10,000 test cases with this seed
  	*/
 	void CPISyncReconcileTest();
 
@@ -48,7 +51,10 @@ public:
 	void testInterCPIAddDelElem();
 
 	/**
- 	* Test a synchronization with InterCPISync
+ 	 * Test a synchronization with InterCPISync
+	 * InterCPISync is tested with prob = false for the same reason as CPISYnc but InterCPISync does not have mBar < m as a
+	 * fail condition because it will recurse and break the set into p smaller sets recursively until the sync is successful
+	 *
  	*/
 	void InterCPISyncReconcileTest();
 

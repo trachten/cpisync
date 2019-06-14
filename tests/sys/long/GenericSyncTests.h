@@ -33,34 +33,59 @@ public:
     void setUp() override;
     void tearDown() override;
 
-    // Test that GenSyncs constructed using GenSync::Builder create equivalent GenSyncs to those constructed using the standard constructor
+	/**
+	* Test that GenSyncs constructed using the GenSync::Builder helper class create equivalent GenSyncs to those
+	* constructed using the standard constructor
+	*/
     static void testBuilder();
 
-    // Test syncing GenSyncs with two-way SyncMethods
+	/**
+	* Test syncing all GenSyncs with two-way SyncMethods
+	* i.e all sync methods that are able to update both the client and server
+	*/
+
     static void testTwoWaySync();
 
-    // Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
+	/**
+	* Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
+	*/
     static void testTwoWayProbSync();
 
-    // Test syncing GenSyncs with one-way SyncMethods
+	/**
+	* Test syncing GenSyncs with one-way SyncMethods
+	* i.e one of the parties in the sync does not update its set to match the other
+	*/
     static void testOneWaySync();
 
+	/**
+	*
+	*/
     // Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
     static void testOneWayProbSync();
 
-    // Test that GenSync::getName returns some nonempty string
+	/**
+	* Test that GenSync::getName returns some nonempty string
+	*/
     static void testGetName();
 
-    // Test adding and removing data from GenSync
+	/**
+	* Test adding and removing data from GenSync
+	*/
     void testAddRemoveElems();
 
-    // Test adding and removing SyncMethods and Communicants from GenSync
+	/**
+	* Test adding and removing SyncMethods and Communicants from GenSync
+	*/
     static void testAddRemoveSyncMethodAndComm();
 
-    // Test sync time and bytes-exchanged counters
+	/**
+	* Test sync time and bytes-exchanged counters
+	*/
     static void testCounters();
 
-    // Tests getPort
+	/**
+	* Tests getPort
+	*/
     static void testPort();
 
 private:

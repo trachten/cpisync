@@ -100,6 +100,7 @@ void IBLTSyncTest::testIBLTParamMismatch(){
 				build();
 
 		//oneWay = false, prob = true, syncParamTest = true
+
 		CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, true, true)));
 	}
 }

@@ -99,15 +99,15 @@ public:
     /**
      * Deletes an element from the GenSync data structure
      * and internal syncMethods by value
-     * @param delData a DataObject that contains the data that you would like to delete from the sync
+     * @param delPtr a DataObject that contains the data that you would like to delete from the sync
      * @return True if the delete appears to have completed successfully, false otherwise
      */
-    bool delElem(DataObject* delData);
+    bool delElem(DataObject* delPtr);
 
     /**
-     * @return a list of pointers to the elements stored in the data structure
+     * @return a list of string representations of the elements stored in the data structure
      */
-     const list<DataObject *> dumpElements();
+     const list<string> dumpElements();
 
 
     // COMMUNICANT MANIPULATION

@@ -19,7 +19,7 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 3; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
@@ -348,7 +348,7 @@ inline vector<GenSync> fileCombos() {
 
 			multiset<string> resClient;
 			for (auto dop : GenSyncClient.dumpElements()) {
-				resClient.insert(dop->print());
+				resClient.insert(dop);
 			}
 
 			clientReconcileSuccess = clientReport.success;
@@ -357,9 +357,9 @@ inline vector<GenSync> fileCombos() {
 				if (probSync) {
 					// True if the elements added during reconciliation were elements that the client was lacking that the server had
 					// and if information was transmitted during the fork
-					clientReconcileSuccess &= (multisetDiff(reconciled, resClient).size() <
-											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && (clientReport.bytes > 0)
-											  && (resClient.size() > SIMILAR + CLIENT_MINUS_SERVER));
+					clientReconcileSuccess &= (multisetDiff(reconciled, resClient).size() < (SERVER_MINUS_CLIENT)
+											&& (clientReport.bytes > 0)
+											&& (resClient.size() > SIMILAR + CLIENT_MINUS_SERVER));
 				}
 				else {
 					clientReconcileSuccess = clientReconcileSuccess && (resClient == reconciled);
@@ -380,14 +380,14 @@ inline vector<GenSync> fileCombos() {
 		forkHandleReport serverReport = forkHandle(GenSyncServer, GenSyncClient);
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements()) {
-			resServer.insert(dop->print());
+			resServer.insert(dop);
 		}
 		if(!syncParamTest){
 			if (probSync) {
 				// True if the elements added during reconciliation were elements that the server was lacking that the client had
 				// and if information was transmitted during the fork
-				bool serverReconcileSuccess = multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER +
-											  SERVER_MINUS_CLIENT) && serverReport.success && (serverReport.bytes > 0)
+				bool serverReconcileSuccess = multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER)
+											  && serverReport.success && (serverReport.bytes > 0)
 											  && (resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
 
 				if (oneWay) return (serverReconcileSuccess);
@@ -401,7 +401,6 @@ inline vector<GenSync> fileCombos() {
 			return serverReport.success;
 		}
 	}
-
 	return false; // should never get here
 }
 
@@ -413,7 +412,7 @@ inline vector<GenSync> fileCombos() {
  * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
  * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
  * of the sets (For parameter mismatch testing)
- * @return Returns true if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
+ * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false, bool syncParamTest = false) {
 	// setup DataObjects

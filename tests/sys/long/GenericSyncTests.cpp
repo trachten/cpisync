@@ -67,7 +67,7 @@ void GenSyncTest::testAddRemoveElems() {
         // create a multiset containing the string representation of objects stored in GenSync
         multiset<string> res;
         for (auto dop : genSync.dumpElements()) {
-            res.insert(dop->print());
+            res.insert(dop);
         }
 
         CPPUNIT_ASSERT(multisetDiff(res, objectsStr).empty());

@@ -175,35 +175,22 @@ void GenSync::addElem(DataObject* newDatum) {
 }
 
 // delete element
-bool GenSync::delElem(DataObject* delData) {
-    Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
-	int beforeSize = myData.size();
-	if(beforeSize != 0) {
-		//Iterate through the syncVec and find the address of the element whose data is identical to delData
+bool GenSync::delElem(DataObject* delPtr) {
+	Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
+	if (!myData.empty()) {
+		//Iterate through mySyncVec and call that sync's delElem method
 		for (auto itAgt : mySyncVec) {
-			for (auto itr = itAgt->beginElements(); itr < itAgt->endElements(); ++itr) {
-				//Iterate through to find the address of the element to be deleted
-				if ((*itr)->to_string() == delData->to_string()) {
-					if (!(itAgt->delElem((*itr)))) {
-						Logger::error("Error deleting item. Found in genSync data but not in syncMethod data");
-						return false;
-					}
-					break;
-				}
+			//TODO:Change this to search for the actual data value rather than the address
+			if (!itAgt->delElem(delPtr)) {
+				Logger::error("Error deleting item. Found in genSync data but not in syncMethod data");
+				return false;
 			}
 		}
 
-		//Remove data from the genSync object
-		list<DataObject *> genSyncData = this->dumpElements();
-		//Iterate through the genSyncs data and return the address of the element to be deleted
-		for (auto itr = myData.begin(); itr != myData.end(); ++itr) {
-			if ((*itr)->to_string() == delData->to_string()) {
-				itr = myData.erase(itr);
-				break;
-			}
-		}
-		//Check that myData's size has decreased by 1
-		return myData.size() == beforeSize - 1;
+		//Remove data from GenSync object meta-data and report success of delete
+		int before = myData.size();
+		myData.remove(delPtr);
+		return myData.size() < before;
 	}
 	else{
 		Logger::error("genSync is empty");
@@ -282,8 +269,12 @@ vector<shared_ptr<SyncMethod>>::iterator GenSync::getSyncAgt(int index) {
     return itAgt;
 }
 
-const list<DataObject *> GenSync::dumpElements() {
-    return myData;
+const list<string> GenSync::dumpElements() {
+    list<string> dump;
+	for(auto itr : myData){
+		dump.push_back(itr->print());
+	}
+	return dump;
 }
 
 const long GenSync::getXmitBytes(int commIndex) const {

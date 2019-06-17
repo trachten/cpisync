@@ -27,19 +27,18 @@ void FullSyncTest::tearDown() {
 }
 
 void FullSyncTest::FullSyncReconcileTest() {
-	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
-		GenSync GenSyncServer = GenSync::Builder().
-				setProtocol(GenSync::SyncProtocol::FullSync).
-				setComm(GenSync::SyncComm::socket).
-				build();
 
-		GenSync GenSyncClient = GenSync::Builder().
-				setProtocol(GenSync::SyncProtocol::FullSync).
-				setComm(GenSync::SyncComm::socket).
-				build();
-		//(oneWay = false, probSync = false)
-		CPPUNIT_ASSERT(syncTest(GenSyncClient,GenSyncServer,false, false));
-	}
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::FullSync).
+			setComm(GenSync::SyncComm::socket).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::FullSync).
+			setComm(GenSync::SyncComm::socket).
+			build();
+	//(oneWay = false, probSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient,GenSyncServer,false, false));
 }
 
 void FullSyncTest::testAddDelElem() {

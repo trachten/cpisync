@@ -55,7 +55,6 @@ void CPISyncTest::testCPIAddDelElem() {
 }
 
 void CPISyncTest::CPISyncReconcileTest() {
-	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
 		GenSync GenSyncServer = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::CPISync).
 				setComm(GenSync::SyncComm::socket).
@@ -74,7 +73,6 @@ void CPISyncTest::CPISyncReconcileTest() {
 
 		//(oneWay = false, probSync = false)
 		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
-	}
 }
 
 //InterCPISync Test Cases
@@ -117,24 +115,22 @@ void CPISyncTest::InterCPISyncReconcileTest() {
 	//A small mBar so that InterCPISync is forced to recurse
 	const int interCPImBar = 2;
 
-	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
-		GenSync GenSyncServer = GenSync::Builder().
-				setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
-				setComm(GenSync::SyncComm::socket).
-				setBits(eltSizeSq).
-				setMbar(interCPImBar).
-				setNumPartitions(numParts).
-				build();
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(interCPImBar).
+			setNumPartitions(numParts).
+			build();
 
-		GenSync GenSyncClient = GenSync::Builder().
-				setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
-				setComm(GenSync::SyncComm::socket).
-				setBits(eltSizeSq).
-				setMbar(interCPImBar).
-				setNumPartitions(numParts).
-				build();
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(interCPImBar).
+			setNumPartitions(numParts).
+			build();
 
-		//(oneWay = false, probSync = false)
-		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
-	}
+	//(oneWay = false, probSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
 }

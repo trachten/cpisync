@@ -24,25 +24,23 @@ void IBLTSyncTest::tearDown() {
 void IBLTSyncTest::IBLTSyncReconcileTest() {
     const int BITS = sizeof(randZZ());
 
-	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
-		GenSync GenSyncServer = GenSync::Builder().
-				setProtocol(GenSync::SyncProtocol::IBLTSync).
-				setComm(GenSync::SyncComm::socket).
-				setBits(BITS).
-				setNumExpectedElements(numExpElem).
-				build();
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(numExpElem).
+			build();
 
-		GenSync GenSyncClient = GenSync::Builder().
-				setProtocol(GenSync::SyncProtocol::IBLTSync).
-				setComm(GenSync::SyncComm::socket).
-				setBits(BITS).
-				setNumExpectedElements(numExpElem).
-				build();
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(numExpElem).
+			build();
 
-		//(oneWay = false, probSync = true)
-		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false,true));
+	//(oneWay = false, probSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false,true));
 
-	}
 }
 
 void IBLTSyncTest::testAddDelElem() {
@@ -83,24 +81,22 @@ void IBLTSyncTest::testGetStrings() {
 void IBLTSyncTest::testIBLTParamMismatch(){
     const int BITS = sizeof(randZZ());
 
-	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
-		GenSync GenSyncServer = GenSync::Builder().
-				setProtocol(GenSync::SyncProtocol::IBLTSync).
-				setComm(GenSync::SyncComm::socket).
-				setBits(BITS).
-				//Different number of expectedElements to test mismatch failure
-				setNumExpectedElements(numExpElem + 100).
-				build();
+    GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			//Different number of expectedElements to test mismatch failure
+			setNumExpectedElements(numExpElem + 100).
+			build();
 
-		GenSync GenSyncClient = GenSync::Builder().
-				setProtocol(GenSync::SyncProtocol::IBLTSync).
-				setComm(GenSync::SyncComm::socket).
-				setBits(BITS).
-				setNumExpectedElements(numExpElem).
-				build();
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(numExpElem).
+			build();
 
-		//oneWay = false, prob = true, syncParamTest = true
+	//oneWay = false, prob = true, syncParamTest = true
 
-		CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, true, true)));
-	}
+	CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, true, true)));
 }

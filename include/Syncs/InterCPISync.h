@@ -95,9 +95,9 @@ public:
     // update metadata when an element is being deleted (the element is supplied by index)
     bool delElem(DataObject* newDatum) override;
 
-    /**
-     * Displays some internal information about this object.
-     */
+		/**
+		 * Displays some internal information about this object.
+		 */
     string getName() override {
         return string("Interactive CPISync: bitNum=") + toStr(bitNum)
                 + ", perr = 2^-" + toStr(probEps) + ", mbar = " + toStr(maxDiff)
@@ -199,10 +199,13 @@ private:
      */
     bool addElem(DataObject* newDatum, pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange);
 
-    /**
-     * Helper for addElem that creates a new pTree node and populates it with the appropriate elements of
-     * the parent in the supplied range.
-     */
+	bool delElem(DataObject* newDatum, pTree * &treeNode, const ZZ &begRange, const ZZ &endRange);
+
+
+		/**
+		 * Helper for addElem that creates a new pTree node and populates it with the appropriate elements of
+		 * the parent in the supplied range.
+		 */
     bool createTreeNode(pTree * &treeNode, pTree * parent, const ZZ &begRange, const ZZ &endRange);
     // ... FIELDS
     

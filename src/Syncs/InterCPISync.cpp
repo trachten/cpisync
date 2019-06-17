@@ -43,7 +43,7 @@ void InterCPISync::deleteTree(pTree *node){
 		return; // i.e. nothing to do
 	else {
 		for (int ii = 0; ii < pFactor; ii++) {
-			deleteTree(node->child[ii]);
+				deleteTree(node->child[ii]);
 		}
 		delete node;
 	}
@@ -55,50 +55,59 @@ bool InterCPISync::delElem(DataObject* datum) {
 
     Logger::gLog(Logger::METHOD_DETAILS, ". (InterCPISync) removing item " + datum->print());
 
+    //If empty do nothing
     if(treeNode == nullptr){
         Logger::error("No elements are present in this sync object");
+        return false;
     }
-    else{
-        pTree* temp = treeNode;
+    //If not empty delete the element from each relevant branch in the tree
+    else {
+		bool success = delElem(datum,treeNode,ZZ_ZERO,DATA_MAX);
+		//If the parent node contains an empty set then clear
+		if(treeNode->getDatum()->getNumElem() == 0) {
+			treeNode = nullptr;
+		}
+		return success;
+	}
+}
 
-        //Delete from base node and move down the tree deleting from children
-        if(treeNode->getDatum()->delElem(datum)) {
-        	//If the parent node is empty delete the tree and return
-        	if(treeNode->getDatum()->printElem().empty()){
-        		deleteTree(treeNode);
-        		treeNode = nullptr;
-        		return true;
-        	}
-            //Break when you reach a node with no children (or a node without the correct datum) 2nd cond shouldn't occur
-        	while (true){
-        		bool breakFlag = true;
-                //itterate through each child
-            	for(int ii = 0; ii < pFactor; ii++){
-            		//Skip over children that don't exist
-            		if(temp->child[ii] != nullptr) {
-						//If delete succeeds, search the children of that node for the relevant data
-						if (temp->child[ii]->getDatum()->delElem(datum)) {
-							//Check if a node is empty. If it is delete it and all of its children
-							if (temp->getDatum()->printElem().empty()) {
-								deleteTree(temp);
-								temp = nullptr;
-								break;
-							}
-							else{
-								temp = temp->child[ii];
-								breakFlag = false;
-								break;
-							}
-						}
-					}
-                }
-            	//Break if data was not found in one of the children
-            	if(breakFlag) break;
-            }
-            return true;
-        }
-        else return false;
-    }
+bool InterCPISync::delElem(DataObject* datum, pTree * &node, const ZZ &begRange, const ZZ &endRange) {
+
+
+	// Compute the hash of the element to find out which children to search if it is present in the parent
+	addElemHashID = rep(hash(datum));
+
+	//If you are in the parent node and delete fails the element is not in your tree
+	if(node == treeNode){
+		//Only print logger details when you first enter (When node == parentNode)
+		Logger::gLog(Logger::METHOD,"Entering recursive InterCPISync::delElem");
+		Logger::gLog(Logger::METHOD_DETAILS, ". (InterCPISync) removing item recursively" + datum->print());
+		if(!node->getDatum()->delElem(datum)) return false;
+	}
+	//If you've deleted the last element from the branch and you are not in the parent node you have succeeded
+	if (node->getDatum()->getNumElem() == 0) {
+		return true;
+	}
+
+	ZZ step = (endRange - begRange) / pFactor; //Calculate the size of the bin of one node
+
+	if (step == 0) { // minimum step size is 1 - this will leave some partitions unused
+		step = 1;
+	}
+
+	long childPos = to_long((addElemHashID - begRange) / step);
+	if (childPos >= pFactor) childPos = pFactor - 1; // lump all final elements into the last child
+
+	ZZ newBegin = begRange + childPos * step; // beginning point of the range of the appropriate child
+	ZZ newEnd = (childPos == pFactor - 1) ?
+				endRange : // last elements lumped into the last child
+				min(newBegin + step, endRange); // don't overrun the end range of the parent node
+
+	//Recurse if the child pointer has elements in it
+	if (node->child[childPos] != nullptr && node->child[childPos]->getDatum()->getNumElem() != 0) {
+		return delElem(datum, node->child[childPos], newBegin, newEnd);
+	}
+	else return true;
 }
 
 bool InterCPISync::addElem(DataObject* newDatum) {

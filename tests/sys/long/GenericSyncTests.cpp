@@ -190,14 +190,12 @@ void GenSyncTest::testBuilder() {
 }
 
 void GenSyncTest::testTwoWaySync() {
-	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
-		vector<GenSync> twoWayClient = twoWayCombos();
-		vector<GenSync> twoWayServer = twoWayCombos();
-		// sync every GenSync configuration with itself
-		for (int ii = 0; ii < twoWayClient.size(); ii++) {
-			//(oneWay = false, probSync = false)
-			CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false));
-		}
+	vector<GenSync> twoWayClient = twoWayCombos();
+	vector<GenSync> twoWayServer = twoWayCombos();
+	// sync every GenSync configuration with itself
+	for (int ii = 0; ii < twoWayClient.size(); ii++) {
+		//(oneWay = false, probSync = false)
+		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false));
 	}
 }
 
@@ -213,15 +211,13 @@ void GenSyncTest::testOneWaySync() {
 }
 
 void GenSyncTest::testTwoWayProbSync() {
-	for(int ii = 0; ii < NUM_TESTS; ii++ ) {
-		vector<GenSync> twoWayProbClient = twoWayProbCombos();
-		vector<GenSync> twoWayProbServer = twoWayProbCombos();
+	vector<GenSync> twoWayProbClient = twoWayProbCombos();
+	vector<GenSync> twoWayProbServer = twoWayProbCombos();
 
-		// sync every GenSync configuration with itself
-		for (int ii = 0; ii < twoWayProbClient.size(); ii++) {
-			//(oneWay = false, probSync = true)
-			CPPUNIT_ASSERT(syncTest(twoWayProbClient.at(ii), twoWayProbServer.at(ii),false,true));
-		}
+	// sync every GenSync configuration with itself
+	for (int ii = 0; ii < twoWayProbClient.size(); ii++) {
+		//(oneWay = false, probSync = true)
+		CPPUNIT_ASSERT(syncTest(twoWayProbClient.at(ii), twoWayProbServer.at(ii),false,true));
 	}
 }
 

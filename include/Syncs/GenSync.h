@@ -105,6 +105,12 @@ public:
     bool delElem(DataObject* delPtr);
 
     /**
+     * Calls delElem on every element in the myData list
+     * @return True if data appears to have been successfully cleared, false otherwise
+     */
+    bool clearData();
+
+    /**
      * @return a list of string representations of the elements stored in the data structure
      */
      const list<string> dumpElements();

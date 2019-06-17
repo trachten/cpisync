@@ -19,17 +19,17 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 2; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
-const int mBar = 2 * UCHAR_MAX; // max differences between client and server in sync tests
+const int mBar = 3 * UCHAR_MAX; // max differences between client and server in sync tests
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
 const string host = "localhost"; // host for CommSocket
 const unsigned int port = 8001; // port for CommSocket
-const int err = 8; // negative log of acceptable error probability for probabilistic syncs
+const int err = 8; // negative log of acceptable error probability for CPISync
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs (
 const int LENGTH_LOW = 1; //Lower limit of string length for testing
@@ -415,70 +415,67 @@ inline vector<GenSync> fileCombos() {
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false, bool syncParamTest = false) {
-	// setup DataObjects
-	const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
-	const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
-	const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
+	bool success = true;
 
-	vector<DataObject*> objectsPtr;
-	set<ZZ> dataSet;
+	for(int ii = 0 ; ii < NUM_TESTS; ii ++) {
+		// setup DataObjects
+		const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
+		const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
+		const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
 
-	for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; jj++) {
-		ZZ data = randZZ();
-		//Checks if elements have already been added before adding them to objectsPtr
-		while(!get<1>(dataSet.insert(data))){
-			data = randZZ();
+
+		vector<DataObject *> objectsPtr;
+		set < ZZ > dataSet;
+
+		for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
+			ZZ data = randZZ();
+			//Checks if elements have already been added before adding them to objectsPtr
+			while (!get<1>(dataSet.insert(data))) {
+				data = randZZ();
+			}
+
+			objectsPtr.push_back(new DataObject(data));
 		}
 
-		objectsPtr.push_back(new DataObject(data));
+		// ... add data objects unique to the server
+		for (int ii = 0; ii < SERVER_MINUS_CLIENT; ii++) {
+			GenSyncServer.addElem(objectsPtr[ii]);
+		}
+
+		// ... add data objects unique to the client
+		for (int ii = SERVER_MINUS_CLIENT; ii < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; ii++) {
+			GenSyncClient.addElem(objectsPtr[ii]);
+		}
+
+		// add common data objects to both
+		for (int ii = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
+			 ii < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + SIMILAR; ii++) {
+			GenSyncClient.addElem(objectsPtr[ii]);
+			GenSyncServer.addElem(objectsPtr[ii]);
+		}
+
+		// create the expected reconciled multiset
+		multiset<string> reconciled;
+		for (auto dop : objectsPtr) {
+			reconciled.insert(dop->print());
+		}
+
+		//Returns a boolean value for the success of the synchronization
+		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
+									  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled);
+
+		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
+		success &= GenSyncServer.clearData();
+		success &= GenSyncClient.clearData();
+
+		for (int jj = 0; jj < objectsPtr.size(); jj++) {
+			delete objectsPtr[jj];
+		}
+
+		objectsPtr.clear();
+		objectsPtr.shrink_to_fit();
 	}
-
-	ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested
-	objectsPtr.push_back(new DataObject(*last));
-
-	// ... add data objects unique to the server
-	for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {
-		GenSyncServer.addElem(*iter);
-	}
-
-	// ... add data objects unique to the client
-	for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT;
-		 iter != objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; iter++) {
-		GenSyncClient.addElem(*iter);
-	}
-
-	// add common data objects to both
-	for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
-		 iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
-		GenSyncClient.addElem(*iter);
-		GenSyncServer.addElem(*iter);
-	}
-
-	// ensure that adding a object that fits the generic type T works
-	GenSyncClient.addElem(last);
-	GenSyncServer.addElem(last);
-
-	// create the expected reconciled multiset
-	multiset<string> reconciled;
-	for (auto dop : objectsPtr) {
-		reconciled.insert(dop->print());
-	}
-
-	//Returns a boolean value for the success of the synchronization
-	if (!syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR, CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled))
-		return false;
-
-	//Remove elements from GenSync for reuse and clear dynamically allocated memory
-	for (auto iter : objectsPtr) {
-		GenSyncClient.GenSync::delElem(iter);
-		GenSyncServer.GenSync::delElem(iter);
-		delete iter;
-	}
-
-	objectsPtr.clear();
-	objectsPtr.shrink_to_fit();
-
-	return true; // tests passed
+	return success; // tests passed
 }
 
 /**

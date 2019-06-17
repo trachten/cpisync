@@ -180,9 +180,8 @@ bool GenSync::delElem(DataObject* delPtr) {
 	if (!myData.empty()) {
 		//Iterate through mySyncVec and call that sync's delElem method
 		for (auto itAgt : mySyncVec) {
-			//TODO:Change this to search for the actual data value rather than the address
 			if (!itAgt->delElem(delPtr)) {
-				Logger::error("Error deleting item. Found in genSync data but not in syncMethod data");
+				Logger::error("Error deleting item. SyncVec delete failed ");
 				return false;
 			}
 		}
@@ -198,8 +197,19 @@ bool GenSync::delElem(DataObject* delPtr) {
 	}
 }
 
-// insert a communicant in the vector at the index position
+//Call delete elements on all data
+bool GenSync::clearData(){
+	bool success = true;
 
+	auto itr = myData.begin();
+	while (itr != myData.end()) {
+		success &= delElem(*itr++);
+	}
+
+	return success && myData.empty();
+}
+
+// insert a communicant in the vector at the index position
 void GenSync::addComm(const shared_ptr<Communicant>& newComm, int index) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addComm");
     vector<shared_ptr<Communicant>>::iterator itComm;

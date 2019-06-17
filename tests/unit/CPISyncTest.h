@@ -14,7 +14,7 @@ class CPISyncTest : public CPPUNIT_NS::TestFixture {
 
 CPPUNIT_TEST_SUITE(CPISyncTest);
 CPPUNIT_TEST(testCPIAddDelElem);
-CPPUNIT_TEST(CPISyncReconcileTest);
+//CPPUNIT_TEST(CPISyncReconcileTest);
 CPPUNIT_TEST(testInterCPIAddDelElem);
 CPPUNIT_TEST(InterCPISyncReconcileTest);
 

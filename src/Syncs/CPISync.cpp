@@ -427,7 +427,7 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
         valList.kill();
       
         // 2. Get more characteristic polynomial values if needed
-        while (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG)) {
+        while (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG)) { // TODO: FIX (Received less or more than the prescribed number of characters in commRecv.: Undefined error: 0) on reuse of prob sync
             if (!probCPI || currDiff == maxDiff) {
                 // CPISync failed
                 delta_other.kill();
@@ -585,7 +585,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
                 result = false;
                 break;
             } else {
-                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p();               
+                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p(); //TODO: Fix (Received less or more than the prescribed number of characters in commRecv.: Invalid argument) one reuse
                 append(recv_meta, recv_new);
                 currDiff = min(currDiff * 2, maxDiff);
             }

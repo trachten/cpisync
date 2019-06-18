@@ -34,15 +34,50 @@ public:
     void tearDown() override;
 
 private:
+	/**
+	 * Tests casting a string to int, double and ZZ
+	 */
     static void testStrTo();
+
+	/**
+	 * Test casting int double and ZZ to string
+	 */
     static void testToStr();
-    static void testBase64_encode();
-    static void testBase64_decode();
-    static void testStrToVecToStr();
-    static void testMultisetIntersect();
-    static void testMultisetDiff();
-    static void testMultisetUnion();
-    static void testMultisetSubset();
+
+	/**
+	 * Tests encoding strings to base64 (Only use 0-9,a-z,A-Z and +/) {Equals sign is used as padding}
+	 */
+	static void testBase64_encode();
+
+	/**
+	 * Tests decoding strings from base64 back to their original values
+	 */
+	static void testBase64_decode();
+
+	/**
+	 * Tests that str to vec and vec to string work properly (by reversing each other)
+	 */
+	static void testStrToVecToStr();
+
+	/**
+	 * Tests that multiset intersect correctly identifies which elements are in both sets (Intersection)
+	 */
+	static void testMultisetIntersect();
+
+	/**
+	 * Tests that multisetDiff correctly identifies elements that are in only one of the two given sets (Difference)
+	 */
+	static void testMultisetDiff();
+
+	/**
+	 * Tests that multisetUnion correctly identifies elements that are in set A or set B (Union)
+	 */
+	static void testMultisetUnion();
+
+	/**
+	 * Tests that MultisetSubset correctly returns a subset of the correct size from the given multiset
+	 */
+	static void testMultisetSubset();
 };
 
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( AuxiliaryTest, AuxiliaryTest );

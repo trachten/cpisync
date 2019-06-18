@@ -48,6 +48,7 @@ public:
 
 	/**
 	* Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
+	 * i.e all sync methods that update the client and server but have a probability of only reconciling some of the missing elements
 	*/
     static void testTwoWayProbSync();
 
@@ -58,9 +59,10 @@ public:
     static void testOneWaySync();
 
 	/**
-	*
+	* Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
+	 * i.e Only one of the parties attempts to get missing elements from the other party (and has a probability of
+	 * getting only some of those differences
 	*/
-    // Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
     static void testOneWayProbSync();
 
 	/**

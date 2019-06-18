@@ -19,7 +19,7 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 2; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 100; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
@@ -418,6 +418,9 @@ inline vector<GenSync> fileCombos() {
  */
 inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false, bool syncParamTest = false) {
 	bool success = true;
+
+	//Seed syncTests so that changing other tests does not cause failure in tests with a small probability of failure
+	srand(3721);
 
 	for(int ii = 0 ; ii < NUM_TESTS; ii ++) {
 		// setup DataObjects

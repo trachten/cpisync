@@ -28,7 +28,7 @@ public:
     void tearDown() override;
 
 	/**
- 	* Test reconciliation
+ 	* Test full reconciliation with FullSync protocol (All elements are exchanged and the sets are updated to be the Union of the two sets
  	*/
     static void FullSyncReconcileTest();
 

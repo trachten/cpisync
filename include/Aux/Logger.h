@@ -29,8 +29,10 @@ using namespace std;
 class Logger {
 
 public:
-        // Constants
+	// Constants
+
     // ... logging levels, in order least inclusive to most inclusive (e.g. COMM includes all METHOD_DETAILS, METHOD, and TEST messages)
+    // To use change set flag (DEFAULT_LOGLEVEL = yourLogLevel) in cmake or otherwise
     enum LOG_TYPES {
     NONE = 0,    /** No logging (the default). */
     TEST,        /** Logging of unit/system tests. */

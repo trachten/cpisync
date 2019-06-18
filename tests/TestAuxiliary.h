@@ -14,16 +14,17 @@
 #include "Syncs/GenSync.h"
 #include "Syncs/FullSync.h"
 #include "Aux/ForkHandle.h"
+#include <type_traits>
 
 #ifndef CPISYNCLIB_GENERIC_SYNC_TESTS_H
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 100; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 3; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
-const int mBar = 3 * UCHAR_MAX; // max differences between client and server in sync tests
+const int mBar = 2 * UCHAR_MAX; // max differences between client and server in sync tests
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
@@ -57,6 +58,11 @@ inline vector<GenSync> builderCombos() {
 
             switch(prot) {
                 case GenSync::SyncProtocol::CPISync:
+                	builder.
+							setBits(eltSizeSq).
+							setMbar(mBar).
+							setErr(err);
+                	break;
                 case GenSync::SyncProtocol::OneWayCPISync:
                     builder.
                             setBits(eltSizeSq).
@@ -120,23 +126,23 @@ inline vector<GenSync> constructorCombos(bool useFile) {
             vector<shared_ptr<SyncMethod>> methods;
             switch(prot) {
                 case GenSync::SyncProtocol::CPISync:
-                    methods = {make_shared<ProbCPISync>(mBar, eltSizeSq, err)};
+                    methods = {make_shared<CPISync>(mBar, eltSizeSq, err)};
                     break;
+				case GenSync::SyncProtocol::InteractiveCPISync:
+					methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
+					break;
                 case GenSync::SyncProtocol::OneWayCPISync:
                     methods = {make_shared<CPISync_HalfRound>(mBar, eltSizeSq, err)};
-                    break;
-                case GenSync::SyncProtocol::InteractiveCPISync:
-                    methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
-                    break;
+					break;
                 case GenSync::SyncProtocol::FullSync:
                     methods = {make_shared<FullSync>()};
-                    break;
+					break;
                 case GenSync::SyncProtocol::IBLTSync:
                     methods = {make_shared<IBLTSync>(numExpElem, eltSize)};
-                    break;
+					break;
                 case GenSync::SyncProtocol::OneWayIBLTSync:
                     methods = {make_shared<IBLTSync_HalfRound>(numExpElem, eltSize)};
-                    break;
+					break;
                 default:
                     continue;
             }
@@ -208,7 +214,7 @@ inline vector<GenSync> twoWayCombos() {
             vector<shared_ptr<SyncMethod>> methods;
             switch(prot) {
                 case GenSync::SyncProtocol::CPISync:
-                    methods = {make_shared<ProbCPISync>(mBar, eltSizeSq, err)};
+                    methods = {make_shared<CPISync>(mBar, eltSizeSq, err)};
                     break;
                 case GenSync::SyncProtocol::InteractiveCPISync:
                     methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
@@ -422,7 +428,7 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 	//Seed syncTests so that changing other tests does not cause failure in tests with a small probability of failure
 	srand(3721);
 
-	for(int ii = 0 ; ii < NUM_TESTS; ii ++) {
+	for(int ii = 0 ; ii < NUM_TESTS; ii++) {
 		// setup DataObjects
 		const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
 		const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
@@ -438,7 +444,6 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 			while (!get<1>(dataSet.insert(data))) {
 				data = randZZ();
 			}
-
 			objectsPtr.push_back(new DataObject(data));
 		}
 

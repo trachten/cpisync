@@ -98,6 +98,8 @@ public:
      * @return An iterator pointing just past the last element in the data structure
      */
     vector<DataObject*>::const_iterator endElements() { return elements.end();}
+
+
     
 protected:
     

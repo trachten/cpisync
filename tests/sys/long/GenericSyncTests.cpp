@@ -39,8 +39,7 @@ void GenSyncTest::testAddRemoveElems() {
 
     // create one object that is convertible to a DataObject
     ZZ *last = new ZZ(randZZ());
-    auto lastData = new DataObject(*last);
-
+	DataObject* newDO;
     // create elts-1 random DataObjects (the last element will be `last`)
     for (unsigned long ii = 0; ii < ELTS - 1; ii++) {
         objectsPtr.push_back(new DataObject(randZZ()));
@@ -61,8 +60,8 @@ void GenSyncTest::testAddRemoveElems() {
         }
 
         // add the ZZ, thus testing the generic addElem function
-        genSync.addElem(last);
-        objectsStr.insert(lastData->print());
+        newDO = genSync.addElem(last);
+        objectsStr.insert(newDO->print());
 
         // create a multiset containing the string representation of objects stored in GenSync
         multiset<string> res;
@@ -75,12 +74,13 @@ void GenSyncTest::testAddRemoveElems() {
         for(auto elem : objectsPtr) {
             genSync.delElem(elem);
         }
-        genSync.delElem(lastData);
+        //Remove the data that was added with the template
+        genSync.delElem(newDO);
         CPPUNIT_ASSERT(genSync.dumpElements().empty());
     }
 
     //Mem clean-up
-    delete lastData;
+    delete newDO;
     delete last;
     for(auto & ptr : objectsPtr){
         delete ptr;
@@ -101,10 +101,10 @@ void GenSyncTest::testAddRemoveSyncMethodAndComm() {
     CPPUNIT_ASSERT_EQUAL(before + 1, after);
 
     // add a ProbCPISync and test that getSyncAgt correctly reports the sync agent at index #0
-    auto toAdd = make_shared<ProbCPISync>(mBar, eltSizeSq, err);
+    auto toAdd = make_shared<CPISync>(mBar, eltSizeSq, err);
     genSync.addSyncAgt(toAdd);
-    genSyncOther.addSyncAgt(make_shared<ProbCPISync>(mBar, eltSizeSq, err));
-    CPPUNIT_ASSERT_EQUAL((ProbCPISync*)(*genSync.getSyncAgt(0)).get(), toAdd.get());
+    genSyncOther.addSyncAgt(make_shared<CPISync>(mBar, eltSizeSq, err));
+    CPPUNIT_ASSERT_EQUAL((CPISync*)(*genSync.getSyncAgt(0)).get(), toAdd.get());
 
     // syncing with the newly added commsocket and probcpisync should succeed
 	//(oneWay = false, probSync = false)
@@ -124,7 +124,7 @@ void GenSyncTest::testAddRemoveSyncMethodAndComm() {
 
     // removes the first SyncMethod. if delSyncAgt is successful, the SyncMethod at idx #0 should be `firstSync`
     genSync.delSyncAgt(0);
-    auto newFirst = dynamic_cast<ProbCPISync*>((*genSync.getSyncAgt(0)).get());
+    auto newFirst = dynamic_cast<CPISync*>((*genSync.getSyncAgt(0)).get());
     CPPUNIT_ASSERT(newFirst != nullptr);
     CPPUNIT_ASSERT_EQUAL(newFirst->getName(), toAdd->getName());
 }
@@ -141,14 +141,8 @@ void GenSyncTest::testCounters() {
     auto cs = make_shared<CommSocket>(port);
 
     // initialize GenSync objects
-    GenSync genSync({cs}, {make_shared<ProbCPISync>(mBar, eltSizeSq, err)});
-    GenSync genSyncOther({make_shared<CommSocket>(port)}, {make_shared<ProbCPISync>(mBar, eltSizeSq, err)});
-
-    // since no sync has happened yet, getSyncTime should report the time since the Communicant at idx #0's creation
-	//Can't predict if this test will fail or succeed before it is called
-    //CPPUNIT_ASSERT_DOUBLES_EQUAL((double) cs->getTotalTime() / CLOCKS_PER_SEC, genSync.getSyncTime(0), 1);
-
-    // perform the sync-tests on both GenSync objects. this will result in bytes being transmitted and received.
+    GenSync genSync({cs}, {make_shared<CPISync>(mBar, eltSizeSq, err)});
+    GenSync genSyncOther({make_shared<CommSocket>(port)}, {make_shared<CPISync>(mBar, eltSizeSq, err)});
 
     // get an upper bound of the time since the last sync to test against `res`
     double before = (double) clock() / CLOCKS_PER_SEC;
@@ -166,10 +160,10 @@ void GenSyncTest::testCounters() {
 }
 
 void GenSyncTest::testPort() {
-    GenSync genSync({make_shared<CommSocket>(port)}, {make_shared<ProbCPISync>(eltSizeSq, mBar, err)});
+    GenSync genSync({make_shared<CommSocket>(port)}, {make_shared<CPISync>(eltSizeSq, mBar, err)});
     CPPUNIT_ASSERT_EQUAL(port, (const unsigned int) genSync.getPort(0));
 
-    GenSync genSyncOther({make_shared<CommString>(iostr)}, {make_shared<ProbCPISync>(eltSizeSq, mBar, err)});
+    GenSync genSyncOther({make_shared<CommString>(iostr)}, {make_shared<CPISync>(eltSizeSq, mBar, err)});
     CPPUNIT_ASSERT_EQUAL(-1, genSyncOther.getPort(0));
 }
 

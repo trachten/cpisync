@@ -350,12 +350,13 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::CPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
-            myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb);
-            break;
+			myMeth = make_shared<CPISync>(mbar, bits, errorProb);
+			break;
         case SyncProtocol::ProbCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
-
+			myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb);
+			break;
         case SyncProtocol::InteractiveCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;

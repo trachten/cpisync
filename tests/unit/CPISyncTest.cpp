@@ -80,7 +80,7 @@ void CPISyncTest::CPISyncReconcileTest() {
 void CPISyncTest::testInterCPIAddDelElem() {
 	// number of elems to add
 	const int ITEMS = 50;
-	InterCPISync interCPIsync(mBar, eltSizeSq, err, partitions);
+	InterCPISync interCPISyncServer(mBar, eltSizeSq, err, partitions);
 
 	multiset<DataObject *, cmp<DataObject*>> elts;
 
@@ -88,12 +88,12 @@ void CPISyncTest::testInterCPIAddDelElem() {
 	for(int ii = 0; ii < ITEMS; ii++) {
 		DataObject* item = new DataObject(randZZ());
 		elts.insert(item);
-		CPPUNIT_ASSERT(interCPIsync.addElem(item));
+		CPPUNIT_ASSERT(interCPISyncServer.addElem(item));
 	}
 
 	// check that elements can be recovered correctly through iterators
 	multiset<DataObject *, cmp<DataObject*>> resultingElts;
-	for(auto iter = interCPIsync.beginElements(); iter != interCPIsync.endElements(); ++iter) {
+	for(auto iter = interCPISyncServer.beginElements(); iter != interCPISyncServer.endElements(); ++iter) {
 		resultingElts.insert(*iter);
 	}
 
@@ -103,12 +103,9 @@ void CPISyncTest::testInterCPIAddDelElem() {
 
 	// check that delElem works
 	for(auto dop : elts) {
-		//Checks that the tree is not set to null until it has no elements inside of it
-		CPPUNIT_ASSERT(interCPIsync.getTree() != nullptr);
-		CPPUNIT_ASSERT(interCPIsync.delElem(dop));
+		CPPUNIT_ASSERT(interCPISyncServer.delElem(dop));
 	}
 
-	CPPUNIT_ASSERT(interCPIsync.getTree() == nullptr);
 }
 
 void CPISyncTest::InterCPISyncReconcileTest() {

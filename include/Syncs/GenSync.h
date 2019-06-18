@@ -85,15 +85,17 @@ public:
     /**
      * Adds a new datum into the existing GenSync data structure
      * @param newDatum The datum to be added ... must be of a type compatible with
+     * @return A pointer to the new data object created so that if needed it can be removed later with delete
      * the global toStr templated function.
      * %R:  newDatum cannot have size larger than a long
      * %M:  If a file is associated with this object, then updates are stored in that file.
     */
     template <typename T>
-    void addElem(T* newDatum) {
+    DataObject* addElem(T* newDatum) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
         auto *newDO = new DataObject(*newDatum);
         addElem(newDO);
+        return newDO;
     }
 
     /**

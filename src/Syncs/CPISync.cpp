@@ -42,6 +42,7 @@ void CPISync::initData(int num) {
 CPISync::CPISync(long m_bar, long bits, int epsilon, int redundant, bool hashes /* = false */) :
 maxDiff(m_bar), probEps(epsilon), hashQ(hashes) {
 Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
+
     // set default parameters
     if (hashQ) {
       /* if hashes are being used, we have to account for the probability of a collision by
@@ -91,9 +92,9 @@ string CPISync::getName() {
     Logger::gLog(Logger::METHOD,"Entering CPISync::getName");
     string methodName;
     if (!probCPI) {
-        methodName = "   Basic CPI Sync   ";
+        methodName = "Basic CPI Sync";
     } else {
-        methodName = "   Probabilistic CPI Sync   ";
+        methodName = "Probabilistic CPI Sync";
     }
 
     ostringstream result;
@@ -721,7 +722,7 @@ bool CPISync::delElem(DataObject * newDatum) {
 		}
 	}
 
-    // update cpi evals
+		// update cpi evals
     for(int ii = 0; ii < sampleLoc.length(); ii++) {
         CPI_evals[ii] /= (sampleLoc[ii] - hashID);
     }

@@ -15,7 +15,7 @@ class CPISyncTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_SUITE(CPISyncTest);
 
 	CPPUNIT_TEST(testCPIAddDelElem);
-	//CPPUNIT_TEST(CPISyncReconcileTest);
+	CPPUNIT_TEST(CPISyncReconcileTest);
 	CPPUNIT_TEST(testInterCPIAddDelElem);
 	CPPUNIT_TEST(InterCPISyncReconcileTest);
 
@@ -56,6 +56,9 @@ public:
 	 * InterCPISync is tested with prob = false for the same reason as CPISYnc but InterCPISync does not have mBar < m as a
 	 * fail condition because it will recurse and break the set into p smaller sets recursively until the sync is successful
 	 *
+	 * Also tests that children are being deleted properly because the GenSync object needs to be cleared every run in order to
+	 * sync properly when called again in syncTest. If delete does not succeed then the sync will fail when called multiple times
+	 * because the real reconciled set will have additional elements that the expected reconcilled set does not have
  	*/
 	void InterCPISyncReconcileTest();
 

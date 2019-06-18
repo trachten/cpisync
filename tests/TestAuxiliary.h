@@ -160,7 +160,8 @@ inline vector<GenSync> constructorCombos(bool useFile) {
 }
 
 /**
- * @return gensync configurations that communicate one-way constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method that communicates one way
+ * Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> oneWayCombos() {
@@ -193,7 +194,8 @@ inline vector<GenSync> oneWayCombos() {
 }
 
 /**
- * @return gensync configurations that communicate two ways constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method that communicates two ways
+ * Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> twoWayCombos() {
@@ -233,8 +235,8 @@ inline vector<GenSync> twoWayCombos() {
 }
 
 /**
- * @return gensync configurations that communicate two ways using syncs with probability of only partially succeeding
- * constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method that communicates two-ways using syncs with probability of
+ * only partially succeeding. Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> twoWayProbCombos() {
@@ -268,8 +270,8 @@ inline vector<GenSync> twoWayProbCombos() {
 }
 
 /**
- * @return gensync configurations that communicate one way using syncs with probability of only partially succeeding
- * constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method that communicates one way using syncs with probability of
+ * only partially succeeding. Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> oneWayProbCombos() {
@@ -303,7 +305,7 @@ inline vector<GenSync> oneWayProbCombos() {
 }
 
 /**
- * @return all possible gensync configurations constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method. These syncs store data as a list of pointers to memory locations
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> standardCombos() {
@@ -311,7 +313,7 @@ inline vector<GenSync> standardCombos() {
 }
 
 /**
- * @return all possible gensync configurations constructed by creating GenSync objects using a file to store contents
+ * @return a vector containing a genSync for each sync method. These syncs are setup to use files for data storage
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> fileCombos() {

@@ -188,7 +188,7 @@ bool GenSync::delElem(DataObject* delPtr) {
 
 		//Remove data from GenSync object meta-data and report success of delete
 		int before = myData.size();
-		myData.remove(delPtr);
+		myData.remove(delPtr); //Does not have a return value so check size difference
 		return myData.size() < before;
 	}
 	else{

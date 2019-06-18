@@ -147,7 +147,7 @@ private:
      * Deletes all memory associate with the given tree.
      * @param treeNode A pointer to the root of a tree.
      */
-    void deleteTree(pTree *treeNode);
+    void _deleteTree(pTree *treeNode);
 
     /* Computes a hash of the given datum of size bit_num, used internally within IntreCPI.
      * @param datum The datum to hash
@@ -156,7 +156,7 @@ private:
      * @note Collisions of this hash will render InterCPI less efficient, but should not
      * otherwise cause the synchronization to fail.
      */
-    ZZ_p hash(DataObject* datum) const;
+    ZZ_p _hash(DataObject *datum) const;
 
     // Recursive versions of public methods
     /**
@@ -167,11 +167,11 @@ private:
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      * @return true iff all constituent sync's succeeded
      */
-    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
+    bool _SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
+					 list<DataObject *> &otherMinusSelf, pTree *&treeNode);
 
-    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,
-                    const ZZ& begRange,
-                    const ZZ& endRange);
+    bool _SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
+					 list<DataObject *> &otherMinusSelf, pTree *treeNode, const ZZ &begRange,const ZZ &endRange);
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
      * @see Sync_Server(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
@@ -180,11 +180,13 @@ private:
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      *     * @return true iff all constituent sync's succeeded
      */
-    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *&treeNode);
+    bool _SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
+					 list<DataObject *> &otherMinusSelf, pTree *&treeNode);
 
-    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, pTree *treeNode,
-                    const ZZ& begRange,
-                    const ZZ& endRange);
+    bool _SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
+					 list<DataObject *> &otherMinusSelf, pTree *treeNode,
+					 const ZZ &begRange,
+					 const ZZ &endRange);
 
     
     /**
@@ -197,16 +199,25 @@ private:
      * @param endRange The end item of the current node's range
      * @return true iff the addition is successful
      */
-    bool addElem(DataObject* newDatum, pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange);
+    bool _addElem(DataObject *newDatum, pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange);
 
-	bool delElem(DataObject* newDatum, pTree * &treeNode, const ZZ &begRange, const ZZ &endRange);
+    /**
+	 * Recursive helper function to delElem
+	 * @param newDatum The datum to remove
+	 * @param treeNode The tree in which to search for the element.  The method recursively
+	 * deletes the element from the appropriate children of the node until a node with < m_bar elements is found.
+	 * @param begRange The beginning item of the current node's hash range
+	 * @param endRange The end item of the current node's hash range
+	 * @return true iff the deletion appears to be successful
+	 */
+	bool _delElem(DataObject* newDatum, pTree * &treeNode, const ZZ &begRange, const ZZ &endRange);
 
 
 		/**
 		 * Helper for addElem that creates a new pTree node and populates it with the appropriate elements of
 		 * the parent in the supplied range.
 		 */
-    bool createTreeNode(pTree * &treeNode, pTree * parent, const ZZ &begRange, const ZZ &endRange);
+    bool _createTreeNode(pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange);
     // ... FIELDS
     
     

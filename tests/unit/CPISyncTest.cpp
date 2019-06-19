@@ -101,7 +101,7 @@ void CPISyncTest::ProbCPISyncReconcileTest() {
 void CPISyncTest::testInterCPIAddDelElem() {
 	// number of elems to add
 	const int ITEMS = 50;
-	InterCPISync interCPISyncServer(mBar, eltSizeSq, err, partitions);
+	InterCPISync interCpiSync(mBar, eltSizeSq, err, partitions);
 
 	multiset<DataObject *, cmp<DataObject*>> elts;
 
@@ -109,12 +109,12 @@ void CPISyncTest::testInterCPIAddDelElem() {
 	for(int ii = 0; ii < ITEMS; ii++) {
 		DataObject* item = new DataObject(randZZ());
 		elts.insert(item);
-		CPPUNIT_ASSERT(interCPISyncServer.addElem(item));
+		CPPUNIT_ASSERT(interCpiSync.addElem(item));
 	}
 
 	// check that elements can be recovered correctly through iterators
 	multiset<DataObject *, cmp<DataObject*>> resultingElts;
-	for(auto iter = interCPISyncServer.beginElements(); iter != interCPISyncServer.endElements(); ++iter) {
+	for(auto iter = interCpiSync.beginElements(); iter != interCpiSync.endElements(); ++iter) {
 		resultingElts.insert(*iter);
 	}
 
@@ -124,8 +124,10 @@ void CPISyncTest::testInterCPIAddDelElem() {
 
 	// check that delElem works
 	for(auto dop : elts) {
-		CPPUNIT_ASSERT(interCPISyncServer.delElem(dop));
+		CPPUNIT_ASSERT(interCpiSync.delElem(dop));
 	}
+	
+	CPPUNIT_ASSERT(interCpiSync.getNumElem() == 0);
 
 }
 

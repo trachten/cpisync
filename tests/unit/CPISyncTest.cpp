@@ -75,6 +75,27 @@ void CPISyncTest::CPISyncReconcileTest() {
 		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
 }
 
+void CPISyncTest::ProbCPISyncReconcileTest() {
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::ProbCPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(mBar).
+			setErr(err).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::ProbCPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(mBar).
+			setErr(err).
+			build();
+
+	//(oneWay = false, probSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
+}
+
 //InterCPISync Test Cases
 
 void CPISyncTest::testInterCPIAddDelElem() {

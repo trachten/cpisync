@@ -228,7 +228,7 @@ protected:
      * to another communicant for the purposes of ensuring that both are using the same scheme.
      * @param commSync The communicant to whom to send the parameters.
      * @require commSync must already be connected
-    * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
+     * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
       */
   void SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
 

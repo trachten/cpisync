@@ -3,9 +3,6 @@
 #include "TestAuxiliary.h"
 #include "Aux/Auxiliary.h"
 #include "Aux/Logger.h"
-#include <string>
-#include <thread>
-#include <time.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommSocketTest);
 
@@ -30,6 +27,8 @@ void CommSocketTest::GetSocketInfo() {
 }
 
 void CommSocketTest::SocketSendAndReceiveTest() {
+	const int WAIT_TIME = 1; // Seconds to wait before terminating test
+
 	int status = 0;
 	//Wrap the test in a timer that terminates if it has not completed in under WAIT_TIME seconds
 	pid_t timer_pid = fork();

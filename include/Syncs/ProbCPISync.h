@@ -49,6 +49,10 @@ public:
      */
     ProbCPISync(long m_bar, long bits, int epsilon);
 
+    void resetCurrDiff(){
+    	currDiff = 1;
+    }
+
     ~ProbCPISync() override = default;;
 private:
 

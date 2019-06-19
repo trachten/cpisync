@@ -20,7 +20,7 @@
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 3; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 2; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
@@ -33,11 +33,6 @@ const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for CPISync
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs (
-const int LENGTH_LOW = 1; //Lower limit of string length for testing
-const int LENGTH_HIGH = 100; //Upper limit of string length for testing
-const int TIMES = 100; //Times to run commSocketTest
-const int WAIT_TIME = 1; // Seconds to wait before terminating commSocketTest
-
 
 // helpers
 
@@ -63,6 +58,12 @@ inline vector<GenSync> builderCombos() {
 							setMbar(mBar).
 							setErr(err);
                 	break;
+				case GenSync::SyncProtocol::ProbCPISync:
+					builder.
+							setBits(eltSizeSq).
+							setMbar(mBar).
+							setErr(err);
+					break;
                 case GenSync::SyncProtocol::OneWayCPISync:
                     builder.
                             setBits(eltSizeSq).
@@ -128,6 +129,9 @@ inline vector<GenSync> constructorCombos(bool useFile) {
                 case GenSync::SyncProtocol::CPISync:
                     methods = {make_shared<CPISync>(mBar, eltSizeSq, err)};
                     break;
+				case GenSync::SyncProtocol::ProbCPISync:
+					methods = {make_shared<ProbCPISync>(mBar, eltSizeSq, err)};
+					break;
 				case GenSync::SyncProtocol::InteractiveCPISync:
 					methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
 					break;
@@ -423,6 +427,9 @@ inline vector<GenSync> fileCombos() {
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false, bool syncParamTest = false) {
+	const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
+	const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
+	const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
 	bool success = true;
 
 	//Seed syncTests so that changing other tests does not cause failure in tests with a small probability of failure
@@ -430,11 +437,6 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 
 	for(int ii = 0 ; ii < NUM_TESTS; ii++) {
 		// setup DataObjects
-		const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
-		const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
-		const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
-
-
 		vector<DataObject *> objectsPtr;
 		set < ZZ > dataSet;
 
@@ -494,6 +496,10 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
  * @host The host that the commSockets will use (localhost)
  */
 inline bool socketSendReceiveTest(){
+	const int LENGTH_LOW = 1; //Lower limit of string length for testing
+	const int LENGTH_HIGH = 100; //Upper limit of string length for testing
+	const int TIMES = 100; //Times to run commSocketTest
+
 	vector<string> sampleData;
 
 	for(int ii = 0; ii < TIMES; ii++){

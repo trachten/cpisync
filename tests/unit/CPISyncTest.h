@@ -16,6 +16,7 @@ class CPISyncTest : public CPPUNIT_NS::TestFixture {
 
 	CPPUNIT_TEST(testCPIAddDelElem);
 	CPPUNIT_TEST(CPISyncReconcileTest);
+	CPPUNIT_TEST(ProbCPISyncReconcileTest);
 	CPPUNIT_TEST(testInterCPIAddDelElem);
 	CPPUNIT_TEST(InterCPISyncReconcileTest);
 
@@ -42,6 +43,11 @@ public:
 	 * probSync false does a more complete check of the functionality of CPISync and passes the first 10,000 test cases with this seed
  	*/
 	void CPISyncReconcileTest();
+
+	/**
+	 * Test a synchronization using ProbCPISync
+	 */
+	void ProbCPISyncReconcileTest();
 
 
 	//InterCPISync Test cases

@@ -397,6 +397,10 @@ void CPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay
 
 bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncClient");
+
+	//Reset currDiff to 1 at the start of the sync so that the correct upper bound can be found if the dataset has changed
+    if(probCPI) currDiff = 1;
+
     // local variables
     vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
             delta_other; /** items the other has that I do not, based on the last synchronization. */
@@ -427,7 +431,7 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
         valList.kill();
       
         // 2. Get more characteristic polynomial values if needed
-        while (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG)) { // TODO: FIX (Received less or more than the prescribed number of characters in commRecv.: Undefined error: 0) on reuse of prob sync
+        while (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG)) {
             if (!probCPI || currDiff == maxDiff) {
                 // CPISync failed
                 delta_other.kill();
@@ -458,8 +462,6 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
                         + "   self - other =  " + toStr<vec_ZZ_p > (delta_self) + "\n"
                         + "   other - self =  " + toStr<vec_ZZ_p > (delta_other) + "\n"
                         + "\n";
-		//cout<<results;
-
         }
 
         // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
@@ -478,7 +480,11 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
 
 bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncServer");
-    string mystring;
+
+    //Reset currDiff to 1 at the start of the sync so that the correct upper bound can be found if the dataset has changed
+	if(probCPI) currDiff = 1;
+
+	string mystring;
     vector<long> self_hash;
     vector<long> recv_hash;
     vec_ZZ_p recv_meta;
@@ -585,7 +591,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
                 result = false;
                 break;
             } else {
-                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p(); //TODO: Fix (Received less or more than the prescribed number of characters in commRecv.: Invalid argument) one reuse
+                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p();
                 append(recv_meta, recv_new);
                 currDiff = min(currDiff * 2, maxDiff);
             }
@@ -729,17 +735,6 @@ bool CPISync::delElem(DataObject * newDatum) {
 
     Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) removed item " + newDatum->print() + ".");
     return true;
-}
-
-// for debugging
-
-void showVec(const vec_ZZ_p &vec) {
-
-    cout << vec << endl;
-}
-
-void showNum(const ZZ_p &num) {
-    cout << num << endl;
 }
 
 string CPISync::printElem() {

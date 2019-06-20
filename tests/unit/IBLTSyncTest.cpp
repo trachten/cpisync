@@ -39,8 +39,29 @@ void IBLTSyncTest::IBLTSyncReconcileTest() {
 			build();
 
 	//(oneWay = false, probSync = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false,true));
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true));
 
+}
+
+void IBLTSyncTest::IBLTSyncMultiReconcileTest() {
+	const int BITS = sizeof(randZZ());
+
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(numExpElem).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(numExpElem).
+			build();
+
+	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, true));
 }
 
 void IBLTSyncTest::testAddDelElem() {

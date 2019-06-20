@@ -53,7 +53,7 @@ public:
      * @param partition The number of subspaces to partition a subset if synchronization fails.
      *     Must be >= 2 and <2^bits
      */
-    InterCPISync(long m_bar, long bits, int epsilon, int partition);
+    InterCPISync(long m_bar, long bits, int epsilon, int partition,bool Hashes = false);
 
     // destructor
     ~InterCPISync() override;
@@ -99,15 +99,12 @@ public:
 		 * Displays some internal information about this object.
 		 */
     string getName() override {
-        return string("Interactive CPISync: bitNum=") + toStr(bitNum)
-                + ", perr = 2^-" + toStr(probEps) + ", mbar = " + toStr(maxDiff)
-                + ", pFactor = " + toStr(pFactor);
+        return string("Interactive CPISync\n   * bitNum = ") + toStr(bitNum)
+                + "\n   * perr = 2^-" + toStr(probEps) + "\n   * mbar = " + toStr(maxDiff)
+                + "\n   * pFactor = " + toStr(pFactor) + '\n';
                
     }
 
-    pTree* getTree(){
-    	return treeNode;
-    }
 
 protected:
 
@@ -124,6 +121,7 @@ protected:
     ZZ addElemHashID; /** A hash ID shared between the non-recursive and recursive addElem methods.  It is used to place
                        * the new element into the appropriate path of the hash tree. */
     bool useExisting; /** Use Exiting connection for Communication */
+    bool hashes;
     /**
      * Encode and transmit synchronization parameters (e.g. synchronization scheme, probability of error ...)
      * to another communicant for the purposes of ensuring that both are using the same scheme.

@@ -18,7 +18,7 @@
 class CPISync_ExistingConnection : public CPISync {
 public:
    // Duplicate the CPISync constructors, but initializes "no hashing"
-    CPISync_ExistingConnection(long m_bar, long bits, int epsilon, int redundant=0) : CPISync(m_bar, bits, epsilon, redundant, false)
+    CPISync_ExistingConnection(long m_bar, long bits, int epsilon, int redundant=0,bool hashes = false) : CPISync(m_bar, bits, epsilon, redundant, hashes)
     { hashQ=false; keepAlive = true; SyncID = SYNC_TYPE::CPISync_ExistingConnection; }
     
     string getName() override {return CPISync::getName() + "   * assuming an existing connection\n";}

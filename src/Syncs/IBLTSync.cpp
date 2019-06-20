@@ -118,4 +118,4 @@ bool IBLTSync::delElem(DataObject* datum){
     myIBLT.erase(datum->to_ZZ(), datum->to_ZZ());
     return true;
 }
-string IBLTSync::getName(){ return "I am an IBLTSync with the following params:\n*expected number of elements: " + toStr(expNumElems) + "\n*size of values: " + toStr(myIBLT.eltSize());}
+string IBLTSync::getName(){ return "IBLTSync\n   * expected number of elements = " + toStr(expNumElems) + "\n   * size of values =  " + toStr(myIBLT.eltSize()) + '\n';}

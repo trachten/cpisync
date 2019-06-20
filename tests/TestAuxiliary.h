@@ -358,6 +358,11 @@ inline vector<GenSync> fileCombos() {
 			// reconcile client with server
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
+//			//Uncomment to print sync stats with the test
+//			cout << "\nCLIENT RECON STATS:\n";
+//			GenSyncClient.printStats(0,0);
+//			cout << endl;
+
 			multiset<string> resClient;
 			for (auto dop : GenSyncClient.dumpElements()) {
 				resClient.insert(dop);
@@ -370,11 +375,10 @@ inline vector<GenSync> fileCombos() {
 					// True if the elements added during reconciliation were elements that the client was lacking that the server had
 					// and if information was transmitted during the fork
 					clientReconcileSuccess &= (multisetDiff(reconciled, resClient).size() < (SERVER_MINUS_CLIENT)
-											&& (clientReport.bytes > 0)
-											&& (resClient.size() > SIMILAR + CLIENT_MINUS_SERVER));
+											&& (clientReport.bytes > 0) && (resClient.size() > SIMILAR + CLIENT_MINUS_SERVER));
 				}
 				else {
-					clientReconcileSuccess = clientReconcileSuccess && (resClient == reconciled);
+					clientReconcileSuccess &= (resClient == reconciled);
 				}
 			}
 		}
@@ -390,10 +394,17 @@ inline vector<GenSync> fileCombos() {
 		success_signal = chld_state;
 		// reconcile server with client
 		forkHandleReport serverReport = forkHandle(GenSyncServer, GenSyncClient);
+
+//		//Uncomment to print sync stats with the test
+//		cout << "\nSERVER RECON STATS:\n";
+//		GenSyncServer.printStats(0,0);
+//		cout << "\n";
+
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements()) {
 			resServer.insert(dop);
 		}
+
 		if(!syncParamTest){
 			if (probSync) {
 				// True if the elements added during reconciliation were elements that the server was lacking that the client had
@@ -406,7 +417,9 @@ inline vector<GenSync> fileCombos() {
 				else return (serverReconcileSuccess && success_signal);
 			} else {
 				if (oneWay) return (resServer == reconciled && serverReport.success);
-				else return ((success_signal) && (reconciled == resServer) && serverReport.success);
+				else {
+					return ((success_signal) && (reconciled == resServer) && serverReport.success);
+				}
 			}
 		}
 		else{
@@ -417,7 +430,7 @@ inline vector<GenSync> fileCombos() {
 }
 
 /**
- * Runs tests assuring that two GenSync objects successfully sync via two-way communication
+ * Runs tests assuring that two GenSync objects successfully sync sets via two-way communication
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
  * @param oneWay true iff the sync will be one way (only server is reconciled)
@@ -426,48 +439,82 @@ inline vector<GenSync> fileCombos() {
  * of the sets (For parameter mismatch testing)
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
-inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false, bool syncParamTest = false) {
-	const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
-	const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
-	const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
+inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false,
+					 bool syncParamTest = false, bool Multiset = false){
+
+
+	srand(3721); //Seed test so that changing other tests does not cause failure in tests with a small probability of failure
 	bool success = true;
 
-	//Seed syncTests so that changing other tests does not cause failure in tests with a small probability of failure
-	srand(3721);
-
 	for(int ii = 0 ; ii < NUM_TESTS; ii++) {
+		const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
+		const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
+		const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
+
 		// setup DataObjects
 		vector<DataObject *> objectsPtr;
 		set < ZZ > dataSet;
 
-		for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
-			ZZ data = randZZ();
-			//Checks if elements have already been added before adding them to objectsPtr
-			while (!get<1>(dataSet.insert(data))) {
+		ZZ data = randZZ();
+		//Creates a set of unique elements
+		if(!Multiset) {
+			for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
+				//Checks if elements have already been added before adding them to objectsPtr to ensure that sync is being
+				//performed on a set rather than a multiset
 				data = randZZ();
+				while (!get<1>(dataSet.insert(data))) {
+					data = randZZ();
+				}
+				objectsPtr.push_back(new DataObject(data));
 			}
-			objectsPtr.push_back(new DataObject(data));
+		}
+		//Adds elements to objectsPtr and intentionally duplicates some of the elements to create a multiset
+		else{
+			int addElemCount = SERVER_MINUS_CLIENT;
+			//Adds elements to objects pointer for SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER and SIMILAR (hence 3 loops)
+			//Must be split to prevent half of a pair being added to SERVER_MINUS_CLIENT and the other half to CLIENT_MINUS_SERVER
+			for(int jj = 0; jj < 3; jj++) {
+				for (int kk = 0; kk < addElemCount; kk++) {
+					//Every 10 elements will have 1 pair and 1 triplet of elements
+					if (kk % 10 == 0 || kk % 10 == 2 || kk % 10 == 3) {
+						objectsPtr.push_back(new DataObject(data));
+					} else {
+						//Prevent elements that have already been added from being added again
+						data = randZZ();
+						while (!get<1>(dataSet.insert(data))) {
+							data = randZZ();
+						}
+						objectsPtr.push_back(new DataObject(data));
+					}
+				}
+				//Re-randomize the data between the different sections of the vector
+				data = randZZ();
+
+				//Change the number of elements to add
+				if(jj == 0) addElemCount = CLIENT_MINUS_SERVER;
+				else if(jj == 1) addElemCount = SIMILAR;
+			}
 		}
 
 		// ... add data objects unique to the server
-		for (int ii = 0; ii < SERVER_MINUS_CLIENT; ii++) {
-			GenSyncServer.addElem(objectsPtr[ii]);
+		for (int jj = 0; jj < SERVER_MINUS_CLIENT; jj++) {
+			GenSyncServer.addElem(objectsPtr[jj]);
 		}
 
 		// ... add data objects unique to the client
-		for (int ii = SERVER_MINUS_CLIENT; ii < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; ii++) {
-			GenSyncClient.addElem(objectsPtr[ii]);
+		for (int jj = SERVER_MINUS_CLIENT; jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
+			GenSyncClient.addElem(objectsPtr[jj]);
 		}
 
 		// add common data objects to both
-		for (int ii = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
-			 ii < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + SIMILAR; ii++) {
-			GenSyncClient.addElem(objectsPtr[ii]);
-			GenSyncServer.addElem(objectsPtr[ii]);
+		for (int jj = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
+			 jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + SIMILAR; jj++) {
+			GenSyncClient.addElem(objectsPtr[jj]);
+			GenSyncServer.addElem(objectsPtr[jj]);
 		}
 
 		// create the expected reconciled multiset
-		multiset<string> reconciled;
+		multiset <string> reconciled;
 		for (auto dop : objectsPtr) {
 			reconciled.insert(dop->print());
 		}
@@ -475,7 +522,6 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 		//Returns a boolean value for the success of the synchronization
 		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
 									  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled);
-
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 		success &= GenSyncServer.clearData();
 		success &= GenSyncClient.clearData();
@@ -484,8 +530,6 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 			delete objectsPtr[jj];
 		}
 
-		objectsPtr.clear();
-		objectsPtr.shrink_to_fit();
 	}
 	return success; // tests passed
 }

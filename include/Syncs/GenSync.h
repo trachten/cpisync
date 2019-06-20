@@ -230,10 +230,17 @@ public:
      */
     const double getSyncTime(int commIndex) const;
 
+    /*
+     * @param commIndex The index of the Communicant to query (in the order that they were added)
+     * @param syncIndex an optional index that allows info about a specific syncMethod in the genSync to be printed as well
+     * @result Prints out nicely formatted stats about a genSync
+     */
+    void printStats(int commIndex,int syncIndex = -1) const;
+
     /**
      * @return the port on which the server is listening for communicant commIndex.
      * If no server is listening for this communicant, the port returned is -1
-     * @param commIndex       The index of the communicant that interests us.
+     * @param commIndex The index of the communicant that interests us.
      * */
     int getPort(int commIndex);
 
@@ -325,6 +332,7 @@ public:
     mbar(DFT_MBAR),
     bits(DFT_BITS),
     numParts(DFT_PARTS),
+    hashes(HASHES),
     numExpElem(DFT_EXPELEMS){
         myComm = nullptr;
         myMeth = nullptr;
@@ -426,6 +434,11 @@ public:
         return *this;
     }
 
+	Builder& setHashes(bool theHash) {
+		this->hashes = theHash;
+		return *this;
+	}
+
     /**
      * Destructor - clear up any possibly allocated internal variables
      */
@@ -449,12 +462,14 @@ private:
     int numParts=Builder::UNDEF_NUM; /** the number of partitions into which to divide recursively for interactive methods. */
     size_t numExpElem=Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
     string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
+	bool hashes = Builder::HASHES;
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
     shared_ptr<SyncMethod> myMeth;
 
     // DEFAULT constants
+    static const bool HASHES = false;
     static const long UNDEF_NUM = -1;
     static const string UNDEF_STR;
     static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;

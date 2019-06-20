@@ -14,8 +14,8 @@
 #include "Syncs/InterCPISync.h"
 
 // might be a bug with epsilon... getting passed a double but receives an int
-InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition)
-: maxDiff(m_bar), bitNum(bits), probEps(epsilon + bits), pFactor(partition) {
+InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,bool Hashes /* = false*/)
+: maxDiff(m_bar), bitNum(bits), probEps(epsilon + bits), pFactor(partition), hashes(Hashes){
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
   // setup ZZ_p field size
   redundant_k = to_long(CeilToZZ(to_RR(probEps) / bitNum)); //
@@ -90,7 +90,7 @@ bool InterCPISync::addElem(DataObject* newDatum) {
 
   if(treeNode == nullptr)
   {
-	 treeNode = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k), pFactor);
+	 treeNode = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k,hashes), pFactor);
   }
   CPISync *curr = treeNode->getDatum();
   return curr->addElem(newDatum);	
@@ -106,7 +106,7 @@ ZZ_p InterCPISync::_hash(DataObject *datum) const {
 bool InterCPISync::_createTreeNode(pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange) {
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::createTreeNode");
     treeNode = new pTree(
-          new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),
+          new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k, hashes),
           pFactor);
 
   CPISync *curr = treeNode->getDatum(); // the current node
@@ -451,7 +451,7 @@ bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<Dat
 		if (!node->SyncServer(commSync, selfMinusOther, otherMinusSelf)) { // sync failure - create Children and go try to syn
 			commSync->commSend(SYNC_FAIL_FLAG);
 
-            auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),pFactor);
+            auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k,hashes),pFactor);
 			createChildren(treeNode, tempTree, begRange, endRange);//Create child Nodes;
 			if(treeNode != treeNode) delete treeNode;				     //Delete the previous parent node
 			treeNode = tempTree;				    //Update the current parent node(parent node only used for referencing the child nodes)
@@ -482,7 +482,7 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
 	if(endRange != begRange){
 		for(int ii=0;ii<pFactor;ii++)
 		{
-			tempTree->child[ii] =  new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),pFactor);//Create child nodes for parent
+			tempTree->child[ii] =  new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k,hashes),pFactor);//Create child nodes for parent
 			nodes[ii] = tempTree->child[ii]->getDatum();//Create references for the child nodes(used for insertion)
 		}	
 		CPISync * parent = parentNode->getDatum();//Get the parent node
@@ -540,7 +540,7 @@ bool InterCPISync::_SyncClient(const shared_ptr<Communicant> &commSync, list<Dat
 			node->SyncClient(commSync, selfMinusOther, otherMinusSelf); // attempt synchroniztion
 			if (commSync->commRecv_byte() == SYNC_FAIL_FLAG) 
 			{ // i.e. the sync is reported by the Server to have failed; recurse
-                auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k),pFactor);
+                auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k,hashes),pFactor);
 				createChildren(treeNode, tempTree, begRange, endRange);//Create child Nodes;
 				if(treeNode != treeNode) delete treeNode;	    //Delete the previous parent node
 				treeNode = tempTree;				    //Update the current parent node(temp parent only children are used)

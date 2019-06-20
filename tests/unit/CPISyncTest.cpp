@@ -54,7 +54,7 @@ void CPISyncTest::testCPIAddDelElem() {
 	CPPUNIT_ASSERT(cpisync.printElem().empty());
 }
 
-void CPISyncTest::CPISyncReconcileTest() {
+void CPISyncTest::CPISyncSetReconcileTest() {
 		GenSync GenSyncServer = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::CPISync).
 				setComm(GenSync::SyncComm::socket).
@@ -75,7 +75,31 @@ void CPISyncTest::CPISyncReconcileTest() {
 		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
 }
 
-void CPISyncTest::ProbCPISyncReconcileTest() {
+
+void CPISyncTest::CPISyncMultisetReconcileTest() {
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::CPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(mBar).
+			setErr(err).
+			setHashes(true).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::CPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(mBar).
+			setErr(err).
+			setHashes(true).
+			build();
+
+	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false, false,false,true));
+}
+
+void CPISyncTest::ProbCPISyncSetReconcileTest() {
 	GenSync GenSyncServer = GenSync::Builder().
 			setProtocol(GenSync::SyncProtocol::ProbCPISync).
 			setComm(GenSync::SyncComm::socket).
@@ -94,6 +118,29 @@ void CPISyncTest::ProbCPISyncReconcileTest() {
 
 	//(oneWay = false, probSync = false)
 	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
+}
+
+void CPISyncTest::ProbCPISyncMultisetReconcileTest() {
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::ProbCPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(mBar).
+			setErr(err).
+			setHashes(true).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::ProbCPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(mBar).
+			setErr(err).
+			setHashes(true).
+			build();
+
+	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false,false,true));
 }
 
 //InterCPISync Test Cases
@@ -126,12 +173,12 @@ void CPISyncTest::testInterCPIAddDelElem() {
 	for(auto dop : elts) {
 		CPPUNIT_ASSERT(interCpiSync.delElem(dop));
 	}
-	
+
 	CPPUNIT_ASSERT(interCpiSync.getNumElem() == 0);
 
 }
 
-void CPISyncTest::InterCPISyncReconcileTest() {
+void CPISyncTest::InterCPISyncSetReconcileTest() {
 	//A small mBar so that InterCPISync is forced to recurse
 	const int interCPImBar = 2;
 
@@ -153,4 +200,32 @@ void CPISyncTest::InterCPISyncReconcileTest() {
 
 	//(oneWay = false, probSync = false)
 	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
+}
+
+//Error with very large negative number of bits being calculated in this equation (not sure why yet)
+//bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
+void CPISyncTest::InterCPISyncMultisetReconcileTest() {
+	//A small mBar so that InterCPISync is forced to recurse
+	const int interCPImBar = 15;
+
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(interCPImBar).
+			setNumPartitions(numParts).
+			setHashes(true).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::InteractiveCPISync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(eltSizeSq).
+			setMbar(interCPImBar).
+			setNumPartitions(numParts).
+			setHashes(true).
+			build();
+
+	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false,true));
 }

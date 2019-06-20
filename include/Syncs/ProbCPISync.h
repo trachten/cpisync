@@ -47,11 +47,7 @@ public:
      *    that an internal hash does not collide, and that there be at least 2 items
      *    in the union of the two sets that are being synchronized.
      */
-    ProbCPISync(long m_bar, long bits, int epsilon);
-
-    void resetCurrDiff(){
-    	currDiff = 1;
-    }
+    ProbCPISync(long m_bar, long bits, int epsilon,bool hashes = false);
 
     ~ProbCPISync() override = default;;
 private:

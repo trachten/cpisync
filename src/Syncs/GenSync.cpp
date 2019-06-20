@@ -304,7 +304,18 @@ const double GenSync::getSyncTime(int commIndex) const {
     } else {
         return (double) comm->getTotalTime() / CLOCKS_PER_SEC;
     }
+}
 
+void GenSync::printStats(int commIndex,int syncIndex) const{
+	if(syncIndex == -1) {
+		cout << "Stats for " << myCommVec[commIndex]->getName() << endl;
+	}
+	else{
+		cout << "Stats for " << myCommVec[commIndex]->getName() << " syncing with " << mySyncVec[syncIndex]->getName() << endl;
+	}
+	cout << "Bytes Transmitted: " << getXmitBytes(commIndex) << endl;
+	cout << "Bytes Received: " << getRecvBytes(commIndex) << endl;
+	cout << "Sync Time: " << getSyncTime(commIndex) << endl;
 }
 
 int GenSync::getPort(int commIndex) {
@@ -350,17 +361,17 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::CPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
-			myMeth = make_shared<CPISync>(mbar, bits, errorProb);
+			myMeth = make_shared<CPISync>(mbar, bits, errorProb,0,hashes);
 			break;
         case SyncProtocol::ProbCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
-			myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb);
+			myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb,hashes);
 			break;
         case SyncProtocol::InteractiveCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
-            myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts);
+            myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts,hashes);
             break;
         case SyncProtocol::OneWayCPISync:
             if (mbar == Builder::UNDEF_NUM)

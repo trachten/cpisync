@@ -98,8 +98,8 @@ string CPISync::getName() {
     }
 
     ostringstream result;
-    result << "I am a " + methodName + " object over a base field of size " << fieldSize << " with parameters:\n";
-    result << "   * mbar=" << maxDiff << endl << "   * b=" << bitNum << endl << "   * epsilon=" << probEps << endl;
+    result << methodName + "\n   * base field size = " << fieldSize << "\n   * mbar = " << maxDiff;
+    result << "\n   * b = " << bitNum << "\n   * epsilon = " << probEps << endl;
     return result.str();
 }
 

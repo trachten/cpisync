@@ -25,7 +25,7 @@ class CPISync_HalfRound_Hashed : public CPISync_HalfRound {
      CPISync_HalfRound_Hashed(long m_bar, long bits, int epsilon, int redundant=0) : CPISync_HalfRound(m_bar, bits, epsilon, redundant)
      {  hashQ = true; keepAlive = true; SyncID = SYNC_TYPE::CPISync_HalfRound_Hashed; }
     
-    string getName() override {return CPISync_HalfRound::getName() + "   * hashed\n";}
+    string getName() override {return CPISync_HalfRound::getName() + "\n   *hashed";}
 };
 
 #endif	/* CPISYNC_HALFROUND_HASHED_H */

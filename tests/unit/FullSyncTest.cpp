@@ -38,8 +38,24 @@ void FullSyncTest::FullSyncReconcileTest() {
 			setComm(GenSync::SyncComm::socket).
 			build();
 	//(oneWay = false, probSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient,GenSyncServer,false, false));
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
 }
+
+ void FullSyncTest::FullMultiSyncReconcileTest(){
+	 GenSync GenSyncServer = GenSync::Builder().
+			 setProtocol(GenSync::SyncProtocol::FullSync).
+			 setComm(GenSync::SyncComm::socket).
+			 build();
+
+	 GenSync GenSyncClient = GenSync::Builder().
+			 setProtocol(GenSync::SyncProtocol::FullSync).
+			 setComm(GenSync::SyncComm::socket).
+			 build();
+
+	 //(oneWay = false, probSync = false, paramSyncTest = false, multiset = true)
+	 CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, true));
+}
+
 
 void FullSyncTest::testAddDelElem() {
     // number of elems to add

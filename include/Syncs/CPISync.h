@@ -85,7 +85,7 @@ public:
    * @param commSync The Communicant to whom to connect.
    * @param selfMinusOther All elements transmitted are added to this parameter, passed by reference.
    */
-  void sendAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther);
+  void sendAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther);
 
   /**
    * Receives elements from a Communicant.
@@ -93,7 +93,7 @@ public:
    * @param otherMinusSelf All elements received are added to this parameter, passed by reference.
    * @requires A connection to the other Communicant must already be present.
    */
-  static void receiveAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf);
+  static void receiveAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf);
   /*
    ** update metadata when an element is being added
    */
@@ -101,7 +101,7 @@ public:
 
   template <typename T>
   bool addElem(T* newDatum) {
-      DataObject *newDO = new DataObject(*newDatum);
+      auto *newDO = new DataObject(*newDatum);
       bool result = addElem(newDO);
       return result;
   }
@@ -121,12 +121,12 @@ public:
   
 protected:
   // internal data
-  bool probCPI; /** If true, then CPISync actually operates using the probabilistic CPISync protocol, wherein
+  bool probCPI{}; /** If true, then CPISync actually operates using the probabilistic CPISync protocol, wherein
                       *  the presumed number of differences is doubled until a correct upper bound is found.
                       *  If false, then CPISync operates with just the prescribed upper bound on differences and
                       *  fails or produces incorrect results if this is not actually an upper bound.
                       */
-  bool oneWay; /** Enables one-way CPISync when set to true.  Otherwise, both client and server are synced.
+  bool oneWay{}; /** Enables one-way CPISync when set to true.  Otherwise, both client and server are synced.
                   * This is mutually exclusive with probCPI (i.e. they cannot both be set to true). */
   bool hashQ; /** Typically CPISync syncs hashes of elements (hashQ == true), then exchange the differing elements.
                   * With hashQ == false, trivial hashes are used (that are in one-to-one correspondence with data)
@@ -137,7 +137,7 @@ protected:
                   * With hashQ == true, element duplicates are permitted (handled through hashing) and, potentially,
                  * element  representations are smaller.
                  */
-  bool keepAlive; /** If this is true, the CPISync does not setup or close the communicant connection - these
+  bool keepAlive{}; /** If this is true, the CPISync does not setup or close the communicant connection - these
                      *  can be handled manually.
                      */
 
@@ -202,7 +202,7 @@ protected:
    *        * either P_vec or Q_vec are not square free
    *        * factoring procedure failed to factor some term down to a linear factor
    */
-  bool find_roots(vec_ZZ_p& P_vec, vec_ZZ_p& Q_vec, vec_ZZ_p& numerator, vec_ZZ_p& denominator);
+  static bool find_roots(vec_ZZ_p& P_vec, vec_ZZ_p& Q_vec, vec_ZZ_p& numerator, vec_ZZ_p& denominator);
 
 
   /**
@@ -228,7 +228,7 @@ protected:
      * to another communicant for the purposes of ensuring that both are using the same scheme.
      * @param commSync The communicant to whom to send the parameters.
      * @require commSync must already be connected
-    * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
+     * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
       */
   void SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
 
@@ -282,20 +282,20 @@ private:
    *      procedure applies the appropriate unhashing to send the actual element (rather than its hash).
    * @throws SyncFailureException if a synchronization error is detected.
    */
-  void sendSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, ZZ_p element);
+  void sendSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, const ZZ_p& element);
 
   /**
    * Receives one set element, properly unhashed, from the other side
    * @param element The set element to receive.  If no hash is used, nothing must actually be received ...
    * the element is simply appended to the otherMinusSelf list.
    */
-  void recvSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf, ZZ_p element);
+  void recvSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf, ZZ_p element);
 
 
   /**
    * Helper function for Sync_Client and Sync_Server.  Sends a second round to the other
    * communicant translating reconciled hashes into actual strings.
    */
-  void makeStructures(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
+  void makeStructures(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
 };
 #endif

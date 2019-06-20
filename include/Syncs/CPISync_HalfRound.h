@@ -21,7 +21,7 @@ class CPISync_HalfRound: public CPISync {
      CPISync_HalfRound(long m_bar, long bits, int epsilon, int redundant=0) : CPISync(m_bar, bits, epsilon, redundant, false)
      { oneWay=true; SyncID = SYNC_TYPE::CPISync_HalfRound; }
     
-    string getName() override {return CPISync::getName() + "   * one-way\n";}
+    string getName() override {return CPISync::getName() + "\n   *one-way*";}
 };
 
 #endif	/* ONEWAYCPISYNC_H */

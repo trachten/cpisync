@@ -33,35 +33,62 @@ public:
     void setUp() override;
     void tearDown() override;
 
-    // Test that GenSyncs constructed using GenSync::Builder create equivalent GenSyncs to those constructed using the standard constructor
-    void testBuilder();
+	/**
+	* Test that GenSyncs constructed using the GenSync::Builder helper class create equivalent GenSyncs to those
+	* constructed using the standard constructor
+	*/
+    static void testBuilder();
 
-    // Test syncing GenSyncs with two-way SyncMethods
-    void testTwoWaySync();
+	/**
+	* Test syncing all GenSyncs with two-way SyncMethods
+	* i.e all sync methods that are able to update both the client and server
+	*/
 
-    // Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
-    void testTwoWayProbSync();
+    static void testTwoWaySync();
 
-    // Test syncing GenSyncs with one-way SyncMethods
-    void testOneWaySync();
+	/**
+	* Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
+	 * i.e all sync methods that update the client and server but have a probability of only reconciling some of the missing elements
+	*/
+    static void testTwoWayProbSync();
 
-    // Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
-    void testOneWayProbSync();
+	/**
+	* Test syncing GenSyncs with one-way SyncMethods
+	* i.e one of the parties in the sync does not update its set to match the other
+	*/
+    static void testOneWaySync();
 
-    // Test that GenSync::getName returns some nonempty string
-    void testGetName();
+	/**
+	* Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
+	 * i.e Only one of the parties attempts to get missing elements from the other party (and has a probability of
+	 * getting only some of those differences
+	*/
+    static void testOneWayProbSync();
 
-    // Test adding and removing data from GenSync
+	/**
+	* Test that GenSync::getName returns some nonempty string
+	*/
+    static void testGetName();
+
+	/**
+	* Test adding and removing data from GenSync
+	*/
     void testAddRemoveElems();
 
-    // Test adding and removing SyncMethods and Communicants from GenSync
-    void testAddRemoveSyncMethodAndComm();
+	/**
+	* Test adding and removing SyncMethods and Communicants from GenSync
+	*/
+    static void testAddRemoveSyncMethodAndComm();
 
-    // Test sync time and bytes-exchanged counters
-    void testCounters();
+	/**
+	* Test sync time and bytes-exchanged counters
+	*/
+    static void testCounters();
 
-    // Tests getPort
-    void testPort();
+	/**
+	* Tests getPort
+	*/
+    static void testPort();
 
 private:
     // constants

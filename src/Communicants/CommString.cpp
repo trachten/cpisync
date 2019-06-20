@@ -8,7 +8,7 @@
 #include "Aux/Auxiliary.h"
 #include "Communicants/CommString.h"
 
-CommString::CommString(string initial, bool base64) {
+CommString::CommString(const string& initial, bool base64) {
     if (base64)
         stream = new stringstream(base64_decode(initial), stringstream::out | stringstream::in);
     else

@@ -21,7 +21,7 @@ public:
         oneWay = true;
     }
 
-    string getName() override {return IBLTSync::getName() + "\n*one-way";}
+    string getName() override {return IBLTSync::getName() + "\n   * one-way";}
 };
 
 #endif //CPISYNCLIB_IBLTSYNC_HALFROUND_H

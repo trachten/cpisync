@@ -62,7 +62,8 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
             signal(SIGCHLD, SIG_IGN);
             Logger::gLog(Logger::COMM,"created a server process");
             server.listenSync(method_num);
-            exit(0);
+
+			exit(0);
         } else if (pID < 0) {
             //handle_error("error to fork a child process");
             cout << "throw out err = " << err << endl;
@@ -70,7 +71,8 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
         } else {
             Logger::gLog(Logger::COMM,"created a client process");
 			result.success = client.startSync(method_num);
-            result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
+
+			result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
             result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytes = client.getXmitBytes(method_num);
             waitpid(pID, &chld_state, my_opt);

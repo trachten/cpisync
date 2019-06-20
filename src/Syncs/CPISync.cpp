@@ -1,6 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 // standard libraries
+#include <utility>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -41,13 +42,14 @@ void CPISync::initData(int num) {
 CPISync::CPISync(long m_bar, long bits, int epsilon, int redundant, bool hashes /* = false */) :
 maxDiff(m_bar), probEps(epsilon), hashQ(hashes) {
 Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
+
     // set default parameters
     if (hashQ) {
       /* if hashes are being used, we have to account for the probability of a collision by
       ** by splitting the error probability between hash collisions and sync failures.
       ** The former is controlled by lengthening the effective bit-representation of strings.
       */
-      bitNum = 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;      
+      bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
     /*
      *  The analysis here is based on the birthday paradox.
      *  The probability of a collision for (at most) 2^bits elements chosen from
@@ -90,14 +92,14 @@ string CPISync::getName() {
     Logger::gLog(Logger::METHOD,"Entering CPISync::getName");
     string methodName;
     if (!probCPI) {
-        methodName = "   Basic CPI Sync   ";
+        methodName = "Basic CPI Sync";
     } else {
-        methodName = "   Probabilistic CPI Sync   ";
+        methodName = "Probabilistic CPI Sync";
     }
 
     ostringstream result;
-    result << "I am a " + methodName + " object over a base field of size " << fieldSize << " with parameters:\n";
-    result << "   * mbar=" << maxDiff << endl << "   * b=" << bitNum << endl << "   * epsilon=" << probEps << endl;
+    result << methodName + "\n   * base field size = " << fieldSize << "\n   * mbar = " << maxDiff;
+    result << "\n   * b = " << bitNum << "\n   * epsilon = " << probEps << endl;
     return result.str();
 }
 
@@ -306,7 +308,7 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
     return true;
 }
 
-void CPISync::sendSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, ZZ_p element) {
+void CPISync::sendSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, const ZZ_p& element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
         selfMinusOther.push_back(invHash(element));
@@ -322,10 +324,10 @@ void CPISync::sendSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &s
     }
 }
 
-void CPISync::recvSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf, ZZ_p element) {
+void CPISync::recvSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf, ZZ_p element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::recvSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
-        otherMinusSelf.push_back(invHash(element));
+        otherMinusSelf.push_back(invHash(std::move(element)));
     else {
         // receive the actual string from the client
         DataObject *dop = commSync->commRecv_DataObject();
@@ -335,7 +337,7 @@ void CPISync::recvSetElem(shared_ptr<Communicant> commSync, list<DataObject*> &o
     }
 }
 
-void CPISync::makeStructures(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
+void CPISync::makeStructures(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::makeStructures");
     // Send self minus other
     try {
@@ -395,6 +397,10 @@ void CPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay
 
 bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncClient");
+
+	//Reset currDiff to 1 at the start of the sync so that the correct upper bound can be found if the dataset has changed
+    if(probCPI) currDiff = 1;
+
     // local variables
     vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
             delta_other; /** items the other has that I do not, based on the last synchronization. */
@@ -456,8 +462,6 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
                         + "   self - other =  " + toStr<vec_ZZ_p > (delta_self) + "\n"
                         + "   other - self =  " + toStr<vec_ZZ_p > (delta_other) + "\n"
                         + "\n";
-		//cout<<results;
-
         }
 
         // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
@@ -468,7 +472,7 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
             commSync->commClose();
 
         return true;
-    } catch (SyncFailureException s) {
+    } catch (SyncFailureException& s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
         throw (s);
     }
@@ -476,7 +480,11 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
 
 bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncServer");
-    string mystring;
+
+    //Reset currDiff to 1 at the start of the sync so that the correct upper bound can be found if the dataset has changed
+	if(probCPI) currDiff = 1;
+
+	string mystring;
     vector<long> self_hash;
     vector<long> recv_hash;
     vec_ZZ_p recv_meta;
@@ -566,7 +574,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
                 // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
                 try {
                     makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
-                } catch (SyncFailureException s) {
+                } catch (SyncFailureException& s) {
                     Logger::gLog(Logger::METHOD_DETAILS, s.what());
                     throw (s);
                 }
@@ -583,7 +591,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
                 result = false;
                 break;
             } else {
-                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p();               
+                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p();
                 append(recv_meta, recv_new);
                 currDiff = min(currDiff * 2, maxDiff);
             }
@@ -603,7 +611,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
     return result;
 }
 
-void CPISync::sendAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther) {
+void CPISync::sendAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendAllElem");
     commSync->commSend((long) CPI_hash.size()); // first send the size
 
@@ -617,7 +625,7 @@ void CPISync::sendAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &s
     }
 }
 
-void CPISync::receiveAllElem(shared_ptr<Communicant> commSync, list<DataObject*> &otherMinusSelf) {
+void CPISync::receiveAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::receiveAllElem");
     long size = commSync->commRecv_long();
 
@@ -710,31 +718,23 @@ bool CPISync::delElem(DataObject * newDatum) {
 
     ZZ_p hashID;
     // remove data from the hash table. to find the value, a linear search is required
-    for(auto iter = CPI_hash.begin(); iter != CPI_hash.end(); iter++) {
-        if(iter->second == newDatum) {
-            hashID = to_ZZ_p(iter->first);
-            CPI_hash.erase(iter);
-        }
-    }
+	auto itr = CPI_hash.begin();
+	while (itr != CPI_hash.end()) {
+		if (itr->second == newDatum) {
+			hashID = to_ZZ_p(itr->first);
+			CPI_hash.erase(itr++);
+		} else {
+			++itr;
+		}
+	}
 
-    // update cpi evals
+		// update cpi evals
     for(int ii = 0; ii < sampleLoc.length(); ii++) {
         CPI_evals[ii] /= (sampleLoc[ii] - hashID);
     }
 
     Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) removed item " + newDatum->print() + ".");
     return true;
-}
-
-// for debugging
-
-void showVec(const vec_ZZ_p &vec) {
-
-    cout << vec << endl;
-}
-
-void showNum(const ZZ_p &num) {
-    cout << num << endl;
 }
 
 string CPISync::printElem() {

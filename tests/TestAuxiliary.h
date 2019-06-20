@@ -14,33 +14,31 @@
 #include "Syncs/GenSync.h"
 #include "Syncs/FullSync.h"
 #include "Aux/ForkHandle.h"
+#include <type_traits>
 
 #ifndef CPISYNCLIB_GENERIC_SYNC_TESTS_H
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 2; // Times to run oneWay and twoWay sync tests
 
-const size_t eltSizeSq = pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
+const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
-const int mBar = UCHAR_MAX*2; // max differences between client and server in sync tests
+const int mBar = 2 * UCHAR_MAX; // max differences between client and server in sync tests
+const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
 const string host = "localhost"; // host for CommSocket
 const unsigned int port = 8001; // port for CommSocket
-const int err = 8; // negative log of acceptable error probability for probabilistic syncs
+const int err = 8; // negative log of acceptable error probability for CPISync
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
-const int numExpElem = UCHAR_MAX*2; // max elements in an IBLT for IBLT syncs
-const int LENGTH_LOW = 1; //Lower limit of string length for testing
-const int LENGTH_HIGH = 100; //Upper limit of string length for testing
-const int TIMES = 100; //Times to run commSocketTest
-const int WAIT_TIME = 1; // TIme to wait before terminating commSocketTest
-
+const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs (
 
 // helpers
 
 /**
- * returns all possible gensync configurations constructed using GenSync::Builder
+ * @return A vector of GenSyncs with every Sync Protocol/Communicant combo (With the parameters specified in TestAuxiliary)
+ * Constructed using the GenSync builder help class
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> builderCombos() {
@@ -55,6 +53,17 @@ inline vector<GenSync> builderCombos() {
 
             switch(prot) {
                 case GenSync::SyncProtocol::CPISync:
+                	builder.
+							setBits(eltSizeSq).
+							setMbar(mBar).
+							setErr(err);
+                	break;
+				case GenSync::SyncProtocol::ProbCPISync:
+					builder.
+							setBits(eltSizeSq).
+							setMbar(mBar).
+							setErr(err);
+					break;
                 case GenSync::SyncProtocol::OneWayCPISync:
                     builder.
                             setBits(eltSizeSq).
@@ -103,7 +112,8 @@ inline vector<GenSync> builderCombos() {
 }
 
 /**
- * return a vector of GenSyncs constructed using either of the two GenSync constructors
+ * @return a vector of GenSyncs of every Sync Protocol/Communicant combination created with the Constructor (No builder helper)
+ * (With the parameters specified in TestAuxiliary)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  * @param useFile if true, GenSyncs constructed using file-based constructor. otherwise, constructed using other constructor
  */
@@ -117,23 +127,26 @@ inline vector<GenSync> constructorCombos(bool useFile) {
             vector<shared_ptr<SyncMethod>> methods;
             switch(prot) {
                 case GenSync::SyncProtocol::CPISync:
-                    methods = {make_shared<ProbCPISync>(mBar, eltSizeSq, err)};
+                    methods = {make_shared<CPISync>(mBar, eltSizeSq, err)};
                     break;
+				case GenSync::SyncProtocol::ProbCPISync:
+					methods = {make_shared<ProbCPISync>(mBar, eltSizeSq, err)};
+					break;
+				case GenSync::SyncProtocol::InteractiveCPISync:
+					methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
+					break;
                 case GenSync::SyncProtocol::OneWayCPISync:
                     methods = {make_shared<CPISync_HalfRound>(mBar, eltSizeSq, err)};
-                    break;
-                case GenSync::SyncProtocol::InteractiveCPISync:
-                    methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
-                    break;
+					break;
                 case GenSync::SyncProtocol::FullSync:
                     methods = {make_shared<FullSync>()};
-                    break;
+					break;
                 case GenSync::SyncProtocol::IBLTSync:
                     methods = {make_shared<IBLTSync>(numExpElem, eltSize)};
-                    break;
+					break;
                 case GenSync::SyncProtocol::OneWayIBLTSync:
                     methods = {make_shared<IBLTSync_HalfRound>(numExpElem, eltSize)};
-                    break;
+					break;
                 default:
                     continue;
             }
@@ -157,7 +170,8 @@ inline vector<GenSync> constructorCombos(bool useFile) {
 }
 
 /**
- * returns gensync configurations that communicate one-way constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method that communicates one way
+ * Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> oneWayCombos() {
@@ -190,7 +204,8 @@ inline vector<GenSync> oneWayCombos() {
 }
 
 /**
- * returns gensync configurations that communicate two ways constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method that communicates two ways
+ * Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> twoWayCombos() {
@@ -203,7 +218,7 @@ inline vector<GenSync> twoWayCombos() {
             vector<shared_ptr<SyncMethod>> methods;
             switch(prot) {
                 case GenSync::SyncProtocol::CPISync:
-                    methods = {make_shared<ProbCPISync>(mBar, eltSizeSq, err)};
+                    methods = {make_shared<CPISync>(mBar, eltSizeSq, err)};
                     break;
                 case GenSync::SyncProtocol::InteractiveCPISync:
                     methods = {make_shared<InterCPISync>(mBar, eltSizeSq, err, numParts)};
@@ -230,8 +245,8 @@ inline vector<GenSync> twoWayCombos() {
 }
 
 /**
- * returns gensync configurations that communicate two ways using syncs with probability of only partially succeeding
- * constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method that communicates two-ways using syncs with probability of
+ * only partially succeeding. Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> twoWayProbCombos() {
@@ -265,8 +280,8 @@ inline vector<GenSync> twoWayProbCombos() {
 }
 
 /**
- * returns gensync configurations that communicate one way using syncs with probability of only partially succeeding
- * constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method that communicates one way using syncs with probability of
+ * only partially succeeding. Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> oneWayProbCombos() {
@@ -300,7 +315,7 @@ inline vector<GenSync> oneWayProbCombos() {
 }
 
 /**
- * returns all possible gensync configurations constructed using the standard way of creating GenSync objects (without a file)
+ * @return a vector containing a genSync for each sync method. These syncs store data as a list of pointers to memory locations
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> standardCombos() {
@@ -308,7 +323,7 @@ inline vector<GenSync> standardCombos() {
 }
 
 /**
- * returns all possible gensync configurations constructed by creating GenSync objects using a file to store contents
+ * @return a vector containing a genSync for each sync method. These syncs are setup to use files for data storage
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
 inline vector<GenSync> fileCombos() {
@@ -343,21 +358,24 @@ inline vector<GenSync> fileCombos() {
 			// reconcile client with server
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
+//			//Uncomment to print sync stats with the test
+//			cout << "\nCLIENT RECON STATS:\n";
+//			GenSyncClient.printStats(0,0);
+//			cout << endl;
 
 			multiset<string> resClient;
 			for (auto dop : GenSyncClient.dumpElements()) {
-				resClient.insert(dop->print());
+				resClient.insert(dop);
 			}
 
 			clientReconcileSuccess = clientReport.success;
 			//If syncParamTest only the result of the fork handle is relevant
 			if (!syncParamTest) {
 				if (probSync) {
-					// True iff the reconciled set contains at least one more element than it did before reconciliation
-					// and the elements added during reconciliation were elements that the client was lacking that the server had
-					clientReconcileSuccess &= resClient.size() > (SIMILAR + CLIENT_MINUS_SERVER) &&
-											  multisetDiff(reconciled, resClient).size() <
-											  (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT);
+					// True if the elements added during reconciliation were elements that the client was lacking that the server had
+					// and if information was transmitted during the fork
+					clientReconcileSuccess &= (multisetDiff(reconciled, resClient).size() < (SERVER_MINUS_CLIENT)
+											&& (clientReport.bytes > 0) && (resClient.size() > SIMILAR + CLIENT_MINUS_SERVER));
 				}
 				else {
 					clientReconcileSuccess &= (resClient == reconciled);
@@ -376,131 +394,156 @@ inline vector<GenSync> fileCombos() {
 		success_signal = chld_state;
 		// reconcile server with client
 		forkHandleReport serverReport = forkHandle(GenSyncServer, GenSyncClient);
+
+//		//Uncomment to print sync stats with the test
+//		cout << "\nSERVER RECON STATS:\n";
+//		GenSyncServer.printStats(0,0);
+//		cout << "\n";
+
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements()) {
-			resServer.insert(dop->print());
+			resServer.insert(dop);
 		}
+
 		if(!syncParamTest){
 			if (probSync) {
-				// True iff the reconciled set contains at least one more element than it did before reconciliation
-				// and the elements added during reconciliation were elements that the server was lacking that the client had
-				bool serverReconcileSuccess = resServer.size() > (SIMILAR + SERVER_MINUS_CLIENT) &&
-											  multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT) && serverReport.success;
+				// True if the elements added during reconciliation were elements that the server was lacking that the client had
+				// and if information was transmitted during the fork
+				bool serverReconcileSuccess = multisetDiff(reconciled, resServer).size() < (CLIENT_MINUS_SERVER)
+											  && serverReport.success && (serverReport.bytes > 0)
+											  && (resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
 
 				if (oneWay) return (serverReconcileSuccess);
 				else return (serverReconcileSuccess && success_signal);
 			} else {
 				if (oneWay) return (resServer == reconciled && serverReport.success);
-				else return ((success_signal) && (reconciled == resServer) && serverReport.success);
+				else {
+					return ((success_signal) && (reconciled == resServer) && serverReport.success);
+				}
 			}
 		}
 		else{
 			return serverReport.success;
 		}
 	}
+	return false; // should never get here
 }
 
 /**
- * Runs tests assuring that two GenSync objects successfully sync via two-way communication
+ * Runs tests assuring that two GenSync objects successfully sync sets via two-way communication
  * @param GenSyncServer Server GenSync
  * @param GenSyncClient Client GenSync
  * @param oneWay true iff the sync will be one way (only server is reconciled)
  * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
  * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
  * of the sets (For parameter mismatch testing)
- * @return Returns true if the recon appears to be successful and false otherwise (if syncParamTest = true returns the
- * result of both forkHandles anded together)
+ * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
-inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false,bool syncParamTest=false) {
-    for(int jj = 0; jj < NUM_TESTS; jj++) {
-        // setup DataObjects
-        const unsigned char SIMILAR = randByte(); // amt of elems common to both GenSyncs
-        const unsigned char CLIENT_MINUS_SERVER = randByte(); // amt of elems unique to client
-        const unsigned char SERVER_MINUS_CLIENT = randByte(); // amt of elems unique to server
+inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false,
+					 bool syncParamTest = false, bool Multiset = false){
 
-        vector<DataObject *> objectsPtr;
 
-        for (unsigned long ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER - 1; ii++) {
-            objectsPtr.push_back(new DataObject(randZZ()));
-        }
-        ZZ *last = new ZZ(randZZ()); // last datum represented by a ZZ so that the templated addElem can be tested
-        objectsPtr.push_back(new DataObject(*last));
+	srand(3721); //Seed test so that changing other tests does not cause failure in tests with a small probability of failure
+	bool success = true;
 
-        // ... add data objects unique to the server
-        for (auto iter = objectsPtr.begin(); iter != objectsPtr.begin() + SERVER_MINUS_CLIENT; iter++) {
-            GenSyncServer.addElem(*iter);
-        }
+	for(int ii = 0 ; ii < NUM_TESTS; ii++) {
+		const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
+		const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
+		const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
 
-        // ... add data objects unique to the client
-        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT;
-             iter != objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; iter++) {
-            GenSyncClient.addElem(*iter);
-        }
+		// setup DataObjects
+		vector<DataObject *> objectsPtr;
+		set < ZZ > dataSet;
 
-        // add common data objects to both
-        for (auto iter = objectsPtr.begin() + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
-             iter != objectsPtr.end() - 1; iter++) { // minus 1 so that the templated element can be tested
-            GenSyncClient.addElem(*iter);
-            GenSyncServer.addElem(*iter);
-        }
+		ZZ data = randZZ();
+		//Creates a set of unique elements
+		if(!Multiset) {
+			for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
+				//Checks if elements have already been added before adding them to objectsPtr to ensure that sync is being
+				//performed on a set rather than a multiset
+				data = randZZ();
+				while (!get<1>(dataSet.insert(data))) {
+					data = randZZ();
+				}
+				objectsPtr.push_back(new DataObject(data));
+			}
+		}
+		//Adds elements to objectsPtr and intentionally duplicates some of the elements to create a multiset
+		else{
+			int addElemCount = SERVER_MINUS_CLIENT;
+			//Adds elements to objects pointer for SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER and SIMILAR (hence 3 loops)
+			//Must be split to prevent half of a pair being added to SERVER_MINUS_CLIENT and the other half to CLIENT_MINUS_SERVER
+			for(int jj = 0; jj < 3; jj++) {
+				for (int kk = 0; kk < addElemCount; kk++) {
+					//Every 10 elements will have 1 pair and 1 triplet of elements
+					if (kk % 10 == 0 || kk % 10 == 2 || kk % 10 == 3) {
+						objectsPtr.push_back(new DataObject(data));
+					} else {
+						//Prevent elements that have already been added from being added again
+						data = randZZ();
+						while (!get<1>(dataSet.insert(data))) {
+							data = randZZ();
+						}
+						objectsPtr.push_back(new DataObject(data));
+					}
+				}
+				//Re-randomize the data between the different sections of the vector
+				data = randZZ();
 
-        // ensure that adding a object that fits the generic type T works
-        GenSyncClient.addElem(last);
-        GenSyncServer.addElem(last);
+				//Change the number of elements to add
+				if(jj == 0) addElemCount = CLIENT_MINUS_SERVER;
+				else if(jj == 1) addElemCount = SIMILAR;
+			}
+		}
+
+		// ... add data objects unique to the server
+		for (int jj = 0; jj < SERVER_MINUS_CLIENT; jj++) {
+			GenSyncServer.addElem(objectsPtr[jj]);
+		}
+
+		// ... add data objects unique to the client
+		for (int jj = SERVER_MINUS_CLIENT; jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
+			GenSyncClient.addElem(objectsPtr[jj]);
+		}
+
+		// add common data objects to both
+		for (int jj = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
+			 jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + SIMILAR; jj++) {
+			GenSyncClient.addElem(objectsPtr[jj]);
+			GenSyncServer.addElem(objectsPtr[jj]);
+		}
 
 		// create the expected reconciled multiset
-		multiset<string> reconciled;
+		multiset <string> reconciled;
 		for (auto dop : objectsPtr) {
 			reconciled.insert(dop->print());
 		}
 
 		//Returns a boolean value for the success of the synchronization
-		return syncTestForkHandle(GenSyncClient,GenSyncServer,oneWay,probSync,syncParamTest,SIMILAR,CLIENT_MINUS_SERVER,
-				SERVER_MINUS_CLIENT,reconciled);
+		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
+									  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled);
+		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
+		success &= GenSyncServer.clearData();
+		success &= GenSyncClient.clearData();
+
+		for (int jj = 0; jj < objectsPtr.size(); jj++) {
+			delete objectsPtr[jj];
+		}
+
 	}
+	return success; // tests passed
 }
 
 /**
- * One way synctest
- * @param GenSyncClient
- * @param GenSyncServer
- */
-inline bool syncTestOneWay(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
-    return _syncTest(GenSyncClient, GenSyncServer, true,false);
-}
-
-/**
- * Two way synctest
- * @param GenSyncServer Server GenSync
- * @param GenSyncClient Client GenSync
- */
-inline bool syncTest(const GenSync &GenSyncServer, const GenSync &GenSyncClient) {
-    return _syncTest(GenSyncServer, GenSyncClient, false,false);
-}
-
-/**
- * One way probabilistic synctest
- * @param GenSyncServer Server GenSync
- * @param GenSyncClient Client GenSync
- */
-inline bool syncTestOneWayProb(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
-    return _syncTest(GenSyncClient, GenSyncServer, true, true);
-}
-
-/**
- * Two way probabilistic synctest
- * @param GenSyncServer Server GenSync
- * @param GenSyncClient Client GenSync
- */
-inline bool syncTestProb(const GenSync &GenSyncClient, const GenSync &GenSyncServer) {
-    return _syncTest(GenSyncClient, GenSyncServer, false, true);
-}
-
-/**
+ * This function handles the server client fork in CommSocketTest and is wrapped in a timer in the actual test
  * @port The port that the commSockets will make a connection on (8001)
  * @host The host that the commSockets will use (localhost)
  */
 inline bool socketSendReceiveTest(){
+	const int LENGTH_LOW = 1; //Lower limit of string length for testing
+	const int LENGTH_HIGH = 100; //Upper limit of string length for testing
+	const int TIMES = 100; //Times to run commSocketTest
+
 	vector<string> sampleData;
 
 	for(int ii = 0; ii < TIMES; ii++){

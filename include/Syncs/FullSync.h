@@ -41,7 +41,7 @@ public:
     bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf) override;
     bool addElem(DataObject* newDatum) override;
     bool delElem(DataObject* newDatum) override;
-    inline string getName() override { return "I am a FullSync object."; }
+    inline string getName() override { return "Full Sync"; }
 
     /**
      * @return A string representing the elements stored in the FullSync object.

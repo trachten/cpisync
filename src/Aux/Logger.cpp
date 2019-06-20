@@ -4,7 +4,7 @@
 #include "Aux/ConstantsAndTypes.h"
 #include "Aux/Auxiliary.h"
 
-void Logger::error(string msg) {
+void Logger::error(const string& msg) {
     perror(msg.c_str());
 }
 

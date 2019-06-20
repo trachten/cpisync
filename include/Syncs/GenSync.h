@@ -71,7 +71,7 @@ public:
      *                   this data structure.  As elements are added to this data structure, they
      *                   are also stored in the file.
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, string fileName);
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string& fileName);
 
     // DATA MANIPULATION
     /**
@@ -85,28 +85,37 @@ public:
     /**
      * Adds a new datum into the existing GenSync data structure
      * @param newDatum The datum to be added ... must be of a type compatible with
+     * @return A pointer to the new data object created so that if needed it can be removed later with delete
      * the global toStr templated function.
      * %R:  newDatum cannot have size larger than a long
      * %M:  If a file is associated with this object, then updates are stored in that file.
-     *      *    */
+    */
     template <typename T>
-    void addElem(T* newDatum) {
+    DataObject* addElem(T* newDatum) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
-        DataObject *newDO = new DataObject(*newDatum);
+        auto *newDO = new DataObject(*newDatum);
         addElem(newDO);
+        return newDO;
     }
 
     /**
-     * Deletes a given element from the GenSync data structure
-     * Not currently implemented.
-     * @unimplemented
+     * Deletes an element from the GenSync data structure
+     * and internal syncMethods by value
+     * @param delPtr a DataObject that contains the data that you would like to delete from the sync
+     * @return True if the delete appears to have completed successfully, false otherwise
      */
-    void delElem(DataObject* newDatum);
+    bool delElem(DataObject* delPtr);
 
     /**
-     * @return a list of pointers to the elements stored in the data structure
-     */// get a data object element from data list
-    const list<DataObject *> dumpElements();
+     * Calls delElem on every element in the myData list
+     * @return True if data appears to have been successfully cleared, false otherwise
+     */
+    bool clearData();
+
+    /**
+     * @return a list of string representations of the elements stored in the data structure
+     */
+     const list<string> dumpElements();
 
 
     // COMMUNICANT MANIPULATION
@@ -123,13 +132,13 @@ public:
      *                  synchronized upon a synchronization call.
      *                  By default, new communicants are added to the back of the vector
      */
-    void addComm(shared_ptr<Communicant> newComm, int index = 0);
+    void addComm(const shared_ptr<Communicant>& newComm, int index = 0);
 
     /**
      * Delete all communicants oldComm (i.e. stored at the same memory address) from the communicant vector.
      * @param oldComm  A pointer to the desired communicant.
      */
-    void delComm(shared_ptr<Communicant> oldComm);
+    void delComm(const shared_ptr<Communicant>& oldComm);
 
     /**
      * Delete the communicant at the given index in the communicant vector.
@@ -157,7 +166,7 @@ public:
      *                  The order of agents is not significant.
      *                  By default, new agents are added to the back of the sync vector
      */
-    void addSyncAgt(shared_ptr<SyncMethod> newAgt, int index = 0);
+    void addSyncAgt(const shared_ptr<SyncMethod>& newAgt, int index = 0);
 
     /**
      * Delete the agent at the given index in the agent vector.
@@ -221,10 +230,17 @@ public:
      */
     const double getSyncTime(int commIndex) const;
 
+    /*
+     * @param commIndex The index of the Communicant to query (in the order that they were added)
+     * @param syncIndex an optional index that allows info about a specific syncMethod in the genSync to be printed as well
+     * @result Prints out nicely formatted stats about a genSync
+     */
+    void printStats(int commIndex,int syncIndex = -1) const;
+
     /**
      * @return the port on which the server is listening for communicant commIndex.
      * If no server is listening for this communicant, the port returned is -1
-     * @param commIndex       The index of the communicant that interests us.
+     * @param commIndex The index of the communicant that interests us.
      * */
     int getPort(int commIndex);
 
@@ -256,7 +272,7 @@ public:
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
         // CPISync and variants
-        CPISync=BEGIN,
+        CPISync= static_cast<int>(BEGIN),
         CPISync_OneLessRound,
         CPISync_HalfRound,
         ProbCPISync,
@@ -271,7 +287,7 @@ public:
     enum class SyncComm {
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
-        socket=BEGIN, //socket-based communication
+        socket= static_cast<int>(BEGIN), //socket-based communication
         string, // communication recorded in a string
         END     // one after the end of iterable options
     };
@@ -316,6 +332,7 @@ public:
     mbar(DFT_MBAR),
     bits(DFT_BITS),
     numParts(DFT_PARTS),
+    hashes(HASHES),
     numExpElem(DFT_EXPELEMS){
         myComm = nullptr;
         myMeth = nullptr;
@@ -413,9 +430,14 @@ public:
      * @param theFileName A file name from which data is to be drawn for the initial population of the sync object.
      */
     Builder& setDataFile(string theFileName) {
-        this->fileName=theFileName;
+        this->fileName=std::move(theFileName);
         return *this;
     }
+
+	Builder& setHashes(bool theHash) {
+		this->hashes = theHash;
+		return *this;
+	}
 
     /**
      * Destructor - clear up any possibly allocated internal variables
@@ -440,12 +462,14 @@ private:
     int numParts=Builder::UNDEF_NUM; /** the number of partitions into which to divide recursively for interactive methods. */
     size_t numExpElem=Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
     string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
+	bool hashes = Builder::HASHES;
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
     shared_ptr<SyncMethod> myMeth;
 
     // DEFAULT constants
+    static const bool HASHES = false;
     static const long UNDEF_NUM = -1;
     static const string UNDEF_STR;
     static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;

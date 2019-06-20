@@ -59,7 +59,7 @@ bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
         commSync->commClose();
         
         return true;
-    } catch(SyncFailureException s) {
+    } catch(SyncFailureException& s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
         throw (s);
     }
@@ -104,7 +104,7 @@ bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         commSync->commClose();
 
         return true;
-    } catch (SyncFailureException s) {
+    } catch (SyncFailureException& s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
         throw (s);
     }

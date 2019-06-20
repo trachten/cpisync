@@ -19,26 +19,43 @@ FullSyncTest::FullSyncTest() = default;
 FullSyncTest::~FullSyncTest() = default;
 
 void FullSyncTest::setUp() {
-    const int SEED = 91;
+    const int SEED = 941;
     srand(SEED);
 }
 
 void FullSyncTest::tearDown() {
 }
 
-void FullSyncTest::justSyncTest() {
-    GenSync GenSyncServer = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::FullSync).
-            setComm(GenSync::SyncComm::socket).
-            build();
+void FullSyncTest::FullSyncReconcileTest() {
 
-    GenSync GenSyncClient = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::FullSync).
-            setComm(GenSync::SyncComm::socket).
-            build();
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::FullSync).
+			setComm(GenSync::SyncComm::socket).
+			build();
 
-    CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient));
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::FullSync).
+			setComm(GenSync::SyncComm::socket).
+			build();
+	//(oneWay = false, probSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
 }
+
+ void FullSyncTest::FullMultiSyncReconcileTest(){
+	 GenSync GenSyncServer = GenSync::Builder().
+			 setProtocol(GenSync::SyncProtocol::FullSync).
+			 setComm(GenSync::SyncComm::socket).
+			 build();
+
+	 GenSync GenSyncClient = GenSync::Builder().
+			 setProtocol(GenSync::SyncProtocol::FullSync).
+			 setComm(GenSync::SyncComm::socket).
+			 build();
+
+	 //(oneWay = false, probSync = false, paramSyncTest = false, multiset = true)
+	 CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, true));
+}
+
 
 void FullSyncTest::testAddDelElem() {
     // number of elems to add

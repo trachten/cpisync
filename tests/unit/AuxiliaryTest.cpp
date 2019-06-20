@@ -30,7 +30,7 @@ void AuxiliaryTest::testStrTo() {
     CPPUNIT_ASSERT_EQUAL(expectedInt, resultInt);
 
     double expectedDouble = 12.57;
-    double resultDouble = strTo<double>("12.57");
+    auto resultDouble = strTo<double>("12.57");
     CPPUNIT_ASSERT_EQUAL(expectedDouble, resultDouble);
 
     ZZ_p::init(randZZ());
@@ -42,15 +42,15 @@ void AuxiliaryTest::testStrTo() {
 void AuxiliaryTest::testToStr() {
     std::string expectedIntStr = "12";
     std::string resultIntStr = toStr(12);
-    CPPUNIT_ASSERT(resultIntStr.compare(expectedIntStr) == 0);
+    CPPUNIT_ASSERT(resultIntStr == expectedIntStr);
 
     std::string expectedDoubleStr = "12.57";
     std::string resultDoubleStr = toStr(12.57);
-    CPPUNIT_ASSERT(resultDoubleStr.compare(expectedDoubleStr) == 0);
+    CPPUNIT_ASSERT(resultDoubleStr == expectedDoubleStr);
 
     std::string expectedZZpStr = "12";
     std::string resultZZpStr = toStr(static_cast<ZZ_p>(12));
-    CPPUNIT_ASSERT(resultZZpStr.compare(expectedZZpStr) == 0);
+    CPPUNIT_ASSERT(resultZZpStr == expectedZZpStr);
 }
 
 void AuxiliaryTest::testBase64_encode() {
@@ -74,7 +74,7 @@ void AuxiliaryTest::testBase64_decode() {
 void AuxiliaryTest::testStrToVecToStr() {
     const string expectedStr = "This is a test!  It is ONLY a test.";
     string resultStr = VecToStr(StrToVec(expectedStr));
-    CPPUNIT_ASSERT(resultStr.compare(expectedStr) == 0);
+    CPPUNIT_ASSERT(resultStr == expectedStr);
 }
 
 void AuxiliaryTest::testMultisetIntersect() {

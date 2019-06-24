@@ -121,7 +121,7 @@ protected:
     ZZ addElemHashID; /** A hash ID shared between the non-recursive and recursive addElem methods.  It is used to place
                        * the new element into the appropriate path of the hash tree. */
     bool useExisting; /** Use Exiting connection for Communication */
-    bool hashes;
+    bool hashes; /**Sets whether or not hashing should be used (Must be true for multisets)*/
     /**
      * Encode and transmit synchronization parameters (e.g. synchronization scheme, probability of error ...)
      * to another communicant for the purposes of ensuring that both are using the same scheme.

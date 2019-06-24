@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 /* 
- * File:   IncreCPI.cpp
+ * File:   InterCPI.cpp
  * Author: Ari Trachtenberg
  * 
  * Created on November 30, 2011, 10:46 PM
@@ -13,9 +13,10 @@
 #include "Syncs/CPISync.h"
 #include "Syncs/InterCPISync.h"
 
-// might be a bug with epsilon... getting passed a double but receives an int
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,bool Hashes /* = false*/)
-: maxDiff(m_bar), bitNum(bits), probEps(epsilon + bits), pFactor(partition), hashes(Hashes){
+: maxDiff(m_bar), bitNum(bits), probEps(epsilon + log(bits)), pFactor(partition), hashes(Hashes){
+  //cout << "Epsilon: " << log2(1-pow((1-pow(2,-epsilon)),(1+(pow(2,bits)/m_bar)*partition*ceil(bits*(log(2)/log(partition)))))) << endl;
+  //TODO:Leave a comment here about error calculation after it has been fixed
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
   // setup ZZ_p field size
   redundant_k = to_long(CeilToZZ(to_RR(probEps) / bitNum)); //

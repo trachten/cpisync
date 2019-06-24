@@ -62,7 +62,6 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
             signal(SIGCHLD, SIG_IGN);
             Logger::gLog(Logger::COMM,"created a server process");
             server.listenSync(method_num);
-
 			exit(0);
         } else if (pID < 0) {
             //handle_error("error to fork a child process");

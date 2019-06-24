@@ -18,10 +18,10 @@
 class CPISync_HalfRound: public CPISync {
     public:
         // Duplicate the CPISync constructors, but set the oneWay flag to true
-     CPISync_HalfRound(long m_bar, long bits, int epsilon, int redundant=0) : CPISync(m_bar, bits, epsilon, redundant, false)
+     CPISync_HalfRound(long m_bar, long bits, int epsilon, int redundant=0,bool hashes = false) : CPISync(m_bar, bits, epsilon, redundant, hashes)
      { oneWay=true; SyncID = SYNC_TYPE::CPISync_HalfRound; }
-    
-    string getName() override {return CPISync::getName() + "\n   *one-way*";}
+
+    string getName() override {return CPISync::getName() + "\n   * one-way";}
 };
 
 #endif	/* ONEWAYCPISYNC_H */

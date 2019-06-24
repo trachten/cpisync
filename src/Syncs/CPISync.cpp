@@ -45,9 +45,9 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
 
     // set default parameters
     if (hashQ) {
-      /* if hashes are being used, we have to account for the probability of a collision by
-      ** by splitting the error probability between hash collisions and sync failures.
-      ** The former is controlled by lengthening the effective bit-representation of strings.
+     /* if hashes are being used, we have to account for the probability of a collision by
+      * by splitting the error probability between hash collisions and sync failures.
+      * The former is controlled by lengthening the effective bit-representation of strings.
       */
       bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
     /*
@@ -558,11 +558,9 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
             if (succeed) { // only do this if reconciliation has succeeded
                 Logger::gLog(Logger::METHOD, "CPISync succeeded.\n");
 
-                if (!oneWay)
-                    commSync->commSend(SYNC_OK_FLAG); // sync succeeded
-
                 if (!oneWay) {
-                    commSync->commSend(delta_self);
+					commSync->commSend(SYNC_OK_FLAG); // sync succeeded
+					commSync->commSend(delta_self);
                     commSync->commSend(delta_other);
                 }
 

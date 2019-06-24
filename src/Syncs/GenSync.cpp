@@ -84,7 +84,6 @@ GenSync::~GenSync() {
 
 
 // listen, receive data and conduct synchronization
-
 bool GenSync::listenSync(int method_num) {
     Logger::gLog(Logger::METHOD, "Entering GenSync::listenSync");
     // find the right syncAgent	

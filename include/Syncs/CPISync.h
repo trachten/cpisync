@@ -39,7 +39,7 @@ public:
    * @param bits  The number of bits used to represent each set element. Must be >= 2.
    *    The data structure cannot store more than 1^bits elements.
    * @param epsilon An upper bound on the probability of error of the synchronization,
-   *    expressed in its negative log.  In other words, the actually probability of error
+   *    expressed in its negative log.  In other words, the actual probability of error
    *    is upper bounded by 2^-epsilon.  This parameter is ignored if redundant is non-zero.
    * @param redundant The number of redundant points used for verification.  If this is zero,
    *    then this redundancy is computed directly from the allowed probability of error.

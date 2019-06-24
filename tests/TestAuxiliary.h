@@ -73,8 +73,9 @@ inline vector<GenSync> builderCombos() {
                     builder.
                             setBits(eltSizeSq).
                             setMbar(mBar).
-                            setNumPartitions(numParts);
-                    break;
+                            setNumPartitions(numParts).
+							setErr(err);
+					break;
                 case GenSync::SyncProtocol::FullSync:
                     break; // nothing needs to be done for a fullsync
                 case GenSync::SyncProtocol::IBLTSync:
@@ -184,7 +185,7 @@ inline vector<GenSync> oneWayCombos() {
             vector<shared_ptr<SyncMethod>> methods;
             switch(prot) {
                 case GenSync::SyncProtocol::OneWayCPISync:
-                    methods = {make_shared<CPISync_HalfRound>(mBar, eltSizeSq, err)};
+                    methods = {make_shared<CPISync_HalfRound>(mBar, eltSizeSq, err,0,false)};
                     break;
                 default:
                     continue;
@@ -382,6 +383,10 @@ inline vector<GenSync> fileCombos() {
 				}
 			}
 		}
+		if(oneWay){
+			//Checks that the size of the client has not changed if the sync is one way
+			clientReconcileSuccess &= GenSyncClient.dumpElements().size() == SIMILAR + CLIENT_MINUS_SERVER;
+		}
 		exit(clientReconcileSuccess);
 	}
 	else if (pID < 0) {
@@ -518,6 +523,7 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 		for (auto dop : objectsPtr) {
 			reconciled.insert(dop->print());
 		}
+		cout << "Reconciled set size: " << objectsPtr.size() << endl;
 
 		//Returns a boolean value for the success of the synchronization
 		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
@@ -529,7 +535,6 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 		for (int jj = 0; jj < objectsPtr.size(); jj++) {
 			delete objectsPtr[jj];
 		}
-
 	}
 	return success; // tests passed
 }

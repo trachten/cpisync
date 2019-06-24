@@ -202,8 +202,6 @@ void CPISyncTest::InterCPISyncSetReconcileTest() {
 	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false));
 }
 
-//Error with very large negative number of bits being calculated in this equation (not sure why yet)
-//bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
 void CPISyncTest::InterCPISyncMultisetReconcileTest() {
 	//A small mBar so that InterCPISync is forced to recurse
 	const int interCPImBar = 15;
@@ -214,6 +212,7 @@ void CPISyncTest::InterCPISyncMultisetReconcileTest() {
 			setBits(eltSizeSq).
 			setMbar(interCPImBar).
 			setNumPartitions(numParts).
+			setErr(err).
 			setHashes(true).
 			build();
 
@@ -223,6 +222,7 @@ void CPISyncTest::InterCPISyncMultisetReconcileTest() {
 			setBits(eltSizeSq).
 			setMbar(interCPImBar).
 			setNumPartitions(numParts).
+			setErr(err).
 			setHashes(true).
 			build();
 

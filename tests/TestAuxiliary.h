@@ -26,7 +26,7 @@ const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests in bytes
 const int mBar = 2 * UCHAR_MAX; // max differences between client and server in sync tests
-const int largeLimit = pow(2,10); //Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
+const int largeLimit = pow(2,12); //Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
 const int mBarLarge = largeLimit * 2; //maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
 const string iostr; // initial string used to construct CommString
@@ -364,6 +364,7 @@ inline vector<GenSync> fileCombos() {
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 			cout << "\nCLIENT RECON STATS:\n";
+			cout << "Set of size " <<  SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with " << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
 			GenSyncClient.printStats(0,0);
 
 			multiset<string> resClient;
@@ -403,6 +404,7 @@ inline vector<GenSync> fileCombos() {
 		forkHandleReport serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 		cout << "\nSERVER RECON STATS:\n";
+		cout << "Set of size " <<  SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with " << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
 		GenSyncServer.printStats(0,0);
 		cout << "\n";
 

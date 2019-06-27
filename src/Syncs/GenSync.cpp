@@ -314,7 +314,7 @@ void GenSync::printStats(int commIndex,int syncIndex) const{
 
 	cout << "Bytes Transmitted: " << getXmitBytes(commIndex) << endl;
 	cout << "Bytes Received: " << getRecvBytes(commIndex) << endl;
-	cout << "Sync Time: " << getSyncTime(commIndex) << endl;
+	cout << "Sync Time(s): " << getSyncTime(commIndex) << endl;
 }
 
 int GenSync::getPort(int commIndex) {

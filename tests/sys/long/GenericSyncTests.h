@@ -20,8 +20,8 @@ class GenSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testBuilder);
     CPPUNIT_TEST(testTwoWaySync);
     CPPUNIT_TEST(testTwoWayProbSync);
-    //CPPUNIT_TEST(testOneWaySync); TODO: Fix forkHandle s.t. server uses listenSync in parent, client uses startSync in child
-    //CPPUNIT_TEST(testOneWayProbSync); TODO: " "
+//    CPPUNIT_TEST(testOneWaySync); //TODO: Fix forkHandle s.t. server uses listenSync in parent, client uses startSync in child
+//    CPPUNIT_TEST(testOneWayProbSync); //TODO: " "
     CPPUNIT_TEST(testAddRemoveSyncMethodAndComm);
     CPPUNIT_TEST(testCounters);
     CPPUNIT_TEST(testPort);

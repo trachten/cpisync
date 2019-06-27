@@ -15,16 +15,19 @@
 #include "Syncs/FullSync.h"
 #include "Aux/ForkHandle.h"
 #include <type_traits>
+#include <chrono>
 
 #ifndef CPISYNCLIB_GENERIC_SYNC_TESTS_H
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
 
 // constants
-const int NUM_TESTS = 2; // Times to run oneWay and twoWay sync tests
+const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
-const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests
+const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests in bytes
 const int mBar = 2 * UCHAR_MAX; // max differences between client and server in sync tests
+const int largeLimit = pow(2,8); //Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT
+const int mBarLarge = largeLimit * 2; //maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
 const string iostr; // initial string used to construct CommString
 const bool b64 = true; // whether CommString should communicate in b64
@@ -32,7 +35,8 @@ const string host = "localhost"; // host for CommSocket
 const unsigned int port = 8001; // port for CommSocket
 const int err = 8; // negative log of acceptable error probability for CPISync
 const int numParts = 3; // partitions per level for divide-and-conquer syncs
-const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs (
+const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs
+const int largeNumExpElems = largeLimit * 3; //maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT and SIMILAR
 
 // helpers
 
@@ -346,8 +350,8 @@ inline vector<GenSync> fileCombos() {
  * @return True if the recon appears to be successful and false otherwise (if syncParamTest = true returns the
  * result of both forkHandles anded together)
  */inline bool syncTestForkHandle(GenSync& GenSyncClient, GenSync& GenSyncServer,bool oneWay, bool probSync,bool syncParamTest,
-								  const unsigned char SIMILAR,const unsigned char CLIENT_MINUS_SERVER,
-								  const unsigned char SERVER_MINUS_CLIENT, multiset<string> reconciled){
+								  const unsigned int SIMILAR,const unsigned int CLIENT_MINUS_SERVER,
+								  const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled){
 	bool success_signal;
 	int chld_state;
 	int my_opt = 0;
@@ -359,10 +363,8 @@ inline vector<GenSync> fileCombos() {
 			// reconcile client with server
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
-//			//Uncomment to print sync stats with the test
-//			cout << "\nCLIENT RECON STATS:\n";
-//			GenSyncClient.printStats(0,0);
-//			cout << endl;
+			cout << "\nCLIENT RECON STATS:\n";
+			GenSyncClient.printStats(0,0);
 
 			multiset<string> resClient;
 			for (auto dop : GenSyncClient.dumpElements()) {
@@ -400,10 +402,9 @@ inline vector<GenSync> fileCombos() {
 		// reconcile server with client
 		forkHandleReport serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
-//		//Uncomment to print sync stats with the test
-//		cout << "\nSERVER RECON STATS:\n";
-//		GenSyncServer.printStats(0,0);
-//		cout << "\n";
+		cout << "\nSERVER RECON STATS:\n";
+		GenSyncServer.printStats(0,0);
+		cout << "\n";
 
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements()) {
@@ -445,16 +446,16 @@ inline vector<GenSync> fileCombos() {
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay = false, bool probSync = false,
-					 bool syncParamTest = false, bool Multiset = false){
+					 bool syncParamTest = false, bool Multiset = false,bool largeSync = false){
 
 
 	srand(3721); //Seed test so that changing other tests does not cause failure in tests with a small probability of failure
 	bool success = true;
 
 	for(int ii = 0 ; ii < NUM_TESTS; ii++) {
-		const unsigned char SIMILAR = (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
-		const unsigned char CLIENT_MINUS_SERVER = (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
-		const unsigned char SERVER_MINUS_CLIENT = (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
+		const unsigned int SIMILAR = largeSync ? (rand() % largeLimit) + 1: (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
+		const unsigned int CLIENT_MINUS_SERVER = largeSync ? (rand() % largeLimit) + 1: (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
+		const unsigned int SERVER_MINUS_CLIENT = largeSync ? (rand() % largeLimit) + 1: (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
 
 		// setup DataObjects
 		vector<DataObject *> objectsPtr;
@@ -523,7 +524,6 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 		for (auto dop : objectsPtr) {
 			reconciled.insert(dop->print());
 		}
-		cout << "Reconciled set size: " << objectsPtr.size() << endl;
 
 		//Returns a boolean value for the success of the synchronization
 		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,

@@ -17,11 +17,14 @@ class CPISyncTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST(testCPIAddDelElem);
 	CPPUNIT_TEST(CPISyncSetReconcileTest);
 	CPPUNIT_TEST(CPISyncMultisetReconcileTest);
+	CPPUNIT_TEST(CPISyncLargeSetReconcileTest);
 	CPPUNIT_TEST(ProbCPISyncSetReconcileTest);
 	CPPUNIT_TEST(ProbCPISyncMultisetReconcileTest);
+	CPPUNIT_TEST(ProbCPISyncLargeSetReconcileTest);
 	CPPUNIT_TEST(testInterCPIAddDelElem);
 	CPPUNIT_TEST(InterCPISyncSetReconcileTest);
 	CPPUNIT_TEST(InterCPISyncMultisetReconcileTest);
+	CPPUNIT_TEST(InterCPISyncLargeSetReconcileTest);
 
 	CPPUNIT_TEST_SUITE_END();
 
@@ -55,6 +58,12 @@ public:
  	*/
 	void CPISyncMultisetReconcileTest();
 
+	/*
+	 * Test a synchronization of large sets using CPISync. This test may be limited by the heap size of a users machine
+	 * TODO: Add a number here once the sie of "Large" is chosen
+	 */
+	void CPISyncLargeSetReconcileTest();
+
 	/**
 	 * Test the synchronization of sets using ProbCPISync
 	 * Same as CPISync but if more than m_bar differences are present the CPISync divides into smaller subproblems
@@ -66,6 +75,12 @@ public:
  	 * Same as CPISync but if more than m_bar differences are present the CPISync divides into smaller subproblems
 	 */
 	void ProbCPISyncMultisetReconcileTest();
+
+	/**
+	 * Test the synchronization of large sets using ProbCPISync
+	 * Same as CPISync but if more than m_bar differences are present the CPISync divides into smaller subproblems
+	 */
+	void ProbCPISyncLargeSetReconcileTest();
 
 	//InterCPISync Test cases
 
@@ -89,6 +104,17 @@ public:
  	 * Test a synchronization with InterCPISync
  	*/
 	void InterCPISyncMultisetReconcileTest();
+
+	/**
+	 * Test a synchronization with InterCPISync
+	 * InterCPISync is tested with prob = false for the same reason as CPISYnc but InterCPISync does not have mBar < m as a
+	 * fail condition because it will recurse and break the set into p smaller sets recursively until the sync is successful
+	 *
+	 * Also tests that children are being deleted properly because the GenSync object needs to be cleared every run in order to
+	 * sync properly when called again in syncTest. If delete does not succeed then the sync will fail when called multiple times
+	 * because the real reconciled set will have additional elements that the expected reconcilled set does not have
+	 */
+	void InterCPISyncLargeSetReconcileTest();
 
 
 };

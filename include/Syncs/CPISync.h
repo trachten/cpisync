@@ -37,7 +37,7 @@ public:
    * @param m_bar Maximum number of differences guaranteed to sync; in some cases,
    *    more than m_bar differences can be synced.  Must be <= 2^bits.
    * @param bits  The number of bits used to represent each set element. Must be >= 2.
-   *    The data structure cannot store more than 1^bits elements.
+   *    The data structure cannot store more than 2^bits elements.
    * @param epsilon An upper bound on the probability of error of the synchronization,
    *    expressed in its negative log.  In other words, the actual probability of error
    *    is upper bounded by 2^-epsilon.  This parameter is ignored if redundant is non-zero.

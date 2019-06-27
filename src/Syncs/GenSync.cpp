@@ -16,6 +16,9 @@
 #include "Syncs/IBLTSync.h"
 #include "Syncs/IBLTSync_HalfRound.h"
 #include "Syncs/CPISync_HalfRound.h"
+#include <chrono>
+
+using namespace std::chrono;
 
 /**
  * Construct a default GenSync object - communicants and objects will have to be added later
@@ -299,19 +302,16 @@ const double GenSync::getSyncTime(int commIndex) const {
 
     // true iff there has been a sync (since sync resets comm counters)
     if(comm->getTotalTime() != comm->getResetTime()) {
-        return (double) (clock() - comm->getResetTime()) / CLOCKS_PER_SEC;
+        return duration_cast<microseconds>(high_resolution_clock::now() - comm->getResetTime()).count() * 1e-6;
     } else {
-        return (double) comm->getTotalTime() / CLOCKS_PER_SEC;
+        return duration_cast<microseconds>(high_resolution_clock::now() - comm->getTotalTime()).count() * 1e-6;
     }
 }
 
 void GenSync::printStats(int commIndex,int syncIndex) const{
-	if(syncIndex == -1) {
-		cout << "Stats for " << myCommVec[commIndex]->getName() << endl;
-	}
-	else{
-		cout << "Stats for " << myCommVec[commIndex]->getName() << " syncing with " << mySyncVec[syncIndex]->getName() << endl;
-	}
+	if(syncIndex == -1) cout << "Stats for " << myCommVec[commIndex]->getName() << endl;
+	else cout << "Stats for " << myCommVec[commIndex]->getName() << " syncing with " << mySyncVec[syncIndex]->getName() << endl;
+
 	cout << "Bytes Transmitted: " << getXmitBytes(commIndex) << endl;
 	cout << "Bytes Received: " << getRecvBytes(commIndex) << endl;
 	cout << "Sync Time: " << getSyncTime(commIndex) << endl;

@@ -16,7 +16,7 @@
 #include "Aux/Auxiliary.h"
 #include "TestAuxiliary.h"
 
-
+using namespace std::chrono;
 // constants
 
 CPPUNIT_TEST_SUITE_REGISTRATION(GenSyncTest);
@@ -145,10 +145,10 @@ void GenSyncTest::testCounters() {
     GenSync genSyncOther({make_shared<CommSocket>(port)}, {make_shared<CPISync>(mBar, eltSizeSq, err)});
 
     // get an upper bound of the time since the last sync to test against `res`
-    double before = (double) clock() / CLOCKS_PER_SEC;
+    auto before = std::chrono::high_resolution_clock::now();
 	//(oneWay = false, probSync = false)
 	CPPUNIT_ASSERT(syncTest(genSyncOther, genSync, false, false));
-    double after = (double) clock() / CLOCKS_PER_SEC;
+    auto after = std::chrono::high_resolution_clock::now();
     double res = genSync.getSyncTime(0);
 
     // check that Communicant counters == the respective GenSync counters
@@ -156,7 +156,7 @@ void GenSyncTest::testCounters() {
     CPPUNIT_ASSERT_EQUAL(cs->getRecvBytes(), genSync.getRecvBytes(0));
 
     // `res` should be positive and less than the time spent in syncTest
-    CPPUNIT_ASSERT(res <= after - before && res >= 0); // fix
+    CPPUNIT_ASSERT(res <= duration_cast<microseconds>(after - before).count() && res >= 0);
 }
 
 void GenSyncTest::testPort() {

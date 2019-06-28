@@ -37,11 +37,11 @@ long Communicant::getRecvBytesTot() {
     return recvBytesTot;
 }
 
-std::chrono::steady_clock::time_point Communicant::getResetTime() {
+std::chrono::high_resolution_clock::time_point Communicant::getResetTime() {
     return resetTime;
 }
 
-std::chrono::steady_clock::time_point Communicant::getTotalTime() {
+std::chrono::high_resolution_clock::time_point Communicant::getTotalTime() {
     return createTime;
 }
 

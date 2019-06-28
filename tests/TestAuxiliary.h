@@ -461,7 +461,7 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay =
 
 		// setup DataObjects
 		vector<DataObject *> objectsPtr;
-		set < ZZ > dataSet;
+		std::set < ZZ > dataSet;
 
 		ZZ data = randZZ();
 		//Creates a set of unique elements

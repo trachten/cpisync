@@ -352,7 +352,7 @@ protected:
     long recvBytes; /** The number of bytes that have been received since the last reset. */
     long recvBytesTot; /** The total number of bytes that have been received since the creation of this communicant. */
 
-	std::chrono::high_resolution_clock::time_point resetTime; /** CPU seconds at the last reset. */
+    std::chrono::high_resolution_clock::time_point resetTime; /** CPU seconds at the last reset. */
 	std::chrono::high_resolution_clock::time_point createTime; /** CPU seconds at the creation of this communicant. */
 
     int MOD_SIZE;    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/

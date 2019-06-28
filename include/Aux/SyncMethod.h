@@ -99,10 +99,6 @@ public:
      */
     vector<DataObject*>::const_iterator endElements() { return elements.end();}
 
-    /**
-     * @return The ID of the Sync
-     */
-	SYNC_TYPE getSyncID(){return SyncID;}
     
 protected:
     

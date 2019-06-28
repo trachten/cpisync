@@ -239,7 +239,7 @@ void GenSyncTest::testOneWayProbSync() {
 				setComm(GenSync::SyncComm::socket).
 				setBits(eltSize).
 				setNumExpectedElements(numExpElem).
-				setPort(port + 1 + ii). //Shift port down by one after each use to circumvent port closure issue
+				setPort(port + 1 + ii). //Shift port up by one after each use to circumvent port closure issue
 				build();
 
 		GenSync GenSyncClient = GenSync::Builder().

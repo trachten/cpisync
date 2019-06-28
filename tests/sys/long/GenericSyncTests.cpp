@@ -107,8 +107,8 @@ void GenSyncTest::testAddRemoveSyncMethodAndComm() {
     CPPUNIT_ASSERT_EQUAL((CPISync*)(*genSync.getSyncAgt(0)).get(), toAdd.get());
 
     // syncing with the newly added commsocket and probcpisync should succeed
-	//(oneWay = false, probSync = false)
-	CPPUNIT_ASSERT(syncTest(genSync, genSyncOther, false, false));
+	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(genSync, genSyncOther, false, false, false, false, false));
 
     // test deleting a communicant by index and by pointer
     genSync.delComm(cs);
@@ -188,8 +188,8 @@ void GenSyncTest::testTwoWaySync() {
 	vector<GenSync> twoWayServer = twoWayCombos();
 	// sync every GenSync configuration with itself
 	for (int ii = 0; ii < twoWayClient.size(); ii++) {
-		//(oneWay = false, probSync = false)
-		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false));
+		//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false, false, false, false));
 	}
 }
 
@@ -199,8 +199,8 @@ void GenSyncTest::testOneWaySync() {
 
     // sync every GenSync configuration with itself
     for(int ii = 0; ii < oneWayClient.size(); ii++) {
-    	//(oneWay = true, probSync = false)
-		CPPUNIT_ASSERT(syncTest(oneWayClient.at(ii), oneWayServer.at(ii), true, false));
+		//(oneWay = true, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(oneWayClient.at(ii), oneWayServer.at(ii), true, false, false, false, false));
 	}
 }
 
@@ -210,8 +210,8 @@ void GenSyncTest::testTwoWayProbSync() {
 
 	// sync every GenSync configuration with itself
 	for (int ii = 0; ii < twoWayProbClient.size(); ii++) {
-		//(oneWay = false, probSync = true)
-		CPPUNIT_ASSERT(syncTest(twoWayProbClient.at(ii), twoWayProbServer.at(ii), false, true));
+		//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(twoWayProbClient.at(ii), twoWayProbServer.at(ii), false, true, false, false, false));
 	}
 }
 
@@ -221,7 +221,7 @@ void GenSyncTest::testOneWayProbSync() {
 
     // sync every GenSync configuration with itself
     for(int ii = 0; ii < oneWayProbClient.size(); ii++) {
-		//(oneWay = true, probSync = true)
-		CPPUNIT_ASSERT(syncTest(oneWayProbClient.at(ii), oneWayProbServer.at(ii), true, true));
+		//(oneWay = true, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(oneWayProbClient.at(ii), oneWayProbServer.at(ii), true, true, false, false, false));
     }
 }

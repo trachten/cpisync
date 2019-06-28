@@ -194,13 +194,29 @@ void GenSyncTest::testTwoWaySync() {
 }
 
 void GenSyncTest::testOneWaySync() {
-    vector<GenSync> oneWayClient = oneWayCombos();
-    vector<GenSync> oneWayServer = oneWayCombos();
+	//TODO: Error check port opening to make sure port is not already in use
+	//See why connecting to port 0 does not work
+	for(int ii = 0 ; ii < NUM_TESTS; ii++) {
+		GenSync GenSyncServer = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::OneWayCPISync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSize * 8). // Bytes to bits
+				setMbar(mBar).
+				setErr(err).
+				setPort(port - 1 - ii). //Shift port down by one after each use to circumvent port closure issue
+				build();
 
-    // sync every GenSync configuration with itself
-    for(int ii = 0; ii < oneWayClient.size(); ii++) {
+		GenSync GenSyncClient = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::OneWayCPISync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSize * 8). // Bytes to bits
+				setMbar(mBar).
+				setErr(err).
+				setPort(port - 1 - ii).
+				build();
+
 		//(oneWay = true, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
-		CPPUNIT_ASSERT(syncTest(oneWayClient.at(ii), oneWayServer.at(ii), true, false, false, false, false));
+		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, true, false, false, false, false));
 	}
 }
 
@@ -216,12 +232,25 @@ void GenSyncTest::testTwoWayProbSync() {
 }
 
 void GenSyncTest::testOneWayProbSync() {
-    vector<GenSync> oneWayProbClient = oneWayProbCombos();
-    vector<GenSync> oneWayProbServer = oneWayProbCombos();
+	//TODO: Error check port opening to make sure port is not already in use
+	for(int ii = 1 ; ii < NUM_TESTS; ii++) {
+		GenSync GenSyncServer = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSize).
+				setNumExpectedElements(numExpElem).
+				setPort(port + 1 + ii). //Shift port down by one after each use to circumvent port closure issue
+				build();
 
-    // sync every GenSync configuration with itself
-    for(int ii = 0; ii < oneWayProbClient.size(); ii++) {
+		GenSync GenSyncClient = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSize).
+				setNumExpectedElements(numExpElem).
+				setPort(port + 1 + ii).
+				build();
+
 		//(oneWay = true, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
-		CPPUNIT_ASSERT(syncTest(oneWayProbClient.at(ii), oneWayProbServer.at(ii), true, true, false, false, false));
-    }
+		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, true, true, false, false, false));
+	}
 }

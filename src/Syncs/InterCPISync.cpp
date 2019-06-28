@@ -15,8 +15,11 @@
 
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,bool Hashes /* = false*/)
 : maxDiff(m_bar), bitNum(bits), probEps(epsilon + log(bits)), pFactor(partition), hashes(Hashes){
-  //cout << "Epsilon: " << log2(1-pow((1-pow(2,-epsilon)),(1+(pow(2,bits)/m_bar)*partition*ceil(bits*(log(2)/log(partition)))))) << endl;
-  //TODO:Leave a comment here about error calculation after it has been fixed
+
+	//cout << "Epsilon: " << epsilon + log(bits) << endl;
+	//cout << "Epsilon: " << ceil(1-(pow(epsilon,(pow(1+(pow(2,bits)*partition/m_bar)*ceil(bits*log(2)/log(partition)),-1))))) << endl;
+    //TODO:Leave a comment here about error calculation after it has been fixed
+
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
   // setup ZZ_p field size
   redundant_k = to_long(CeilToZZ(to_RR(probEps) / bitNum)); //

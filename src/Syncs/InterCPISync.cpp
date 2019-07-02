@@ -12,13 +12,20 @@
 #include "Aux/Exceptions.h"
 #include "Syncs/CPISync.h"
 #include "Syncs/InterCPISync.h"
+#include <NTL/RR.h>
 
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,bool Hashes /* = false*/)
-: maxDiff(m_bar), bitNum(bits), probEps(epsilon + log(bits)), pFactor(partition), hashes(Hashes){
+: maxDiff(m_bar), bitNum(bits), pFactor(partition), hashes(Hashes),
+probEps(conv<int>(ceil(-log10((RR_ONE - pow(RR_ONE - pow(RR_TWO,(RR) -epsilon),RR_ONE/ (RR_ONE+ pow(RR_TWO,(RR) bits) * (RR) partition / (RR) m_bar * (RR) ceil(bits*log(2)/log(partition))))))/log10(RR_TWO)))){
 
-	//cout << "Epsilon: " << epsilon + log(bits) << endl;
-	//cout << "Epsilon: " << ceil(1-(pow(epsilon,(pow(1+(pow(2,bits)*partition/m_bar)*ceil(bits*log(2)/log(partition)),-1))))) << endl;
-    //TODO:Leave a comment here about error calculation after it has been fixed
+/**
+ * ProbEps: Derivation
+ * Probability of failure for each CPISync node = 2^-Epsilon
+ * 1-(1-P[error per node])^maxNodes <= 2^-Epsilon //Probability of 1 or more errors occuring:
+ * max nodes for InterCPISync = 1 + (symDifs*partition/m_bar)*ceil(bits* log_p(2))
+ * Then solve for P[error per node] to find the epsilon_0(Epsilon for each CPISync node) needed
+ * for each CPISync in order to bound the total error by the given epsilon
+ */
 
   Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
   // setup ZZ_p field size
@@ -37,7 +44,7 @@ InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,boo
 }
 
 InterCPISync::~InterCPISync() {
-  // clean out the CPISync tree
+	// clean out the CPISync tree
 	_deleteTree(treeNode);
 }
 

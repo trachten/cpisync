@@ -45,11 +45,15 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
 
     // set default parameters
     if (hashQ) {
-     /* if hashes are being used, we have to account for the probability of a collision by
-      * by splitting the error probability between hash collisions and sync failures.
-      * The former is controlled by lengthening the effective bit-representation of strings.
-      */
-      bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
+    /* if hashes are being used, we have to account for the probability of a collision by
+     * by splitting the error probability between hash collisions and sync failures.
+     * The former is controlled by lengthening the effective bit-representation of strings.
+     */
+
+    // Use big floats(RR) to prevent underflow which results in a "negative exponent in _ntl_gexp" error
+    // bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
+    bitNum = conv<long>(ceil(RR_TWO * (RR) bits + log(-RR_ONE/log(RR_ONE-pow(RR_TWO,(RR) -epsilon-RR_ONE)))/log(RR_TWO) - RR_ONE));
+
     /*
      *  The analysis here is based on the birthday paradox.
      *  The probability of a collision for (at most) 2^bits elements chosen from

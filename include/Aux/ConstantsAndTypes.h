@@ -6,6 +6,7 @@
 #define CONSTS_AND_TYPES
 
 #include <NTL/ZZ.h>
+#include <NTL/RR.h>
 
 typedef unsigned char byte;
 typedef std::basic_string<unsigned char> ustring; // a string of unsigned characters
@@ -28,6 +29,8 @@ using std::runtime_error;
 const ZZ ZZ_ZERO = to_ZZ("0");
 const ZZ ZZ_ONE = to_ZZ("1");
 const ZZ ZZ_TWO = to_ZZ("2");
+const RR RR_ONE = (RR) 1.0;
+const RR RR_TWO = (RR) 2.0;
 const string SYNC_FAILED = "ERR: SYNC FAILED"; // message that a sync attempt has failed
 // ... these constants must copy at most one byte
 const byte SYNC_FAIL_FLAG = 0; /** The sync failed. */

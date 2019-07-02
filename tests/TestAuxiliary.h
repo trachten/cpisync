@@ -23,20 +23,20 @@
 // constants
 const int NUM_TESTS = 2; // Times to run oneWay and twoWay sync tests
 
-const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // size^2 of elements stored in sync tests
-const size_t eltSize = sizeof(randZZ()); // size of elements stored in sync tests in bytes
-const int mBar = 2 * UCHAR_MAX; // max differences between client and server in sync tests
-const int largeLimit = pow(2,10); //Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
-const int mBarLarge = largeLimit * 2; //maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT
+const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // Size^2 of elements stored in sync tests
+const size_t eltSize = sizeof(randZZ()); // Size of elements stored in sync tests in bytes
+const int mBar = 2 * UCHAR_MAX; // Max differences between client and server in sync tests
+const int largeLimit = pow(2,9); // Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
+const int mBarLarge = largeLimit * 2; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
-const string iostr; // initial string used to construct CommString
-const bool b64 = true; // whether CommString should communicate in b64
-const string host = "localhost"; // host for CommSocket
-const unsigned int port = 8001; // port for CommSocket
-const int err = 8; // negative log of acceptable error probability for CPISync
-const int numParts = 3; // partitions per level for divide-and-conquer syncs
-const int numExpElem = UCHAR_MAX*4; // max elements in an IBLT for IBLT syncs
-const int largeNumExpElems = largeLimit * 3; //maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT and SIMILAR
+const string iostr; // Initial string used to construct CommString
+const bool b64 = true; // Whether CommString should communicate in b64
+const string host = "localhost"; // Host for CommSocket
+const unsigned int port = 8001; // Port for CommSocket
+const int err = 8; // Negative log of acceptable error probability for CPISync
+const int numParts = 3; // Partitions per level for divide-and-conquer syncs
+const int numExpElem = UCHAR_MAX*4; // Max elements in an IBLT for IBLT syncs
+const int largeNumExpElems = largeLimit * 3; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT and SIMILAR
 
 // helpers
 
@@ -364,9 +364,9 @@ inline vector<GenSync> fileCombos() {
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 //			//Uncomment to see sync stats
-//			cout << "\nCLIENT RECON STATS:\n";
-//			cout << "Set of size " <<  SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with " << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
-//			GenSyncClient.printStats(0,0);
+			cout << "\nCLIENT RECON STATS:\n";
+			cout << "Set of size " <<  SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with " << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
+			GenSyncClient.printStats(0,0);
 
 			multiset<string> resClient;
 			for (auto dop : GenSyncClient.dumpElements()) {
@@ -408,10 +408,10 @@ inline vector<GenSync> fileCombos() {
 		else serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 //		//Uncomment to see sync stats
-//		cout << "\nSERVER RECON STATS:\n";
-//		cout << "Set of size " <<  SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with " << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
-//		GenSyncServer.printStats(0,0);
-//		cout << "\n";
+		cout << "\nSERVER RECON STATS:\n";
+		cout << "Set of size " <<  SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with " << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
+		GenSyncServer.printStats(0,0);
+		cout << "\n";
 
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements()) {

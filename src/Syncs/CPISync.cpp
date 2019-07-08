@@ -50,9 +50,9 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
      * The former is controlled by lengthening the effective bit-representation of strings.
      */
 
-    // Use big floats(RR) to prevent underflow which results in a "negative exponent in _ntl_gexp" error
+    // Use big floats(RR) to prevent underflow which results in a "negative exponent in _ntl_exp" error
     // bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
-    bitNum = conv<long>(ceil(RR_TWO * (RR) bits + log(-RR_ONE/log(RR_ONE-pow(RR_TWO,(RR) -epsilon-RR_ONE)))/log(RR_TWO) - RR_ONE));
+	bitNum = conv<long>(ceil(RR_TWO * (RR) bits + log(-RR_ONE/log(RR_ONE-pow(RR_TWO,(RR) -epsilon-RR_ONE)))/log(RR_TWO) - RR_ONE));
 
     /*
      *  The analysis here is based on the birthday paradox.
@@ -102,8 +102,8 @@ string CPISync::getName() {
     }
 
     ostringstream result;
-    result << methodName + "\n   * base field size = " << fieldSize << "\n   * mbar = " << maxDiff;
-    result << "\n   * b = " << bitNum << "\n   * epsilon = " << probEps << endl;
+    result << methodName + "\n   * base field size = " << fieldSize << "\n   * mbar = " << maxDiff << "\n   * b = "
+    << bitNum << "\n   * epsilon = " << probEps << "\n   * Evaluation Points = " << redundant_k << endl;
     return result.str();
 }
 

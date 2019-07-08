@@ -14,10 +14,11 @@ set(DATA_DIR ${SRC_DIR}/Data)
 set(COMM_DIR ${SRC_DIR}/Communicants)
 set(SYNC_DIR ${SRC_DIR}/Syncs)
 
+#Test directory structure
 set(TEST_DIR tests)
 set(UNIT_TEST_DIR ${TEST_DIR}/unit)
-#set(SYSSHORT_TEST_DIR ${TEST_DIR}/sys/short)
 set(SYSLONG_TEST_DIR ${TEST_DIR}/sys/long)
+set(BENCHMARK_TEST_DIR ${TEST_DIR}/sys/benchmark)
 
 # Set location of the test runner
 set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
@@ -86,3 +87,5 @@ endmacro()
 add_group_test(${UNIT_TEST_DIR} UnitTest)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
 add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)
+#add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
+add_group_test(${BENCHMARK_TEST_DIR} Benchmark)

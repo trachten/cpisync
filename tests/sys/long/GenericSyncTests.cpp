@@ -17,7 +17,6 @@
 #include "TestAuxiliary.h"
 
 using namespace std::chrono;
-// constants
 
 CPPUNIT_TEST_SUITE_REGISTRATION(GenSyncTest);
 
@@ -29,6 +28,7 @@ void GenSyncTest::setUp(){
     const int SEED = 619;
     srand(SEED);
 }
+
 void GenSyncTest::tearDown(){}
 
 // tests
@@ -147,7 +147,7 @@ void GenSyncTest::testCounters() {
     // get an upper bound of the time since the last sync to test against `res`
     auto before = std::chrono::high_resolution_clock::now();
 	//(oneWay = false, probSync = false)
-	CPPUNIT_ASSERT(syncTest(genSyncOther, genSync, false, false));
+	CPPUNIT_ASSERT(syncTest(genSyncOther, genSync, false,false,false,false,false));
     auto after = std::chrono::high_resolution_clock::now();
     double res = genSync.getSyncTime(0);
 

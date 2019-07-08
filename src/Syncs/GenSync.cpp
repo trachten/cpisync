@@ -308,13 +308,17 @@ const double GenSync::getSyncTime(int commIndex) const {
     }
 }
 
-void GenSync::printStats(int commIndex,int syncIndex) const{
-	if(syncIndex == -1) cout << "Stats for " << myCommVec[commIndex]->getName() << endl;
-	else cout << "Stats for " << myCommVec[commIndex]->getName() << " syncing with " << mySyncVec[syncIndex]->getName() << endl;
 
-	cout << "Bytes Transmitted: " << getXmitBytes(commIndex) << endl;
-	cout << "Bytes Received: " << getRecvBytes(commIndex) << endl;
-	cout << "Sync Time(s): " << getSyncTime(commIndex) << endl;
+string GenSync::printStats(int commIndex,int syncIndex) const{
+	stringstream returnStream;
+	if(syncIndex == -1) returnStream << "Stats for " << myCommVec[commIndex]->getName() << endl;
+	else returnStream << "Stats for " << myCommVec[commIndex]->getName() << " syncing with " << mySyncVec[syncIndex]->getName() << endl;
+
+	returnStream << "Bytes Transmitted: " << getXmitBytes(commIndex) << endl;
+	returnStream << "Bytes Received: " << getRecvBytes(commIndex) << endl;
+	returnStream << "Sync Time(s): " << getSyncTime(commIndex) << endl;
+
+	return returnStream.str();
 }
 
 int GenSync::getPort(int commIndex) {

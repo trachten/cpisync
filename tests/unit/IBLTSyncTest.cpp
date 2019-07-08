@@ -59,8 +59,8 @@ void IBLTSyncTest::IBLTSyncMultisetReconcileTest() {
 			setNumExpectedElements(numExpElem).
 			build();
 
-	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, true));
+	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = true, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, true, false));
 }
 
 void IBLTSyncTest::IBLTSyncLargeSetReconcileTest() {

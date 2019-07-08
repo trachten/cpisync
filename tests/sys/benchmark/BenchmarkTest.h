@@ -38,7 +38,9 @@ public:
 	static void CPISyncErrorBenchmark();
 
 	/**
-	 * Runs each two-way sync
+	 * Runs each two-way sync until it can no longer complete in under MAX_TIME = 10 seconds. Start at 2 differences and multiplies by
+	 * 2 until the the test no longer passes. Print out stats for the largest sync that passed as well as the smallest sync that
+	 * did not pass
 	 */
 	void TimedSyncThreshold();
 };

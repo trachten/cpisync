@@ -410,7 +410,8 @@ inline vector<GenSync> fileCombos() {
  * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
  * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
  * of the sets (For parameter mismatch testing)
- * @return Returns true if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
+ * @return Returns true if *every* recon test appears to be successful (and, if syncParamTest==true, then also that the
+ * sync reports that it is successful) and false otherwise.
  */
 inline bool _syncTest(GenSync GenSyncServer, GenSync GenSyncClient, bool oneWay=false, bool probSync=false,bool syncParamTest=false) {
     for(int jj = 0; jj < NUM_TESTS; jj++) {

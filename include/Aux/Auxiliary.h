@@ -32,7 +32,7 @@
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
-#include <stdio.h>
+#include <cstdio>
 
 
 // some standard names
@@ -75,7 +75,7 @@ inline vector<byte> StrToVec(const string& data) {
  * @require vector must have fewer than MAXINT characters
  * @return The string whose characters correspond, one by one, to the bytes of data.
  */
-inline string VecToStr(vector<byte>&& data) {
+inline string VecToStr(vector<byte>& data) {
     string result;
     for (unsigned char ii : data)
         result.push_back(ii);
@@ -136,7 +136,7 @@ inline T ZZtoT(const ZZ &zz, const T) {
  * for a ZZ_p)
  */
 template <class T>
-inline T strTo(const string str) {
+inline T strTo(const string& str) {
     if (str.empty())
         throw invalid_argument(str);
 
@@ -152,7 +152,7 @@ inline T strTo(const string str) {
  * @return A string representing the number
  */
 template <class T>
-inline string toStr(const T item) {
+inline string toStr(T item) {
     ostringstream tmp;
     tmp << item;
     return tmp.str();
@@ -405,7 +405,7 @@ inline string base64_decode(std::string const& encoded_string) {
 
     string ret;
     for (int ii = 0; ii < in_len; ii += 4) {
-        unsigned long group = static_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
+        auto group = static_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
                                                          64 * 64 * (tmp[ii + 2] - min_base64) +
                                                          64 * 64 * 64 * (tmp[ii + 3] - min_base64));
         ret += (char) (group % 256) - signed_shift;
@@ -529,14 +529,14 @@ inline string randCharacters(int len = 10) {
 inline string subprocess_commandline(const char *command) {
     // borrowed from https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-output-of-command-within-c-using-posix
     char buffer[128];
-    string result = "";
+    string result;
     FILE * pipe = popen(command, "r");
     if (!pipe) Logger::error("popen() failed!");
     try {
-        while (fgets(buffer, sizeof buffer, pipe) != NULL) {
+        while (fgets(buffer, sizeof buffer, pipe) != nullptr) {
             result += buffer;
         }
-    } catch (exception e) {
+    } catch (exception& e) {
         pclose(pipe);
         cout << "We failed to get command line response: " << e.what() << endl;
         Logger::error("Failed to read command reply");
@@ -554,7 +554,7 @@ struct rsync_stats {
 inline ostream &operator<<(ostream &os, const rsync_stats &stats) {
     os << "xmit: " + to_string(stats.xmit) + ", recv: " + to_string(stats.recv);
     return os;
-};
+}
 
 /**
  * @return extracts a substring between two indicies
@@ -562,7 +562,7 @@ inline ostream &operator<<(ostream &os, const rsync_stats &stats) {
  * @param from The start index of the substring you would like to extract
  * @param to The end index of the substring that you would like to extract
  */
-inline string extractStringIn(string org, string from, string to) {
+inline string extractStringIn(string org, const string& from, const string& to) {
     auto start = org.find(from);
     if (start == string::npos) return "";
     org = org.substr(start + from.size());
@@ -576,15 +576,15 @@ inline string extractStringIn(string org, string from, string to) {
  * @param file_name The name of the file that you would like to write your content too
  * @param content The string that you would like to write to your file
  */
- inline void writeStrToFile(string file_name, string content) {
+ inline void writeStrToFile(const string& file_name, const string& content) {
     ofstream myfile(file_name);
     myfile << content;
     myfile.close();
 }
 
-inline rsync_stats getRsyncStats(string origin, string target, bool full_report = false) {
+inline rsync_stats getRsyncStats(const string& origin, const string& target, bool full_report = false) {
 // only works for one type of rsync outputs
-    rsync_stats stats;
+    rsync_stats stats{};
 
     string res = subprocess_commandline(("rsync -r --checksum --no-whole-file --progress --stats " + origin + " " +
                                          target).c_str());  // -a archive -z compress -v for verbose
@@ -608,7 +608,7 @@ inline rsync_stats getRsyncStats(string origin, string target, bool full_report 
  * @param dir The path to the file that you would like to read from
  * @param len The length of the file
  */
-inline string scanTxtFromFile(string dir, int len) {
+inline string scanTxtFromFile(const string dir, int len) {
     std::string line;
     std::ifstream myfile(dir); //"./tests/SampleTxt.txt"
     ostringstream txt;
@@ -636,7 +636,7 @@ inline string scanTxtFromFile(string dir, int len) {
  * @return true if exists, else false
  */
 inline bool isPathExist(const string &path) {
-    struct stat buf;
+    struct stat buf{};
     return (stat(path.c_str(), &buf) == 0);
 }
 
@@ -647,7 +647,7 @@ inline bool isPathExist(const string &path) {
  * @return true if path is a file, false if it is a directory, else error and quit
  */
 inline bool isFile(const string &path) {
-    struct stat buf;
+    struct stat buf{};
     if (stat(path.c_str(), &buf) == 0) {
         if (buf.st_mode & S_IFREG)
             return true;
@@ -665,7 +665,7 @@ inline bool isFile(const string &path) {
  * @return return the size of the file
  */
 inline size_t getFileSize(const string &path) {
-    struct stat st;
+    struct stat st{};
     if (stat(path.c_str(), &st) != 0) {
         return 0;
     }
@@ -678,13 +678,13 @@ inline size_t getFileSize(const string &path) {
  * @param relative Whether file path is relative or not
  * @return vector of the names of the files inside of the directory
  */
-inline vector<string> getFileList(string dir_path, string file_type = ".", bool relative = false) {
+inline vector<string> getFileList(const string &dir_path, const string &file_type = ".", bool relative = false) {
     vector<string> f_lst;
     if (isPathExist(dir_path) and not isFile(dir_path)) {
         DIR *dir;
         struct dirent *dirp;
-        if ((dir = opendir(dir_path.c_str())) != NULL) {
-            while ((dirp = readdir(dir)) != NULL) {
+        if ((dir = opendir(dir_path.c_str())) != nullptr) {
+            while ((dirp = readdir(dir)) != nullptr) {
                 string f_name = string(dirp->d_name);
                 if (f_name.find(file_type) != std::string::npos and f_name != "." and f_name != "..") {
                   if(!relative)  f_lst.push_back(dir_path + "/" + f_name);
@@ -703,13 +703,13 @@ inline vector<string> getFileList(string dir_path, string file_type = ".", bool 
  * @param dir_path The directory you would like to know the contents of
  * @return vector of the names of the folders inside of a directory
  */
-inline vector<string> getFolderList(string dir_path) {
+inline vector<string> getFolderList(const string &dir_path) {
     vector<string> f_lst;
     if (!isFile(dir_path)) {
         DIR *dir;
         struct dirent *dirp;
-        if ((dir = opendir(dir_path.c_str())) != NULL) {
-            while ((dirp = readdir(dir)) != NULL) {
+        if ((dir = opendir(dir_path.c_str())) != nullptr) {
+            while ((dirp = readdir(dir)) != nullptr) {
                 string f_name = string(dirp->d_name);
                 if(!isFile(dir_path+"/"+f_name) and f_name != "." and f_name != "..")
                     f_lst.push_back(dir_path+"/"+f_name);
@@ -733,7 +733,7 @@ inline vector<string> getFolderList(string dir_path) {
  * @param loc The path to the directory or file you would like to request a string from
  * @return a string from loc of length=len
  */
-inline string randTxt(int len, string loc) {
+inline string randTxt(int len, const string& loc) {
     string full_txt;
     if (len <= 0) return full_txt;
     if (isFile(loc)) { // it is a file
@@ -761,10 +761,10 @@ inline string randTxt(int len, string loc) {
  * @param dir Absolute directory path
  * @return All path of files
  */
-inline list<string> walkabsDir(string dir) {
+inline list<string> walkabsDir(const string& dir) {
     if (isFile(dir))  Logger::error_and_quit("Input path is a file."); // No Error Means it exist and is dir
     list<string> res;
-    for (string file_name : getFileList(dir,".")){ // get all files
+    for (const string& file_name : getFileList((const string &) dir, ".")){ // get all files
         res.emplace_back(file_name);
     }
     for(string folder_name : getFolderList(dir)){
@@ -779,11 +779,11 @@ inline list<string> walkabsDir(string dir) {
  * @param reduceLen ?
  * @return All path of files
  */
-inline list<string> walkRelDir(string dir, int reduceLen = -1) {
+inline list<string> walkRelDir(const string& dir, int reduceLen = -1) {
     if (isFile(dir))  Logger::error_and_quit("Input path is a file."); // No Error Means it exist and is dir
     list<string> res;
     if (reduceLen<0)reduceLen+=dir.size()+2;
-    for (string file_name : getFileList(dir,".")){ // get all files
+    for (string file_name : getFileList(dir, ".")){ // get all files
         res.emplace_back((file_name.substr(reduceLen)));
     }
     for(string folder_name : getFolderList(dir)){

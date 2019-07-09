@@ -51,7 +51,7 @@ void BenchmarkTest::TimedSyncThreshold(){
 	const int MAX_TIME = 10; // Test completion threshold (If a test does not complete in this amount of seconds, stop the test and record the size of the previous sync)
 	string syncStats;
 	string syncStatsMax;
-	double difs; //Number of elements unique to the server and unique to the client (also the number of elements that are shared between the two sets)
+	int difs; //Number of elements unique to the server and unique to the client (also the number of elements that are shared between the two sets)
 
 	//CPISyncs
 	vector<GenSync> CPISyncClient;
@@ -72,9 +72,9 @@ void BenchmarkTest::TimedSyncThreshold(){
 		}
 
 		//Report Stats
-		cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << floor(difs) << endl;
+		cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << difs << " difs"<< endl;
 		cout << syncStats << endl;
-		cout << "Stats for the first sync that took longer than " << MAX_TIME << " second(s)" << endl;
+		cout << "Stats for the first sync that took longer than " << MAX_TIME << " second(s):" << difs*2 << endl;
 		cout << syncStatsMax;
 	}
 
@@ -93,8 +93,61 @@ void BenchmarkTest::TimedSyncThreshold(){
 	}
 
 	//Report Stats
-	cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << floor(difs) << endl;
+	cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << difs << " difs"<< endl;
 	cout << syncStats << endl;
-	cout << "Stats for the first sync that took longer than " << MAX_TIME << " second(s)" << endl;
+	cout << "Stats for the first sync that took longer than " << MAX_TIME << " second(s):" << difs*2 << endl;
+	cout << syncStatsMax;
+}
+
+void BenchmarkTest::BitThresholdTest(){
+
+	const int MAX_BYTES = 10000; // Runs two-way syncs with twice as many expected elements each time until more than MAX_BYTES need to be sent to reconcille
+	string syncStats;
+	string syncStatsMax;
+	int difs; //Number of elements unique to the server and unique to the client (also the number of elements that are shared between the two sets)
+
+	//CPISyncs
+	vector<GenSync> CPISyncClient;
+	vector<GenSync> CPISyncServer;
+	for(int ii = 0; ii < twoWayCombos(1).size(); ii++) {
+		difs = 1;
+		while(1) {
+			//Double the ammount of differences until the sync can not complete without sending more than MAX_BYTEs
+			difs *= 2;
+			//Mbar*2 because there are difs differences in the server and another difs in the client
+			CPISyncClient = twoWayCombos(difs*2);
+			CPISyncServer = twoWayCombos(difs*2);
+
+			CPPUNIT_ASSERT(benchmarkSync(CPISyncClient[ii],CPISyncServer[ii],difs,difs,difs,false,false));
+			syncStatsMax = CPISyncServer[ii].printStats(0,0);
+			if(CPISyncServer[0].getXmitBytes(0) > MAX_BYTES )break;
+			syncStats = CPISyncServer[ii].printStats(0,0);
+		}
+
+		//Report Stats
+		cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize while sending less than " << MAX_BYTES << " bytes: " << difs << " difs" << endl;
+		cout << syncStats << endl;
+		cout << "Stats for the first sync that took more than " << MAX_BYTES << " bytes to complete: " << difs*2 << " difs" << endl;
+		cout << syncStatsMax;
+	}
+
+	//IBLT Sync tests
+	difs = 1;
+	while(1){
+		difs *= 2;
+		vector<GenSync> IBLTGenClient = twoWayProbCombos(difs*3);
+		vector<GenSync> IBLTGenServer= twoWayProbCombos(difs*3);
+
+		CPPUNIT_ASSERT(benchmarkSync(IBLTGenClient[0],IBLTGenServer[0],difs,difs,difs,true,false));
+
+		syncStatsMax = IBLTGenServer[0].printStats(0,0);
+		if(IBLTGenServer[0].getXmitBytes(0) > MAX_BYTES )break;
+		syncStats = IBLTGenServer[0].printStats(0,0);
+	}
+
+	//Report Stats
+	cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize while sending less than " << MAX_BYTES << " bytes: " << difs << " difs" << endl;
+	cout << syncStats << endl;
+	cout << "Stats for the first sync that took more than " << MAX_BYTES << " bytes to complete: " << difs*2 << " difs" << endl;
 	cout << syncStatsMax;
 }

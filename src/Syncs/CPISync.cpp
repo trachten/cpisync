@@ -492,7 +492,6 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
     vector<long> self_hash;
     vector<long> recv_hash;
     vec_ZZ_p recv_meta;
-    clock_t serverStart = clock();
     long otherSetSize;
 
     vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */

@@ -195,7 +195,7 @@ void GenSyncTest::testTwoWaySync() {
 
 void GenSyncTest::testOneWaySync() {
 	//TODO: Error check port opening to make sure port is not already in use
-	//See why connecting to port 0 does not work
+	//See why connecting to port 0 does not work (should ask os to assign a port for us to use)
 	for(int ii = 0 ; ii < NUM_TESTS; ii++) {
 		GenSync GenSyncServer = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::OneWayCPISync).

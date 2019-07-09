@@ -29,7 +29,7 @@
 #include <csignal>
 #include "Syncs/GenSync.h"
 
-
+using namespace std::chrono;
 
 /**
  * Report structure for a forkHandle run
@@ -54,7 +54,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
     int chld_state;
     int my_opt = 0;
     forkHandleReport result;
-	clock_t start = clock();
+	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
     try {
         pid_t pID = fork();
         int method_num = 0;
@@ -71,7 +71,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
             Logger::gLog(Logger::COMM,"created a client process");
 			result.success = client.startSync(method_num);
 
-			result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
+			result.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
             result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytes = client.getXmitBytes(method_num);
             waitpid(pID, &chld_state, my_opt);
@@ -102,7 +102,7 @@ inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
 	int chld_state;
 	int my_opt = 0;
 	forkHandleReport result;
-	clock_t start = clock();
+	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 	try {
 		pid_t pID = fork();
 		int method_num = 0;
@@ -118,7 +118,7 @@ inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
 		} else {
 			Logger::gLog(Logger::COMM,"created a server process");
 			server.listenSync(method_num);
-			result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
+			result.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
 			result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
 			result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
 			waitpid(pID, &chld_state, my_opt);

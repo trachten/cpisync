@@ -214,7 +214,7 @@ inline vector<GenSync> oneWayCombos() {
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  * Only socket based syncs are created by this function
  */
-inline vector<GenSync> twoWayCombos(int m_Bar = mBar) {
+inline vector<GenSync> twoWayCombos(int m_Bar) {
     vector<GenSync> ret;
 
     // iterate through all possible combinations of communicant and syncmethod
@@ -258,7 +258,7 @@ inline vector<GenSync> twoWayCombos(int m_Bar = mBar) {
  * only partially succeeding. Constructed with useFile = false (Data is stored as a list of pointers to memory)
  * GenSyncs are lexicographically ordered with index of SyncProtocol more significant than the index of SyncComm
  */
-inline vector<GenSync> twoWayProbCombos(int expElems = numExpElem) {
+inline vector<GenSync> twoWayProbCombos(int expElems) {
     vector<GenSync> ret;
 
     // iterate through all possible combinations of communicant and syncmethod
@@ -368,9 +368,12 @@ inline vector<GenSync> fileCombos() {
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 			//Print stats about sync
-//			cout << "\nCLIENT RECON STATS:\n";
-//			cout << "(Reconciled) Set of size " <<  SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with " << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
-//			cout << GenSyncClient.printStats(0,0);
+//			if(clientReport.success) {
+//				cout << "\nCLIENT RECON STATS:\n";
+//				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
+//					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
+//				cout << GenSyncClient.printStats(0, 0);
+//			}
 
 			multiset<string> resClient;
 			for (auto dop : GenSyncClient.dumpElements()) {
@@ -413,10 +416,13 @@ inline vector<GenSync> fileCombos() {
 		else serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 		//Print stats about sync
-//		cout << "\nSERVER RECON STATS:\n";
-//		cout << "(Reconciled) Set of size " <<  SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with " << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
-//		cout << GenSyncServer.printStats(0,0);
-//		cout << "\n";
+//		if(serverReport.success) {
+//			cout << "\nSERVER RECON STATS:\n";
+//			cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
+//				 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
+//			cout << GenSyncServer.printStats(0, 0);
+//			cout << "\n";
+//		}
 
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements()) {
@@ -487,6 +493,10 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 				data = randZZ();
 				//While you fail to add an element to the set  (Because it is a duplicate)
 				while (!get<1>(dataSet.insert(data))) {
+					if(dataSet.size() == pow(2,eltSize*8)){
+						string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
+						Logger::error_and_quit(errorMsg);
+					}
 					data = randZZ();
 				}
 				objectsPtr.push_back(new DataObject(data));
@@ -578,6 +588,10 @@ inline bool benchmarkSync(GenSync GenSyncClient, GenSync GenSyncServer, int SIMI
 			data = randZZ();
 			//While you fail to add an element to the set  (Because it is a duplicate)
 			while (!get<1>(dataSet.insert(data))) {
+				if(dataSet.size() == pow(2,eltSize*8)){
+					string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
+					Logger::error_and_quit(errorMsg);
+				}
 				data = randZZ();
 			}
 			objectsPtr.push_back(new DataObject(data));

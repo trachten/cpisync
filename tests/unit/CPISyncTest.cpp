@@ -222,7 +222,7 @@ void CPISyncTest::testInterCPIAddDelElem() {
 
 void CPISyncTest::InterCPISyncSetReconcileTest() {
 	//A small mBar so that InterCPISync is forced to recurse
-	const int interCPImBar = 2;
+	const int interCPImBar = 15;
 
 	GenSync GenSyncServer = GenSync::Builder().
 			setProtocol(GenSync::SyncProtocol::InteractiveCPISync).

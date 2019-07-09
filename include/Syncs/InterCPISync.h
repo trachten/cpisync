@@ -101,8 +101,7 @@ public:
     string getName() override {
         return string("Interactive CPISync\n   * bitNum = ") + toStr(bitNum)
                 + "\n   * perr = 2^-" + toStr(probEps) + "\n   * mbar = " + toStr(maxDiff)
-                + "\n   * pFactor = " + toStr(pFactor) + '\n';
-               
+                + "\n   * pFactor = " + toStr(pFactor) + "\n   * Evaluation Points = " + toStr(redundant_k) + '\n';
     }
 
 

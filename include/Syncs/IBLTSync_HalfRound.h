@@ -18,7 +18,8 @@ class IBLTSync_HalfRound : public IBLTSync {
 public:
     // Duplicate the IBLTSync constructor, but set oneWay to true
     IBLTSync_HalfRound(size_t expected, size_t eltSize) : IBLTSync(expected, eltSize) {
-        oneWay = true, SyncID = SYNC_TYPE::IBLTSync_HalfRound;
+        oneWay = true;
+        SyncID = SYNC_TYPE::IBLTSync_HalfRound;
     }
 
     string getName() override {return IBLTSync::getName() + "   * one-way\n";}

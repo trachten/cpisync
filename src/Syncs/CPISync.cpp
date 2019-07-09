@@ -103,7 +103,7 @@ string CPISync::getName() {
 
     ostringstream result;
     result << methodName + "\n   * base field size = " << fieldSize << "\n   * mbar = " << maxDiff << "\n   * b = "
-    << bitNum << "\n   * epsilon = " << probEps << "\n   * Evaluation Points = " << redundant_k << endl;
+    << bitNum << "\n   * pErr = 2^-" << probEps << "\n   * Evaluation Points = " << redundant_k << endl;
     return result.str();
 }
 

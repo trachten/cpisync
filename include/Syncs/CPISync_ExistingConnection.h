@@ -20,7 +20,10 @@ public:
 	
     // Duplicate the CPISync constructor
     CPISync_ExistingConnection(long m_bar, long bits, int epsilon, int redundant=0,bool hashes = false) : CPISync(m_bar, bits, epsilon, redundant, hashes)
-    { hashQ=hashes; keepAlive = true; SyncID = SYNC_TYPE::CPISync_ExistingConnection; }
+    {
+    	hashQ=hashes; keepAlive = true;
+    	SyncID = SYNC_TYPE::CPISync_ExistingConnection;
+    }
     
     string getName() override {return CPISync::getName() + "\n   * assuming an existing connection";}
 };

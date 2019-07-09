@@ -184,8 +184,8 @@ void GenSyncTest::testBuilder() {
 }
 
 void GenSyncTest::testTwoWaySync() {
-	vector<GenSync> twoWayClient = twoWayCombos();
-	vector<GenSync> twoWayServer = twoWayCombos();
+	vector<GenSync> twoWayClient = twoWayCombos(mBar);
+	vector<GenSync> twoWayServer = twoWayCombos(mBar);
 	// sync every GenSync configuration with itself
 	for (int ii = 0; ii < twoWayClient.size(); ii++) {
 		//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
@@ -221,8 +221,8 @@ void GenSyncTest::testOneWaySync() {
 }
 
 void GenSyncTest::testTwoWayProbSync() {
-	vector<GenSync> twoWayProbClient = twoWayProbCombos();
-	vector<GenSync> twoWayProbServer = twoWayProbCombos();
+	vector<GenSync> twoWayProbClient = twoWayProbCombos(numExpElem);
+	vector<GenSync> twoWayProbServer = twoWayProbCombos(numExpElem);
 
 	// sync every GenSync configuration with itself
 	for (int ii = 0; ii < twoWayProbClient.size(); ii++) {

@@ -31,6 +31,7 @@ using std::list;
 
 typedef paryTree<CPISync_ExistingConnection> pTree;
 
+//TODO: Fix stat reporting for InterCPI (Curerntly only reports stats for the last node rather than the entire tree)
 class InterCPISync : public SyncMethod {
 public:
 

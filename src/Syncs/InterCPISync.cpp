@@ -16,8 +16,8 @@
 
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,bool Hashes /* = false*/)
 : maxDiff(m_bar), bitNum(bits), pFactor(partition), hashes(Hashes),
-probEps(conv<int>(ceil(-log10((RR_ONE - pow(RR_ONE - pow(RR_TWO,(RR) -epsilon),RR_ONE/ (RR_ONE+ pow(RR_TWO,(RR) bits) *
-(RR) partition / (RR) m_bar * (RR) ceil(bits*log(2)/log(partition))))))/log10(RR_TWO)))){
+	probEps(conv<int>(ceil(-log10((RR_ONE - pow(RR_ONE - pow(RR_TWO,(RR) -epsilon),RR_ONE/ (RR_ONE+ pow(RR_TWO,(RR) bits) *
+	(RR) partition / (RR) m_bar * (RR) ceil(bits*log(2)/log(partition))))))/log10(RR_TWO)))){
 
 	/**
 	 * ProbEps: Derivation
@@ -124,7 +124,7 @@ bool InterCPISync::_createTreeNode(pTree *&treeNode, pTree *parent, const ZZ &be
 
 		for (auto elem = par->beginElements(); elem != par->endElements(); elem++) {
 			ZZ elemZZ = rep(_hash(*elem));
-			if (elemZZ >= begRange && elemZZ < endRange && !curr->addElem(*elem)) //Element is in range and add fails
+			if (elemZZ >= begRange && elemZZ < endRange && !curr->addElem(*elem)) //if element is in range and add fails
 				return false;
 		}
 	}
@@ -371,7 +371,6 @@ bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<Data
 }
 
 // Recursive helper function for SyncServer
-
 bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
 							   list<DataObject *> &otherMinusSelf, pTree *&treeNode) {
 
@@ -419,14 +418,13 @@ bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<Dat
 		return true; // should always return true
 	}
 }
+
 bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
 							   list<DataObject *> &otherMinusSelf, pTree *treeNode, const ZZ &begRange,
 							   const ZZ &endRange) {
 
 	//Establish initial Handshakes - Check If I have nothing or If Client has nothing
 	int response;
-
-	cout << treeNode->getDatum()->getNumElem() << endl;
 
 	if(treeNode == nullptr || treeNode->getDatum()->getNumElem() == 0){
 		commSync->commSend(SYNC_NO_INFO);
@@ -447,8 +445,8 @@ bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<Dat
 	}
 	else
 	{
-                //Attempt Sync on current node
-		if (!node->SyncServer(commSync, selfMinusOther, otherMinusSelf)) { // sync failure - create Children and go try to syn
+        //Attempt Sync on current node
+		if (!node->SyncServer(commSync, selfMinusOther, otherMinusSelf)) { // sync failure - create Children and go try to sync
 			commSync->commSend(SYNC_FAIL_FLAG);
 
             auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k,hashes),pFactor);
@@ -488,13 +486,13 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
 
 		for(auto elem = parent->beginElements();elem!=parent->endElements();elem++){    //Iterate through all parent information
 			ZZ elemZZ = rep(_hash(*elem));
-            	pos = pFactor-1;
-                for(int jj=0;jj<pFactor-1;jj++){
-                	if((elemZZ >= (begRange +(jj*step))) && (elemZZ < (begRange + (jj+1)*step))){
-                    	pos = jj;
-                        break;
-                    }
-                }
+			pos = pFactor-1;
+			for(int jj=0;jj<pFactor-1;jj++){
+				if((elemZZ >= (begRange +(jj*step))) && (elemZZ < (begRange + (jj+1)*step))){
+					pos = jj;
+					break;
+				}
+			}
 			nodes[pos]->addElem(*elem);//Add to appropriate child
 		}
 	}

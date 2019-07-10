@@ -74,7 +74,7 @@ void BenchmarkTest::TimedSyncThreshold(){
 		//Report Stats
 		cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << difs << " difs"<< endl;
 		cout << syncStats << endl;
-		cout << "Stats for the first sync that took longer than " << MAX_TIME << " second(s):" << difs*2 << endl;
+		cout << endl << "Maximum number of set differences (Multiples of 2) NOT able to synchronize in under " << MAX_TIME << " second(s): " << difs*2 << " difs"<< endl;
 		cout << syncStatsMax;
 	}
 
@@ -95,7 +95,7 @@ void BenchmarkTest::TimedSyncThreshold(){
 	//Report Stats
 	cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << difs << " difs"<< endl;
 	cout << syncStats << endl;
-	cout << "Stats for the first sync that took longer than " << MAX_TIME << " second(s):" << difs*2 << endl;
+	cout << endl << "Maximum number of set differences (Multiples of 2) NOT able to synchronize in under " << MAX_TIME << " second(s): " << difs*2 << " difs"<< endl;
 	cout << syncStatsMax;
 }
 

@@ -484,20 +484,20 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 		vector<DataObject *> objectsPtr;
 		std::set < ZZ > dataSet;
 
-		ZZ data = randZZ();
+		ZZ data = rep(random_ZZ_p());
 		//Creates a set of unique elements
 		if(!Multiset) {
 			for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
 				//Checks if elements have already been added before adding them to objectsPtr to ensure that sync is being
 				//performed on a set rather than a multiset
-				data = randZZ();
+				data = rep(random_ZZ_p());
 				//While you fail to add an element to the set  (Because it is a duplicate)
 				while (!get<1>(dataSet.insert(data))) {
 					if(dataSet.size() == pow(2,eltSize*8)){
 						string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
 						Logger::error_and_quit(errorMsg);
 					}
-					data = randZZ();
+					data = rep(random_ZZ_p());
 				}
 				objectsPtr.push_back(new DataObject(data));
 			}
@@ -514,16 +514,16 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 						objectsPtr.push_back(new DataObject(data));
 					} else {
 						//Prevent elements that have already been added from being added again
-						data = randZZ();
+						data = rep(random_ZZ_p());
 						//While you fail to add an element to the set (Because it is a duplicate)
 						while (!get<1>(dataSet.insert(data))) {
-							data = randZZ();
+							data = rep(random_ZZ_p());
 						}
 						objectsPtr.push_back(new DataObject(data));
 					}
 				}
 				//Re-randomize the data between the different sections of the vector
-				data = randZZ();
+				data = rep(random_ZZ_p());
 
 				//Change the number of elements to add
 				if(jj == 0) addElemCount = CLIENT_MINUS_SERVER;
@@ -578,21 +578,21 @@ inline bool benchmarkSync(GenSync GenSyncClient, GenSync GenSyncServer, int SIMI
 	bool success = true;
 	vector<DataObject *> objectsPtr;
 	std::set < ZZ > dataSet;
-	ZZ data = randZZ();
+	ZZ data = rep(random_ZZ_p());
 
 	//Creates a set of unique elements
 	if(!Multiset) {
 		for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
 			//Checks if elements have already been added before adding them to objectsPtr to ensure that sync is being
 			//performed on a set rather than a multiset
-			data = randZZ();
+			data = rep(random_ZZ_p());
 			//While you fail to add an element to the set  (Because it is a duplicate)
 			while (!get<1>(dataSet.insert(data))) {
 				if(dataSet.size() == pow(2,eltSize*8)){
 					string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
 					Logger::error_and_quit(errorMsg);
 				}
-				data = randZZ();
+				data = rep(random_ZZ_p());
 			}
 			objectsPtr.push_back(new DataObject(data));
 		}
@@ -610,13 +610,13 @@ inline bool benchmarkSync(GenSync GenSyncClient, GenSync GenSyncServer, int SIMI
 				} else { //Prevent elements that have already been added from being added again data = randZZ();
 					//While you fail to add an element to the set (Because it is a duplicate)
 					while (!get<1>(dataSet.insert(data))) {
-						data = randZZ();
+						data = rep(random_ZZ_p());
 					}
 					objectsPtr.push_back(new DataObject(data));
 				}
 			}
 			//Re-randomize the data between the different sections of the vector
-			data = randZZ();
+			data = rep(random_ZZ_p());
 
 			//Change the number of elements to add
 			if(jj == 0) addElemCount = CLIENT_MINUS_SERVER;

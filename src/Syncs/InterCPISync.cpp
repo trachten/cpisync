@@ -237,35 +237,32 @@ void InterCPISync::SendSyncParam(const shared_ptr<Communicant>& commSync, bool o
 }
 
 bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
-    Logger::gLog(Logger::METHOD, "Entering InterCPISync::SyncClient");
-  // 0. Set up communicants
-    if(!useExisting)
-      commSync->commConnect();
-  // ... check that the other side is doing the same synchronization
-    SendSyncParam(commSync);
+	Logger::gLog(Logger::METHOD, "Entering InterCPISync::SyncClient");
+	// 0. Set up communicants
+	if(!useExisting)
+		commSync->commConnect();
+	// ... check that the other side is doing the same synchronization
+	SendSyncParam(commSync);
 
+	// 1. Do the sync
+	pTree *parentNode = treeNode;//Create a copy of the root node - Just to make sure that it is not deleted
 
-  // 1. Do the sync
-  //Original Code
-/*
-  bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
-          && SyncClient(commSync, selfMinusOther, otherMinusSelf, treeNode);*/
-  pTree *parentNode = treeNode;//Create a copy of the root node - Just to make sure that it is not deleted
-  bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
-          && _SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges
-  if (result) { // Sync succeeded
-    Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
-            + "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
-            + "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
-            + "\n");
-  } else
-    Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
+	bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
+		&& _SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges
 
-  // Close communicants
-  if(!useExisting)
-    commSync->commClose();
+	if (result) { // Sync succeeded
+	Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
+			+ "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
+			+ "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
+			+ "\n");
+	}
+	else
+		Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
 
-    return result;
+	// Close communicants
+	if(!useExisting) commSync->commClose();
+
+	return result;
 }
 
 // Recursive helper function for SyncClient

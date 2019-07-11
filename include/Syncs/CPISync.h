@@ -118,6 +118,7 @@ public:
    * @return A string representing the elements (with hashes) stored in the CPISync object.
    */
   string printElem();
+
   
 protected:
   // internal data

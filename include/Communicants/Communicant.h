@@ -284,6 +284,11 @@ public:
     void resetCommCounters();
 
     /**
+     * Resets ALL stats including total type stats
+     */
+    void hardResetCommCounters();
+
+    /**
      * @return The number of bytes transmitted with this Communicant (using this object) since the last communication counter reset (with {@link #resetCommCounters}).
      */
     long getXmitBytes() const;
@@ -353,7 +358,7 @@ protected:
     long recvBytesTot; /** The total number of bytes that have been received since the creation of this communicant. */
 
     std::chrono::high_resolution_clock::time_point resetTime; /** CPU seconds at the last reset. */
-	std::chrono::high_resolution_clock::time_point createTime; /** CPU seconds at the creation of this communicant. */
+	std::chrono::high_resolution_clock::time_point totalTime; /** CPU seconds at the creation of this communicant. */
 
     int MOD_SIZE;    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/
 

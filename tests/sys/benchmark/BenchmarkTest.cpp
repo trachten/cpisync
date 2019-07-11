@@ -32,13 +32,11 @@ void BenchmarkTest::CPISyncErrorBenchmark() {
 	vector<GenSync> CPISyncServer = twoWayCombos(2*DIFS);
 
 
-	//Itterate through each type of sync (CPISync, ProbCPISync, InterCPISync) exclude FullSync becuase it does not have a theoretical probability of failure
+	//Itterate through each type of sync (CPISync, ProbCPISync, InterCPISync) exclude FullSync because it does not have a theoretical probability of failure
 	for(int ii = 0; ii < CPISyncClient.size() - 1; ii++) {
 		//Test that less than (failExpected) tests fail in (testRuns) tests for sets
 		for (int jj = 0; jj < testRuns; jj++) {
-			//Having some issues with having 2 different genSync's with multiset enabled at the same time.
-			//TODO: Re-enable when multiset issue is fixed
-			bool success = benchmarkSync(CPISyncClient.at(ii), CPISyncServer.at(ii), SIMILAR, DIFS, DIFS, false, false/* (ii % 2 == 1) */); //Multiset is set to true if ii is odd
+			bool success = benchmarkSync(CPISyncClient.at(ii), CPISyncServer.at(ii), SIMILAR, DIFS, DIFS, false, false)
 			if (!success) {
 				failCount++;
 			}

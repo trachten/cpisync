@@ -368,12 +368,12 @@ inline vector<GenSync> fileCombos() {
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 			//Print stats about sync
-//			if(clientReport.success) {
-//				cout << "\nCLIENT RECON STATS:\n";
-//				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
-//					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
-//				cout << GenSyncClient.printStats(0, 0);
-//			}
+			if(clientReport.success) {
+				cout << "\nCLIENT RECON STATS:\n";
+				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
+					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
+				cout << GenSyncClient.printStats(0);
+			}
 
 			multiset<string> resClient;
 			for (auto dop : GenSyncClient.dumpElements()) {
@@ -416,13 +416,13 @@ inline vector<GenSync> fileCombos() {
 		else serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 		//Print stats about sync
-//		if(serverReport.success) {
-//			cout << "\nSERVER RECON STATS:\n";
-//			cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
-//				 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
-//			cout << GenSyncServer.printStats(0, 0);
-//			cout << "\n";
-//		}
+		if(serverReport.success) {
+			cout << "\nSERVER RECON STATS:\n";
+			cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
+				 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
+			cout << GenSyncServer.printStats(0);
+			cout << "\n";
+		}
 
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements()) {

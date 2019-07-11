@@ -57,7 +57,13 @@ bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
         Logger::gLog(Logger::METHOD, msg.str());
 
         commSync->commClose();
-        
+
+		//Record Stats
+		recvBytes = commSync->getRecvBytes();
+		xmitBytes = commSync->getXmitBytes();
+		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+			 - commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+
         return true;
     } catch(SyncFailureException& s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
@@ -102,6 +108,12 @@ bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         Logger::gLog(Logger::METHOD, msg.str());
 
         commSync->commClose();
+
+		//Record Stats
+		recvBytes = commSync->getRecvBytes();
+		xmitBytes = commSync->getXmitBytes();
+		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+				 - commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
 
         return true;
     } catch (SyncFailureException& s) {

@@ -290,11 +290,11 @@ const list<string> GenSync::dumpElements() {
 }
 
 const long GenSync::getXmitBytes(int commIndex) const {
-    return myCommVec[commIndex]->getXmitBytes();
+    return myCommVec[commIndex]->getXmitBytesTot();
 }
 
 const long GenSync::getRecvBytes(int commIndex) const {
-    return myCommVec[commIndex]->getRecvBytes();
+    return myCommVec[commIndex]->getRecvBytesTot();
 }
 
 const double GenSync::getSyncTime(int commIndex) const {
@@ -309,14 +309,13 @@ const double GenSync::getSyncTime(int commIndex) const {
 }
 
 
-string GenSync::printStats(int commIndex,int syncIndex) const{
+string GenSync::printStats(int syncIndex) const{
 	stringstream returnStream;
-	if(syncIndex == -1) returnStream << "Stats for " << myCommVec[commIndex]->getName() << endl;
-	else returnStream << "Stats for " << myCommVec[commIndex]->getName() << " syncing with " << mySyncVec[syncIndex]->getName() << endl;
+	returnStream << "Stats for " << mySyncVec[syncIndex]->getName() << endl;
 
-	returnStream << "Bytes Transmitted: " << getXmitBytes(commIndex) << endl;
-	returnStream << "Bytes Received: " << getRecvBytes(commIndex) << endl;
-	returnStream << "Sync Time(s): " << getSyncTime(commIndex) << endl;
+	returnStream << "Bytes Transmitted: " << mySyncVec[syncIndex]->getXmitBytes() << endl;
+	returnStream << "Bytes Received: " << mySyncVec[syncIndex]->getRecvBytes() << endl;
+	returnStream << "Sync Time(s): " << mySyncVec[syncIndex]->getSyncTime() << endl;
 
 	return returnStream.str();
 }

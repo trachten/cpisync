@@ -442,6 +442,13 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
                 delta_self.kill();
                 if (!keepAlive)
                     commSync->commClose();
+
+				//Record Stats
+				recvBytes = commSync->getRecvBytes();
+				xmitBytes = commSync->getXmitBytes();
+				syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+						- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+
                 return false;
             } else {
                 // Send more samples and try again
@@ -474,6 +481,12 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
         delta_other.kill();
         if (!keepAlive)
             commSync->commClose();
+
+        //Record Stats
+		recvBytes = commSync->getRecvBytes();
+		xmitBytes = commSync->getXmitBytes();
+		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+				- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
 
         return true;
     } catch (SyncFailureException& s) {
@@ -608,6 +621,12 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
     delta_self.kill();
     self_hash.clear();
     recv_hash.clear();
+
+	//Record Stats
+	recvBytes = commSync->getRecvBytes();
+	xmitBytes = commSync->getXmitBytes();
+	syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+			- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
 
     return result;
 }

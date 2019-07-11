@@ -6,7 +6,7 @@
 Communicant::Communicant() {
     resetCommCounters();
     xferBytesTot = recvBytesTot = 0;
-    createTime = std::chrono::high_resolution_clock::now();
+    totalTime = std::chrono::high_resolution_clock::now();
     MOD_SIZE = NOT_SET;
 }
 
@@ -15,6 +15,12 @@ Communicant::~Communicant() = default;
 void Communicant::resetCommCounters() {
     xferBytes = recvBytes = 0;
 	resetTime = std::chrono::high_resolution_clock::now();
+}
+
+void Communicant::hardResetCommCounters() {
+	xferBytes = recvBytes = xferBytesTot = recvBytesTot = 0;
+	resetTime = std::chrono::high_resolution_clock::now();
+	totalTime = std::chrono::high_resolution_clock::now();
 }
 
 string Communicant::getName() {
@@ -42,7 +48,7 @@ std::chrono::high_resolution_clock::time_point Communicant::getResetTime() {
 }
 
 std::chrono::high_resolution_clock::time_point Communicant::getTotalTime() {
-    return createTime;
+    return totalTime;
 }
 
 void Communicant::addXmitBytes(long numBytes) {

@@ -246,7 +246,7 @@ bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<Data
 
 	// 1. Do the sync
 	pTree *parentNode = treeNode;//Create a copy of the root node - Just to make sure that it is not deleted
-
+	commSync->hardResetCommCounters(); //Because each CPISync will reset the communicant stats need to reset and use the "total" fields
 	bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
 		&& _SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges
 
@@ -261,6 +261,12 @@ bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<Data
 
 	// Close communicants
 	if(!useExisting) commSync->commClose();
+
+	//Record Stats
+	recvBytes = commSync->getRecvBytesTot();
+	xmitBytes = commSync->getXmitBytesTot();
+	syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+			 - commSync->getTotalTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
 
 	return result;
 }
@@ -338,36 +344,40 @@ void InterCPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool o
 }
 
 bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
-    Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
-  // 0. Set up communicants
-    if(!useExisting)
-      commSync->commListen();
+	Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
 
-  // ... verify sync parameters
-    RecvSyncParam(commSync);
+	// 0. Set up communicants
+	if(!useExisting)
+	  commSync->commListen();
 
-  // 1. Do the sync
-//Original Sync
-/*  bool result = SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
-          && SyncServer(commSync, selfMinusOther, otherMinusSelf, treeNode);*/
- pTree * parentNode = treeNode;
- bool result = SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
-          && _SyncServer(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);
-  if (result) { // Sync succeeded
-    Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
-            + "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
-            + "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
-            + "\n");
-  } else
-    Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
+	// ... verify sync parameters
+	RecvSyncParam(commSync);
 
+	// 1. Do the sync
+	pTree * parentNode = treeNode;
+	commSync->hardResetCommCounters(); //Because each CPISync will reset the communicant stats need to reset and use the "total" fields
+	bool result = SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
+		  && _SyncServer(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);
+	if (result) { // Sync succeeded
+	Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
+			+ "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
+			+ "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
+			+ "\n");
+	} else
+	Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
 
 
-  // 2. Close communicants
-  if(!useExisting)
-    commSync->commClose();
 
-  return result;
+	// 2. Close communicants
+	if(!useExisting) commSync->commClose();
+
+	// 3. Record stats
+	recvBytes = commSync->getRecvBytesTot();
+	xmitBytes = commSync->getXmitBytesTot();
+	syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+			- commSync->getTotalTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+
+	return result;
 }
 
 // Recursive helper function for SyncServer

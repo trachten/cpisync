@@ -23,7 +23,10 @@ class CPISync_HalfRound_Hashed : public CPISync_HalfRound {
     public:
         // Duplicate the CPISync constructors, but set the oneWay flag to true
      CPISync_HalfRound_Hashed(long m_bar, long bits, int epsilon, int redundant=0) : CPISync_HalfRound(m_bar, bits, epsilon, redundant)
-     {  hashQ = true; keepAlive = true; SyncID = SYNC_TYPE::CPISync_HalfRound_Hashed; }
+     {
+        	hashQ = true; keepAlive = true;
+        	SyncID = SYNC_TYPE::CPISync_HalfRound_Hashed;
+     }
     
     string getName() override {return CPISync_HalfRound::getName() + "\n   *hashed";}
 };

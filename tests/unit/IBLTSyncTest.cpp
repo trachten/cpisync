@@ -21,7 +21,7 @@ void IBLTSyncTest::setUp() {
 void IBLTSyncTest::tearDown() {
 }
 
-void IBLTSyncTest::IBLTSyncReconcileTest() {
+void IBLTSyncTest::IBLTSyncSetReconcileTest() {
     const int BITS = sizeof(randZZ());
 
 	GenSync GenSyncServer = GenSync::Builder().
@@ -38,12 +38,11 @@ void IBLTSyncTest::IBLTSyncReconcileTest() {
 			setNumExpectedElements(numExpElem).
 			build();
 
-	//(oneWay = false, probSync = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true));
-
+	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, false, false));
 }
 
-void IBLTSyncTest::IBLTSyncMultiReconcileTest() {
+void IBLTSyncTest::IBLTSyncMultisetReconcileTest() {
 	const int BITS = sizeof(randZZ());
 
 	GenSync GenSyncServer = GenSync::Builder().
@@ -60,8 +59,29 @@ void IBLTSyncTest::IBLTSyncMultiReconcileTest() {
 			setNumExpectedElements(numExpElem).
 			build();
 
-	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, true));
+	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = true, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, true, false));
+}
+
+void IBLTSyncTest::IBLTSyncLargeSetReconcileTest() {
+	const int BITS = sizeof(randZZ());
+
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(largeNumExpElems).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setNumExpectedElements(largeNumExpElems).
+			build();
+
+	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true,false,false,true));
 }
 
 void IBLTSyncTest::testAddDelElem() {
@@ -106,7 +126,7 @@ void IBLTSyncTest::testIBLTParamMismatch(){
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			//Different number of expectedElements to test mismatch failure
+			//Different number of expectedElements to ensure that mismatches cause failure properly
 			setNumExpectedElements(numExpElem + 100).
 			build();
 
@@ -117,7 +137,6 @@ void IBLTSyncTest::testIBLTParamMismatch(){
 			setNumExpectedElements(numExpElem).
 			build();
 
-	//oneWay = false, prob = true, syncParamTest = true
-
-	CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, true, true)));
+	//(oneWay = false, probSync = true, syncParamTest = true, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, true, true, false, false)));
 }

@@ -20,12 +20,12 @@ class GenSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testBuilder);
     CPPUNIT_TEST(testTwoWaySync);
     CPPUNIT_TEST(testTwoWayProbSync);
-    //CPPUNIT_TEST(testOneWaySync); TODO: Fix forkHandle s.t. server uses listenSync in parent, client uses startSync in child
-    //CPPUNIT_TEST(testOneWayProbSync); TODO: " "
+    CPPUNIT_TEST(testOneWaySync);
+    CPPUNIT_TEST(testOneWayProbSync);
     CPPUNIT_TEST(testAddRemoveSyncMethodAndComm);
     CPPUNIT_TEST(testCounters);
     CPPUNIT_TEST(testPort);
-    CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST_SUITE_END();
 public:
     GenSyncTest();
 
@@ -53,13 +53,13 @@ public:
     static void testTwoWayProbSync();
 
 	/**
-	* Test syncing GenSyncs with one-way SyncMethods
+	* Test syncing GenSyncs with one-way SyncMethods (Only OneWayCPISync)
 	* i.e one of the parties in the sync does not update its set to match the other
 	*/
     static void testOneWaySync();
 
 	/**
-	* Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
+	* Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling (Only OneWayIBLTSync)
 	 * i.e Only one of the parties attempts to get missing elements from the other party (and has a probability of
 	 * getting only some of those differences
 	*/

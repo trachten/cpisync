@@ -12,8 +12,9 @@
 class IBLTSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(IBLTSyncTest);
 
-        CPPUNIT_TEST(IBLTSyncReconcileTest);
-		CPPUNIT_TEST(IBLTSyncMultiReconcileTest);
+        CPPUNIT_TEST(IBLTSyncSetReconcileTest);
+		CPPUNIT_TEST(IBLTSyncMultisetReconcileTest);
+		CPPUNIT_TEST(IBLTSyncLargeSetReconcileTest);
 		CPPUNIT_TEST(testAddDelElem);
         CPPUNIT_TEST(testGetStrings);
 		CPPUNIT_TEST(testIBLTParamMismatch);
@@ -31,9 +32,17 @@ public:
 	 * IBLT Sync is a probabilistic sync but with a sufficiently large numExpElems and the current seed this isn't an issue,
 	 * even for a large amount of tests
 	 */
-    void IBLTSyncReconcileTest();
+    void IBLTSyncSetReconcileTest();
 
-    void IBLTSyncMultiReconcileTest();
+	/**
+	 * Tests reconciliation of multisets using IBLTSync
+	 */
+    void IBLTSyncMultisetReconcileTest();
+
+	/**
+	 * Test reconciliation of large sets using IBLTSync
+	 */
+	void IBLTSyncLargeSetReconcileTest();
 
 	/**
 	 * Test adding and deleting elements

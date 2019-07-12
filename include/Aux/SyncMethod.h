@@ -40,6 +40,10 @@ public:
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
     virtual bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+		recvBytes = 0;
+		xmitBytes = 0; //Reset syncMethod counters
+		syncTime = 0;
+
         commSync->resetCommCounters();
         return true;
     }
@@ -54,6 +58,10 @@ public:
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
     virtual bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+		recvBytes = 0;
+		xmitBytes = 0; //Reset syncMethod counters
+		syncTime = 0;
+
         commSync->resetCommCounters();
         return true;
     }
@@ -99,10 +107,18 @@ public:
      */
     vector<DataObject*>::const_iterator endElements() { return elements.end();}
 
+	int getXmitBytes() {return xmitBytes;};
 
+	int getRecvBytes() {return recvBytes;};
+
+	float getSyncTime() {return syncTime;};
     
 protected:
-    
+
+	int xmitBytes; /** The total amount of bytes that this sync has transmitted */
+	int recvBytes; /** The total amount of bytes that this sync has received*/
+	float syncTime; /** The total amount of time that this sync has taken to complete */
+
     /**
      * Encode and transmit synchronization parameters (e.g. synchronization scheme, probability of error ...)
      * to another communicant for the purposes of ensuring that both are using the same scheme.  If the

@@ -31,6 +31,7 @@ using std::list;
 
 typedef paryTree<CPISync_ExistingConnection> pTree;
 
+//TODO: Fix stat reporting for InterCPI (Curerntly only reports stats for the last node rather than the entire tree)
 class InterCPISync : public SyncMethod {
 public:
 
@@ -101,8 +102,7 @@ public:
     string getName() override {
         return string("Interactive CPISync\n   * bitNum = ") + toStr(bitNum)
                 + "\n   * perr = 2^-" + toStr(probEps) + "\n   * mbar = " + toStr(maxDiff)
-                + "\n   * pFactor = " + toStr(pFactor) + '\n';
-               
+                + "\n   * pFactor = " + toStr(pFactor) + "\n   * Evaluation Points = " + toStr(redundant_k) + '\n';
     }
 
 
@@ -121,7 +121,7 @@ protected:
     ZZ addElemHashID; /** A hash ID shared between the non-recursive and recursive addElem methods.  It is used to place
                        * the new element into the appropriate path of the hash tree. */
     bool useExisting; /** Use Exiting connection for Communication */
-    bool hashes;
+    bool hashes; /**Sets whether or not hashing should be used (Must be true for multisets)*/
     /**
      * Encode and transmit synchronization parameters (e.g. synchronization scheme, probability of error ...)
      * to another communicant for the purposes of ensuring that both are using the same scheme.

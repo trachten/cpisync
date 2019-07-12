@@ -45,11 +45,15 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
 
     // set default parameters
     if (hashQ) {
-      /* if hashes are being used, we have to account for the probability of a collision by
-      ** by splitting the error probability between hash collisions and sync failures.
-      ** The former is controlled by lengthening the effective bit-representation of strings.
-      */
-      bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
+    /* if hashes are being used, we have to account for the probability of a collision by
+     * by splitting the error probability between hash collisions and sync failures.
+     * The former is controlled by lengthening the effective bit-representation of strings.
+     */
+
+    // Use big floats(RR) to prevent underflow which results in a "negative exponent in _ntl_exp" error
+    // bitNum = (long) 2 * bits + log(-1.0/log(1.0-pow(2.0,-epsilon-1.0)))/log(2) - 1;
+	bitNum = conv<long>(ceil(RR_TWO * (RR) bits + log(-RR_ONE/log(RR_ONE-pow(RR_TWO,(RR) -epsilon-RR_ONE)))/log(RR_TWO) - RR_ONE));
+
     /*
      *  The analysis here is based on the birthday paradox.
      *  The probability of a collision for (at most) 2^bits elements chosen from
@@ -98,8 +102,8 @@ string CPISync::getName() {
     }
 
     ostringstream result;
-    result << methodName + "\n   * base field size = " << fieldSize << "\n   * mbar = " << maxDiff;
-    result << "\n   * b = " << bitNum << "\n   * epsilon = " << probEps << endl;
+    result << methodName + "\n   * base field size = " << fieldSize << "\n   * mbar = " << maxDiff << "\n   * b = "
+    << bitNum << "\n   * pErr = 2^-" << probEps << "\n   * Evaluation Points = " << redundant_k << endl;
     return result.str();
 }
 
@@ -438,6 +442,13 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
                 delta_self.kill();
                 if (!keepAlive)
                     commSync->commClose();
+
+				//Record Stats
+				recvBytes = commSync->getRecvBytes();
+				xmitBytes = commSync->getXmitBytes();
+				syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+						- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+
                 return false;
             } else {
                 // Send more samples and try again
@@ -471,6 +482,12 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
         if (!keepAlive)
             commSync->commClose();
 
+        //Record Stats
+		recvBytes = commSync->getRecvBytes();
+		xmitBytes = commSync->getXmitBytes();
+		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+				- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+
         return true;
     } catch (SyncFailureException& s) {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
@@ -488,7 +505,6 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
     vector<long> self_hash;
     vector<long> recv_hash;
     vec_ZZ_p recv_meta;
-    clock_t serverStart = clock();
     long otherSetSize;
 
     vec_ZZ_p delta_self, /** items I have that the other does not, based on the last synchronization. */
@@ -558,11 +574,9 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
             if (succeed) { // only do this if reconciliation has succeeded
                 Logger::gLog(Logger::METHOD, "CPISync succeeded.\n");
 
-                if (!oneWay)
-                    commSync->commSend(SYNC_OK_FLAG); // sync succeeded
-
                 if (!oneWay) {
-                    commSync->commSend(delta_self);
+					commSync->commSend(SYNC_OK_FLAG); // sync succeeded
+					commSync->commSend(delta_self);
                     commSync->commSend(delta_other);
                 }
 
@@ -607,6 +621,12 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
     delta_self.kill();
     self_hash.clear();
     recv_hash.clear();
+
+	//Record Stats
+	recvBytes = commSync->getRecvBytes();
+	xmitBytes = commSync->getXmitBytes();
+	syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
+			- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
 
     return result;
 }

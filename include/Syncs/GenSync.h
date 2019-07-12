@@ -235,7 +235,7 @@ public:
      * @param syncIndex an optional index that allows info about a specific syncMethod in the genSync to be printed as well
      * @result Prints out nicely formatted stats about a genSync
      */
-    void printStats(int commIndex,int syncIndex = -1) const;
+    string printStats(int syncIndex) const;
 
     /**
      * @return the port on which the server is listening for communicant commIndex.

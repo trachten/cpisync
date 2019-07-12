@@ -29,7 +29,7 @@
 #include <csignal>
 #include "Syncs/GenSync.h"
 
-
+using namespace std::chrono;
 
 /**
  * Report structure for a forkHandle run
@@ -54,7 +54,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
     int chld_state;
     int my_opt = 0;
     forkHandleReport result;
-	clock_t start = clock();
+	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
     try {
         pid_t pID = fork();
         int method_num = 0;
@@ -62,7 +62,6 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
             signal(SIGCHLD, SIG_IGN);
             Logger::gLog(Logger::COMM,"created a server process");
             server.listenSync(method_num);
-
 			exit(0);
         } else if (pID < 0) {
             //handle_error("error to fork a child process");
@@ -72,7 +71,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
             Logger::gLog(Logger::COMM,"created a client process");
 			result.success = client.startSync(method_num);
 
-			result.totalTime = (double) (clock() - start) / CLOCKS_PER_SEC;
+			result.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
             result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytes = client.getXmitBytes(method_num);
             waitpid(pID, &chld_state, my_opt);
@@ -85,5 +84,53 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
     }
 
     return result;
+}
+/**
+ * Runs client (child process) and server (parent process), returning statistics for server.
+ * server is modified to reflect reconciliation, whereas client is not.
+ * @param server The GenSync object that plays the role of server in the sync.
+ * @param client The GenSync object that plays the role of client in the sync.
+ * @return Synchronization statistics as reported by the server.
+ */
+
+/**
+ * Known bug: The server doesn't close communicant connection after sync, causing port-in-use errors.
+ * A more in-depth discussion can be found in BUGS.txt. Currently working around this by changing port for each sync in tests
+ */
+inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
+	int err = 1;
+	int chld_state;
+	int my_opt = 0;
+	forkHandleReport result;
+	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+	try {
+		pid_t pID = fork();
+		int method_num = 0;
+		if (pID == 0) {
+			signal(SIGCHLD, SIG_IGN);
+			Logger::gLog(Logger::COMM,"created a client process");
+			client.startSync(method_num);
+			exit(0);
+		} else if (pID < 0) {
+			//handle_error("error to fork a child process");
+			cout << "throw out err = " << err << endl;
+			throw err;
+		} else {
+			Logger::gLog(Logger::COMM,"created a server process");
+			server.listenSync(method_num);
+			result.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
+			result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+			result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
+			waitpid(pID, &chld_state, my_opt);
+			result.success=true;
+		}
+
+	} catch (int& err) {
+		sleep(1); // why?
+		cout << "handle_error caught" << endl;
+		result.success=false;
+	}
+
+	return result;
 }
 #endif

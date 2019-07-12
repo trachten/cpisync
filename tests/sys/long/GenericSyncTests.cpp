@@ -16,8 +16,7 @@
 #include "Aux/Auxiliary.h"
 #include "TestAuxiliary.h"
 
-
-// constants
+using namespace std::chrono;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(GenSyncTest);
 
@@ -29,6 +28,7 @@ void GenSyncTest::setUp(){
     const int SEED = 619;
     srand(SEED);
 }
+
 void GenSyncTest::tearDown(){}
 
 // tests
@@ -107,8 +107,8 @@ void GenSyncTest::testAddRemoveSyncMethodAndComm() {
     CPPUNIT_ASSERT_EQUAL((CPISync*)(*genSync.getSyncAgt(0)).get(), toAdd.get());
 
     // syncing with the newly added commsocket and probcpisync should succeed
-	//(oneWay = false, probSync = false)
-	CPPUNIT_ASSERT(syncTest(genSync, genSyncOther, false, false));
+	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(genSync, genSyncOther, false, false, false, false, false));
 
     // test deleting a communicant by index and by pointer
     genSync.delComm(cs);
@@ -145,10 +145,10 @@ void GenSyncTest::testCounters() {
     GenSync genSyncOther({make_shared<CommSocket>(port)}, {make_shared<CPISync>(mBar, eltSizeSq, err)});
 
     // get an upper bound of the time since the last sync to test against `res`
-    double before = (double) clock() / CLOCKS_PER_SEC;
+    auto before = std::chrono::high_resolution_clock::now();
 	//(oneWay = false, probSync = false)
-	CPPUNIT_ASSERT(syncTest(genSyncOther, genSync, false, false));
-    double after = (double) clock() / CLOCKS_PER_SEC;
+	CPPUNIT_ASSERT(syncTest(genSyncOther, genSync, false,false,false,false,false));
+    auto after = std::chrono::high_resolution_clock::now();
     double res = genSync.getSyncTime(0);
 
     // check that Communicant counters == the respective GenSync counters
@@ -156,7 +156,7 @@ void GenSyncTest::testCounters() {
     CPPUNIT_ASSERT_EQUAL(cs->getRecvBytes(), genSync.getRecvBytes(0));
 
     // `res` should be positive and less than the time spent in syncTest
-    CPPUNIT_ASSERT(res <= after - before && res >= 0); // fix
+    CPPUNIT_ASSERT(res <= duration_cast<microseconds>(after - before).count() && res >= 0);
 }
 
 void GenSyncTest::testPort() {
@@ -184,44 +184,73 @@ void GenSyncTest::testBuilder() {
 }
 
 void GenSyncTest::testTwoWaySync() {
-	vector<GenSync> twoWayClient = twoWayCombos();
-	vector<GenSync> twoWayServer = twoWayCombos();
+	vector<GenSync> twoWayClient = twoWayCombos(mBar);
+	vector<GenSync> twoWayServer = twoWayCombos(mBar);
 	// sync every GenSync configuration with itself
 	for (int ii = 0; ii < twoWayClient.size(); ii++) {
-		//(oneWay = false, probSync = false)
-		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false));
+		//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false, false, false, false));
 	}
 }
 
 void GenSyncTest::testOneWaySync() {
-    vector<GenSync> oneWayClient = oneWayCombos();
-    vector<GenSync> oneWayServer = oneWayCombos();
+	//TODO: Error check port opening to make sure port is not already in use
+	//See why connecting to port 0 does not work (should ask os to assign a port for us to use)
+	for(int ii = 0 ; ii < NUM_TESTS; ii++) {
+		GenSync GenSyncServer = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::OneWayCPISync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSize * 8). // Bytes to bits
+				setMbar(mBar).
+				setErr(err).
+				setPort(port - 1 - ii). //Shift port down by one after each use to circumvent port closure issue
+				build();
 
-    // sync every GenSync configuration with itself
-    for(int ii = 0; ii < oneWayClient.size(); ii++) {
-    	//(oneWay = true, probSync = false)
-		CPPUNIT_ASSERT(syncTest(oneWayClient.at(ii), oneWayServer.at(ii), true, false));
+		GenSync GenSyncClient = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::OneWayCPISync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSize * 8). // Bytes to bits
+				setMbar(mBar).
+				setErr(err).
+				setPort(port - 1 - ii).
+				build();
+
+		//(oneWay = true, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, true, false, false, false, false));
 	}
 }
 
 void GenSyncTest::testTwoWayProbSync() {
-	vector<GenSync> twoWayProbClient = twoWayProbCombos();
-	vector<GenSync> twoWayProbServer = twoWayProbCombos();
+	vector<GenSync> twoWayProbClient = twoWayProbCombos(numExpElem);
+	vector<GenSync> twoWayProbServer = twoWayProbCombos(numExpElem);
 
 	// sync every GenSync configuration with itself
 	for (int ii = 0; ii < twoWayProbClient.size(); ii++) {
-		//(oneWay = false, probSync = true)
-		CPPUNIT_ASSERT(syncTest(twoWayProbClient.at(ii), twoWayProbServer.at(ii), false, true));
+		//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(twoWayProbClient.at(ii), twoWayProbServer.at(ii), false, true, false, false, false));
 	}
 }
 
 void GenSyncTest::testOneWayProbSync() {
-    vector<GenSync> oneWayProbClient = oneWayProbCombos();
-    vector<GenSync> oneWayProbServer = oneWayProbCombos();
+	//TODO: Error check port opening to make sure port is not already in use
+	for(int ii = 1 ; ii < NUM_TESTS; ii++) {
+		GenSync GenSyncServer = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSize).
+				setNumExpectedElements(numExpElem).
+				setPort(port + 1 + ii). //Shift port up by one after each use to circumvent port closure issue
+				build();
 
-    // sync every GenSync configuration with itself
-    for(int ii = 0; ii < oneWayProbClient.size(); ii++) {
-		//(oneWay = true, probSync = true)
-		CPPUNIT_ASSERT(syncTest(oneWayProbClient.at(ii), oneWayProbServer.at(ii), true, true));
-    }
+		GenSync GenSyncClient = GenSync::Builder().
+				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
+				setComm(GenSync::SyncComm::socket).
+				setBits(eltSize).
+				setNumExpectedElements(numExpElem).
+				setPort(port + 1 + ii).
+				build();
+
+		//(oneWay = true, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, true, true, false, false, false));
+	}
 }

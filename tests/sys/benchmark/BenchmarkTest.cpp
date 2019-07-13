@@ -36,7 +36,7 @@ void BenchmarkTest::CPISyncErrorBenchmark() {
 	for(int ii = 0; ii < CPISyncClient.size() - 1; ii++) {
 		//Test that less than (failExpected) tests fail in (testRuns) tests for sets
 		for (int jj = 0; jj < testRuns; jj++) {
-			bool success = benchmarkSync(CPISyncClient.at(ii), CPISyncServer.at(ii), SIMILAR, DIFS, DIFS, false, false)
+			bool success = benchmarkSync(CPISyncClient.at(ii), CPISyncServer.at(ii), SIMILAR, DIFS, DIFS, false, false);
 			if (!success) {
 				failCount++;
 			}
@@ -64,9 +64,9 @@ void BenchmarkTest::TimedSyncThreshold(){
 			CPISyncServer = twoWayCombos(difs*2);
 
 			CPPUNIT_ASSERT(benchmarkSync(CPISyncClient[ii],CPISyncServer[ii],difs,difs,difs,false,false));
-			syncStatsMax = CPISyncServer[ii].printStats(0,0);
+			syncStatsMax = CPISyncServer[ii].printStats(0);
 			if(CPISyncServer[ii].getSyncTime(0) > MAX_TIME) break;
-			syncStats = CPISyncServer[ii].printStats(0,0);
+			syncStats = CPISyncServer[ii].printStats(0);
 		}
 
 		//Report Stats
@@ -117,9 +117,9 @@ void BenchmarkTest::BitThresholdTest(){
 			CPISyncServer = twoWayCombos(difs*2);
 
 			CPPUNIT_ASSERT(benchmarkSync(CPISyncClient[ii],CPISyncServer[ii],difs,difs,difs,false,false));
-			syncStatsMax = CPISyncServer[ii].printStats(0,0);
+			syncStatsMax = CPISyncServer[ii].printStats(0);
 			if(CPISyncServer[0].getXmitBytes(0) > MAX_BYTES )break;
-			syncStats = CPISyncServer[ii].printStats(0,0);
+			syncStats = CPISyncServer[ii].printStats(0);
 		}
 
 		//Report Stats
@@ -138,9 +138,9 @@ void BenchmarkTest::BitThresholdTest(){
 
 		CPPUNIT_ASSERT(benchmarkSync(IBLTGenClient[0],IBLTGenServer[0],difs,difs,difs,true,false));
 
-		syncStatsMax = IBLTGenServer[0].printStats(0,0);
+		syncStatsMax = IBLTGenServer[0].printStats(0);
 		if(IBLTGenServer[0].getXmitBytes(0) > MAX_BYTES )break;
-		syncStats = IBLTGenServer[0].printStats(0,0);
+		syncStats = IBLTGenServer[0].printStats(0);
 	}
 
 	//Report Stats

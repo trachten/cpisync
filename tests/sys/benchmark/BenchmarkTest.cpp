@@ -85,9 +85,9 @@ void BenchmarkTest::TimedSyncThreshold(){
 
 		CPPUNIT_ASSERT(benchmarkSync(IBLTGenClient[0],IBLTGenServer[0],difs,difs,difs,true,false));
 
-		syncStatsMax = IBLTGenServer[0].printStats(0,0);
+		syncStatsMax = IBLTGenServer[0].printStats(0);
 		if(IBLTGenServer[0].getSyncTime(0) > MAX_TIME)break;
-		syncStats = IBLTGenServer[0].printStats(0,0);
+		syncStats = IBLTGenServer[0].printStats(0);
 	}
 
 	//Report Stats

@@ -149,3 +149,13 @@ void BenchmarkTest::BitThresholdTest(){
 	cout << "Stats for the first sync that took more than " << MAX_BYTES << " bytes to complete: " << difs*2 << " difs" << endl;
 	cout << syncStatsMax;
 }
+
+void BenchmarkTest::ServerSyncItterative() {
+	vector<GenSync> serverVec = constructorCombos(false);
+	vector<GenSync> clientVec = constructorCombos(false);
+
+	for(int ii = 0; ii < serverVec.size(); ii++){
+
+	}
+
+}

@@ -371,7 +371,7 @@ inline vector<GenSync> fileCombos() {
 			if(/*clientReport.success*/ false) {
 				cout << "\nCLIENT RECON STATS:\n";
 				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
-					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
+					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
 				cout << GenSyncClient.printStats(0);
 			}
 

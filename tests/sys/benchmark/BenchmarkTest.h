@@ -21,9 +21,12 @@
 
 class BenchmarkTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_SUITE(BenchmarkTest);
+
 	CPPUNIT_TEST(CPISyncErrorBenchmark);
 	CPPUNIT_TEST(TimedSyncThreshold);
 	CPPUNIT_TEST(BitThresholdTest);
+	CPPUNIT_TEST(ServerSyncItterative);
+
 	CPPUNIT_TEST_SUITE_END();
 public:
 
@@ -43,14 +46,21 @@ public:
 	 * until the the test no longer passes. Print out stats for the largest sync that passed as well as the smallest sync that
 	 * did not pass
 	 */
-	void TimedSyncThreshold();
+	static void TimedSyncThreshold();
 
 	/**
 	 * Run each two-way sync, doubling the number of differences until the sync can no longer comoplete with under MAX_BYTES
 	 * transmitted. Prints out stats for the largest sync that was able to complete with under MAX_BYTES sent and the smallest
 	 * sync that was not able to complete
 	 */
-	void BitThresholdTest();
+	static void BitThresholdTest();
+
+
+	/**
+	 * A sync that mimics a client making itterative changes and periodically syncing those changes to a server to simulate
+	 * an actual use case
+	 */
+	static void ServerSyncItterative();
 };
 
 #endif //CPISYNCLIB_BENCHMARKTEST_H

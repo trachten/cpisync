@@ -75,7 +75,7 @@ inline vector<byte> StrToVec(const string& data) {
  * @require vector must have fewer than MAXINT characters
  * @return The string whose characters correspond, one by one, to the bytes of data.
  */
-inline string VecToStr(vector<byte>& data) {
+inline string VecToStr(vector<byte>&& data) {
     string result;
     for (unsigned char ii : data)
         result.push_back(ii);

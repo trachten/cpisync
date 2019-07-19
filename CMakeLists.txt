@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(cpisynclib VERSION 1.0.0 DESCRIPTION "A research tool for comparing the performance of different synchronization protocols")
+project(cpisynclib)
 set(CMAKE_CXX_STANDARD 11)
 
 include(CTest)
@@ -105,13 +105,8 @@ include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 
 # Add libs and executables
-add_library(cpisynclib ${HEADERS} ${SOURCE_FILES})
-target_include_directories(cpisynclib PUBLIC ${INCLUDE})
-
-install(TARGETS cpisynclib EXPORT cpisynclib DESTINATION "${MAIN_LIB_DEST}")
-install(FILES ${HEADERS} DESTINATION "${INCLUDE_DEST}")
-#install(EXPORT cpisynclib DESTINATION "${LIB_DEST}")
-
+add_library(cpisynclib SHARED ${SOURCE_FILES})
+target_include_directories(cpisynclib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # Add the TryMe executable
 #add_executable(cpisync ${SRC_DIR}/main.cpp)

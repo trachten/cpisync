@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(cpisynclib)
+project(cpisynclib VERSION 1.0.0 DESCRIPTION "A research tool for comparing the performance of different synchronization protocols")
 set(CMAKE_CXX_STANDARD 11)
 
 include(CTest)
@@ -14,6 +14,12 @@ set(DATA_DIR ${SRC_DIR}/Data)
 set(COMM_DIR ${SRC_DIR}/Communicants)
 set(SYNC_DIR ${SRC_DIR}/Syncs)
 
+set(INCLUDE include)
+set(AUX_DIR_INC ${INCLUDE}/Aux)
+set(DATA_DIR_INC ${INCLUDE}/Data)
+set(COMM_DIR_INC ${INCLUDE}/Communicants)
+set(SYNC_DIR_INC ${INCLUDE}/Syncs)
+
 #Test directory structure
 set(TEST_DIR tests)
 set(UNIT_TEST_DIR ${TEST_DIR}/unit)
@@ -22,6 +28,12 @@ set(BENCHMARK_TEST_DIR ${TEST_DIR}/sys/benchmark)
 
 # Set location of the test runner
 set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
+
+#set install paths
+
+set(INCLUDE_DEST "include/CPISync")
+set(MAIN_LIB_DEST "lib/CPISync")
+set(LIB_DEST "${MAIN_LIB_DEST}/${CMAKE_BUILD_TYPE}")
 
 # Set file config
 set(SOURCE_FILES
@@ -48,6 +60,42 @@ set(SOURCE_FILES
 
         ${SRC_DIR}/main.cpp)
 
+set(HEADERS
+
+        ${AUX_DIR_INC}/Auxiliary.h
+        ${AUX_DIR_INC}/ConstantsAndTypes.h
+        ${AUX_DIR_INC}/Exceptions.h
+        ${AUX_DIR_INC}/ForkHandle.h
+        ${AUX_DIR_INC}/Logger.h
+        ${AUX_DIR_INC}/SyncMethod.h
+        ${AUX_DIR_INC}/UID.h
+
+        ${DATA_DIR_INC}/DataFileC.h
+        ${DATA_DIR_INC}/DataMemC.h
+        ${DATA_DIR_INC}/DataObjC.h
+        ${DATA_DIR_INC}/DataObject.h
+        ${DATA_DIR_INC}/DataPriorityObject.h
+
+        ${COMM_DIR_INC}/CommSocket.h
+        ${COMM_DIR_INC}/CommString.h
+        ${COMM_DIR_INC}/Communicant.h
+        ${COMM_DIR_INC}/CommDummy.h
+
+        ${SYNC_DIR_INC}/CPISync.h
+        ${SYNC_DIR_INC}/CPISync_ExistingConnection.h
+        ${SYNC_DIR_INC}/CPISync_HalfRound.h
+        ${SYNC_DIR_INC}/CPISync_HalfRound_Hashed.h
+        ${SYNC_DIR_INC}/CPISync_OneLessRound.h
+        ${SYNC_DIR_INC}/FullSync.h
+        ${SYNC_DIR_INC}/GenSync.h
+        ${SYNC_DIR_INC}/HashSync.h
+        ${SYNC_DIR_INC}/IBLT.h
+        ${SYNC_DIR_INC}/IBLTSync.h
+        ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
+        ${SYNC_DIR_INC}/InterCPISync.h
+        ${SYNC_DIR_INC}/PrioCPISync.h
+        ${SYNC_DIR_INC}/probCPISync.h)
+
 include_directories(include)
 include_directories(tests)
 
@@ -57,7 +105,13 @@ include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 
 # Add libs and executables
-add_library(cpisynclib ${SOURCE_FILES} ${SRC_DIR}/main.cpp)
+add_library(cpisynclib ${HEADERS} ${SOURCE_FILES})
+target_include_directories(cpisynclib PUBLIC ${INCLUDE})
+
+install(TARGETS cpisynclib EXPORT cpisynclib DESTINATION "${MAIN_LIB_DEST}")
+install(FILES ${HEADERS} DESTINATION "${INCLUDE_DEST}")
+#install(EXPORT cpisynclib DESTINATION "${LIB_DEST}")
+
 
 # Add the TryMe executable
 #add_executable(cpisync ${SRC_DIR}/main.cpp)

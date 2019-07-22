@@ -104,9 +104,8 @@ include_directories(tests)
 add_library(cpisync SHARED ${SOURCE_FILES} ${HEADERS})
 target_include_directories(cpisync PRIVATE ${INCLUDE}})
 
-install(TARGETS cpisync
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS cpisync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY ${INCLUDE} DESTINATION /usr/local/include COMPONENT devel)
 
 # Add the TryMe executable
 #add_executable(cpisync ${SRC_DIR}/main.cpp)

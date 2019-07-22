@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.6)
-project(cpisynclib)
+project(cpisync)
 set(CMAKE_CXX_STANDARD 11)
 
 include(CTest)
+include(GNUInstallDirs)
 
 # some flags
 set(CMAKE_CXX_FLAGS "-DDEFAULT_LOGLEVEL=TEST")
@@ -94,29 +95,28 @@ set(HEADERS
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
         ${SYNC_DIR_INC}/InterCPISync.h
         ${SYNC_DIR_INC}/PrioCPISync.h
-        ${SYNC_DIR_INC}/probCPISync.h)
+        ${SYNC_DIR_INC}/ProbCPISync.h)
 
 include_directories(include)
 include_directories(tests)
 
-
-# for external libraries
-include_directories(/usr/local/include)
-link_directories(/usr/local/lib)
-
 # Add libs and executables
-add_library(cpisynclib SHARED ${SOURCE_FILES})
-target_include_directories(cpisynclib PUBLIC ${PROJECT_SOURCE_DIR}/include)
+add_library(cpisync SHARED ${SOURCE_FILES} ${HEADERS})
+target_include_directories(cpisync PRIVATE ${INCLUDE}})
+
+install(TARGETS cpisync
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Add the TryMe executable
 #add_executable(cpisync ${SRC_DIR}/main.cpp)
 #add_executable(tryMe ${SRC_DIR}/TryMe.cpp)
-#target_link_libraries(cpisync cpisynclib ntl)
-#target_link_libraries(tryMe cpisynclib ntl)
+#target_link_libraries(cpisync cpisync ntl)
+#target_link_libraries(tryMe cpisync ntl)
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
-target_link_libraries(TryMe cpisynclib ntl cppunit pthread gmp)
+target_link_libraries(TryMe cpisync ntl cppunit pthread gmp)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add
@@ -127,7 +127,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisynclib ntl cppunit pthread gmp)
+        TARGET_LINK_LIBRARIES(${name} cpisync ntl cppunit pthread gmp)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

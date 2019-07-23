@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include "Communicant.h"
+#include <CPISync/Communicants/Communicant.h>
 
 class CommSocket : public Communicant {
 public:

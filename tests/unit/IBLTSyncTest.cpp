@@ -4,8 +4,8 @@
 //
 
 #include "IBLTSyncTest.h"
-#include "Syncs/GenSync.h"
-#include "Syncs/IBLTSync.h"
+#include <CPISync/Syncs/GenSync.h>
+#include <CPISync/Syncs/IBLTSync.h>
 #include "TestAuxiliary.h"
 CPPUNIT_TEST_SUITE_REGISTRATION(IBLTSyncTest);
 

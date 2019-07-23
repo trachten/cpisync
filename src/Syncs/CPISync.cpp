@@ -13,10 +13,10 @@
 #include <NTL/ZZ_pXFactoring.h>
 
 // project libraries
-#include "Aux/Auxiliary.h"
-#include "Aux/SyncMethod.h"
-#include "Syncs/CPISync.h"
-#include "Aux/Exceptions.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Aux/SyncMethod.h>
+#include <CPISync/Syncs/CPISync.h>
+#include <CPISync/Aux/Exceptions.h>
 
 // namespaces
 

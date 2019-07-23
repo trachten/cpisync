@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(cpisync)
+project(CPISync)
 set(CMAKE_CXX_STANDARD 11)
 
 include(CTest)
@@ -101,24 +101,25 @@ include_directories(include)
 include_directories(tests)
 
 # Add libs and executables
-add_library(cpisync SHARED ${SOURCE_FILES} ${HEADERS})
-target_include_directories(cpisync PRIVATE ${INCLUDE}})
+add_library(CPISync SHARED ${SOURCE_FILES} ${HEADERS})
+target_include_directories(CPISync PRIVATE ${INCLUDE}})
 
-#execute_process(COMMAND "[ -d usr/local/include/cpisync/ ] || sudo rm -rf /usr/local/include/cpisync/ && [ -f usr/local/lib/libcpisync.so ] || sudo rm -f /usr/local/lib/libcpisync.a")
-install(TARGETS cpisync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(CODE "FILE(REMOVE_RECURSE /usr/local/include/cpisync)") #Remove the existing cpisync library data and reinstall
-install(DIRECTORY DESTINATION /usr/local/include/cpisync) #create a new folder for cpisync inside of the system include directory if there isn't already one
-install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC} DESTINATION /usr/local/include/cpisync COMPONENT devel) #copy the contents of the include folder into the system include directory
+#execute_process(COMMAND "[ -d usr/local/include/CPISync/ ] || sudo rm -rf /usr/local/include/CPISync/ && [ -f usr/local/lib/libCPISync.so ] || sudo rm -f /usr/local/lib/libCPISync.a")
+install(CODE "FILE(REMOVE_RECURSE /usr/local/include/CPISync)") #Remove the existing CPISync library data and reinstall
+install(CODE "FILE(REMOVE_RECURSE /usr/local/lib/libCPISync.so)") #Remove the existing CPISync library data and reinstall
+install(TARGETS CPISync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY DESTINATION /usr/local/include/CPISync) #create a new folder for CPISync inside of the system include directory if there isn't already one
+install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC} DESTINATION /usr/local/include/CPISync COMPONENT devel) #copy the contents of the include folder into the system include directory
 
 # Add the TryMe executable
-#add_executable(cpisync ${SRC_DIR}/main.cpp)
+#add_executable(CPISync ${SRC_DIR}/main.cpp)
 #add_executable(tryMe ${SRC_DIR}/TryMe.cpp)
-#target_link_libraries(cpisync cpisync ntl)
-#target_link_libraries(tryMe cpisync ntl)
+#target_link_libraries(CPISync CPISync ntl)
+#target_link_libraries(tryMe CPISync ntl)
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
-target_link_libraries(TryMe cpisync ntl cppunit pthread gmp)
+target_link_libraries(TryMe CPISync ntl cppunit pthread gmp)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add
@@ -129,7 +130,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisync ntl cppunit pthread gmp)
+        TARGET_LINK_LIBRARIES(${name} CPISync ntl cppunit pthread gmp)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()

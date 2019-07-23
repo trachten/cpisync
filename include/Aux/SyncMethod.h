@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <memory>
-#include "Communicants/Communicant.h"
+#include <CPISync/Communicants/Communicant.h>
 
 // namespaces
 using std::vector;

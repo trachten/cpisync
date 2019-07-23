@@ -13,7 +13,7 @@
 #include <string>
 #include <NTL/ZZ.h>
 #include <sstream>
-#include "Aux/Auxiliary.h"
+#include <CPISync/Aux/Auxiliary.h>
 
 using std::vector;
 using std::hash;

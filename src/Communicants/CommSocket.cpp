@@ -3,8 +3,8 @@
 #include <sys/socket.h>
 #include <sstream>
 #include <thread>
-#include "Aux/Auxiliary.h"
-#include "Communicants/CommSocket.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Communicants/CommSocket.h>
 
 CommSocket::CommSocket() = default;
 

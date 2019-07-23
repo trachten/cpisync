@@ -26,8 +26,8 @@
 #include <sys/wait.h>
 #include <climits>
 #include <cstring>
-#include "ConstantsAndTypes.h"
-#include "Logger.h"
+#include <CPISync/Aux/ConstantsAndTypes.h>
+#include <CPISync/Aux/Logger.h>
 
 // some standard names
 using std::cout;

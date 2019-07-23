@@ -11,8 +11,8 @@
 #ifndef CPISYNCLIB_IBLTSYNC_HALFROUND_H
 #define CPISYNCLIB_IBLTSYNC_HALFROUND_H
 
-#include "IBLT.h"
-#include "IBLTSync.h"
+#include <CPISync/Syncs/IBLT.h>
+#include <CPISync/Syncs/IBLTSync.h>
 
 class IBLTSync_HalfRound : public IBLTSync {
 public:

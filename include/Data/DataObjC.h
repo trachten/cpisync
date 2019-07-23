@@ -3,7 +3,7 @@
 #ifndef DATA_OBJECT_CONTAINER_H 
 #define DATA_OBJECT_CONTAINER_H 
 
-#include "DataObject.h" 
+#include <CPISync/Data/DataObject.h>
 
 /**
  * Data Object Container

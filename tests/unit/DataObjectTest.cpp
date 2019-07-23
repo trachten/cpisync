@@ -7,7 +7,7 @@
  */
 
 #include "DataObjectTest.h"
-#include "Data/DataObject.h"
+#include <CPISync/Data/DataObject.h>
 
 using namespace std;
 

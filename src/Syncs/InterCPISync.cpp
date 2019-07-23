@@ -7,11 +7,11 @@
  * Created on November 30, 2011, 10:46 PM
  */
 
-#include "Aux/Auxiliary.h"
-#include "Communicants/Communicant.h"
-#include "Aux/Exceptions.h"
-#include "Syncs/CPISync.h"
-#include "Syncs/InterCPISync.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Communicants/Communicant.h>
+#include <CPISync/Aux/Exceptions.h>
+#include <CPISync/Syncs/CPISync.h>
+#include <CPISync/Syncs/InterCPISync.h>
 #include <NTL/RR.h>
 
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,bool Hashes /* = false*/)

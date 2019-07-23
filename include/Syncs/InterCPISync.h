@@ -5,10 +5,10 @@
 #define INCRE_CPI_H
 
 #include <list>
-#include "Aux/Auxiliary.h"
-#include "Communicants/Communicant.h"
-#include "Data/DataObject.h"
-#include "Syncs/CPISync_ExistingConnection.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Communicants/Communicant.h>
+#include <CPISync/Data/DataObject.h>
+#include <CPISync/Syncs/CPISync_ExistingConnection.h>
 
 using std::list;
 

@@ -11,9 +11,9 @@
 #include <string>
 #include <memory>
 
-#include "Communicants/Communicant.h"
-#include "Data/DataObject.h"
-#include "Aux/SyncMethod.h"
+#include <CPISync/Communicants/Communicant.h>
+#include <CPISync/Data/DataObject.h>
+#include <CPISync/Aux/SyncMethod.h>
 
 // namespace info
 using std::string;

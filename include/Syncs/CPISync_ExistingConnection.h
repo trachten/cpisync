@@ -13,7 +13,7 @@
 #define	CPISYNC_EXISTINGCONNECTION_H
 
 #include <string>
-#include "CPISync.h"
+#include <CPISync/Syncs/CPISync.h>
 
 class CPISync_ExistingConnection : public CPISync {
 public:

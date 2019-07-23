@@ -5,7 +5,7 @@
 // Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
 //
 
-#include "Syncs/IBLT.h"
+#include <CPISync/Syncs/IBLT.h>
 
 IBLT::IBLT() = default;
 IBLT::~IBLT() = default;

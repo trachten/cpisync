@@ -29,7 +29,7 @@
 #ifndef PROBCPISYNC_H
 #define	PROBCPISYNC_H
 
-#include "Syncs/CPISync.h"
+#include <CPISync/Syncs/CPISync.h>
 class ProbCPISync: public CPISync {
 public:
     // Constructors

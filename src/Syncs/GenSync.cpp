@@ -5,17 +5,17 @@
 #include <memory>
 #include <string>
 
-#include "Syncs/GenSync.h"
-#include "Aux/Exceptions.h"
-#include "Syncs/CPISync.h"
-#include "Communicants/CommSocket.h"
-#include "Communicants/CommString.h"
-#include "Syncs/ProbCPISync.h"
-#include "Syncs/InterCPISync.h"
-#include "Syncs/FullSync.h"
-#include "Syncs/IBLTSync.h"
-#include "Syncs/IBLTSync_HalfRound.h"
-#include "Syncs/CPISync_HalfRound.h"
+#include <CPISync/Syncs/GenSync.h>
+#include <CPISync/Aux/Exceptions.h>
+#include <CPISync/Syncs/CPISync.h>
+#include <CPISync/Communicants/CommSocket.h>
+#include <CPISync/Communicants/CommString.h>
+#include <CPISync/Syncs/ProbCPISync.h>
+#include <CPISync/Syncs/InterCPISync.h>
+#include <CPISync/Syncs/FullSync.h>
+#include <CPISync/Syncs/IBLTSync.h>
+#include <CPISync/Syncs/IBLTSync_HalfRound.h>
+#include <CPISync/Syncs/CPISync_HalfRound.h>
 #include <chrono>
 
 using namespace std::chrono;

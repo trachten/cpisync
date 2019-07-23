@@ -4,7 +4,7 @@
 #ifndef DATA_MEM_CONTAINER_H
 #define DATA_MEM_CONTAINER_H
 
-#include "DataObjC.h"
+#include <CPISync/Data/DataObjC.h>
 
 class DataMemC: public DataObjC
 {

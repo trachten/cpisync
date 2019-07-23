@@ -8,8 +8,8 @@
 #include <NTL/ZZ_pX.h>
 #include <NTL/vec_ZZ_p.h>
 #include <NTL/ZZ_pXFactoring.h>
-#include "Aux/Auxiliary.h"
-#include "Aux/SyncMethod.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Aux/SyncMethod.h>
 
 // namespaces
 

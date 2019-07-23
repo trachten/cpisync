@@ -15,7 +15,7 @@
 #define	CPISYNC_ONEROUND_H
 
 #include <string>
-#include "CPISync.h"
+#include <CPISync/Syncs/CPISync.h>
 
 
 class CPISync_OneLessRound : public CPISync {

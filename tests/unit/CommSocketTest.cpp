@@ -1,8 +1,8 @@
-#include "Communicants/CommSocket.h"
+#include <CPISync/Communicants/CommSocket.h>
 #include "CommSocketTest.h"
 #include "TestAuxiliary.h"
-#include "Aux/Auxiliary.h"
-#include "Aux/Logger.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Aux/Logger.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommSocketTest);
 

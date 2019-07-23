@@ -104,8 +104,11 @@ include_directories(tests)
 add_library(cpisync SHARED ${SOURCE_FILES} ${HEADERS})
 target_include_directories(cpisync PRIVATE ${INCLUDE}})
 
+#execute_process(COMMAND "[ -d usr/local/include/cpisync/ ] || sudo rm -rf /usr/local/include/cpisync/ && [ -f usr/local/lib/libcpisync.so ] || sudo rm -f /usr/local/lib/libcpisync.a")
 install(TARGETS cpisync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(DIRECTORY ${INCLUDE} DESTINATION /usr/local/include COMPONENT devel)
+install(CODE "FILE(REMOVE_RECURSE /usr/local/include/cpisync)") #Remove the existing cpisync library data and reinstall
+install(DIRECTORY DESTINATION /usr/local/include/cpisync) #create a new folder for cpisync inside of the system include directory if there isn't already one
+install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC} DESTINATION /usr/local/include/cpisync COMPONENT devel) #copy the contents of the include folder into the system include directory
 
 # Add the TryMe executable
 #add_executable(cpisync ${SRC_DIR}/main.cpp)

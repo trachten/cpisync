@@ -127,6 +127,18 @@ Relevant applications and extensions can be found at:
          mySyncClient.getSyncTime();
      ```
 
+**Notes**:
+   * Two-Way vs One-Way Syncs: Some of the syncs in the project are "One-Way" or "Half-Round". These syncs attempt to add elements from the client to the server but the clients does not try to sync with the Server. This means that only the server will update its elements.
+   * Included Sync Protocols:
+       * CPISync
+       * CPISync_OneLessRound
+       * CPISync_HalfRound
+       * ProbCPISync
+       * InteractiveCPISync
+       * OneWayCPISync
+       * FullSync
+       * IBLTSync
+       * OneWayIBLTSync
 ------------------------------
 
 Acknowledgments:  NSF

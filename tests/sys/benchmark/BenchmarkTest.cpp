@@ -205,7 +205,7 @@ void BenchmarkTest::IBLTSyncLongTerm()
 	const int difPerRound = 3;   // # of elems to be added to client during each round
 	const bool multiSet = false; // true iff it's testing on multiset
 	bool success = true;		 // true iff test succeeds in the end
-	bool details = true;		 // true iff to show inner progress during test
+	bool details = false;		 // true iff to show inner progress during test
 
 	// IBLTSyncs
 	// Only works when mbar values are way bigger than difference

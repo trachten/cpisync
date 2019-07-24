@@ -19,16 +19,19 @@
 #include <CPISync/Aux/ForkHandle.h>
 #include "TestAuxiliary.h"
 
-class BenchmarkTest : public CPPUNIT_NS::TestFixture {
+class BenchmarkTest : public CPPUNIT_NS::TestFixture
+{
 	CPPUNIT_TEST_SUITE(BenchmarkTest);
 
+	CPPUNIT_TEST(CPISyncLongTerm);
+	CPPUNIT_TEST(IBLTSyncLongTerm);
 	CPPUNIT_TEST(CPISyncErrorBenchmark);
 	CPPUNIT_TEST(TimedSyncThreshold);
 	CPPUNIT_TEST(BitThresholdTest);
 
 	CPPUNIT_TEST_SUITE_END();
-public:
 
+  public:
 	BenchmarkTest();
 	~BenchmarkTest() override;
 	void setUp() override;
@@ -54,12 +57,19 @@ public:
 	 */
 	static void BitThresholdTest();
 
-
 	/**
 	 * A sync that mimics a client making itterative changes and periodically syncing those changes to a server to simulate
 	 * an actual use case
 	 */
 	// static void ServerSyncItterative();
+
+	/*
+	 * Long term tests that performs continous rounds syncs on client and server, with each time a const number of elements added to client
+	 * and do another round of reconciliation. 
+	 */
+	static void CPISyncLongTerm();
+
+	static void IBLTSyncLongTerm();
 };
 
 #endif //CPISYNCLIB_BENCHMARKTEST_H

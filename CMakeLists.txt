@@ -15,7 +15,7 @@ set(DATA_DIR ${SRC_DIR}/Data)
 set(COMM_DIR ${SRC_DIR}/Communicants)
 set(SYNC_DIR ${SRC_DIR}/Syncs)
 
-set(INCLUDE include)
+set(INCLUDE include/CPISync)
 set(AUX_DIR_INC ${INCLUDE}/Aux)
 set(DATA_DIR_INC ${INCLUDE}/Data)
 set(COMM_DIR_INC ${INCLUDE}/Communicants)
@@ -101,15 +101,18 @@ include_directories(include)
 include_directories(tests)
 
 # Add libs and executables
-add_library(CPISync SHARED ${SOURCE_FILES} ${HEADERS})
-target_include_directories(CPISync PRIVATE ${INCLUDE}})
+add_library(CPISync STATIC ${SOURCE_FILES} ${HEADERS})
+target_include_directories(CPISync PRIVATE ${CMAKE_SOURCE_DIR}/include)
+TARGET_LINK_LIBRARIES(CPISync ntl cppunit pthread gmp)
 
 #execute_process(COMMAND "[ -d usr/local/include/CPISync/ ] || sudo rm -rf /usr/local/include/CPISync/ && [ -f usr/local/lib/libCPISync.so ] || sudo rm -f /usr/local/lib/libCPISync.a")
 install(CODE "FILE(REMOVE_RECURSE /usr/local/include/CPISync)") #Remove the existing CPISync library data and reinstall
-install(CODE "FILE(REMOVE_RECURSE /usr/local/lib/libCPISync.so)") #Remove the existing CPISync library data and reinstall
+install(CODE "FILE(REMOVE_RECURSE /usr/local/lib/libCPISync.a)") #Remove the existing CPISync library data and reinstall
 install(TARGETS CPISync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(DIRECTORY DESTINATION /usr/local/include/CPISync) #create a new folder for CPISync inside of the system include directory if there isn't already one
+install(DIRECTORY DESTINATION /usr/local/include/CPISync) #create a new folder for CPISync inside of the system include directory
 install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC} DESTINATION /usr/local/include/CPISync COMPONENT devel) #copy the contents of the include folder into the system include directory
+
+
 
 # Add the TryMe executable
 #add_executable(CPISync ${SRC_DIR}/main.cpp)

@@ -122,9 +122,9 @@ Relevant applications and extensions can be found at:
   4. Collect relevant statistics
      ```cpp
          mySyncClient.printStats();
-         mySyncClient.getRecvBytes();
-         mySyncClient.getXmitBytes();
-         mySyncClient.getSyncTime();
+         mySyncClient.mySyncVec[0]->getXmitBytes();
+         mySyncClient.mySyncVec[0]->getRecvBytes();
+         mySyncClient.mySyncVec[0]->getSyncTime();
      ```
 
 **Notes**:

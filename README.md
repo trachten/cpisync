@@ -71,7 +71,7 @@ This project has the following dependencies:
 ------------------------------
 
 ## Installation:
- **MacOS & Linux** - Open the project in terminal (To the directory containing CMakeLists.txt):
+ **MacOS & Linux** - Open the project in terminal and run the following commands:
   - `cmake`
   - `make`
   - `sudo make install`

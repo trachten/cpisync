@@ -30,12 +30,6 @@ set(BENCHMARK_TEST_DIR ${TEST_DIR}/sys/benchmark)
 # Set location of the test runner
 set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
 
-#set install paths
-
-set(INCLUDE_DEST "include/CPISync")
-set(MAIN_LIB_DEST "lib/CPISync")
-set(LIB_DEST "${MAIN_LIB_DEST}/${CMAKE_BUILD_TYPE}")
-
 # Set file config
 set(SOURCE_FILES
 
@@ -105,20 +99,11 @@ add_library(CPISync STATIC ${SOURCE_FILES} ${HEADERS})
 target_include_directories(CPISync PRIVATE ${CMAKE_SOURCE_DIR}/include)
 TARGET_LINK_LIBRARIES(CPISync ntl cppunit pthread gmp)
 
-#execute_process(COMMAND "[ -d usr/local/include/CPISync/ ] || sudo rm -rf /usr/local/include/CPISync/ && [ -f usr/local/lib/libCPISync.so ] || sudo rm -f /usr/local/lib/libCPISync.a")
 install(CODE "FILE(REMOVE_RECURSE /usr/local/include/CPISync)") #Remove the existing CPISync library data and reinstall
 install(CODE "FILE(REMOVE_RECURSE /usr/local/lib/libCPISync.a)") #Remove the existing CPISync library data and reinstall
 install(TARGETS CPISync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/CPISync) #create a new folder for CPISync inside of the system include directory
 install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/CPISync COMPONENT devel) #copy the contents of the include folder into the system include directory
-
-
-
-# Add the TryMe executable
-#add_executable(CPISync ${SRC_DIR}/main.cpp)
-#add_executable(tryMe ${SRC_DIR}/TryMe.cpp)
-#target_link_libraries(CPISync CPISync ntl)
-#target_link_libraries(tryMe CPISync ntl)
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)

@@ -253,12 +253,12 @@ private:
    * @note If there is a collision between two elements under this hash, it is possible that the synchronization
    * will fail.  This probability is not included in the probability of error computation.
    */
-  ZZ_p hash(const DataObject* datum) const;
+  ZZ_p _hash(const DataObject *datum) const;
 
   /**
    * Inverts the hash above when the noHash boolean is set
    */
-  DataObject *invHash(ZZ_p num) const;
+  DataObject* _invHash(ZZ_p num) const;
 
   /**
    * A secondary hash used for disambiguating set elements with the same hash.
@@ -269,13 +269,13 @@ private:
    * @param num A parameter of the hash.
    * @return An arbitrary ZZ_p corresponding to num.
    */
-  ZZ_p hash2(long num) const;
+  ZZ_p _hash2(long num) const;
 
   /**
    * Converts num to a number between 1 and DATA_MAX
    * @return 
    */
-  ZZ_p makeData(ZZ_p num) const;
+  ZZ_p _makeData(ZZ_p num) const;
 
   /**
    * Sends one set element, properly unhashed, to the other side
@@ -283,20 +283,21 @@ private:
    *      procedure applies the appropriate unhashing to send the actual element (rather than its hash).
    * @throws SyncFailureException if a synchronization error is detected.
    */
-  void sendSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, const ZZ_p& element);
+  void _sendSetElem(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, const ZZ_p &element);
 
   /**
    * Receives one set element, properly unhashed, from the other side
    * @param element The set element to receive.  If no hash is used, nothing must actually be received ...
    * the element is simply appended to the otherMinusSelf list.
    */
-  void recvSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf, ZZ_p element);
+  void _recvSetElem(const shared_ptr<Communicant> &commSync, list<DataObject *> &otherMinusSelf, ZZ_p element);
 
 
   /**
    * Helper function for Sync_Client and Sync_Server.  Sends a second round to the other
    * communicant translating reconciled hashes into actual strings.
    */
-  void makeStructures(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
+  void _makeStructures(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
+					   list<DataObject *> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
 };
 #endif

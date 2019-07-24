@@ -50,9 +50,6 @@ public:
     ProbCPISync(long m_bar, long bits, int epsilon,bool hashes = false);
 
     ~ProbCPISync() override = default;;
-private:
-
-
 };
 
 #endif	/* PROBCPISYNC_H */

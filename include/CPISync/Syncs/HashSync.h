@@ -65,7 +65,7 @@ class HashSync : SyncMethod {
   /**
    * Maps a point to a hashed value to the pointer to the original value that produced the hash.
    */
-    DataObject *mapHashToOrig(DataObject *hashPtr) {
+    DataObject* _mapHashToOrig(DataObject *hashPtr) {
       return myHashMap[hashPtr->to_ZZ()].second;
     }
 };

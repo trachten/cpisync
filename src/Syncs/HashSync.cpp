@@ -47,7 +47,8 @@ bool HashSync::SyncClient(const shared_ptr<Communicant>& commSync,
   bool result = syncObject->SyncClient(commSync,selfMinusOther,otherMinusSelf);
 
   // translate the selfMinusOther items we know
-  std::transform(selfMinusOther.begin(),selfMinusOther.end(),selfMinusOther.begin(),std::bind1st(std::mem_fun(&HashSync::mapHashToOrig), this));
+  std::transform(selfMinusOther.begin(),selfMinusOther.end(),selfMinusOther.begin(),std::bind1st(std::mem_fun(
+		  &HashSync::_mapHashToOrig), this));
 
   // open up another connection for the hash translation
   commSync->commConnect();
@@ -76,7 +77,8 @@ bool HashSync::SyncServer(const shared_ptr<Communicant>& commSync,
   SendSyncParam(commSync);
 
   // translate the selfMinusOther items we know
-  std::transform(selfMinusOther.begin(),selfMinusOther.end(),selfMinusOther.begin(),std::bind1st(std::mem_fun(&HashSync::mapHashToOrig), this));
+  std::transform(selfMinusOther.begin(),selfMinusOther.end(),selfMinusOther.begin(),std::bind1st(std::mem_fun(
+		  &HashSync::_mapHashToOrig), this));
 
   // receive client's knowledge
   otherMinusSelf = commSync->commRecv_DataObject_List(); // possible data leak of otherMinusSelf DataObjects?

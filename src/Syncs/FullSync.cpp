@@ -7,7 +7,7 @@
  * Created on June 27, 2018, 9:37 AM
  */
 
-#include "Syncs/FullSync.h"
+#include <CPISync/Syncs/FullSync.h>
 
 FullSync::FullSync() = default;
 

@@ -7,7 +7,7 @@
  */
 
 #include "CommunicantTest.h"
-#include "Communicants/CommDummy.h"
+#include <CPISync/Communicants/CommDummy.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommunicantTest);
 

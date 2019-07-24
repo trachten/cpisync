@@ -12,8 +12,8 @@
 #define	PRIO_CPI_H
 
 #include <string>
-#include "Data/DataObject.h"
-#include "InterCPISync.h"
+#include <CPISync/Data/DataObject.h>
+#include <CPISync/Syncs/InterCPISync.h>
 using namespace std;
 
 class PriorityCPISync : public InterCPISync {

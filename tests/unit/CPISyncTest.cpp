@@ -2,9 +2,9 @@
 // Created by Sean Brandenburg on 2019-06-10.
 //
 #include <cppunit/extensions/HelperMacros.h>
-#include "Syncs/CPISync.h"
+#include <CPISync/Syncs/CPISync.h>
 #include "CPISyncTest.h"
-#include "Syncs/InterCPISync.h"
+#include <CPISync/Syncs/InterCPISync.h>
 #include "TestAuxiliary.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CPISyncTest);

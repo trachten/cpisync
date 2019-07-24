@@ -1,8 +1,8 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-#include "Communicants/Communicant.h"
-#include "Aux/SyncMethod.h"
-#include "Aux/Exceptions.h"
+#include <CPISync/Communicants/Communicant.h>
+#include <CPISync/Aux/SyncMethod.h>
+#include <CPISync/Aux/Exceptions.h>
 
 SyncMethod::SyncMethod() {
     SyncID = SYNC_TYPE::GenericSync; // synchronization type

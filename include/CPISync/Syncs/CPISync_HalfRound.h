@@ -13,7 +13,7 @@
 #define	CPISYNC_HALFROUND_H
 
 #include <string>
-#include "CPISync.h"
+#include <CPISync/Syncs/CPISync.h>
 
 class CPISync_HalfRound: public CPISync {
     public:

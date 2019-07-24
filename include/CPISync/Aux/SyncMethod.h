@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <memory>
-#include "Communicants/Communicant.h"
+#include <CPISync/Communicants/Communicant.h>
 
 // namespaces
 using std::vector;
@@ -112,12 +112,12 @@ public:
 	int getRecvBytes() {return recvBytes;};
 
 	float getSyncTime() {return syncTime;};
-    
+
 protected:
 
 	int xmitBytes; /** The total amount of bytes that this sync has transmitted */
 	int recvBytes; /** The total amount of bytes that this sync has received*/
-	float syncTime; /** The total amount of time that this sync has taken to complete */
+	float syncTime; /** The total amount of time spent sending data */
 
     /**
      * Encode and transmit synchronization parameters (e.g. synchronization scheme, probability of error ...)

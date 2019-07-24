@@ -3,17 +3,17 @@
 // Created by eliez on 8/6/2018.
 //
 
-#include <Syncs/IBLTSync.h>
-#include <Syncs/IBLTSync_HalfRound.h>
-#include "Syncs/ProbCPISync.h"
-#include "Syncs/CPISync_HalfRound.h"
-#include "Syncs/InterCPISync.h"
-#include "Communicants/CommString.h"
-#include "Communicants/CommSocket.h"
-#include "Aux/Auxiliary.h"
-#include "Syncs/GenSync.h"
-#include "Syncs/FullSync.h"
-#include "Aux/ForkHandle.h"
+#include <CPISync/Syncs/IBLTSync.h>
+#include <CPISync/Syncs/IBLTSync_HalfRound.h>
+#include <CPISync/Syncs/ProbCPISync.h>
+#include <CPISync/Syncs/CPISync_HalfRound.h>
+#include <CPISync/Syncs/InterCPISync.h>
+#include <CPISync/Communicants/CommString.h>
+#include <CPISync/Communicants/CommSocket.h>
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Syncs/GenSync.h>
+#include <CPISync/Syncs/FullSync.h>
+#include <CPISync/Aux/ForkHandle.h>
 #include <type_traits>
 #include <chrono>
 
@@ -387,7 +387,7 @@ inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, b
 			{
 				cout << "\nCLIENT RECON STATS:\n";
 				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
-					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
+					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
 				cout << GenSyncClient.printStats(0);
 			}
 

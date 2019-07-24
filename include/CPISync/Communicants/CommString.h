@@ -14,7 +14,7 @@
 #define	COMMSTRING_H
 #include <sstream>
 #include <string>
-#include "Communicant.h"
+#include <CPISync/Communicants/Communicant.h>
 
 class CommString : public Communicant {
 public:

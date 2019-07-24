@@ -19,7 +19,7 @@
 #include <cstring>
 #include <queue>
 
-#include <Communicants/Communicant.h>
+#include <CPISync/Communicants/Communicant.h>
 
 using namespace std;
 class CommDummy : public Communicant {

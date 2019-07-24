@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 #include <NTL/RR.h>
-#include <Communicants/Communicant.h>
+#include <CPISync/Communicants/Communicant.h>
 
 Communicant::Communicant() {
     resetCommCounters();

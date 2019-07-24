@@ -112,15 +112,12 @@ public:
 	int getRecvBytes() {return recvBytes;};
 
 	float getSyncTime() {return syncTime;};
-	
-	float getCPUTime() {return cpuTime;};
-    
+
 protected:
 
 	int xmitBytes; /** The total amount of bytes that this sync has transmitted */
 	int recvBytes; /** The total amount of bytes that this sync has received*/
 	float syncTime; /** The total amount of time spent sending data */
-	float cpuTime; /** the total amount of time spent doing computation for this sync */
 
     /**
      * Encode and transmit synchronization parameters (e.g. synchronization scheme, probability of error ...)

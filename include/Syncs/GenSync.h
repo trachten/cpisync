@@ -16,23 +16,22 @@
 #include "Aux/SyncMethod.h"
 
 // namespace info
-using std::string;
-using std::cout;
 using std::clog;
+using std::cout;
 using std::endl;
-using std::list;
-using std::vector;
-using std::string;
-using std::stringstream;
-using std::istringstream;
-using std::ostringstream;
-using std::ostream;
-using std::ofstream;
 using std::ifstream;
-using std::ios;
 using std::invalid_argument;
+using std::ios;
+using std::istringstream;
+using std::list;
+using std::ofstream;
+using std::ostream;
+using std::ostringstream;
 using std::runtime_error;
 using std::shared_ptr;
+using std::string;
+using std::stringstream;
+using std::vector;
 /**
  * Implements a data structure for storing sets of data
  * in a manner that is designed for efficient synchronization.
@@ -44,8 +43,9 @@ using std::shared_ptr;
  * 1.  One or more synchronization methods, which govern(s) the protocol through which synchronization is carried out.
  * 2.  Data that is associated with the local object.
  */
-class GenSync {
-public:
+class GenSync
+{
+  public:
     /**
      * Specific GenSync constructor
      * @param cVec      The vector of other GenSync's with whom this data structure might
@@ -58,7 +58,7 @@ public:
      *                      if not specified.
      * 
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject*> &data = list<DataObject*>());
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject *> &data = list<DataObject *>());
 
     /**
      * Specific GenSync constructor
@@ -71,7 +71,7 @@ public:
      *                   this data structure.  As elements are added to this data structure, they
      *                   are also stored in the file.
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string& fileName);
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string &fileName);
 
     // DATA MANIPULATION
     /**
@@ -80,7 +80,7 @@ public:
      * %R:  newDatum cannot have size larger than a long
      * %M:  If a file is associated with this object, then updates are stored in that file.
      */
-    void addElem(DataObject* newDatum);
+    void addElem(DataObject *newDatum);
 
     /**
      * Adds a new datum into the existing GenSync data structure
@@ -91,7 +91,8 @@ public:
      * %M:  If a file is associated with this object, then updates are stored in that file.
     */
     template <typename T>
-    DataObject* addElem(T* newDatum) {
+    DataObject *addElem(T *newDatum)
+    {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
         auto *newDO = new DataObject(*newDatum);
         addElem(newDO);
@@ -104,7 +105,7 @@ public:
      * @param delPtr a DataObject that contains the data that you would like to delete from the sync
      * @return True if the delete appears to have completed successfully, false otherwise
      */
-    bool delElem(DataObject* delPtr);
+    bool delElem(DataObject *delPtr);
 
     /**
      * Calls delElem on every element in the myData list
@@ -115,8 +116,7 @@ public:
     /**
      * @return a list of string representations of the elements stored in the data structure
      */
-     const list<string> dumpElements();
-
+    const list<string> dumpElements();
 
     // COMMUNICANT MANIPULATION
     /* Communicants are entities that can communicate [and thus sync] with this GenSync object.
@@ -132,13 +132,13 @@ public:
      *                  synchronized upon a synchronization call.
      *                  By default, new communicants are added to the back of the vector
      */
-    void addComm(const shared_ptr<Communicant>& newComm, int index = 0);
+    void addComm(const shared_ptr<Communicant> &newComm, int index = 0);
 
     /**
      * Delete all communicants oldComm (i.e. stored at the same memory address) from the communicant vector.
      * @param oldComm  A pointer to the desired communicant.
      */
-    void delComm(const shared_ptr<Communicant>& oldComm);
+    void delComm(const shared_ptr<Communicant> &oldComm);
 
     /**
      * Delete the communicant at the given index in the communicant vector.
@@ -150,7 +150,6 @@ public:
      * @return The number of communicants currently registered. 
      */
     int numComm();
-
 
     // SYNCHRONIZATION AGENT MANIPULATION
     /* Synchronization agents represent the type of synchronization that could be
@@ -166,7 +165,7 @@ public:
      *                  The order of agents is not significant.
      *                  By default, new agents are added to the back of the sync vector
      */
-    void addSyncAgt(const shared_ptr<SyncMethod>& newAgt, int index = 0);
+    void addSyncAgt(const shared_ptr<SyncMethod> &newAgt, int index = 0);
 
     /**
      * Delete the agent at the given index in the agent vector.
@@ -180,8 +179,6 @@ public:
      * @return The ii-th Sync Agent attached to this object
      */
     vector<shared_ptr<SyncMethod>>::iterator getSyncAgt(int index);
-
-
 
     // SYNCHRONIZATION METHODS
     /**
@@ -206,8 +203,6 @@ public:
      * @return  true iff all synchronizations were completed successfully
      */
     bool startSync(int sync_num);
-
-
 
     // INFORMATIONAL
 
@@ -247,9 +242,15 @@ public:
     /**
      * Displays some internal information about this method
      */
-    virtual string getName() {
+    virtual string getName()
+    {
         return "I am a GenSync object";
     }
+
+    /**
+     *  @return myData
+    */
+    const list<DataObject *> getMyData();
 
     /**
      * Destructor - clears out all memory
@@ -268,11 +269,12 @@ public:
     /**
      * Protocols that are implemented for use in data synchronization
      */
-    enum class SyncProtocol {
+    enum class SyncProtocol
+    {
         UNDEFINED, // not yet defined
-        BEGIN, // beginning of iterable option
+        BEGIN,     // beginning of iterable option
         // CPISync and variants
-        CPISync= static_cast<int>(BEGIN),
+        CPISync = static_cast<int>(BEGIN),
         CPISync_OneLessRound,
         CPISync_HalfRound,
         ProbCPISync,
@@ -281,28 +283,28 @@ public:
         FullSync,
         IBLTSync,
         OneWayIBLTSync,
-        END     // one after the end of iterable options
+        END // one after the end of iterable options
     };
 
-    enum class SyncComm {
-        UNDEFINED, // not yet defined
-        BEGIN, // beginning of iterable option
-        socket= static_cast<int>(BEGIN), //socket-based communication
-        string, // communication recorded in a string
-        END     // one after the end of iterable options
+    enum class SyncComm
+    {
+        UNDEFINED,                        // not yet defined
+        BEGIN,                            // beginning of iterable option
+        socket = static_cast<int>(BEGIN), //socket-based communication
+        string,                           // communication recorded in a string
+        END                               // one after the end of iterable options
     };
 
-private:
+  private:
     // METHODS
     /**
      * No argument constructor ... should not be used
      */
     GenSync();
 
-
     // FIELDS
     /** A container for the data stored by this GenSync object. */
-    list<DataObject*> myData;
+    list<DataObject *> myData;
 
     /** A vector of communicants registered to be able to sync with this GenSync object. */
     vector<shared_ptr<Communicant>> myCommVec;
@@ -314,26 +316,25 @@ private:
     shared_ptr<ofstream> outFile;
 };
 
-
 /**
  * A class for building GenSync objects in a more user-friendly manner.
  */
-class GenSync::Builder {
-public:
-
+class GenSync::Builder
+{
+  public:
     /** Constructor - makes all fields undefined. */
-    Builder() :
-    proto(DFT_PROTO),
-    host(DFT_HOST),
-    port(DFT_PRT),
-    ioStr(DFT_IO),
-    errorProb(DFT_ERROR),
-    base64(DFT_BASE64),
-    mbar(DFT_MBAR),
-    bits(DFT_BITS),
-    numParts(DFT_PARTS),
-    hashes(HASHES),
-    numExpElem(DFT_EXPELEMS){
+    Builder() : proto(DFT_PROTO),
+                host(DFT_HOST),
+                port(DFT_PRT),
+                ioStr(DFT_IO),
+                errorProb(DFT_ERROR),
+                base64(DFT_BASE64),
+                mbar(DFT_MBAR),
+                bits(DFT_BITS),
+                numParts(DFT_PARTS),
+                hashes(HASHES),
+                numExpElem(DFT_EXPELEMS)
+    {
         myComm = nullptr;
         myMeth = nullptr;
     }
@@ -347,7 +348,8 @@ public:
     /**
      * Sets the protocol to be used for synchronization.
      */
-    Builder& setProtocol(SyncProtocol theProto) {
+    Builder &setProtocol(SyncProtocol theProto)
+    {
         this->proto = theProto;
         return *this;
     }
@@ -355,7 +357,8 @@ public:
     /**
      * Sets the host to which to connect for synchronization in a socket-based sync.
      */
-    Builder& setHost(string theHost) {
+    Builder &setHost(string theHost)
+    {
         this->host = std::move(theHost);
         return *this;
     }
@@ -363,7 +366,8 @@ public:
     /**
      * Sets the communication port for a socket-based sync object
      */
-    Builder& setPort(int thePort) {
+    Builder &setPort(int thePort)
+    {
         this->port = thePort;
         return *this;
     }
@@ -371,7 +375,8 @@ public:
     /**
      * Sets the communication mode for the synchronization.
      */
-    Builder& setComm(SyncComm theComm) {
+    Builder &setComm(SyncComm theComm)
+    {
         this->comm = theComm;
         return *this;
     }
@@ -380,7 +385,8 @@ public:
      * Sets an upper bound on the desired error probability for the synchronization.
      * @param theErrorProb This is negative log of the maximum error probability to be tolerated.
      */
-    Builder& setErr(int theErrorProb) {
+    Builder &setErr(int theErrorProb)
+    {
         this->errorProb = theErrorProb;
         return *this;
     }
@@ -388,7 +394,8 @@ public:
     /**
      * Sets the string with which to synchronize for string-based communication.
      */
-    Builder& setIoStr(string theIoStr) {
+    Builder &setIoStr(string theIoStr)
+    {
         this->ioStr = std::move(theIoStr);
         return *this;
     }
@@ -396,7 +403,8 @@ public:
     /**
      * Sets the maximum number of differences that the synchronization protocol is expected to synchronize.
      */
-    Builder& setMbar(long theMbar) {
+    Builder &setMbar(long theMbar)
+    {
         this->mbar = theMbar;
         return *this;
     }
@@ -404,7 +412,8 @@ public:
     /**
      * Sets the number of bits to be used to represent one datum.
      */
-    Builder& setBits(long theBits) {
+    Builder &setBits(long theBits)
+    {
         this->bits = theBits;
         return *this;
     }
@@ -412,7 +421,8 @@ public:
     /**
      * Sets the number of partitions to use in recursive calls for interactive protocols like InteractiveCPISync
      */
-    Builder& setNumPartitions(int theNumParts) {
+    Builder &setNumPartitions(int theNumParts)
+    {
         this->numParts = theNumParts;
         return *this;
     }
@@ -421,7 +431,8 @@ public:
      * The number of elements expected to be in the sync data structure.  Some sync objects work are targeted toward
      * a specific number of elements.
      */
-    Builder& setNumExpectedElements(size_t theNumExpElems) {
+    Builder &setNumExpectedElements(size_t theNumExpElems)
+    {
         this->numExpElem = theNumExpElems;
         return *this;
     }
@@ -429,40 +440,43 @@ public:
     /**
      * @param theFileName A file name from which data is to be drawn for the initial population of the sync object.
      */
-    Builder& setDataFile(string theFileName) {
-        this->fileName=std::move(theFileName);
+    Builder &setDataFile(string theFileName)
+    {
+        this->fileName = std::move(theFileName);
         return *this;
     }
 
-	Builder& setHashes(bool theHash) {
-		this->hashes = theHash;
-		return *this;
-	}
+    Builder &setHashes(bool theHash)
+    {
+        this->hashes = theHash;
+        return *this;
+    }
 
     /**
      * Destructor - clear up any possibly allocated internal variables
      */
-    ~Builder() {
+    ~Builder()
+    {
         //if (myComm != NULL)
         //    delete myComm;
         //if (myMeth != NULL)
         //    delete myMeth;
     }
 
-private:
-    SyncProtocol proto; /** the sync protocol to implement */
-    SyncComm comm; /** communication means for the synchronization */
-    string host; /** the host with which to connect for a socket-based sync */
-    int port; /** connection port for a socket-based sync */
-    int errorProb; /** negative log of the upper bound on the probability of error tolerance of the sync */
-    const bool base64; /** whether or not ioStr represents a base64 string */
-    string ioStr; /** the string with which to communicate input/output for string-based sync. */
-    long mbar=Builder::UNDEF_NUM; /** an upper estimate on the number of differences between synchronizing data multisets. */
-    long bits=Builder::UNDEF_NUM; /** the number of bits per element of data */
-    int numParts=Builder::UNDEF_NUM; /** the number of partitions into which to divide recursively for interactive methods. */
-    size_t numExpElem=Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
-    string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
-	bool hashes = Builder::HASHES;
+  private:
+    SyncProtocol proto;                     /** the sync protocol to implement */
+    SyncComm comm;                          /** communication means for the synchronization */
+    string host;                            /** the host with which to connect for a socket-based sync */
+    int port;                               /** connection port for a socket-based sync */
+    int errorProb;                          /** negative log of the upper bound on the probability of error tolerance of the sync */
+    const bool base64;                      /** whether or not ioStr represents a base64 string */
+    string ioStr;                           /** the string with which to communicate input/output for string-based sync. */
+    long mbar = Builder::UNDEF_NUM;         /** an upper estimate on the number of differences between synchronizing data multisets. */
+    long bits = Builder::UNDEF_NUM;         /** the number of bits per element of data */
+    int numParts = Builder::UNDEF_NUM;      /** the number of partitions into which to divide recursively for interactive methods. */
+    size_t numExpElem = Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
+    string fileName = Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
+    bool hashes = Builder::HASHES;
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;

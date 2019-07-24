@@ -19,6 +19,7 @@ set(TEST_DIR tests)
 set(UNIT_TEST_DIR ${TEST_DIR}/unit)
 set(SYSLONG_TEST_DIR ${TEST_DIR}/sys/long)
 set(BENCHMARK_TEST_DIR ${TEST_DIR}/sys/benchmark)
+set(LONGTERM_TEST_DIR ${TEST_DIR}/sys/longTerm)
 
 # Set location of the test runner
 set(TEST_RUNNER ${TEST_DIR}/testRunner.cpp)
@@ -89,3 +90,4 @@ add_group_test(${UNIT_TEST_DIR} UnitTest)
 add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
 add_group_test(${BENCHMARK_TEST_DIR} Benchmark)
+add_group_test(${LONGTERM_TEST_DIR} LongTerm)

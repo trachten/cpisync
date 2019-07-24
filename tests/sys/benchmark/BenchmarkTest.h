@@ -19,14 +19,15 @@
 #include "Aux/ForkHandle.h"
 #include "TestAuxiliary.h"
 
-class BenchmarkTest : public CPPUNIT_NS::TestFixture {
+class BenchmarkTest : public CPPUNIT_NS::TestFixture
+{
 	CPPUNIT_TEST_SUITE(BenchmarkTest);
 	CPPUNIT_TEST(CPISyncErrorBenchmark);
 	CPPUNIT_TEST(TimedSyncThreshold);
 	CPPUNIT_TEST(BitThresholdTest);
 	CPPUNIT_TEST_SUITE_END();
-public:
 
+  public:
 	BenchmarkTest();
 	~BenchmarkTest() override;
 	void setUp() override;

@@ -20,7 +20,6 @@
  * @version 2.02, 8/14/2014
  */
 
-
 #ifndef FORKHANDLE_H
 #define FORKHANDLE_H
 
@@ -34,12 +33,13 @@ using namespace std::chrono;
 /**
  * Report structure for a forkHandle run
   */
-struct forkHandleReport {
-    forkHandleReport(): bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
-    long bytes;       // the number of bytes communicated
-    double CPUtime;   // the amount of CPU time used
-    double totalTime; // total time used
-    bool success;     // true iff the sync completed successfully
+struct forkHandleReport
+{
+	forkHandleReport() : bytes(-1), CPUtime(-1), totalTime(-1), success(false) {}
+	long bytes;		  // the number of bytes communicated
+	double CPUtime;   // the amount of CPU time used
+	double totalTime; // total time used
+	bool success;	 // true iff the sync completed successfully
 };
 
 /**
@@ -49,41 +49,50 @@ struct forkHandleReport {
  * @param server The GenSync object that plays the role of server in the sync.
  * @return Synchronization statistics as reported by the client.
  */
-inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
-    int err = 1;
-    int chld_state;
-    int my_opt = 0;
-    forkHandleReport result;
+inline forkHandleReport forkHandle(GenSync &client, GenSync server)
+{
+	int err = 1;
+	int chld_state;
+	int my_opt = 0;
+	forkHandleReport result;
 	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
-    try {
-        pid_t pID = fork();
-        int method_num = 0;
-        if (pID == 0) {
-            signal(SIGCHLD, SIG_IGN);
-            Logger::gLog(Logger::COMM,"created a server process");
-            server.listenSync(method_num);
+	try
+	{
+		pid_t pID = fork();
+		int method_num = 0;
+		if (pID == 0)
+		{
+			signal(SIGCHLD, SIG_IGN);
+			Logger::gLog(Logger::COMM, "created a server process");
+			server.listenSync(method_num);
 			exit(0);
-        } else if (pID < 0) {
-            //handle_error("error to fork a child process");
-            cout << "throw out err = " << err << endl;
-            throw err;
-        } else {
-            Logger::gLog(Logger::COMM,"created a client process");
+		}
+		else if (pID < 0)
+		{
+			//handle_error("error to fork a child process");
+			cout << "throw out err = " << err << endl;
+			throw err;
+		}
+		else
+		{
+			Logger::gLog(Logger::COMM, "created a client process");
 			result.success = client.startSync(method_num);
 
 			result.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
-            result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
-            result.bytes = client.getXmitBytes(method_num);
-            waitpid(pID, &chld_state, my_opt);
-        }
+			result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+			result.bytes = client.getXmitBytes(method_num);
 
-    } catch (int& err) {
-        sleep(1); // why?
-        cout << "handle_error caught" << endl;
-        result.success=false;
-    }
+			waitpid(pID, &chld_state, my_opt);
+		}
+	}
+	catch (int &err)
+	{
+		sleep(1); // why?
+		cout << "handle_error caught" << endl;
+		result.success = false;
+	}
 
-    return result;
+	return result;
 }
 /**
  * Runs client (child process) and server (parent process), returning statistics for server.
@@ -97,38 +106,46 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
  * Known bug: The server doesn't close communicant connection after sync, causing port-in-use errors.
  * A more in-depth discussion can be found in BUGS.txt. Currently working around this by changing port for each sync in tests
  */
-inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
+inline forkHandleReport forkHandleServer(GenSync &server, GenSync client)
+{
 	int err = 1;
 	int chld_state;
 	int my_opt = 0;
 	forkHandleReport result;
 	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
-	try {
+	try
+	{
 		pid_t pID = fork();
 		int method_num = 0;
-		if (pID == 0) {
+		if (pID == 0)
+		{
 			signal(SIGCHLD, SIG_IGN);
-			Logger::gLog(Logger::COMM,"created a client process");
+			Logger::gLog(Logger::COMM, "created a client process");
 			client.startSync(method_num);
 			exit(0);
-		} else if (pID < 0) {
+		}
+		else if (pID < 0)
+		{
 			//handle_error("error to fork a child process");
 			cout << "throw out err = " << err << endl;
 			throw err;
-		} else {
-			Logger::gLog(Logger::COMM,"created a server process");
+		}
+		else
+		{
+			Logger::gLog(Logger::COMM, "created a server process");
 			server.listenSync(method_num);
 			result.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
 			result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
 			result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
 			waitpid(pID, &chld_state, my_opt);
-			result.success=true;
+			result.success = true;
 		}
-
-	} catch (int& err) {
+	}
+	catch (int &err)
+	{
 		sleep(1); // why?
 		cout << "handle_error caught" << endl;
-		result.success=false;
+		result.success = false;
 	}
 
 	return result;

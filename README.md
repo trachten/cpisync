@@ -54,15 +54,38 @@ Relevant applications and extensions can be found at:
   @ Alexander Smirnov
 
   @ [Eliezer Pearl](http://eliezer.tk) 
+  
+  @ Sean Brandenburg
 
 ------------------------------
 
 ## Compilation:
 
 This project has the following dependencies:
-   * NTL - A library for doing Number Theory (>9.5) - http://www.shoup.net/ntl/
-   * cppunit - For testing
-   * cmake - For building
+   * [NTL](http://www.shoup.net/ntl/) - A library for doing Number Theory (>9.5) 
+       - ptheads - may be required depending on how NTL is configured
+       - gmp - may be required depending on how NTL is configured
+   * [cppunit](http://cppunit.sourceforge.net/doc/cvs/index.html) - For testing
+   * [cmake](https://cmake.org) - For building
+
+------------------------------
+
+## Installation:
+ **MacOS & Linux** - Open the project in terminal (To the directory containing CMakeLists.txt):
+  - `cmake`
+  - `make`
+  - `sudo make install`
+
+ **Windows** - Not currently supported
+
+------------------------------
+
+## Use Instructions:
+  -
+  -
+  -
+  -
+  -
 
 ------------------------------
 

@@ -1051,24 +1051,6 @@ inline bool longTermSync(GenSync &GenSyncClient,
 					// cout << "[Client] " << dop << endl;
 				}
 				clientReconcileSuccess = clientReport.success;
-				// //If syncParamTest only the result of the fork handle is relevant
-				// if (!syncParamTest)
-				// {
-				// 	if (probSync)
-				// 	{
-				// 		// True if the elements added during reconciliation were elements that the client was lacking that the server had
-				// 		// and if information was transmitted during the fork
-				// 		cout << "1:" << (multisetDiff(reconciled, resClient).size() <= (SERVER_MINUS_CLIENT)) << endl;
-				// 		cout << "2:" << (clientReport.bytes > 0) << endl;
-				// 		cout << "3:" << (resClient.size() >= SIMILAR + CLIENT_MINUS_SERVER) << endl;
-
-				// 		clientReconcileSuccess &= ((multisetDiff(reconciled, resClient).size() <= (SERVER_MINUS_CLIENT)) && (clientReport.bytes > 0) && (resClient.size() >= SIMILAR + CLIENT_MINUS_SERVER));
-				// 	}
-				// 	else
-				// 	{
-				// 		clientReconcileSuccess &= (resClient == reconciled);
-				// 	}
-				// }
 			}
 			if (oneWay)
 			{
@@ -1123,15 +1105,7 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				{
 					// True if the elements added during reconciliation were elements that the server was lacking that the client had
 					// and if information was transmitted during the fork
-					if (details)
-					{
-						cout << "SIMILIAR IS " << SIMILAR << endl;
-						cout << "0: " << (multisetDiff(reconciled, resServer).size() <= CLIENT_MINUS_SERVER) << endl;
-						cout << "1: " << serverReport.success << endl;
-						cout << "2: " << (serverReport.bytes > 0) << endl;
-						cout << "3: " << (resServer.size() >= SIMILAR + SERVER_MINUS_CLIENT) << endl
-							 << endl;
-					}
+
 					serverReconcileSuccess &= (multisetDiff(reconciled, resServer).size() <= CLIENT_MINUS_SERVER) && serverReport.success && (serverReport.bytes > 0) && (resServer.size() >= SIMILAR + SERVER_MINUS_CLIENT);
 
 					if (!oneWay)

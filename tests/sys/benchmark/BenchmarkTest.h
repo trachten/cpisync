@@ -26,6 +26,8 @@ class BenchmarkTest : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(CPISyncErrorBenchmark);
 	CPPUNIT_TEST(TimedSyncThreshold);
 	CPPUNIT_TEST(BitThresholdTest);
+	CPPUNIT_TEST(CPISyncLongTerm);
+	CPPUNIT_TEST(IBLTSyncLongTerm);
 
 	CPPUNIT_TEST_SUITE_END();
 
@@ -55,12 +57,15 @@ class BenchmarkTest : public CPPUNIT_NS::TestFixture
 	 */
 	static void BitThresholdTest();
 
-
 	/**
 	 * A sync that mimics a client making itterative changes and periodically syncing those changes to a server to simulate
 	 * an actual use case
 	 */
 	// static void ServerSyncItterative();
+
+	static void CPISyncLongTerm();
+
+	static void IBLTSyncLongTerm();
 };
 
 #endif //CPISYNCLIB_BENCHMARKTEST_H

@@ -13,10 +13,10 @@
 #include <NTL/ZZ_pXFactoring.h>
 
 // project libraries
-#include "Aux/Auxiliary.h"
-#include "Aux/SyncMethod.h"
-#include "Syncs/CPISync.h"
-#include "Aux/Exceptions.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Aux/SyncMethod.h>
+#include <CPISync/Syncs/CPISync.h>
+#include <CPISync/Aux/Exceptions.h>
 
 // namespaces
 
@@ -312,10 +312,11 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
     return true;
 }
 
-void CPISync::sendSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, const ZZ_p& element) {
+void CPISync::_sendSetElem(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
+						   const ZZ_p &element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
-        selfMinusOther.push_back(invHash(element));
+        selfMinusOther.push_back(_invHash(element));
     else {
         // Translate to an actual string and send it to the client
         DataObject *dop = CPI_hash[rep(element)];
@@ -328,10 +329,10 @@ void CPISync::sendSetElem(const shared_ptr<Communicant>& commSync, list<DataObje
     }
 }
 
-void CPISync::recvSetElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf, ZZ_p element) {
+void CPISync::_recvSetElem(const shared_ptr<Communicant> &commSync, list<DataObject *> &otherMinusSelf, ZZ_p element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::recvSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
-        otherMinusSelf.push_back(invHash(std::move(element)));
+        otherMinusSelf.push_back(_invHash(std::move(element)));
     else {
         // receive the actual string from the client
         DataObject *dop = commSync->commRecv_DataObject();
@@ -341,19 +342,20 @@ void CPISync::recvSetElem(const shared_ptr<Communicant>& commSync, list<DataObje
     }
 }
 
-void CPISync::makeStructures(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
+void CPISync::_makeStructures(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
+							  list<DataObject *> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::makeStructures");
     // Send self minus other
     try {
         for (const ZZ_p& dop : delta_self)
-            sendSetElem(commSync, selfMinusOther, dop);
+			_sendSetElem(commSync, selfMinusOther, dop);
     } catch (const SyncFailureException& s) {
         throw (s); // rethrow the exception onward
     }
 
     // Receive other minus self
     for (const auto &ii : delta_other)
-        recvSetElem(commSync, otherMinusSelf, ii);
+		_recvSetElem(commSync, otherMinusSelf, ii);
 }
 
 void CPISync::SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
@@ -476,7 +478,7 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
         }
 
         // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
-        makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
+		_makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
         delta_self.kill();
         delta_other.kill();
         if (!keepAlive)
@@ -587,7 +589,7 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
 
                 // create selfMinusOther and otherMinusSelf structures to report the result of reconciliation
                 try {
-                    makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
+					_makeStructures(commSync, selfMinusOther, otherMinusSelf, delta_self, delta_other);
                 } catch (SyncFailureException& s) {
                     Logger::gLog(Logger::METHOD_DETAILS, s.what());
                     throw (s);
@@ -657,18 +659,18 @@ void CPISync::receiveAllElem(const shared_ptr<Communicant>& commSync, list<DataO
     Logger::gLog(Logger::COMM_DETAILS, "Received all node elements.");
 }
 
-DataObject * CPISync::invHash(const ZZ_p num) const {
+DataObject * CPISync::_invHash(ZZ_p num) const {
     Logger::gLog(Logger::METHOD,"Entering CPISync::invHash");
     const ZZ &numZZ = rep(num);
     auto *result = new DataObject(numZZ);
     return result;
 }
 
-ZZ_p CPISync::makeData(ZZ_p num) const {
+ZZ_p CPISync::_makeData(ZZ_p num) const {
     return to_ZZ_p(rep(num) % DATA_MAX);
 }
 
-ZZ_p CPISync::hash(const DataObject * datum) const {
+ZZ_p CPISync::_hash(const DataObject *datum) const {
     ZZ num = datum->to_ZZ(); // convert the datum to a ZZ
 
     if (!hashQ && (num >= DATA_MAX))
@@ -679,7 +681,7 @@ ZZ_p CPISync::hash(const DataObject * datum) const {
     return to_ZZ_p(num % (DATA_MAX)); // reduce to bit_num bits and make into a ZZ_p
 }
 
-ZZ_p CPISync::hash2(const long num) const {
+ZZ_p CPISync::_hash2(const long num) const {
     return to_ZZ_p(to_ZZ(num)*101 % (DATA_MAX));
 }
 
@@ -698,10 +700,10 @@ bool CPISync::addElem(DataObject * datum) {
     int count = 0;
     do {
         if (hashQ) {
-            hashID = makeData(hash(datum) + hash2(count++)); // a double hash to allow repeated elements
+            hashID = _makeData(_hash(datum) + _hash2(count++)); // a double hash to allow repeated elements
             hashNum = rep(hashID);
         } else { // noHash is enabled
-            hashID = hash(datum); // a simpler, potentially reversable hash
+            hashID = _hash(datum); // a simpler, potentially reversable hash
             hashNum = rep(hashID);
             if (CPI_hash.find(hashNum) != CPI_hash.end()) { // an item with this hash already exists
                 Logger::error("Item with hash " + toStr(hashNum) + " already exists in the set.  Under the noHash option, duplicate elements are not permitted.");

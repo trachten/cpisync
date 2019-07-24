@@ -9,7 +9,7 @@
 
 #include <climits>
 #include "FullSyncTest.h"
-#include "Syncs/FullSync.h"
+#include <CPISync/Syncs/FullSync.h>
 #include "TestAuxiliary.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(FullSyncTest);

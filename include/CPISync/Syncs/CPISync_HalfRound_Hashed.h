@@ -17,7 +17,7 @@
 #define	CPISYNC_HALFROUND_HASHED_H
  
 #include <string>
-#include "CPISync_HalfRound.h"
+#include <CPISync/Syncs/CPISync_HalfRound.h>
 
 class CPISync_HalfRound_Hashed : public CPISync_HalfRound {
     public:

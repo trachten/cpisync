@@ -5,8 +5,8 @@
  * Created on November 5, 2011, 8:49 PM
  */
 
-#include "Aux/Auxiliary.h"
-#include "Communicants/CommString.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Communicants/CommString.h>
 
 CommString::CommString(const string& initial, bool base64) {
     if (base64)

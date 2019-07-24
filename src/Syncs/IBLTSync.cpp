@@ -4,8 +4,8 @@
 // Created by Eliezer Pearl on 8/3/2018.
 //
 
-#include <Aux/Exceptions.h>
-#include "Syncs/IBLTSync.h"
+#include <CPISync/Aux/Exceptions.h>
+#include <CPISync/Syncs/IBLTSync.h>
 
 IBLTSync::IBLTSync(size_t expected, size_t eltSize) : myIBLT(expected, eltSize) {
     expNumElems = expected;

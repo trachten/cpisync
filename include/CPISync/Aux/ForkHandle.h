@@ -27,7 +27,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <csignal>
-#include "Syncs/GenSync.h"
+#include <CPISync/Syncs/GenSync.h>
 
 using namespace std::chrono;
 

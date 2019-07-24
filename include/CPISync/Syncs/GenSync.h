@@ -11,9 +11,9 @@
 #include <string>
 #include <memory>
 
-#include "Communicants/Communicant.h"
-#include "Data/DataObject.h"
-#include "Aux/SyncMethod.h"
+#include <CPISync/Communicants/Communicant.h>
+#include <CPISync/Data/DataObject.h>
+#include <CPISync/Aux/SyncMethod.h>
 
 // namespace info
 using std::string;
@@ -212,18 +212,24 @@ public:
     // INFORMATIONAL
 
     /**
+     * This returns stats that are used by SyncMethod to update the actual stats in the elements of the SyncVec
+     * If you would like the actual stats for the sync use GenSync.SyncVec[index].getXmitBytes() or parse printStats()
      * @param commIndex The index of the Communicant to query (in the order that they were added)
      * @return The number of bytes transmitted by the Communicant and index #commIndex.
      */
     const long getXmitBytes(int commIndex) const;
 
     /**
+     * This returns stats that are used by SyncMethod to update the actual stats in the elements of the SyncVec
+     * If you would like the actual stats for the sync use GenSync.SyncVec[index].getRecvBytes() or parse printStats()
      * @param commIndex The index of the Communicant to query (in the order that they were added)
      * @return The number of bytes received by the Communicant and index #commIndex.
      */
     const long getRecvBytes(int commIndex) const;
 
     /**
+     * This returns stats that are used by SyncMethod to update the actual stats in the elements of the SyncVec
+     * If you would like the actual stats for the sync use GenSync.SyncVec[index].getSyncTime() or parse printStats()
      * @param commIndex The index of the Communicant to query (in the order that they were added)
      * @return The amount of CPU time (in seconds) since the last sync request by the Communicant and index #commIndex.
      *          if there was no sync request, the creation time is used.

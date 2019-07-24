@@ -6,8 +6,8 @@
 
 #include <iostream>
 #include <string>
-#include <Syncs/GenSync.h>
-#include <Data/DataObject.h>
+#include <CPISync/Syncs/GenSync.h>
+#include <CPISync/Data/DataObject.h>
 
 using std::cout;
 using std::endl;

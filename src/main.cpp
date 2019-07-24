@@ -14,20 +14,20 @@
 #include <getopt.h>
 #include <ctime>
 
-#include "Aux/Auxiliary.h"
-#include "Aux/SyncMethod.h"
-#include "Communicants/Communicant.h"
-#include "Communicants/CommSocket.h"
-#include "Aux/SyncMethod.h"
-#include "Data/DataObject.h"
-#include "Syncs/GenSync.h"
-#include "Syncs/CPISync.h"
-#include "Syncs/CPISync_HalfRound.h"
-#include "Syncs/CPISync_OneLessRound.h"
-#include "Syncs/ProbCPISync.h"
-#include "Syncs/InterCPISync.h"
-#include "Aux/Logger.h"
-#include "Communicants/CommString.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Aux/SyncMethod.h>
+#include <CPISync/Communicants/Communicant.h>
+#include <CPISync/Communicants/CommSocket.h>
+#include <CPISync/Aux/SyncMethod.h>
+#include <CPISync/Data/DataObject.h>
+#include <CPISync/Syncs/GenSync.h>
+#include <CPISync/Syncs/CPISync.h>
+#include <CPISync/Syncs/CPISync_HalfRound.h>
+#include <CPISync/Syncs/CPISync_OneLessRound.h>
+#include <CPISync/Syncs/ProbCPISync.h>
+#include <CPISync/Syncs/InterCPISync.h>
+#include <CPISync/Aux/Logger.h>
+#include <CPISync/Communicants/CommString.h>
 
 using namespace std;
 

@@ -1,6 +1,6 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-#include "Data/DataObject.h"
+#include <CPISync/Data/DataObject.h>
 #include "NTL/ZZ_pXFactoring.h"
 
 // namespaces

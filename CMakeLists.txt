@@ -94,6 +94,9 @@ set(HEADERS
 include_directories(include)
 include_directories(tests)
 
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+
 # Add libs and executables
 add_library(CPISync STATIC ${SOURCE_FILES} ${HEADERS})
 target_include_directories(CPISync PRIVATE ${CMAKE_SOURCE_DIR}/include)

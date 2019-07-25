@@ -127,18 +127,48 @@ Relevant applications and extensions can be found at:
          mySyncClient.mySyncVec[0]->getSyncTime();
      ```
 
-**Notes**:
-   * Two-Way vs One-Way Syncs: Some of the syncs in the project are "One-Way" or "Half-Round". These syncs attempt to add elements from the client to the server but the clients does not try to sync with the Server. This means that only the server will update its elements.
-   * Included Sync Protocols:
+## Parameters & Syncs:
+   * **Included Sync Protocols:**
        * CPISync
+            * Perform the procedure described [here](http://ipsit.bu.edu/documents/ieee-it3-web.pdf). The maximum number of differences that can be reconciled must be specified by setting mBar.
        * CPISync_OneLessRound
-       * CPISync_HalfRound
-       * ProbCPISync
-       * InteractiveCPISync
+            * Perform CPISync with set elements represented in full in order to reduce the amount of rounds of communication by one (No hash inverse round of communication)
        * OneWayCPISync
+            * Perform CPISync in one direction, only adding new elements from the client to the server. The client's elements are not updated.
+       * ProbCPISync
+            * Perform CPISync with a given mBar but if the amount of differences is larger than that, double mBar until the sync is successful
+       * InteractiveCPISync
+            * Perform CPISync but if there are more than mBar differences, divide the set into `numPartitions` subsets and attempt to CPISync again. This recurses until the sync is successful.
        * FullSync
+            * Each peer sends their set contents in its entirety and the set differences are determined and repaired
        * IBLTSync
+            * Each peer encodes their set into an [Invertible Bloom Lookup Table](https://arxiv.org/pdf/1101.2245.pdf) with a size determined by NumExpElements and sends it to their peer. The differences are determined by "subtracting" the IBLT's from each other and attempting to peel the resulting IBLT
        * OneWayIBLTSync
+            * Perform IBLTSync  but only the server peer has their set elements updated
+   * **Builder Sync Parameters:**
+       * setProtocl: Set the protocol that your sync will execute
+           * *All syncs*
+       * setComm: Set the communication method your sync will use (CommSocket and CommString)
+           * *All Syncs*
+       * setPort & setHost: Set the port & host that your socket will use
+           * *Any socket based syncs*
+       * setIOString: Set the string with which to synchronize
+           * *Only for CommString based syncs*
+       * setBits: The number of bits that represent each element in the set
+           * *All syncs except FullSync*
+       * setMbar: The maximum number of symmetric differences that can be synced by a CPISync
+           * *All CPISync variants*
+       * setErr: The negative log base 2 of the probability of error you would like to use to bound your sync
+           * *All CPISync variants*
+       * setHashes: If true, elements are hashed non-trivially (Must be true to synchronize multisets)
+           * *All CPISync variants*
+       * setNumPartitions: The number of partitions that InterCPISync should recurse into if it fails
+           * *InteractiveCPISync*
+       * setNumExpElements: The maximum number of differences that you expect to be placed into your IBLT
+           * *IBLTSync and OneWayIBLTSync*
+       * setDataFile: Set the data file containing the data you would like to populate your GenSync with
+           * *Any sync you'd like to do this with*
+           
 ------------------------------
 
 Acknowledgments:  NSF

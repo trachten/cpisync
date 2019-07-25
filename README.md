@@ -90,9 +90,7 @@ Relevant applications and extensions can be found at:
 
 ## Use Instructions:
   1. Initialize a `GenSync` object with the constructor or builder helper class on the client and server machine
-     
-     * Ex.) Create a CPISync with the builder helper
-     
+          
      ```cpp
          GenSync::Builder builder = GenSync::Builder().
             setProtocol(CPISync).  //CPISync,InterCPISync, ProbCPISync, IBLTSync, FullSync, etc.

@@ -89,6 +89,8 @@ Relevant applications and extensions can be found at:
 ------------------------------
 
 ## Use Instructions:
+  - *Include Statements:* `#include <CPISync/(Aux/Data/Communicants/Syncs)/(The module you want to use).h>`
+
   1. Initialize a `GenSync` object with the constructor or builder helper class on the client and server machine
           
      ```cpp
@@ -126,6 +128,7 @@ Relevant applications and extensions can be found at:
          mySyncClient.mySyncVec[0]->getRecvBytes();
          mySyncClient.mySyncVec[0]->getSyncTime();
      ```
+     
 
 ## Parameters & Syncs:
    * **Included Sync Protocols:**

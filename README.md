@@ -117,8 +117,8 @@ Relevant applications and extensions can be found at:
      
   3. Run listenSync and startSync on the server and client respectively
      ```cpp
-         mySyncServer.listenSync();
-         mySyncClient.startSync();
+         mySyncServer.listenSync(0); //Add the index of the sync you would like to perform
+         mySyncClient.startSync(0);  //Multiple syncs or communicants may be added to one GenSync
      ```
   
   4. Collect relevant statistics

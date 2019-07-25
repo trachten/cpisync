@@ -1021,7 +1021,6 @@ inline bool longTermSync(GenSync &GenSyncClient,
 			client.insert(i);
 		}
 
-
 		pid_t pID = fork();
 
 		// Client Process
@@ -1110,7 +1109,6 @@ inline bool longTermSync(GenSync &GenSyncClient,
 			{
 				resServer.insert(dop);
 			}
-
 
 			if (!syncParamTest)
 			{

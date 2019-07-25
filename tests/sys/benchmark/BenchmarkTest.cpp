@@ -203,12 +203,11 @@ void BenchmarkTest::IBLTSyncLongTerm()
 	const int difPerRound = 3;   // # of elems to be added to client during each round
 	const bool multiSet = false; // true iff it's testing on multiset
 	bool success = true;		 // true iff test succeeds in the end
-	bool details = false;		 // true iff to show inner progress during test
+	bool details = true;		 // true iff to show inner progress during test
 
-	// IBLTSyncs
-	// Only works when mbar values are way bigger than difference
-	vector<GenSync> IBLTSyncClient = twoWayProbCombos(dif * 20);
-	vector<GenSync> IBLTSyncServer = twoWayProbCombos(dif * 20);
+	// # ExpElems should be the total expected # of set after reconciliation, but not m_bar which are used for twoWayCombos funciton
+	vector<GenSync> IBLTSyncClient = twoWayProbCombos(difPerRound * testRounds + dif + similiar);
+	vector<GenSync> IBLTSyncServer = twoWayProbCombos(difPerRound * testRounds + dif + similiar);
 
 	for (int ii = 0; ii < IBLTSyncClient.size(); ii++)
 	{

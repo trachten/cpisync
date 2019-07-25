@@ -997,12 +997,17 @@ inline bool longTermSync(GenSync &GenSyncClient,
 	while (curRound < Rounds)
 	{
 		curRound++;
-
+		auto h = GenSyncServer.dumpElements();
+		multiset<string> beforeAdd, client;
+		for (auto i : h)
+		{
+			beforeAdd.insert(i);
+		}
 		if (curRound != 1)
 		{
 			SIMILAR += CLIENT_MINUS_SERVER;
 			SERVER_MINUS_CLIENT = 0;
-			CLIENT_MINUS_SERVER = difPerRound; // Only add elements on server during each round
+			CLIENT_MINUS_SERVER = difPerRound; // Only add elements on client during each round
 
 			refill = addMoreElems(reconciled, difPerRound, Multiset);
 
@@ -1011,6 +1016,11 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				GenSyncClient.addElem(itr);
 			}
 		}
+		for (auto i : GenSyncClient.dumpElements())
+		{
+			client.insert(i);
+		}
+
 
 		pid_t pID = fork();
 
@@ -1057,6 +1067,7 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				//Checks that the size of the client has not changed if the sync is one way
 				clientReconcileSuccess &= (GenSyncClient.dumpElements().size() == SIMILAR + CLIENT_MINUS_SERVER);
 			}
+
 			//chld_state will be nonzero if clientReconcileSuccess is nonzero(nonzero = true, zero = false)
 			exit(clientReconcileSuccess);
 		}
@@ -1083,6 +1094,8 @@ inline bool longTermSync(GenSync &GenSyncClient,
 			else
 				serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
+			//cout << "Server report " << serverReport.success << endl;
+
 			//Print stats about sync
 			if (/*clientReport.success*/ false)
 			{
@@ -1096,8 +1109,8 @@ inline bool longTermSync(GenSync &GenSyncClient,
 			for (auto dop : GenSyncServer.dumpElements())
 			{
 				resServer.insert(dop);
-				// cout << "[Server] " << dop << endl;
 			}
+
 
 			if (!syncParamTest)
 			{
@@ -1106,13 +1119,10 @@ inline bool longTermSync(GenSync &GenSyncClient,
 					// True if the elements added during reconciliation were elements that the server was lacking that the client had
 					// and if information was transmitted during the fork
 
-					serverReconcileSuccess &= (multisetDiff(reconciled, resServer).size() <= CLIENT_MINUS_SERVER) && serverReport.success && (serverReport.bytes > 0) && (resServer.size() >= SIMILAR + SERVER_MINUS_CLIENT);
+					serverReconcileSuccess &= (multisetDiff(reconciled, resServer).size() < CLIENT_MINUS_SERVER) && serverReport.success && (serverReport.bytes > 0) && (resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
 
 					if (!oneWay)
 					{
-						// std::cout << "serverrecon: " << serverReconcileSuccess << std::endl;
-						// std::cout << "successsig: " << success_signal << std::endl;
-
 						serverReconcileSuccess &= success_signal;
 					}
 				}

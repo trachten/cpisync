@@ -219,20 +219,20 @@ void BenchmarkTest::IBLTSyncLongTerm()
 
 void BenchmarkTest::IBLTSyncErrBenchMark()
 {
-	const int testRuns = 40;														  // Number of times to sync
-	const int SIMILAR = 32;															  //Number of elements in common between the server and client
-	const int DIFS = 8;																  // Number of elements unique to the server AND number of elements unique to client (Sym Difs = DIFS *2)
-	const int failExpected = testRuns * (1 - pow(1 - exp(-N_HASH / N_HASHCHECK), 4)); //Amount of failures should be less than P[error] * number of runs
-	int failCount = 0;																  //Keeps track of how many synchronizations are reported as failures for comparison to theoretical value
+	const int testRuns = 40;															   // Number of times to sync
+	const int SIMILAR = 32;																   // Number of elements in common between the server and client
+	const int DIFS = 8;																	   // Number of elements unique to the server AND number of elements unique to client (Sym Difs = DIFS *2)
+	const int failExpected = testRuns * (1 - pow(1 - exp(-N_HASH / N_HASHCHECK), N_HASH)); // Amount of failures should be less than P[error] * number of runss,
+																						   // see https://arxiv.org/pdf/1101.2245.pdf for how this error being calculated.
+	int failCount = 0;																	   // Keeps track of how many synchronizations are reported as failures for comparison to theoretical value
 
-	//Vector containing by now only IBLTSync
+	// Vector containing by now only IBLTSync
 	vector<GenSync> IBLTSyncServer = twoWayProbCombos(2 * DIFS + SIMILAR);
 	vector<GenSync> IBLTSyncClient = twoWayProbCombos(2 * DIFS + SIMILAR);
 
-	//Itterate through each type of sync (CPISync, ProbCPISync, InterCPISync) exclude FullSync because it does not have a theoretical probability of failure
 	for (int ii = 0; ii < IBLTSyncClient.size() - 1; ii++)
 	{
-		//Test that less than (failExpected) tests fail in (testRuns) tests for sets
+		// Test that less than (failExpected) tests fail in (testRuns) tests for sets
 		for (int jj = 0; jj < testRuns; jj++)
 		{
 			bool success = benchmarkSync(IBLTSyncClient.at(ii), IBLTSyncServer.at(ii), SIMILAR, DIFS, DIFS, true, false);
@@ -241,7 +241,7 @@ void BenchmarkTest::IBLTSyncErrBenchMark()
 				failCount++;
 			}
 		}
-		//If more test failed than the calculated failExpected, then CPISync's error may not be properly bounded
+		//If more test failed than the calculated failExpected, then IBLTSync's error may not be properly bounded
 		CPPUNIT_ASSERT(failCount < failExpected);
 	}
 }

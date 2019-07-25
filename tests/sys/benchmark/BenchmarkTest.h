@@ -26,9 +26,9 @@ class BenchmarkTest : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(CPISyncLongTerm);
 	CPPUNIT_TEST(IBLTSyncLongTerm);
 	CPPUNIT_TEST(CPISyncErrorBenchmark);
+	CPPUNIT_TEST(IBLTSyncErrBenchMark);
 	CPPUNIT_TEST(TimedSyncThreshold);
 	CPPUNIT_TEST(BitThresholdTest);
-	//CPPUNIT_TEST(IBLTSyncErrBenchMark);
 
 	CPPUNIT_TEST_SUITE_END();
 

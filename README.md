@@ -149,7 +149,7 @@ Relevant applications and extensions can be found at:
        * OneWayIBLTSync
             * Perform IBLTSync  but only the server peer has their set elements updated
    * **Builder Sync Parameters:**
-       * setProtocl: Set the protocol that your sync will execute
+       * setProtocol: Set the protocol that your sync will execute
            * *All syncs*
        * setComm: Set the communication method your sync will use (CommSocket and CommString)
            * *All Syncs*

@@ -85,6 +85,7 @@ set(HEADERS
         ${SYNC_DIR_INC}/GenSync.h
         ${SYNC_DIR_INC}/HashSync.h
         ${SYNC_DIR_INC}/IBLT.h
+        ${SYNC_DIR_INC}/IBLT4IBLTs.h
         ${SYNC_DIR_INC}/IBLTSync.h
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
         ${SYNC_DIR_INC}/InterCPISync.h

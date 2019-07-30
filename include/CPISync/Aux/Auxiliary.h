@@ -8,7 +8,7 @@
  */
 
 #ifndef AUX_H
-#define	AUX_H
+#define AUX_H
 
 #include <sstream>
 #include <unistd.h>
@@ -28,22 +28,23 @@
 #include <cstring>
 #include <CPISync/Aux/ConstantsAndTypes.h>
 #include <CPISync/Aux/Logger.h>
+#include <CPISync/Data/DataObject.h>
 
 // some standard names
-using std::cout;
 using std::clog;
+using std::cout;
 using std::endl;
-using std::vector;
-using std::string;
-using std::stringstream;
+using std::invalid_argument;
 using std::istringstream;
-using std::ostringstream;
-using std::ostream;
 using std::list;
 using std::map;
 using std::multiset;
-using std::invalid_argument;
+using std::ostream;
+using std::ostringstream;
 using std::runtime_error;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 // FUNCTIONS
 
@@ -53,11 +54,14 @@ using std::runtime_error;
  * @require string must have fewer than MAXINT characters
  * @return A vector of bytes, corresponding, one by one, to the characters of data
  */
-inline vector<byte> StrToVec(const string& data) {
+inline vector<byte> StrToVec(const string &data)
+{
     vector<byte> result; // where we will be build the result to be returned
 
     const char *data_c_str = data.c_str();
-    result.reserve((int) data.length()); result.reserve((int) data.length()); for (int ii = 0; ii < (int) data.length(); ii++)
+    result.reserve((int)data.length());
+    result.reserve((int)data.length());
+    for (int ii = 0; ii < (int)data.length(); ii++)
         result.push_back(data_c_str[ii]);
 
     return result;
@@ -69,7 +73,8 @@ inline vector<byte> StrToVec(const string& data) {
  * @require vector must have fewer than MAXINT characters
  * @return The string whose characters correspond, one by one, to the bytes of data.
  */
-inline string VecToStr(vector<byte>&& data) {
+inline string VecToStr(vector<byte> &&data)
+{
     string result;
     for (unsigned char ii : data)
         result.push_back(ii);
@@ -85,7 +90,8 @@ inline string VecToStr(vector<byte>&& data) {
  * for a ZZ_p)
  */
 template <class T>
-inline T strTo(const string str) {
+inline T strTo(const string str)
+{
     if (str.empty())
         throw invalid_argument(str);
 
@@ -101,24 +107,83 @@ inline T strTo(const string str) {
  * @return A string representing the number
  */
 template <class T>
-inline string toStr(const T item) {
+inline string toStr(const T item)
+{
     ostringstream tmp;
     tmp << item;
     return tmp.str();
 }
 
 /**
+ * Helper function to split string with the appointed char
+ * @param str The target string to be splitted
+ * @param sep Appointed char where string should be splitted
+ * @return arr A vector containing the content of string after splitting
+ */
+inline vector<string> split(string str, string sep)
+{
+    char *cstr = const_cast<char *>(str.c_str());
+    char *current;
+    vector<std::string> arr;
+    current = strtok(cstr, sep.c_str());
+    while (current != NULL)
+    {
+        arr.push_back(current);
+        current = strtok(NULL, sep.c_str());
+    }
+    return arr;
+}
+
+/**
+ * Helper function to turn string (ascii) into a ZZ (unsigned long)
+ * @param str The string to be converted
+ * @return number Converted number in ZZ type
+ */
+inline ZZ strToZZ(string str)
+{
+    ZZ number = conv<ZZ>(str[0]);
+    long len = str.length();
+    for (long i = 1; i < len; i++)
+    {
+        number *= 128;
+        number += conv<ZZ>(str[i]);
+    }
+
+    return number;
+}
+
+/**
+ * Helper function to turn number (ZZ) to ascii string
+ * @param num The number to be converted
+ * @return str Converted string (ascii formatted)
+ */
+inline string zzToStr(ZZ num)
+{
+    long len = ceil(log(num) / log(128));
+    char str[len];
+    for (long i = len - 1; i >= 0; i--)
+    {
+        str[i] = conv<int>(num % 128);
+        num /= 128;
+    }
+
+    return (string)str;
+}
+
+/**
  * Reinterprets a ustring into a string
  */
-inline string ustrToStr(const ustring& ustr) {
-    return string(reinterpret_cast<const char *> ((unsigned char *) ustr.data()), ustr.length());
+inline string ustrToStr(const ustring &ustr)
+{
+    return string(reinterpret_cast<const char *>((unsigned char *)ustr.data()), ustr.length());
 }
 
 /**
  * Provides a string representing a human-readable version of a list of pointers
  */
 template <class T>
-string printListOfPtrs(list<T *> theList) {
+string printListOfPtrs(list<T *> theList)
+{
     string result = "[";
     typename list<T *>::const_iterator iter;
     for (iter = theList.begin(); iter != theList.end(); iter++)
@@ -131,10 +196,11 @@ string printListOfPtrs(list<T *> theList) {
  * Writes the elements of an array as ints to a return string
  */
 template <class T>
-string writeInts(T *data, int len) {
+string writeInts(T *data, int len)
+{
     string result;
     for (int ii = 0; ii < len; ii++)
-        result += toStr((char) data[ii]) + " (" + toStr((int) data[ii]) + ") ";
+        result += toStr((char)data[ii]) + " (" + toStr((int)data[ii]) + ") ";
     return result;
 }
 
@@ -142,10 +208,12 @@ string writeInts(T *data, int len) {
  * Prints the contents of a map.
  */
 template <class S, class T>
-inline string printMap(map<S, T> theMap) {
+inline string printMap(map<S, T> theMap)
+{
     string result;
     typename map<S, T>::const_iterator iter;
-    for (iter = theMap.begin(); iter != theMap.end(); iter++) {
+    for (iter = theMap.begin(); iter != theMap.end(); iter++)
+    {
         result += toStr(iter->first) + " -> " + toStr(iter->second) + "\n";
     }
     return result;
@@ -158,12 +226,13 @@ inline string printMap(map<S, T> theMap) {
  * @param container The multiset whose contents should be shown in the string
  * @return a string representing the contents of the container
  */
-inline string multisetPrint(const multiset<string>& container) {
+inline string multisetPrint(const multiset<string> &container)
+{
     string result;
     multiset<string>::const_iterator ii;
     for (ii = container.begin();
-            ii != container.end();
-            ii++)
+         ii != container.end();
+         ii++)
         result += "[" + *ii + "] ";
     //result += "["+ writeInts(ii->data(),ii->length()) + "] ";
     return result;
@@ -177,13 +246,46 @@ inline string multisetPrint(const multiset<string>& container) {
  * @return the resulting multiset
  */
 template <class T>
-multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second) {
+multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second)
+{
     vector<T> resultVec;
     std::set_intersection(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
 }
+
+// inline string setToStr(const multiset<DataObject *> tarSet)
+// {
+//     string outZZ = "";
+//     // transfer each element in multiset into a readable ascii character and split by comma
+//     for (auto i : tarSet)
+//     {
+//         outZZ += zzToStr(i->to_ZZ()) + ",";
+//     }
+
+//     return outZZ;
+// }
+
+// inline multiset<DataObject *> strToSet(const string tarStr)
+// {
+//     multiset<DataObject *> outSet;
+//     string curStr = "";
+//     for (int i = 0; i < tarStr.length(); i++)
+//     {
+//         if (tarStr[i] == ',')
+//         {
+//             const auto obj = DataObject(strToZZ(curStr));
+//             //outSet.insert(obj);
+//             curStr = "";
+//         }
+//         else
+//         {
+//             curStr += tarStr[i];
+//         }
+//     }
+//     return outSet;
+// }
 
 /**
  * Returns the multi-set difference <first> - <second>.
@@ -193,7 +295,8 @@ multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second)
  * @return the resulting multiset
  */
 template <class T>
-multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
+multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second)
+{
     vector<T> resultVec;
     std::set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
@@ -206,9 +309,11 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
  * @tparam T A pointer to an object that s.t. (*T)::operator<(const (*T)&) is defined
  */
 template <typename T>
-class cmp {
-public:
-    bool operator()(T a, T b) {
+class cmp
+{
+  public:
+    bool operator()(T a, T b)
+    {
         return (*a) < (*b);
     }
 };
@@ -222,7 +327,8 @@ public:
  * @param coll Iterator onto which the results of the set difference will be pushed.
  */
 template <class IteratorA, class IteratorB, class IteratorOut>
-void rangeDiff(IteratorA begA, IteratorA endA, IteratorB begB, IteratorB endB, IteratorOut coll) {
+void rangeDiff(IteratorA begA, IteratorA endA, IteratorB begB, IteratorB endB, IteratorOut coll)
+{
     typedef typename std::iterator_traits<IteratorA>::value_type T;
     set_difference(begA, endA, begB, endB, coll, cmp<T>());
 }
@@ -235,7 +341,8 @@ void rangeDiff(IteratorA begA, IteratorA endA, IteratorB begB, IteratorB endB, I
  * @return the resulting multiset
  */
 template <class T>
-multiset<T> multisetUnion(const multiset<T> first, const multiset<T> second) {
+multiset<T> multisetUnion(const multiset<T> first, const multiset<T> second)
+{
     vector<T> resultVec;
     std::set_union(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
@@ -251,7 +358,8 @@ multiset<T> multisetUnion(const multiset<T> first, const multiset<T> second) {
  * @return A subset of <first> of size <size>
  */
 template <class T>
-multiset<T> multisetSubset(const multiset<T> first, const int size) {
+multiset<T> multisetSubset(const multiset<T> first, const int size)
+{
     multiset<T> result;
     typename multiset<T>::iterator it; // need typename for dependent scope (?)
     int count = 0;
@@ -264,38 +372,42 @@ multiset<T> multisetSubset(const multiset<T> first, const int size) {
  A generic p-ary tree of type T
  */
 template <typename T>
-class paryTree {
-public:
-
+class paryTree
+{
+  public:
     /**
      * Construct a p-ary tree of a fixed arity
      * @param datum The actual datum to add - will be deallocated by the destructor
      * @param pary The number of children per node.
      */
-    paryTree(T *theDatum, int pary) : arity(pary) {
+    paryTree(T *theDatum, int pary) : arity(pary)
+    {
         datum = theDatum;
         child = new paryTree<T> *[arity];
-        for (int ii = 0; ii < arity; ii++) child[ii] = NULL;
+        for (int ii = 0; ii < arity; ii++)
+            child[ii] = NULL;
     }
 
     /** Destructor */
-    ~paryTree() {
+    ~paryTree()
+    {
         delete[] child; /** An array of children of the current node. */
-        delete datum; /** The payload of the current node. */
+        delete datum;   /** The payload of the current node. */
     }
 
     /** Accessor */
-    T *getDatum() {
+    T *getDatum()
+    {
         return datum;
     }
 
     paryTree<T> **child; /** Full access to all the children of the node. */
-private:
+  private:
     long arity;
     T *datum;
 };
 
-const int min_base64 = 62; // first character of base-64 text
+const int min_base64 = 62;    // first character of base-64 text
 const int signed_shift = 128; // shift to get from unsigned to signed
 
 /**
@@ -304,25 +416,27 @@ const int signed_shift = 128; // shift to get from unsigned to signed
  * @param len The length of the bytes array
  * @return An ASCII-armored string.
  */
-inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
+inline string base64_encode(char const *bytes_to_encode, unsigned int in_len)
+{
     string ret;
 
     int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
     // every 3 ASCII characters get converted into four base64 characters
-    for (int ii = 0; ii < round3; ii += 3) {
+    for (int ii = 0; ii < round3; ii += 3)
+    {
         unsigned int group = signed_shift + bytes_to_encode[ii] +
-                256 * (ii + 1 >= (int) in_len ? 0 : signed_shift + bytes_to_encode[ii + 1]) +
-                256 * 256 * (ii + 2 >= (int) in_len ? 0 : signed_shift + bytes_to_encode[ii + 2]);
-        ret += (char) min_base64 + group % 64;
-        ret += (char) min_base64 + (group >> 6) % 64;
-        ret += (char) min_base64 + (group >> 12) % 64;
-        ret += (char) min_base64 + (group >> 18) % 64;
+                             256 * (ii + 1 >= (int)in_len ? 0 : signed_shift + bytes_to_encode[ii + 1]) +
+                             256 * 256 * (ii + 2 >= (int)in_len ? 0 : signed_shift + bytes_to_encode[ii + 2]);
+        ret += (char)min_base64 + group % 64;
+        ret += (char)min_base64 + (group >> 6) % 64;
+        ret += (char)min_base64 + (group >> 12) % 64;
+        ret += (char)min_base64 + (group >> 18) % 64;
     }
     // replace the last characters with "=" as needed
     if (in_len % 3 >= 1)
-        ret[ ret.length() - 1 ] = '=';
+        ret[ret.length() - 1] = '=';
     if (in_len % 3 == 1)
-        ret[ ret.length() - 2 ] = '=';
+        ret[ret.length() - 2] = '=';
 
     return ret;
 }
@@ -332,30 +446,34 @@ inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
  * The exact inverse of base64_encode
  */
 
-inline string base64_decode(std::string const& encoded_string) {
+inline string base64_decode(std::string const &encoded_string)
+{
     int in_len = encoded_string.length();
     char tmp[in_len];
     strncpy(tmp, encoded_string.data(), in_len);
 
     // record how much padding was in the string, and remove it
     int rem = 0;
-    if (tmp[in_len - 1] == '=') {
+    if (tmp[in_len - 1] == '=')
+    {
         rem++;
         tmp[in_len - 1] = min_base64;
     }
-    if (tmp[in_len - 2] == '=') {
+    if (tmp[in_len - 2] == '=')
+    {
         rem++;
         tmp[in_len - 2] = min_base64;
     }
 
     string ret;
-    for (int ii = 0; ii < in_len; ii += 4) {
+    for (int ii = 0; ii < in_len; ii += 4)
+    {
         unsigned long group = static_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
                                                          64 * 64 * (tmp[ii + 2] - min_base64) +
                                                          64 * 64 * 64 * (tmp[ii + 3] - min_base64));
-        ret += (char) (group % 256) - signed_shift;
-        ret += (char) ((group >> 8) % 256) - signed_shift;
-        ret += (char) ((group >> 16) % 256) - signed_shift;
+        ret += (char)(group % 256) - signed_shift;
+        ret += (char)((group >> 8) % 256) - signed_shift;
+        ret += (char)((group >> 16) % 256) - signed_shift;
     }
 
     if (rem > 0)
@@ -371,7 +489,8 @@ inline string base64_decode(std::string const& encoded_string) {
  * @param base64_chars
  * @return 
  */
-inline string base64_encode(const string bytes, unsigned int in_len) {
+inline string base64_encode(const string bytes, unsigned int in_len)
+{
     string foo = base64_encode(bytes.data(), in_len);
     return foo;
 }
@@ -379,8 +498,9 @@ inline string base64_encode(const string bytes, unsigned int in_len) {
 /**
  * @return The minimum of two NTL ZZ objects
  */
-inline ZZ min(const ZZ& aa, const ZZ& bb) {
-    if (compare(aa,bb)==1) // (aa>?bb)
+inline ZZ min(const ZZ &aa, const ZZ &bb)
+{
+    if (compare(aa, bb) == 1) // (aa>?bb)
         return aa;
     else
         return bb;
@@ -390,9 +510,11 @@ inline ZZ min(const ZZ& aa, const ZZ& bb) {
  * @return A random integer in [lower, upper]
  * @require srand() must've been called
  */
-inline int randLenBetween(int lower, int upper) {
-    int length = (rand() % (upper+1));
-    if(length < lower) length = lower;
+inline int randLenBetween(int lower, int upper)
+{
+    int length = (rand() % (upper + 1));
+    if (length < lower)
+        length = lower;
     return length;
 }
 
@@ -400,7 +522,8 @@ inline int randLenBetween(int lower, int upper) {
  * @return A random long
  * @require srand() must've been called
  */
-inline long randLong() {
+inline long randLong()
+{
     return (static_cast<long>(rand()) << (sizeof(int) * CHAR_BIT)) | rand(); // lshift the amount of bits in an int and then bitwise or a random int
 }
 
@@ -408,22 +531,24 @@ inline long randLong() {
  * @return A random byte
  * @require srand() must've been called
  */
-inline byte randByte() {
-    return (byte) (rand() % (int) pow(2, CHAR_BIT));
+inline byte randByte()
+{
+    return (byte)(rand() % (int)pow(2, CHAR_BIT));
 }
 
 /**
  * @return A string of random characters with a random length in [lower, upper]
  * @require srand() must've been called
  */
-inline string randString(int lower=0, int upper=10) {
+inline string randString(int lower = 0, int upper = 10)
+{
     stringstream str;
 
     // pick a length in between lower and upper, inclusive
     int length = randLenBetween(lower, upper);
 
-    for(int jj = 0; jj < length; jj++)
-        str << (char) randByte(); // generate a random character and add to the stringstream
+    for (int jj = 0; jj < length; jj++)
+        str << (char)randByte(); // generate a random character and add to the stringstream
 
     return str.str();
 }
@@ -432,7 +557,8 @@ inline string randString(int lower=0, int upper=10) {
  * @return A random double in [lower, upper]
  * @require srand() must've been called
  */
-inline double randDouble(double lower=0.0, double upper=1.0) {
+inline double randDouble(double lower = 0.0, double upper = 1.0)
+{
     return ((double)rand() * (upper - lower)) / (double)RAND_MAX + lower;
 }
 
@@ -440,7 +566,8 @@ inline double randDouble(double lower=0.0, double upper=1.0) {
  * @return A random ZZ s.t. it is <= ZZ(LONG_MAX)
  * @require srand() must've been called
  */
-inline ZZ randZZ() {
+inline ZZ randZZ()
+{
     return ZZ(randLong());
 }
 
@@ -448,10 +575,11 @@ inline ZZ randZZ() {
  * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
  */
 template <class T>
-inline byte enumToByte(T theEnum) {
+inline byte enumToByte(T theEnum)
+{
     static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
-        "Underlying enum class is not byte - cannot convert to byte!");
-    return static_cast< byte >(theEnum);
+                  "Underlying enum class is not byte - cannot convert to byte!");
+    return static_cast<byte>(theEnum);
 };
 
 /**
@@ -460,8 +588,9 @@ inline byte enumToByte(T theEnum) {
  * @return the next enum value
  */
 template <typename T>
-inline T &operator++(T& curr) {
-    curr = (T)(((int) (curr) + 1));
+inline T &operator++(T &curr)
+{
+    curr = (T)(((int)(curr) + 1));
     return curr;
 }
 
@@ -470,15 +599,18 @@ inline T &operator++(T& curr) {
  * In C++17, this can be replaced with std::filesystem::temp_directory_path.
  * @return path to temp directory
  */
-inline string temporaryDir() {
+inline string temporaryDir()
+{
     // possible environment variables containing path to temp directory
-    const char* opts[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
+    const char *opts[] = {"TMPDIR", "TMP", "TEMP", "TEMPDIR"};
 
     // return the first defined env var in opts
-    for(const char* ss : opts) {
+    for (const char *ss : opts)
+    {
 
         // true iff ss is an env var
-        if(const char* path = getenv(ss)) {
+        if (const char *path = getenv(ss))
+        {
             return string(path);
         }
     }
@@ -487,5 +619,4 @@ inline string temporaryDir() {
     return "/tmp";
 }
 
-#endif	/* AUX_H */
-
+#endif /* AUX_H */

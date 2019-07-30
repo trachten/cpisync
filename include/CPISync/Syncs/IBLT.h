@@ -15,11 +15,11 @@
 #include <sstream>
 #include <CPISync/Aux/Auxiliary.h>
 
-using std::vector;
 using std::hash;
+using std::pair;
 using std::string;
 using std::stringstream;
-using std::pair;
+using std::vector;
 using namespace NTL;
 
 // The number of hashes used per insert
@@ -39,39 +39,40 @@ typedef unsigned long int hash_t;
  * Goodrich, Michael T., and Michael Mitzenmacher. "Invertible bloom lookup tables." 
  * arXiv preprint arXiv:1101.2245 (2011).
  */
-class IBLT {
+class IBLT
+{
 public:
-    // Communicant needs to access the internal representation of an IBLT to send and receive it
-    friend class Communicant;
+  // Communicant needs to access the internal representation of an IBLT to send and receive it
+  friend class Communicant;
 
-    /**
+  /**
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
      * @param _valueSize The size of the values being added, in bits
      */
-    IBLT(size_t expectedNumEntries, size_t _valueSize);
-    
-    // default destructor
-    ~IBLT();
-    
-    /**
+  IBLT(size_t expectedNumEntries, size_t _valueSize);
+
+  // default destructor
+  ~IBLT();
+
+  /**
      * Inserts a key-value pair to the IBLT.
      * This operation always succeeds.
      * @param key The key to be added
      * @param value The value to be added
      * @require The key must be distinct in the IBLT
      */
-    void insert(ZZ key, ZZ value);
-    
-    /**
+  void insert(ZZ key, ZZ value);
+
+  /**
      * Erases a key-value pair from the IBLT.
      * This operation always succeeds.
      * @param key The key to be removed
      * @param value The value to be removed
      */
-    void erase(ZZ key, ZZ value);
-    
-    /**
+  void erase(ZZ key, ZZ value);
+
+  /**
      * Produces the value s.t. (key, value) is in the IBLT.
      * This operation doesn't always succeed.
      * This operation is destructive, as entries must be "peeled" away in order to find an element, i.e.
@@ -81,9 +82,9 @@ public:
      * If not found, result will be set to 0. result is unchanged iff the operation returns false.
      * @return true iff the presence of the key could be determined
      */
-    bool get(ZZ key, ZZ& result);
-    
-    /**
+  bool get(ZZ key, ZZ &result);
+
+  /**
      * Produces a list of all the key-value pairs in the IBLT.
      * With a low, constant probability, only partial lists will be produced
      * Listing is destructive, as the same peeling technique used in the get method is used.
@@ -92,67 +93,80 @@ public:
      * @param negative All the elements that were removed without being inserted first.
      * @return true iff the operation has successfully recovered the entire list
      */
-    bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
+  bool listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative);
 
-    /**
+  /**
+   * Convert IBLT to string
+   * @return string
+   */
+  string toString() const;
+
+  /**
+   * Rebuild IBLT from string infos
+   * @param inStr IBLT hashtableentries in string type, converted by toString function above
+   */
+  void reBuild(string &inStr);
+
+  /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
      * @param other The IBLT that will be subtracted from this IBLT
      * @require IBLT must have the same number of entries and the values must be of the same size
      */
-    IBLT operator-(const IBLT& other) const;
-    IBLT& operator-=(const IBLT& other);
+  IBLT operator-(const IBLT &other) const;
+  IBLT &operator-=(const IBLT &other);
 
-    /**
+  /**
      * @return the number of cells in the IBLT. Not necessarily equal to the expected number of entries
      */
-    size_t size() const;
+  size_t size() const;
 
-    /**
+  /**
      * @return the size of a value stored in the IBLT.
      */
-    size_t eltSize() const;
+  size_t eltSize() const;
+
 private:
-    // local data
+  // local data
 
-    // default constructor - no internal parameters are initialized
-    IBLT();
+  // default constructor - no internal parameters are initialized
+  IBLT();
 
-    // Helper function for insert and erase
-    void _insert(long plusOrMinus, ZZ key, ZZ value);
+  // Helper function for insert and erase
+  void _insert(long plusOrMinus, ZZ key, ZZ value);
 
-    // Returns the kk-th unique hash of the zz that produced initial.
-    static hash_t _hashK(const ZZ &item, long kk);
-    static hash_t _hash(const hash_t& initial, long kk);
+  // Returns the kk-th unique hash of the zz that produced initial.
+  static hash_t _hashK(const ZZ &item, long kk);
+  static hash_t _hash(const hash_t &initial, long kk);
 
-    // Represents each entry in the iblt
-    class HashTableEntry
-    {
-    public:
-        // Net insertions and deletions that mapped to this cell
-        long count;
+  // Represents each entry in the iblt
+  class HashTableEntry
+  {
+  public:
+    // Net insertions and deletions that mapped to this cell
+    long count;
 
-        // The bitwise xor-sum of all keys mapped to this cell
-        ZZ keySum;
+    // The bitwise xor-sum of all keys mapped to this cell
+    ZZ keySum;
 
-        // The bitwise xor-sum of all keySum checksums at each allocation
-        hash_t keyCheck;
+    // The bitwise xor-sum of all keySum checksums at each allocation
+    hash_t keyCheck;
 
-        // The bitwise xor-sum of all values mapped to this cell
-        ZZ valueSum;
+    // The bitwise xor-sum of all values mapped to this cell
+    ZZ valueSum;
 
-        // Returns whether the entry contains just one insertion or deletion
-        bool isPure() const;
+    // Returns whether the entry contains just one insertion or deletion
+    bool isPure() const;
 
-        // Returns whether the entry is empty
-        bool empty() const;
-    };
+    // Returns whether the entry is empty
+    bool empty() const;
+  };
 
-    // vector of all entries
-    vector<HashTableEntry> hashTable;
+  // vector of all entries
+  vector<HashTableEntry> hashTable;
 
-    // the value size, in bits
-    size_t valueSize;
+  // the value size, in bits
+  size_t valueSize;
 };
 
 #endif //CPISYNCLIB_IBLT_H

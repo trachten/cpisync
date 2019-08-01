@@ -7,19 +7,21 @@
 #include <vector>
 #include <memory>
 #include <CPISync/Communicants/Communicant.h>
+#include <CPISync/Syncs/IBLT.h>
 
 // namespaces
-using std::vector;
 using std::list;
+using std::vector;
 
 /**
  * SyncMethod.h -- abstract class for sync methods
  * This is the base class for all synchronization methods.
  */
 
-class SyncMethod {
+class SyncMethod
+{
 
-public:
+  public:
     // CONSTRUCTOR/DESTRUCTOR
 
     // constructor
@@ -39,10 +41,11 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    virtual bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
-		recvBytes = 0;
-		xmitBytes = 0; //Reset syncMethod counters
-		syncTime = 0;
+    virtual bool SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf)
+    {
+        recvBytes = 0;
+        xmitBytes = 0; //Reset syncMethod counters
+        syncTime = 0;
 
         commSync->resetCommCounters();
         return true;
@@ -57,10 +60,50 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    virtual bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
-		recvBytes = 0;
-		xmitBytes = 0; //Reset syncMethod counters
-		syncTime = 0;
+    virtual bool SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf)
+    {
+        recvBytes = 0;
+        xmitBytes = 0; //Reset syncMethod counters
+        syncTime = 0;
+
+        commSync->resetCommCounters();
+        return true;
+    }
+
+    /**
+     * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
+     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
+     *      * 
+     * @param commSync The communicant to whom to connect.
+     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
+     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
+     * @return true iff the connection and subsequent synchronization appear to be successful.
+     */
+    virtual bool SetsSyncServer(const shared_ptr<Communicant> &commSync, list<pair<ZZ, list<DataObject *>>> &selfMinusOther, list<pair<ZZ, list<DataObject *>>> &otherMinusSelf)
+    {
+        recvBytes = 0;
+        xmitBytes = 0; //Reset syncMethod counters
+        syncTime = 0;
+
+        commSync->resetCommCounters();
+        return true;
+    }
+
+    /**
+     * Connect as a client to a specific communicant and computes differences between the two (without actually updating them).
+     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
+     * %R:  Sync_Server must have been called at that communicant.
+     * 
+     * @param commSync The communicant to whom to connect.
+     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
+     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
+     * @return true iff the connection and subsequent synchronization appear to be successful.
+     */
+    virtual bool SetsSyncClient(const shared_ptr<Communicant> &commSync, list<pair<ZZ, list<DataObject *>>> &selfMinusOther, list<pair<ZZ, list<DataObject *>>> &otherMinusSelf)
+    {
+        recvBytes = 0;
+        xmitBytes = 0; //Reset syncMethod counters
+        syncTime = 0;
 
         commSync->resetCommCounters();
         return true;
@@ -73,18 +116,46 @@ public:
      * hash, so it is advisable not to change the datum dereference hereafter.
      * @return true iff the addition was successful
      */
-    virtual bool addElem(DataObject* datum) { elements.push_back(datum); return true; };
+    virtual bool addElem(DataObject *datum)
+    {
+        elements.push_back(datum);
+        return true;
+    };
 
     /**
      * Delete an element from the data structure that will be performing the synchronization.
      * @param datum The element to delete.
      * @return true iff the removal was successful
      */
-    virtual bool delElem(DataObject* datum) { 
+    virtual bool delElem(DataObject *datum)
+    {
         long int before = elements.size();
         elements.erase(std::remove(elements.begin(), elements.end(), datum), elements.end());
         return before > elements.size(); // true iff there were more elements before removal than after
     };
+
+    /**
+     * Add a set to the datastructure that will be performing the synchronization for set of sets cases
+     * @param tarSet The target set to add
+     * @return true iff the addition was successful
+     */
+    virtual bool addSet(multiset<DataObject *> tarSet)
+    {
+        sets.push_back(tarSet);
+        return true;
+    }
+
+    /** 
+     * Delete a set from the data structure that will be performing the synchronization
+     * @param tarSet The target set to be deleted
+     * @return true iff the removal was successful
+     */
+    virtual bool delSet(multiset<DataObject *> tarSet)
+    {
+        long int before = sets.size();
+        sets.erase(std::remove(sets.begin(), sets.end(), tarSet), sets.end());
+        return before > sets.size();
+    }
 
     // INFORMATIONAL
     /**
@@ -93,31 +164,31 @@ public:
     virtual string getName() = 0;
 
     /** Accessor methods */
-    long getNumElem() const {
+    long getNumElem() const
+    {
         return elements.size();
     }
 
     /**
      * @return An iterator pointing to the first element in the data structure
      */
-    vector<DataObject*>::const_iterator beginElements() { return elements.begin();}
-    
+    vector<DataObject *>::const_iterator beginElements() { return elements.begin(); }
+
     /**
      * @return An iterator pointing just past the last element in the data structure
      */
-    vector<DataObject*>::const_iterator endElements() { return elements.end();}
+    vector<DataObject *>::const_iterator endElements() { return elements.end(); }
 
-	int getXmitBytes() {return xmitBytes;};
+    int getXmitBytes() { return xmitBytes; };
 
-	int getRecvBytes() {return recvBytes;};
+    int getRecvBytes() { return recvBytes; };
 
-	float getSyncTime() {return syncTime;};
+    float getSyncTime() { return syncTime; };
 
-protected:
-
-	int xmitBytes; /** The total amount of bytes that this sync has transmitted */
-	int recvBytes; /** The total amount of bytes that this sync has received*/
-	float syncTime; /** The total amount of time spent sending data */
+  protected:
+    int xmitBytes;  /** The total amount of bytes that this sync has transmitted */
+    int recvBytes;  /** The total amount of bytes that this sync has received*/
+    float syncTime; /** The total amount of time spent sending data */
 
     /**
      * Encode and transmit synchronization parameters (e.g. synchronization scheme, probability of error ...)
@@ -127,8 +198,8 @@ protected:
      * @param oneWay If set to true, no response is expected from the other communicant (the sync is one-way).
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    virtual void SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false);
-    
+    virtual void SendSyncParam(const shared_ptr<Communicant> &commSync, bool oneWay = false);
+
     /**
      * Receive synchronization parameters from another communicant and compare to the current object.
      * Return true iff they are the same (or the other communicant does not care).
@@ -136,13 +207,13 @@ protected:
      * @param oneWay If set to true, no response is expected from the other communicant (the sync is one-way).
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
-    virtual void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false);
-    
-    SYNC_TYPE SyncID; /** A number that uniquely identifies a given synchronization protocol. */
-    
-private:
-    vector<DataObject *> elements; /** Pointers to the elements stored in the data structure. */
-};
+    virtual void RecvSyncParam(const shared_ptr<Communicant> &commSync, bool oneWay = false);
 
+    SYNC_TYPE SyncID; /** A number that uniquely identifies a given synchronization protocol. */
+
+  private:
+    vector<DataObject *> elements; /** Pointers to the elements stored in the data structure. */
+    vector<multiset<DataObject *>> sets;
+};
 
 #endif

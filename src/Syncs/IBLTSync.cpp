@@ -7,15 +7,18 @@
 #include <CPISync/Aux/Exceptions.h>
 #include <CPISync/Syncs/IBLTSync.h>
 
-IBLTSync::IBLTSync(size_t expected, size_t eltSize) : myIBLT(expected, eltSize) {
+IBLTSync::IBLTSync(size_t expected, size_t eltSize) : myIBLT(expected, eltSize)
+{
     expNumElems = expected;
     oneWay = false;
 }
 
 IBLTSync::~IBLTSync() = default;
 
-bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
-    try {
+bool IBLTSync::SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf)
+{
+    try
+    {
         Logger::gLog(Logger::METHOD, "Entering IBLTSync::SyncClient");
 
         bool success = true;
@@ -27,40 +30,45 @@ bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
         commSync->commConnect();
 
         // ensure that the IBLT size and eltSize equal those of the server otherwise fail and don't continue
-        if(!commSync->establishIBLTSend(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
+        if (!commSync->establishIBLTSend(myIBLT.size(), myIBLT.eltSize(), oneWay))
+        {
             Logger::gLog(Logger::METHOD_DETAILS, "IBLT parameters do not match up between client and server!");
             return false;
         }
         commSync->commSend(myIBLT, true);
 
-        if(!oneWay) {
-            list<DataObject*> newOMS = commSync->commRecv_DataObject_List();
-            list<DataObject*> newSMO = commSync->commRecv_DataObject_List();
+        if (!oneWay)
+        {
+            list<DataObject *> newOMS = commSync->commRecv_DataObject_List();
+            // list<DataObject *> newSMO = commSync->commRecv_DataObject_List();
 
             otherMinusSelf.insert(otherMinusSelf.end(), newOMS.begin(), newOMS.end());
-            selfMinusOther.insert(selfMinusOther.end(), newSMO.begin(), newSMO.end());
+            // selfMinusOther.insert(selfMinusOther.end(), newSMO.begin(), newSMO.end());
 
             stringstream msg;
             msg << "IBLTSync succeeded." << endl;
-            msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
+            // msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
             msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
             Logger::gLog(Logger::METHOD, msg.str());
         }
 
-		//Record Stats
-		recvBytes = commSync->getRecvBytes();
-		xmitBytes = commSync->getXmitBytes();
-		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-				 - commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+        //Record Stats
+        recvBytes = commSync->getRecvBytes();
+        xmitBytes = commSync->getXmitBytes();
+        syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
 
         return success;
-    } catch (SyncFailureException& s) {
+    }
+    catch (SyncFailureException &s)
+    {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
-        throw (s);
+        throw(s);
     } // might not need the try-catch
 }
-bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
-    try {
+bool IBLTSync::SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf)
+{
+    try
+    {
         Logger::gLog(Logger::METHOD, "Entering IBLTSync::SyncServer");
 
         bool success = true;
@@ -72,7 +80,8 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
         commSync->commListen();
 
         // ensure that the IBLT size and eltSize equal those of the server otherwise fail and don't continue
-        if(!commSync->establishIBLTRecv(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
+        if (!commSync->establishIBLTRecv(myIBLT.size(), myIBLT.eltSize(), oneWay))
+        {
             Logger::gLog(Logger::METHOD_DETAILS, "IBLT parameters do not match up between client and server!");
             return false;
         }
@@ -82,54 +91,61 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
 
         // more efficient than - and modifies theirs, which we don't care about
         vector<pair<ZZ, ZZ>> positive, negative;
-        if(!(theirs -= myIBLT).listEntries(positive, negative)) {
+        if (!(theirs -= myIBLT).listEntries(positive, negative))
+        {
             Logger::gLog(Logger::METHOD_DETAILS,
                          "Unable to completely reconcile, returning a partial list of differences");
             success = false;
         }
 
         // store values because they're what we care about
-        for(const auto& pair : positive) {
-            otherMinusSelf.push_back(new DataObject(pair.second));
-        }
+        // for (const auto &pair : positive)
+        // {
+        //     otherMinusSelf.push_back(new DataObject(pair.second));
+        // }
 
-        for(const auto& pair : negative) {
+        for (const auto &pair : negative)
+        {
             selfMinusOther.push_back(new DataObject(pair.first));
         }
 
-        if(!oneWay) {
+        if (!oneWay)
+        {
             commSync->commSend(selfMinusOther);
-            commSync->commSend(otherMinusSelf);
+            // commSync->commSend(otherMinusSelf);
         }
 
         stringstream msg;
         msg << "IBLTSync " << (success ? "succeeded" : "may not have completely succeeded") << endl;
         msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
-        msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
+        // msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
         Logger::gLog(Logger::METHOD, msg.str());
 
-		//Record Stats
-		recvBytes = commSync->getRecvBytes();
-		xmitBytes = commSync->getXmitBytes();
-		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-				 - commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+        //Record Stats
+        recvBytes = commSync->getRecvBytes();
+        xmitBytes = commSync->getXmitBytes();
+        syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
 
         return success;
-    } catch (SyncFailureException& s) {
+    }
+    catch (SyncFailureException &s)
+    {
         Logger::gLog(Logger::METHOD_DETAILS, s.what());
-        throw (s);
+        throw(s);
     } // might not need the try-catch
 }
-bool IBLTSync::addElem(DataObject* datum){
+bool IBLTSync::addElem(DataObject *datum)
+{
     // call parent add
     SyncMethod::addElem(datum);
     myIBLT.insert(datum->to_ZZ(), datum->to_ZZ());
     return true;
 }
-bool IBLTSync::delElem(DataObject* datum){
+bool IBLTSync::delElem(DataObject *datum)
+{
     // call parent delete
     SyncMethod::delElem(datum);
     myIBLT.erase(datum->to_ZZ(), datum->to_ZZ());
     return true;
 }
-string IBLTSync::getName(){ return "IBLTSync\n   * expected number of elements = " + toStr(expNumElems) + "\n   * size of values =  " + toStr(myIBLT.eltSize()) + '\n';}
+string IBLTSync::getName() { return "IBLTSync\n   * expected number of elements = " + toStr(expNumElems) + "\n   * size of values =  " + toStr(myIBLT.eltSize()) + '\n'; }

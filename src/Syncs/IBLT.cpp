@@ -1,7 +1,7 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
 //
-// Created by Eliezer Pearl on 7/9/18.
+// Created by Eliezer Pearl on 7/9/18. Modified by Zifan Wang on 7/30/2019
 // Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
 //
 
@@ -33,6 +33,16 @@ hash_t IBLT::_hashK(const ZZ &item, long kk)
 {
     std::hash<std::string> shash; // stl uses MurmurHashUnaligned2 for calculating the hash of a string
     return _hash(shash(toStr(item)), kk - 1);
+}
+
+hash_t IBLT::_setHash(multiset<DataObject *> &tarSet)
+{
+    hash_t outHash = 0;
+    for (auto i : tarSet)
+    {
+        outHash += _hashK(i->to_ZZ(), 1);
+    }
+    return outHash;
 }
 
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value)
@@ -142,6 +152,7 @@ bool IBLT::HashTableEntry::isPure() const
 
 bool IBLT::HashTableEntry::empty() const
 {
+    //cout << "count: " << count << " keySum: " << keySum << " keyCheck: " << keyCheck << endl;
     return (count == 0 && IsZero(keySum) && keyCheck == 0);
 }
 
@@ -226,11 +237,84 @@ string IBLT::toString() const
     string outStr = "";
     for (auto entry : hashTable)
     {
-        outStr += to_string(entry.count) + "," + to_string(entry.keyCheck) + "," + zzToStr(entry.keySum) + "," + zzToStr(entry.valueSum) + "," + to_string(entry.empty()) + to_string(entry.isPure()) + "\n";
+        //cout << to_string(entry.count) << endl;
+        //cout << to_string(entry.keyCheck) << endl;
+        //cout << zzToStr(entry.keySum) << endl;
+        //cout << zzToStr(entry.valueSum) << endl;
+        outStr += to_string(entry.count) + "," + to_string(entry.keyCheck) + "," + toStr<ZZ>(entry.keySum) + "," + toStr<ZZ>(entry.valueSum) + "\n";
     }
     return outStr;
 }
 
-// void IBLT::reBuild(string &inStr) {
-//     vector<string> tmp =
-// }
+void IBLT::reBuild(string &inStr)
+{
+    vector<string> entries = split(inStr, "\n");
+    int index = 0;
+
+    for (auto entry : entries)
+    {
+        vector<string> infos = split(entry, ",");
+        HashTableEntry curEntry;
+        curEntry.count = stol(infos[0]);
+        curEntry.keyCheck = stoul(infos[1]);
+        curEntry.keySum = strTo<ZZ>(infos[2]);
+        curEntry.valueSum = strTo<ZZ>(infos[3]);
+        this->hashTable[index] = curEntry;
+        index++;
+    }
+}
+
+void IBLT::insertIBLT(IBLT &chldIBLT, hash_t &chldHash)
+{
+    ZZ ibltZZ = strTo<ZZ>(chldIBLT.toString());
+    _insert(1, ibltZZ, (ZZ)chldHash);
+}
+
+void IBLT::eraseIBLT(IBLT &chldIBLT, hash_t &chldHash)
+{
+    ZZ ibltZZ = strTo<ZZ>(chldIBLT.toString());
+    _insert(-1, ibltZZ, (ZZ)chldHash);
+}
+
+void IBLT::insertIBLTfromSet(multiset<DataObject *> tarSet, size_t elemSize)
+{
+    hash_t setHash = _setHash(tarSet);
+
+    // Put chld set into a chld IBLT
+    IBLT chldIBLT(tarSet.size(), elemSize);
+    for (auto i : tarSet)
+    {
+        chldIBLT.insert(i->to_ZZ(), i->to_ZZ());
+    }
+
+    // Put the pair(chld IBLT, hash of set) into the outer IBLT T
+    this->insertIBLT(chldIBLT, setHash);
+
+    hashes.push_back(setHash);
+}
+
+void IBLT::eraseIBLT(multiset<DataObject *> tarSet, size_t elemSize)
+{
+    hash_t setHash = _setHash(tarSet);
+
+    IBLT chldIBLT(tarSet.size(), elemSize);
+    for (auto i : tarSet)
+    {
+        chldIBLT.insert(i->to_ZZ(), i->to_ZZ());
+    }
+    this->eraseIBLT(chldIBLT, setHash);
+    // delete set hash in the vector
+    for (auto i = hashes.begin(); i < hashes.end(); i++)
+    {
+        if (*i == setHash)
+        {
+            hashes.erase(i);
+            break;
+        }
+    }
+}
+
+ZZ IBLT::getHash(multiset<DataObject *> tarSet)
+{
+    return (ZZ)_setHash(tarSet);
+}

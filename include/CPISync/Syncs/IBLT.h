@@ -82,6 +82,10 @@ public:
      * If not found, result will be set to 0. result is unchanged iff the operation returns false.
      * @return true iff the presence of the key could be determined
      */
+
+  void insertIBLT(IBLT &chldIBLT, hash_t &chldHash);
+  void eraseIBLT(IBLT &chldIBLT, hash_t &chldHash);
+
   bool get(ZZ key, ZZ &result);
 
   /**
@@ -108,6 +112,20 @@ public:
   void reBuild(string &inStr);
 
   /**
+   * Insert a set into chldIBLT and put chldIBLT into current IBLT
+   * @param tarSet target set to be added to IBLT
+   */
+  void insertIBLTfromSet(multiset<DataObject *> tarSet, size_t elemSize);
+
+  /**
+   * Delete an IBLT by a given set
+   * @param tarSet the target set to be deleted
+   * @param elemSize size of element in the chld set
+   */
+  void eraseIBLT(multiset<DataObject *> tarSet, size_t elemSize);
+
+  static ZZ getHash(multiset<DataObject *> tarSet);
+  /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
      * @param other The IBLT that will be subtracted from this IBLT
@@ -126,6 +144,8 @@ public:
      */
   size_t eltSize() const;
 
+  vector<hash_t> hashes; /* vector for all hashes of sets */
+
 private:
   // local data
 
@@ -138,6 +158,7 @@ private:
   // Returns the kk-th unique hash of the zz that produced initial.
   static hash_t _hashK(const ZZ &item, long kk);
   static hash_t _hash(const hash_t &initial, long kk);
+  static hash_t _setHash(multiset<DataObject *> &tarSet);
 
   // Represents each entry in the iblt
   class HashTableEntry

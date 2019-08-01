@@ -383,7 +383,7 @@ inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, b
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 			//Print stats about sync
-			if (/*clientReport.success*/ false)
+			if (/*clientReport.success*/ true)
 			{
 				cout << "\nCLIENT RECON STATS:\n";
 				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
@@ -440,7 +440,7 @@ inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, b
 			serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 		//Print stats about sync
-		if (/*serverReport.success*/ false)
+		if (/*serverReport.success*/ true)
 		{
 			cout << "\nSERVER RECON STATS:\n";
 			cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "

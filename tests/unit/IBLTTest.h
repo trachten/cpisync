@@ -12,21 +12,25 @@
 #include <iostream>
 #include <algorithm>
 
-class IBLTTest : public CPPUNIT_NS::TestFixture{
+class IBLTTest : public CPPUNIT_NS::TestFixture
+{
     CPPUNIT_TEST_SUITE(IBLTTest);
     CPPUNIT_TEST(testAll);
+    CPPUNIT_TEST(testReconstruct);
     CPPUNIT_TEST_SUITE_END();
-public:
+
+  public:
     IBLTTest();
     virtual ~IBLTTest();
     void setUp();
     void tearDown();
 
-	/**
+    /**
  	* Tests every function in IBLT together, except for size
  	*/
     static void testAll();
-};
 
+    static void testReconstruct();
+};
 
 #endif //CPISYNCLIB_IBLTTEST_H

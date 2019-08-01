@@ -135,42 +135,6 @@ inline vector<string> split(string str, string sep)
 }
 
 /**
- * Helper function to turn string (ascii) into a ZZ (unsigned long)
- * @param str The string to be converted
- * @return number Converted number in ZZ type
- */
-inline ZZ strToZZ(string str)
-{
-    ZZ number = conv<ZZ>(str[0]);
-    long len = str.length();
-    for (long i = 1; i < len; i++)
-    {
-        number *= 128;
-        number += conv<ZZ>(str[i]);
-    }
-
-    return number;
-}
-
-/**
- * Helper function to turn number (ZZ) to ascii string
- * @param num The number to be converted
- * @return str Converted string (ascii formatted)
- */
-inline string zzToStr(ZZ num)
-{
-    long len = ceil(log(num) / log(128));
-    char str[len];
-    for (long i = len - 1; i >= 0; i--)
-    {
-        str[i] = conv<int>(num % 128);
-        num /= 128;
-    }
-
-    return (string)str;
-}
-
-/**
  * Reinterprets a ustring into a string
  */
 inline string ustrToStr(const ustring &ustr)

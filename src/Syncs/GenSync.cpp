@@ -146,6 +146,7 @@ bool GenSync::startSync(int method_num)
         selfMinusOther.clear();
         otherMinusSelf.clear();
 
+        //if((*syncAgentIt)->
         // do the sync
         try
         {
@@ -191,25 +192,6 @@ void GenSync::addElem(DataObject *newDatum)
         (*outFile) << newDatum->to_string() << endl;
 }
 
-// add element which is a set
-void GenSync::addElem(multiset<DataObject *> newSet)
-{
-    Logger::gLog(Logger::METHOD, "Entering GenSync::addElem(sets)");
-    myDataSets.push_back(newSet);
-
-    // Update Data in syncMethod
-    vector<shared_ptr<SyncMethod>>::iterator itAgt;
-    for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt)
-    {
-        if (!(*itAgt)->addSet(newSet))
-            Logger::error_and_quit("Could not add item " + toStr<ZZ>(IBLT::getHash(newSet)) + ".  Please considering increasing the number of bits per set element.");
-    }
-
-    // update file
-    if (outFile != nullptr)
-        (*outFile) << toStr<ZZ>(IBLT::getHash(newSet)) << endl;
-}
-
 // delete element
 bool GenSync::delElem(DataObject *delPtr)
 {
@@ -238,41 +220,6 @@ bool GenSync::delElem(DataObject *delPtr)
     }
 }
 
-// delete set
-bool GenSync::delElem(multiset<DataObject *> tarSet)
-{
-    Logger::gLog(Logger::METHOD, "Entering GenSync::delElem(sets)");
-    list<multiset<DataObject *>>::iterator it;
-    bool found = false;
-
-    for (it = myDataSets.begin(); it != myDataSets.end(); it++)
-    {
-        if (*it == tarSet)
-        {
-            found = true;
-            myDataSets.erase(it);
-            break;
-        }
-    }
-    if (!found)
-    {
-        return false;
-    }
-
-    // Update Data in syncMethod
-    vector<shared_ptr<SyncMethod>>::iterator itAgt;
-    for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt)
-    {
-        if (!(*itAgt)->delSet(tarSet))
-        {
-            Logger::error("Error deleting item. SyncVec delete failed");
-            return false;
-        }
-    }
-
-    return true;
-}
-
 //Call delete elements on all data
 bool GenSync::clearData()
 {
@@ -282,12 +229,6 @@ bool GenSync::clearData()
     while (itr != myData.end())
     {
         success &= delElem(*itr++);
-    }
-
-    auto itr2 = myDataSets.begin();
-    while (itr2 != myDataSets.end())
-    {
-        success &= delElem(*itr2);
     }
 
     return success && myData.empty();

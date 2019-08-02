@@ -13,32 +13,33 @@ typedef std::basic_string<unsigned char> ustring; // a string of unsigned charac
 
 // namespaces
 using namespace NTL;
-using std::cout;
 using std::clog;
+using std::cout;
 using std::endl;
+using std::invalid_argument;
+using std::istringstream;
+using std::ostream;
+using std::ostringstream;
+using std::runtime_error;
 using std::string;
 using std::stringstream;
-using std::istringstream;
-using std::ostringstream;
-using std::ostream;
-using std::invalid_argument;
-using std::runtime_error;
 
 // CONSTANT VALUES
 
 const ZZ ZZ_ZERO = to_ZZ("0");
 const ZZ ZZ_ONE = to_ZZ("1");
 const ZZ ZZ_TWO = to_ZZ("2");
-const RR RR_ONE = (RR) 1.0;
-const RR RR_TWO = (RR) 2.0;
+const RR RR_ONE = (RR)1.0;
+const RR RR_TWO = (RR)2.0;
 const string SYNC_FAILED = "ERR: SYNC FAILED"; // message that a sync attempt has failed
 // ... these constants must copy at most one byte
 const byte SYNC_FAIL_FLAG = 0; /** The sync failed. */
-const byte SYNC_OK_FLAG = 1; /** The sync succeeded. */
+const byte SYNC_OK_FLAG = 1;   /** The sync succeeded. */
 const byte SYNC_SOME_INFO = 2; /** I have some information to sync. */
-const byte SYNC_NO_INFO = 3; /** I have no information to sync. */
+const byte SYNC_NO_INFO = 3;   /** I have no information to sync. */
 // ... ... synchronization type
-enum class SYNC_TYPE : byte {
+enum class SYNC_TYPE : byte
+{
   GenericSync,
   CPISync,
   CPISync_HalfRound,
@@ -50,12 +51,18 @@ enum class SYNC_TYPE : byte {
   HashSync,
   FullSync,
   IBLTSync,
-  IBLTSync_HalfRound
+  IBLTSync_HalfRound,
+  IBLT4IBLTsSync
 };
 
+enum class DATA_RECON_TYPE : byte
+{
+  SET,
+  SETOFSETS,
+  Graph
+};
 // ... Error constants
-static const int SYNC_SUCCESS = 0; /** Exit status when synchronization succeeds. */
-static const int SYNC_FAILURE = -1; /** Exit status when synchronization fails. */
+static const int SYNC_SUCCESS = 0;   /** Exit status when synchronization succeeds. */
+static const int SYNC_FAILURE = -1;  /** Exit status when synchronization fails. */
 static const int GENERAL_ERROR = -2; /** Exit status for a general error. */
-#endif /* TYPES_H */
-
+#endif                               /* TYPES_H */

@@ -14,6 +14,7 @@
 #include <CPISync/Communicants/Communicant.h>
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Aux/SyncMethod.h>
+#include <CPISync/Aux/ConstantsAndTypes.h>
 
 // namespace info
 using std::clog;
@@ -82,8 +83,6 @@ class GenSync
      */
     void addElem(DataObject *newDatum);
 
-    void addElem(multiset<DataObject *> newSet);
-
     /**
      * Adds a new datum into the existing GenSync data structure
      * @param newDatum The datum to be added ... must be of a type compatible with
@@ -109,8 +108,6 @@ class GenSync
      */
     bool delElem(DataObject *delPtr);
 
-    bool delElem(multiset<DataObject *> tarSet);
-
     /**
      * Calls delElem on every element in the myData list
      * @return True if data appears to have been successfully cleared, false otherwise
@@ -121,8 +118,6 @@ class GenSync
      * @return a list of string representations of the elements stored in the data structure
      */
     const list<string> dumpElements();
-
-    const list<multiset<DataObject *>> dumpSets();
 
     // COMMUNICANT MANIPULATION
     /* Communicants are entities that can communicate [and thus sync] with this GenSync object.
@@ -310,15 +305,12 @@ class GenSync
      */
     GenSync();
 
-    // Flag for set of sets sync
-    bool setOfSets = false;
+    // type of data for recon
+    DATA_RECON_TYPE dataType;
 
     // FIELDS
     /** A container for the data stored by this GenSync object. */
     list<DataObject *> myData;
-
-    /** A container for set of sets stored by this GenSync object */
-    list<multiset<DataObject *>> myDataSets;
 
     /** A vector of communicants registered to be able to sync with this GenSync object. */
     vector<shared_ptr<Communicant>> myCommVec;
@@ -466,6 +458,12 @@ class GenSync::Builder
         return *this;
     }
 
+    Builder &setofSets(bool setOfSets)
+    {
+        this->SETOFSETS = setOfSets;
+        return *this;
+    }
+
     /**
      * Destructor - clear up any possibly allocated internal variables
      */
@@ -491,6 +489,7 @@ class GenSync::Builder
     size_t numExpElem = Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
     string fileName = Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
     bool hashes = Builder::HASHES;
+    bool SETOFSETS = false;
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;

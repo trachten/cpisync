@@ -115,7 +115,7 @@ public:
    * Insert a set into chldIBLT and put chldIBLT into current IBLT
    * @param tarSet target set to be added to IBLT
    */
-  void insertIBLTfromSet(multiset<DataObject *> tarSet, size_t elemSize);
+  void insertIBLT(multiset<DataObject *> tarSet, size_t elemSize);
 
   /**
    * Delete an IBLT by a given set

@@ -26,6 +26,7 @@ class SyncMethod
 
     // constructor
     SyncMethod();
+
     // destructor
     virtual ~SyncMethod();
 
@@ -70,45 +71,6 @@ class SyncMethod
         return true;
     }
 
-    /**
-     * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
-     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
-     *      * 
-     * @param commSync The communicant to whom to connect.
-     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
-     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
-     * @return true iff the connection and subsequent synchronization appear to be successful.
-     */
-    virtual bool SetsSyncServer(const shared_ptr<Communicant> &commSync, list<pair<ZZ, list<DataObject *>>> &selfMinusOther, list<pair<ZZ, list<DataObject *>>> &otherMinusSelf)
-    {
-        recvBytes = 0;
-        xmitBytes = 0; //Reset syncMethod counters
-        syncTime = 0;
-
-        commSync->resetCommCounters();
-        return true;
-    }
-
-    /**
-     * Connect as a client to a specific communicant and computes differences between the two (without actually updating them).
-     * All results are *added* to the selfMinusOther and otherMinusSelf parameters (passed by reference).
-     * %R:  Sync_Server must have been called at that communicant.
-     * 
-     * @param commSync The communicant to whom to connect.
-     * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
-     * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
-     * @return true iff the connection and subsequent synchronization appear to be successful.
-     */
-    virtual bool SetsSyncClient(const shared_ptr<Communicant> &commSync, list<pair<ZZ, list<DataObject *>>> &selfMinusOther, list<pair<ZZ, list<DataObject *>>> &otherMinusSelf)
-    {
-        recvBytes = 0;
-        xmitBytes = 0; //Reset syncMethod counters
-        syncTime = 0;
-
-        commSync->resetCommCounters();
-        return true;
-    }
-
     // MANIPULATE DATA
     /**
      * Add an element to the data structure that will be performing the synchronization.
@@ -133,29 +95,6 @@ class SyncMethod
         elements.erase(std::remove(elements.begin(), elements.end(), datum), elements.end());
         return before > elements.size(); // true iff there were more elements before removal than after
     };
-
-    /**
-     * Add a set to the datastructure that will be performing the synchronization for set of sets cases
-     * @param tarSet The target set to add
-     * @return true iff the addition was successful
-     */
-    virtual bool addSet(multiset<DataObject *> tarSet)
-    {
-        sets.push_back(tarSet);
-        return true;
-    }
-
-    /** 
-     * Delete a set from the data structure that will be performing the synchronization
-     * @param tarSet The target set to be deleted
-     * @return true iff the removal was successful
-     */
-    virtual bool delSet(multiset<DataObject *> tarSet)
-    {
-        long int before = sets.size();
-        sets.erase(std::remove(sets.begin(), sets.end(), tarSet), sets.end());
-        return before > sets.size();
-    }
 
     // INFORMATIONAL
     /**

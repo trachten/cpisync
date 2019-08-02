@@ -276,7 +276,7 @@ void IBLT::eraseIBLT(IBLT &chldIBLT, hash_t &chldHash)
     _insert(-1, ibltZZ, (ZZ)chldHash);
 }
 
-void IBLT::insertIBLTfromSet(multiset<DataObject *> tarSet, size_t elemSize)
+void IBLT::insertIBLT(multiset<DataObject *> tarSet, size_t elemSize)
 {
     hash_t setHash = _setHash(tarSet);
 

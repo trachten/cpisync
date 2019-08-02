@@ -10,17 +10,18 @@
 
 // Construct T, the outer IBLT for transmission
 // eltSize should be upperbound for sizeof(ibltZZ)
-IBLT4IBLTsSync::IBLT4IBLTsSync(size_t expected, size_t eltSize, size_t chldSize) : myIBLT(expected, eltSize)
+IBLT4IBLTsSync::IBLT4IBLTsSync(size_t expected, size_t eltSize, size_t chldSize, size_t innerSize) : myIBLT(expected, eltSize)
 {
     expNumElems = expected;
     oneWay = false;
     childSize = chldSize;
+    elemSize = innerSize;
 }
 
 IBLT4IBLTsSync::~IBLT4IBLTsSync() = default;
 
 //A端
-bool IBLT4IBLTsSync::SetsSyncClient(const shared_ptr<Communicant> &commSync, list<pair<ZZ, list<DataObject *>>> &selfMinusOther, list<pair<ZZ, list<DataObject *>>> &otherMinusSelf)
+bool IBLT4IBLTsSync::SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf)
 {
     try
     {
@@ -29,7 +30,7 @@ bool IBLT4IBLTsSync::SetsSyncClient(const shared_ptr<Communicant> &commSync, lis
         bool success = true;
 
         // call parent method for bookkeeping
-        SyncMethod::SetsSyncClient(commSync, selfMinusOther, otherMinusSelf);
+        SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf);
 
         // connect to server
         commSync->commConnect();
@@ -40,24 +41,51 @@ bool IBLT4IBLTsSync::SetsSyncClient(const shared_ptr<Communicant> &commSync, lis
             Logger::gLog(Logger::METHOD_DETAILS, "IBLT parameters do not match up between client and server!");
             return false;
         }
-        // 将T发给B
+
         commSync->commSend(myIBLT, true);
 
-        // 从B收到不同的set信息，重新构建A
         if (!oneWay)
         {
 
-            list<pair<ZZ, list<DataObject *>>> newOMS = commSync->commRecv_Pair_List();
+            auto newOMS = commSync->commRecv_DataObject_List();
+            auto newSMO = commSync->commRecv_DataObject_List();
 
-            list<pair<ZZ, list<DataObject *>>> newSMO = commSync->commRecv_Pair_List();
+            for (auto i : newOMS)
+            {
+                ZZ tarHash = i->to_pair().first;
+                ZZ index = ZZ_ZERO;
+                for (auto hash : myIBLT.hashes)
+                {
+                    if (tarHash == (ZZ)hash)
+                    {
+                        otherMinusSelf.push_back(new DataObject(index, i->to_pair().second));
+                    }
+                    index++;
+                }
+            }
 
-            otherMinusSelf.insert(otherMinusSelf.end(), newOMS.begin(), newOMS.end());
-            selfMinusOther.insert(selfMinusOther.end(), newSMO.begin(), newSMO.end());
+            //otherMinusSelf.insert(otherMinusSelf.end(), newOMS.begin(), newOMS.end());
+
+            for (auto i : newSMO)
+            {
+                ZZ tarHash = i->to_pair().first;
+                ZZ index = ZZ_ZERO;
+                for (auto hash : myIBLT.hashes)
+                {
+                    if (tarHash == (ZZ)hash)
+                    {
+                        selfMinusOther.push_back(new DataObject(index, i->to_pair().second));
+                    }
+                    index++;
+                }
+            }
+
+            //selfMinusOther.insert(selfMinusOther.end(), newSMO.begin(), newSMO.end());
 
             stringstream msg;
             msg << "IBLT4IBLTsSync succeeded." << endl;
-            //msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
-            //msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
+            msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
+            msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
             Logger::gLog(Logger::METHOD, msg.str());
         }
 
@@ -76,7 +104,7 @@ bool IBLT4IBLTsSync::SetsSyncClient(const shared_ptr<Communicant> &commSync, lis
 }
 
 //B端
-bool IBLT4IBLTsSync::SetsSyncServer(const shared_ptr<Communicant> &commSync, list<pair<ZZ, list<DataObject *>>> &selfMinusOther, list<pair<ZZ, list<DataObject *>>> &otherMinusSelf)
+bool IBLT4IBLTsSync::SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf)
 {
     try
     {
@@ -85,7 +113,7 @@ bool IBLT4IBLTsSync::SetsSyncServer(const shared_ptr<Communicant> &commSync, lis
         bool success = true;
 
         // call parent method for bookkeeping
-        SyncMethod::SetsSyncServer(commSync, selfMinusOther, otherMinusSelf);
+        SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf);
 
         // listen for client
         commSync->commListen();
@@ -108,24 +136,6 @@ bool IBLT4IBLTsSync::SetsSyncServer(const shared_ptr<Communicant> &commSync, lis
             Logger::gLog(Logger::METHOD_DETAILS,
                          "Unable to completely reconcile, returning a partial list of differences");
             success = false;
-        }
-
-        // posChld and negChld both have pairs like (chldIBLT(ZZ), chldSetHash(ZZ))
-        // Establish Db containing sets with same hashes in Eb/Ea
-        // Elements in Db are needed to be substitude by Da after Sync
-        // Db中存有B有A没有的chldset的序号
-        vector<long> Db;
-        for (auto i : negativeChld)
-        {
-            long index = 0;
-            for (auto j : myIBLT.hashes)
-            {
-                if (i.second == j)
-                {
-                    Db.push_back(index);
-                }
-                index++;
-            }
         }
 
         // pair<chldHash, missing elements in chldset>
@@ -189,13 +199,15 @@ bool IBLT4IBLTsSync::SetsSyncServer(const shared_ptr<Communicant> &commSync, lis
                 {
                     elements.push_back(new DataObject(entry.first));
                 }
-                selfMinusOther.push_back({IHash, elements});
+                // construct dataobject from {ZZ,list<DataObject *>}
+                // to ensure minimum changes on syncMethod and genSync
+                selfMinusOther.push_back(new DataObject(IHash, elements));
                 elements.clear();
                 for (auto entry : best_POS)
                 {
                     elements.push_back(new DataObject(entry.first));
                 }
-                otherMinusSelf.push_back({JHash, elements});
+                otherMinusSelf.push_back(new DataObject(JHash, elements));
             }
         }
 
@@ -207,8 +219,8 @@ bool IBLT4IBLTsSync::SetsSyncServer(const shared_ptr<Communicant> &commSync, lis
 
         stringstream msg;
         msg << "IBLT4IBLTsSync " << (success ? "succeeded" : "may not have completely succeeded") << endl;
-        //msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
-        //msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
+        msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
+        msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
         Logger::gLog(Logger::METHOD, msg.str());
 
         //Record Stats
@@ -225,19 +237,20 @@ bool IBLT4IBLTsSync::SetsSyncServer(const shared_ptr<Communicant> &commSync, lis
     } // might not need the try-catch
 }
 
-bool IBLT4IBLTsSync::addSet(multiset<DataObject *> tarSet)
+bool IBLT4IBLTsSync::addElem(DataObject *elem)
 {
-    // call parent add
-    SyncMethod::addSet(tarSet);
-    myIBLT.insertIBLTfromSet(tarSet, elemSize);
-    return true;
+    bool success = SyncMethod::addElem(elem);
+    auto tarSet = elem->to_Set();
+    myIBLT.insertIBLT(tarSet, elemSize);
+    return success;
 }
-bool IBLT4IBLTsSync::delSet(multiset<DataObject *> tarSet)
+
+bool IBLT4IBLTsSync::delElem(DataObject *elem)
 {
-    // call parent delete
-    SyncMethod::delSet(tarSet);
+    bool success = SyncMethod::delElem(elem);
+    auto tarSet = elem->to_Set();
     myIBLT.eraseIBLT(tarSet, elemSize);
-    return true;
+    return success;
 }
 string IBLT4IBLTsSync::getName()
 {

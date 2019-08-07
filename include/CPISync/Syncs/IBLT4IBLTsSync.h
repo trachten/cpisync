@@ -37,6 +37,7 @@ public:
   bool SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf) override;
   bool addElem(DataObject *elem) override;
   bool delElem(DataObject *elem) override;
+  DataObject *reWrite(long index, list<DataObject *> elems);
   string getName() override;
 
 protected:
@@ -47,6 +48,8 @@ private:
   // IBLT instance variable for storing data
   // Every pair element put in this IBLT is actually like (chldIBLT, chldSet.hash)
   IBLT myIBLT;
+
+  vector<DataObject *> mySet;
 
   // Instance variable to sore the expected number of elements
   size_t expNumElems;

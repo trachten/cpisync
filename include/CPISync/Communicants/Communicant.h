@@ -204,6 +204,10 @@ public:
      */
   void commSend(const IBLT &iblt, bool sync = false);
 
+  void commSendPrime(const IBLT &iblt, bool sync);
+
+  IBLT commRecv_IBLTPrime(size_t size, size_t eltSize);
+
   /**
      * Receives up to MAX_BUF_SIZE characters from the socket.
      * This is the primitive receive method that all other methods call.

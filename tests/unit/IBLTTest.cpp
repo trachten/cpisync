@@ -5,6 +5,7 @@
 
 #include <climits>
 #include "IBLTTest.h"
+#include <CPISync/Aux/Auxiliary.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IBLTTest);
 
@@ -79,4 +80,33 @@ void IBLTTest::testReconstruct()
     CPPUNIT_ASSERT_EQUAL(str, b.toString());
     // Make sure basic functions can still be applied to reconstructed one
     CPPUNIT_ASSERT(b.listEntries(pos, neg));
+}
+
+void IBLTTest::testIBLTinsertNRebuild()
+{
+    multiset<DataObject *> result;
+    set<ZZ> setZZ;
+    IBLT tarIBLT(20, 8);
+
+    for (int ii = 0; ii < 20; ii++)
+    {
+        int before = setZZ.size();
+        ZZ data = randZZ();
+        setZZ.insert(data);
+        while (before == setZZ.size())
+        {
+            data = randZZ();
+            setZZ.insert(data);
+        }
+        DataObject *tar = new DataObject(data);
+        result.insert(tar);
+        tarIBLT.insert(tar->to_ZZ(), tar->to_ZZ());
+    }
+    IBLT myIBLT(20, 8);
+    size_t size = 8;
+    myIBLT.insertIBLT(result, 8, 20);
+
+    vector<pair<ZZ, ZZ>> pos, neg;
+    myIBLT.listEntries(pos, neg);
+    CPPUNIT_ASSERT_EQUAL(tarIBLT.toString(), numberToString(pos[0].first));
 }

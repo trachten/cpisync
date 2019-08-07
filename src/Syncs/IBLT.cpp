@@ -159,11 +159,17 @@ bool IBLT::HashTableEntry::empty() const
 bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative)
 {
     long nErased = 0;
+
     do
     {
         nErased = 0;
+        if ((positive.size() + negative.size()) > hashTable.size())
+        {
+            return false;
+        }
         for (IBLT::HashTableEntry &entry : this->hashTable)
         {
+
             if (entry.isPure())
             {
                 if (entry.count == 1)
@@ -174,10 +180,16 @@ bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &neg
                 {
                     negative.emplace_back(std::make_pair(entry.keySum, entry.valueSum));
                 }
+                // cout << "before \n"
+                //      << this->toString() << endl;
                 this->_insert(-entry.count, entry.keySum, entry.valueSum);
+                // cout << "after \n"
+                //      << this->toString() << endl;
                 ++nErased;
+                //cout << nErased << endl;
             }
         }
+
     } while (nErased > 0);
 
     // If any buckets for one of the hash functions is not empty,
@@ -185,7 +197,9 @@ bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &neg
     for (IBLT::HashTableEntry &entry : this->hashTable)
     {
         if (!entry.empty())
+        {
             return false;
+        }
     }
     return true;
 }
@@ -241,8 +255,9 @@ string IBLT::toString() const
         //cout << to_string(entry.keyCheck) << endl;
         //cout << zzToStr(entry.keySum) << endl;
         //cout << zzToStr(entry.valueSum) << endl;
-        outStr += to_string(entry.count) + "," + to_string(entry.keyCheck) + "," + toStr<ZZ>(entry.keySum) + "," + toStr<ZZ>(entry.valueSum) + "\n";
+        outStr += toStr<long>(entry.count) + "," + toStr<hash_t>(entry.keyCheck) + "," + toStr<ZZ>(entry.keySum) + "," + toStr<ZZ>(entry.valueSum) + "\n";
     }
+    outStr.pop_back();
     return outStr;
 }
 
@@ -250,13 +265,12 @@ void IBLT::reBuild(string &inStr)
 {
     vector<string> entries = split(inStr, "\n");
     int index = 0;
-
     for (auto entry : entries)
     {
         vector<string> infos = split(entry, ",");
         HashTableEntry curEntry;
-        curEntry.count = stol(infos[0]);
-        curEntry.keyCheck = stoul(infos[1]);
+        curEntry.count = strTo<long>(infos[0]);
+        curEntry.keyCheck = strTo<hash_t>(infos[1]);
         curEntry.keySum = strTo<ZZ>(infos[2]);
         curEntry.valueSum = strTo<ZZ>(infos[3]);
         this->hashTable[index] = curEntry;
@@ -266,47 +280,49 @@ void IBLT::reBuild(string &inStr)
 
 void IBLT::insertIBLT(IBLT &chldIBLT, hash_t &chldHash)
 {
-    ZZ ibltZZ = strTo<ZZ>(chldIBLT.toString());
-    _insert(1, ibltZZ, (ZZ)chldHash);
+    // problems here
+    // can't directly convert a string to zz
+    ZZ ibltZZ = stringToNumber(chldIBLT.toString());
+    _insert(1, ibltZZ, strTo<ZZ>(toStr<hash_t>(chldHash)));
 }
 
 void IBLT::eraseIBLT(IBLT &chldIBLT, hash_t &chldHash)
 {
-    ZZ ibltZZ = strTo<ZZ>(chldIBLT.toString());
-    _insert(-1, ibltZZ, (ZZ)chldHash);
+    ZZ ibltZZ = stringToNumber(chldIBLT.toString());
+    _insert(-1, ibltZZ, strTo<ZZ>(toStr<hash_t>(chldHash)));
 }
 
-void IBLT::insertIBLT(multiset<DataObject *> tarSet, size_t elemSize)
+void IBLT::insertIBLT(multiset<DataObject *> tarSet, size_t elemSize, size_t expnChldSet)
 {
     hash_t setHash = _setHash(tarSet);
 
     // Put chld set into a chld IBLT
-    IBLT chldIBLT(tarSet.size(), elemSize);
+    IBLT chldIBLT(expnChldSet, elemSize);
     for (auto i : tarSet)
     {
         chldIBLT.insert(i->to_ZZ(), i->to_ZZ());
     }
 
     // Put the pair(chld IBLT, hash of set) into the outer IBLT T
-    this->insertIBLT(chldIBLT, setHash);
+    insertIBLT(chldIBLT, setHash);
 
     hashes.push_back(setHash);
 }
 
-void IBLT::eraseIBLT(multiset<DataObject *> tarSet, size_t elemSize)
+void IBLT::eraseIBLT(multiset<DataObject *> tarSet, size_t elemSize, size_t expnChldSet)
 {
     hash_t setHash = _setHash(tarSet);
 
-    IBLT chldIBLT(tarSet.size(), elemSize);
+    IBLT chldIBLT(expnChldSet, elemSize);
     for (auto i : tarSet)
     {
         chldIBLT.insert(i->to_ZZ(), i->to_ZZ());
     }
-    this->eraseIBLT(chldIBLT, setHash);
+    eraseIBLT(chldIBLT, setHash);
     // delete set hash in the vector
     for (auto i = hashes.begin(); i < hashes.end(); i++)
     {
-        if (*i == setHash)
+        if ((*i) == setHash)
         {
             hashes.erase(i);
             break;

@@ -46,9 +46,11 @@ public:
   explicit DataObject(const string &str);
 
   /**
-     * Constructs a data object from pair of {hash, elements}
+     * Constructs a data object from pair of {index, elements}
      **/
-  explicit DataObject(const ZZ hash, const list<DataObject *> elems);
+  explicit DataObject(const long index, const list<DataObject *> elems);
+
+  explicit DataObject(const ZZ index, const list<DataObject *> elems);
 
   /**
      * Constructs a data object that contains the given multiset
@@ -87,7 +89,9 @@ public:
    **/
   multiset<DataObject *> to_Set() const;
 
-  pair<ZZ, list<DataObject *>> to_pair() const;
+  pair<long, list<DataObject *>> to_pairLong() const;
+
+  pair<ZZ, list<DataObject *>> to_pairZZ() const;
   /**
      * @param len Stores the length of the char array (upon return)
      * @return A char array version of the contents of this data object.

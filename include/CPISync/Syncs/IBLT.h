@@ -72,6 +72,8 @@ public:
      */
   void erase(ZZ key, ZZ value);
 
+  static ZZ getHash(multiset<DataObject *> tarSet);
+
   /**
      * Produces the value s.t. (key, value) is in the IBLT.
      * This operation doesn't always succeed.
@@ -115,16 +117,15 @@ public:
    * Insert a set into chldIBLT and put chldIBLT into current IBLT
    * @param tarSet target set to be added to IBLT
    */
-  void insertIBLT(multiset<DataObject *> tarSet, size_t elemSize);
+  void insertIBLT(multiset<DataObject *> tarSet, size_t elemSize, size_t expnChldSet);
 
   /**
    * Delete an IBLT by a given set
    * @param tarSet the target set to be deleted
    * @param elemSize size of element in the chld set
    */
-  void eraseIBLT(multiset<DataObject *> tarSet, size_t elemSize);
+  void eraseIBLT(multiset<DataObject *> tarSet, size_t elemSize, size_t expnChldSet);
 
-  static ZZ getHash(multiset<DataObject *> tarSet);
   /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -

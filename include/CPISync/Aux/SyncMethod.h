@@ -152,7 +152,6 @@ class SyncMethod
 
   private:
     vector<DataObject *> elements; /** Pointers to the elements stored in the data structure. */
-    vector<multiset<DataObject *>> sets;
 };
 
 #endif

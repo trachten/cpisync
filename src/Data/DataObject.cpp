@@ -28,9 +28,20 @@ DataObject::DataObject(const string &str) : DataObject()
 
 // toStr function convert the ZZ from number directly to a string
 // pretty sure space here won't interfere with the content
-DataObject::DataObject(const ZZ hash, const list<DataObject *> elems) : DataObject()
+DataObject::DataObject(const long index, const list<DataObject *> elems) : DataObject()
 {
-    string str = toStr(hash) + " ";
+    string str = toStr<long>(index) + " ";
+    for (auto i : elems)
+    {
+        str += i->to_string() + " ";
+    }
+    str.pop_back();
+    myBuffer = pack(str);
+}
+
+DataObject::DataObject(const ZZ index, const list<DataObject *> elems) : DataObject()
+{
+    string str = toStr<ZZ>(index) + " ";
     for (auto i : elems)
     {
         str += i->to_string() + " ";
@@ -69,7 +80,7 @@ string DataObject::unpack(const ZZ &num)
 multiset<DataObject *> DataObject::to_Set() const
 {
     multiset<DataObject *> result;
-    string str = RepIsInt ? toStr(myBuffer) : unpack(myBuffer);
+    string str = unpack(myBuffer);
     auto splt = split(str, " ");
     for (auto i : splt)
     {
@@ -83,9 +94,22 @@ ZZ DataObject::to_ZZ() const
     return myBuffer;
 }
 
-pair<ZZ, list<DataObject *>> DataObject::to_pair() const
+pair<long, list<DataObject *>> DataObject::to_pairLong() const
 {
-    string str = RepIsInt ? toStr(myBuffer) : unpack(myBuffer);
+    string str = unpack(myBuffer);
+    auto splt = split(str, " ");
+    long out = strTo<long>(splt[0]);
+    list<DataObject *> outList;
+    for (int i = 1; i < splt.size(); i++)
+    {
+        outList.push_back(new DataObject(splt[i]));
+    }
+    return {out, outList};
+}
+
+pair<ZZ, list<DataObject *>> DataObject::to_pairZZ() const
+{
+    string str = unpack(myBuffer);
     auto splt = split(str, " ");
     ZZ out = strTo<ZZ>(splt[0]);
     list<DataObject *> outList;

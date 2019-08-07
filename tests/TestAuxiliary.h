@@ -367,7 +367,8 @@ inline vector<GenSync> fileCombos()
  */
 inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay, bool probSync, bool syncParamTest,
 							   const unsigned int SIMILAR, const unsigned int CLIENT_MINUS_SERVER,
-							   const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled)
+							   const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled,
+							   bool setofSets)
 {
 	bool success_signal;
 	int chld_state;
@@ -383,7 +384,7 @@ inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, b
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 			//Print stats about sync
-			if (/*clientReport.success*/ true)
+			if (/*clientReport.success*/ false)
 			{
 				cout << "\nCLIENT RECON STATS:\n";
 				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
@@ -409,7 +410,36 @@ inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, b
 				}
 				else
 				{
-					clientReconcileSuccess &= (resClient == reconciled);
+					if (!setofSets)
+					{
+						clientReconcileSuccess &= (resClient == reconciled);
+					}
+					else
+					{
+						long match = 0;
+
+						//cout << "[reconciled] " << endl;
+
+						for (auto i : reconciled)
+						{
+							auto recon = DataObject(base64_decode(i)).to_Set();
+							//cout << printSet(recon) << endl;
+							for (auto j : resClient)
+							{
+								auto res = DataObject(base64_decode(j)).to_Set();
+
+								if (cmpMultiset(recon, res))
+								{
+									match++;
+									break;
+								}
+								//cout << printSet(res->to_Set()) << endl;
+							}
+						}
+						cout << "[Client]match " << match << endl;
+						clientReconcileSuccess &= (match == resClient.size());
+						// check for set of sets
+					}
 				}
 			}
 		}
@@ -440,7 +470,7 @@ inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, b
 			serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 		//Print stats about sync
-		if (/*serverReport.success*/ true)
+		if (/*serverReport.success*/ false)
 		{
 			cout << "\nSERVER RECON STATS:\n";
 			cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
@@ -450,9 +480,14 @@ inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, b
 		}
 
 		multiset<string> resServer;
+
+		//cout << "[Server]" << endl;
 		for (auto dop : GenSyncServer.dumpElements())
 		{
+
 			resServer.insert(dop);
+			//auto out = DataObject(base64_decode(dop)).to_Set();
+			//cout << printSet(out) << endl;
 		}
 
 		if (!syncParamTest)
@@ -470,11 +505,47 @@ inline bool syncTestForkHandle(GenSync &GenSyncClient, GenSync &GenSyncServer, b
 			}
 			else
 			{
-				if (oneWay)
-					return (resServer == reconciled && serverReport.success);
+				if (!setofSets)
+				{
+					if (oneWay)
+						return (resServer == reconciled && serverReport.success);
+					else
+					{
+
+						return ((success_signal) && (reconciled == resServer) && serverReport.success);
+					}
+				}
+				// Set of sets
 				else
 				{
-					return ((success_signal) && (reconciled == resServer) && serverReport.success);
+					if (oneWay)
+					{
+					}
+					else
+					{
+						long match = 0;
+
+						//cout << "[reconciled] " << endl;
+
+						for (auto i : reconciled)
+						{
+							auto recon = DataObject(base64_decode(i)).to_Set();
+							//cout << printSet(recon) << endl;
+							for (auto j : resServer)
+							{
+								auto res = DataObject(base64_decode(j)).to_Set();
+
+								if (cmpMultiset(recon, res))
+								{
+									match++;
+									break;
+								}
+								//cout << printSet(res->to_Set()) << endl;
+							}
+						}
+						cout << "[Server] match " << match << endl;
+						return ((success_signal) && (match == reconciled.size()) && serverReport.success);
+					}
 				}
 			}
 		}
@@ -609,7 +680,7 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 
 		//Returns a boolean value for the success of the synchronization
 		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
-									  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT, reconciled);
+									  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT, reconciled, false);
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 		success &= GenSyncServer.clearData();
 		success &= GenSyncClient.clearData();
@@ -720,7 +791,7 @@ inline bool benchmarkSync(GenSync GenSyncClient, GenSync GenSyncServer, int SIMI
 
 	//Returns a boolean value for the success of the synchronization
 	success &= syncTestForkHandle(GenSyncClient, GenSyncServer, false, probSync, false, SIMILAR,
-								  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT, reconciled);
+								  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT, reconciled, false);
 	//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 	success &= GenSyncServer.clearData();
 	success &= GenSyncClient.clearData();
@@ -1156,6 +1227,134 @@ inline bool longTermSync(GenSync &GenSyncClient,
 			}
 		}
 	}
+}
+
+/**
+ * Runs tests assuring that two GenSync objects successfully sync sets via two-way communication
+ * @param GenSyncServer Server GenSync
+ * @param GenSyncClient Client GenSync
+ * @param oneWay true iff the sync will be one way (only server is reconciled). One way syncs require that the looping be done
+ * around the constructor of the GenSync Object and the port be changed each test because of how processes handle port closures.
+ * This means that for oneWay syncs syncTest will only loop once internally and the function will have to be called again from the test
+ * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
+ * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
+ * of the sets (For parameter mismatch testing)
+ * @param Multiset true iff you would like to test syncing a multiset
+ * @param largeSync true if you would like to test syncing a large number of elements
+ * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
+ */
+inline bool SetOfSetsSyncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, bool largeSync, long numPerSet)
+{
+
+	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
+	//Don't seed oneWay tests because they loop on the outside of syncTest and you want different values for each run
+	if (!oneWay)
+		srand(3721);
+	bool success = true;
+
+	//If one way, run 1 time, if not run NUM_TESTS times
+	for (int ii = 0; ii < (oneWay ? 1 : NUM_TESTS); ii++)
+	{
+		// const unsigned int SIMILAR = largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1;			   // amt of elems common to both GenSyncs (!= 0)
+		// const unsigned int CLIENT_MINUS_SERVER = largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
+		// const unsigned int SERVER_MINUS_CLIENT = CLIENT_MINUS_SERVER;											   // For set of sets SMC == CMS
+		const unsigned int SIMILAR = 20;
+		const unsigned int CLIENT_MINUS_SERVER = 10;
+		const unsigned int SERVER_MINUS_CLIENT = CLIENT_MINUS_SERVER;
+
+		vector<DataObject *> setofsets;
+
+		// create the expected reconciled multiset
+		multiset<string> reconciled;
+
+		for (long jj = 0; jj < SIMILAR; jj++)
+		{
+			multiset<DataObject *> objectsPtr;
+			std::set<ZZ> dataSet;
+			for (long ii = 0; ii < numPerSet; ii++)
+			{
+				ZZ data = randZZ();
+				while (!get<1>(dataSet.insert(data)))
+				{
+					if (dataSet.size() == pow(2, eltSize * 8))
+					{
+						string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
+						Logger::error_and_quit(errorMsg);
+					}
+					data = randZZ();
+				}
+				objectsPtr.insert(new DataObject(data));
+			}
+			setofsets.push_back(new DataObject(objectsPtr));
+		}
+
+		for (int jj = 0; jj < SIMILAR; jj++)
+		{
+			GenSyncClient.addElem(setofsets[jj]);
+			GenSyncServer.addElem(setofsets[jj]);
+			reconciled.insert(setofsets[jj]->print());
+		}
+
+		for (long jj = 0; jj < CLIENT_MINUS_SERVER; jj++)
+		{
+			multiset<DataObject *> objectsPtr;
+			std::set<ZZ> dataSet;
+			for (long aa = 0; aa < numPerSet - 1; aa++)
+			{
+				ZZ data = randZZ();
+				while (!get<1>(dataSet.insert(data)))
+				{
+					if (dataSet.size() == pow(2, eltSize * 8))
+					{
+						string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
+						Logger::error_and_quit(errorMsg);
+					}
+					data = randZZ();
+				}
+				objectsPtr.insert(new DataObject(data));
+			}
+			setofsets.push_back(new DataObject(objectsPtr));
+		}
+
+		for (int jj = SIMILAR; jj < SIMILAR + CLIENT_MINUS_SERVER; jj++)
+		{
+
+			auto curSet = setofsets[jj]->to_Set();
+			long siz = curSet.size();
+			ZZ data = randZZ();
+			curSet.insert(new DataObject(data));
+			while (siz == curSet.size())
+			{
+				data = randZZ();
+				curSet.insert(new DataObject(data));
+			}
+
+			DataObject *tar = new DataObject(curSet);
+			if (jj % 2 == 0)
+			{
+				GenSyncServer.addElem(tar);
+				GenSyncClient.addElem(setofsets[jj]);
+			}
+			else
+			{
+				GenSyncClient.addElem(tar);
+				GenSyncServer.addElem(setofsets[jj]);
+			}
+			reconciled.insert(tar->print());
+		}
+		//Returns a boolean value for the success of the synchronization
+		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, false, false, SIMILAR,
+									  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT, reconciled, true);
+		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
+		//success &= GenSyncServer.clearData();
+		//success &= GenSyncClient.clearData();
+		cout << "[Reconciled] size" << reconciled.size() << endl;
+		for (int jj = 0; jj < setofsets.size(); jj++)
+		{
+			delete setofsets[jj];
+		}
+	}
+	return success; // returns success status of tests
 }
 
 #endif //CPISYNCLIB_GENERIC_SYNC_TESTS_H

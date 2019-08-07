@@ -16,6 +16,9 @@
 #include <CPISync/Syncs/IBLTSync.h>
 #include <CPISync/Syncs/IBLTSync_HalfRound.h>
 #include <CPISync/Syncs/CPISync_HalfRound.h>
+#include <CPISync/Syncs/IBLT4IBLTsSync.h>
+#include <CPISync/Syncs/GenSync.h>
+#include <CPISync/Aux/ConstantsAndTypes.h>
 #include <chrono>
 
 using namespace std::chrono;
@@ -28,11 +31,12 @@ GenSync::GenSync() = default;
 /**
  * Construct a specific GenSync object
  */
-GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject *> &data)
+GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const DATA_RECON_TYPE dtype, const list<DataObject *> &data)
 {
     myCommVec = cVec;
     mySyncVec = mVec;
     outFile = nullptr; // no output file is being used
+    DTYPE = dtype;
 
     // add each datum one by one
     auto itData = data.begin();
@@ -45,6 +49,8 @@ GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<share
     myCommVec = cVec;
     mySyncVec = mVec;
     outFile = nullptr; // add elements without writing to the file at first
+    // DTYPE = dtype;
+
     Logger::gLog(Logger::METHOD, "Entering GenSync::GenSync");
     // read data from a file
     Logger::gLog(Logger::METHOD, "Utilizing file: " + fileName);
@@ -119,9 +125,41 @@ bool GenSync::listenSync(int method_num)
 
         // add any items that were found in the reconciliation
         list<DataObject *>::iterator itDO;
+        vector<long> toErase;
         for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
         {
-            addElem(*itDO);
+            if (DTYPE == DATA_RECON_TYPE::SETOFSETS)
+            {
+                auto info = (*itDO)->to_pairLong();
+
+                toErase.push_back(info.first);
+
+                //cout << "Deleting " << printSet((*it)->to_Set()) << endl;
+                multiset<DataObject *> tmpSet;
+                for (auto ii : info.second)
+                {
+                    tmpSet.insert(ii);
+                }
+                auto out = new DataObject(tmpSet);
+                addElem(out);
+            }
+            else
+            {
+                //cout << "[Server] " << printSetofSets((*itDO)->to_Set()) << endl;
+                addElem(*itDO);
+            }
+        }
+        if (toErase.size() != 0)
+        {
+
+            sort(toErase.begin(), toErase.end(), greater<long>());
+            for (auto i : toErase)
+            {
+                auto it = myData.begin();
+                advance(it, i);
+                delElem(*it);
+            }
+            toErase.clear();
         }
     }
 
@@ -148,6 +186,7 @@ bool GenSync::startSync(int method_num)
 
         //if((*syncAgentIt)->
         // do the sync
+        vector<DataObject *> curData;
         try
         {
             if (!(*syncAgentIt)->SyncClient(*itComm, selfMinusOther, otherMinusSelf))
@@ -164,9 +203,45 @@ bool GenSync::startSync(int method_num)
 
         // add any items that were found in the reconciliation
         list<DataObject *>::iterator itDO;
+        vector<long> toErase;
         for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
-            addElem(*itDO);
+        {
+
+            if (DTYPE == DATA_RECON_TYPE::SETOFSETS)
+            {
+                auto info = (*itDO)->to_pairLong();
+
+                toErase.push_back(info.first);
+
+                // cout << "Deleting " << info.first << " " << printSet((*it)->to_Set()) << endl;
+                multiset<DataObject *> tmpSet;
+                for (auto ii : info.second)
+                {
+                    tmpSet.insert(ii);
+                }
+                auto out = new DataObject(tmpSet);
+                addElem(out);
+            }
+            else
+            {
+                //cout << "[Server] " << printSetofSets((*itDO)->to_Set()) << endl;
+                addElem(*itDO);
+            }
+        }
+        if (toErase.size() != 0)
+        {
+
+            sort(toErase.begin(), toErase.end(), greater<long>());
+            for (auto i : toErase)
+            {
+                auto it = myData.begin();
+                advance(it, i);
+                delElem(*it);
+            }
+            toErase.clear();
+        }
     }
+    //cout << "[Client]Outside loop" << printSetofSets(myData) << endl;
 
     Logger::gLog(Logger::METHOD, "Sync succeeded:  " + toStr(syncSuccess));
     return syncSuccess;
@@ -176,9 +251,8 @@ bool GenSync::startSync(int method_num)
 void GenSync::addElem(DataObject *newDatum)
 {
     Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
-    // store locally
-    myData.push_back(newDatum);
 
+    myData.push_back(newDatum);
     // update synch methods' metadata
     vector<shared_ptr<SyncMethod>>::iterator itAgt;
     for (itAgt = mySyncVec.begin(); itAgt != mySyncVec.end(); ++itAgt)
@@ -195,6 +269,7 @@ void GenSync::addElem(DataObject *newDatum)
 // delete element
 bool GenSync::delElem(DataObject *delPtr)
 {
+
     Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
     if (!myData.empty())
     {
@@ -203,7 +278,7 @@ bool GenSync::delElem(DataObject *delPtr)
         {
             if (!itAgt->delElem(delPtr))
             {
-                Logger::error("Error deleting item. SyncVec delete failed ");
+                Logger::error("Error deleting item " + toStr(delPtr->to_ZZ()) + ". SyncVec delete failed ");
                 return false;
             }
         }
@@ -436,13 +511,23 @@ GenSync GenSync::Builder::build()
     case SyncProtocol::OneWayIBLTSync:
         myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
         break;
+    case SyncProtocol::IBLT4IBLTsSync:
+        myMeth = make_shared<IBLT4IBLTsSync>(numExpElem, setSize, numElemInSet, bits);
+        break;
     default:
         throw invalid_argument("I don't know how to synchronize with this protocol.");
     }
     theMeths.push_back(myMeth);
 
-    if (fileName.empty()) // is data to be drawn from a file?
-        return GenSync(theComms, theMeths);
+    if (fileName.empty())
+    {
+        if (proto == SyncProtocol::IBLT4IBLTsSync)
+        {
+            return GenSync(theComms, theMeths, DATA_RECON_TYPE::SETOFSETS);
+        } // is data to be drawn from a file?
+        else
+            return GenSync(theComms, theMeths);
+    }
     else
         return GenSync(theComms, theMeths, fileName);
 }

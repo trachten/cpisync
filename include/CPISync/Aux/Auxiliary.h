@@ -67,6 +67,53 @@ inline vector<byte> StrToVec(const string &data)
     return result;
 }
 
+inline ZZ stringToNumber(string str)
+{
+
+    ZZ number = conv<ZZ>(str[0]);
+    long len = str.length();
+    for (long i = 1; i < len; i++)
+    {
+        number *= 128;
+        number += conv<ZZ>(str[i]);
+    }
+
+    return number;
+}
+
+inline string numberToString(ZZ num)
+{
+    long len;
+
+    if (num == 0)
+    {
+        len = 1;
+    }
+    else
+    {
+        if (num < 0)
+        {
+            num = -num;
+        }
+        len = ceil(log(num) / log(128));
+    }
+    char str[len];
+
+    for (long i = len - 1; i >= 0; i--)
+    {
+        str[i] = conv<int>(num % 128);
+        num /= 128;
+    }
+
+    string out = "";
+
+    for (auto i : str)
+    {
+        out += i;
+    }
+    return out;
+}
+
 /**
  * Converts a vector of bytes into a string.  The opposite of StrToVec.
  * @param data The vector of bytes to be converted
@@ -112,6 +159,36 @@ inline string toStr(const T item)
     ostringstream tmp;
     tmp << item;
     return tmp.str();
+}
+
+template <class T>
+inline string printSetofSets(T theList)
+{
+    string result = "{ ";
+    for (auto i : theList)
+    {
+        auto h = i->to_Set();
+        result += "[ ";
+        for (auto element : h)
+        {
+            result += toStr(element->to_ZZ()) + " ";
+        }
+        result += "] \n";
+    }
+    result += " }";
+    return result;
+}
+
+template <class T>
+inline string printSet(T thelist)
+{
+    string result = "[ ";
+    for (auto i : thelist)
+    {
+        result += toStr(i->to_ZZ()) + " ";
+    }
+    result += " ]";
+    return result;
 }
 
 /**
@@ -219,38 +296,6 @@ multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second)
     return result;
 }
 
-// inline string setToStr(const multiset<DataObject *> tarSet)
-// {
-//     string outZZ = "";
-//     // transfer each element in multiset into a readable ascii character and split by comma
-//     for (auto i : tarSet)
-//     {
-//         outZZ += zzToStr(i->to_ZZ()) + ",";
-//     }
-
-//     return outZZ;
-// }
-
-// inline multiset<DataObject *> strToSet(const string tarStr)
-// {
-//     multiset<DataObject *> outSet;
-//     string curStr = "";
-//     for (int i = 0; i < tarStr.length(); i++)
-//     {
-//         if (tarStr[i] == ',')
-//         {
-//             const auto obj = DataObject(strToZZ(curStr));
-//             //outSet.insert(obj);
-//             curStr = "";
-//         }
-//         else
-//         {
-//             curStr += tarStr[i];
-//         }
-//     }
-//     return outSet;
-// }
-
 /**
  * Returns the multi-set difference <first> - <second>.
  * Not particularly efficient ... but it works.
@@ -266,6 +311,24 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second)
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
+}
+
+template <class T>
+bool cmpMultiset(const multiset<T> first, const multiset<T> second)
+{
+    long match = 0;
+    for (auto i : first)
+    {
+        for (auto j : second)
+        {
+            if (toStr(i->to_ZZ()) == toStr(j->to_ZZ()))
+            {
+                match++;
+                break;
+            }
+        }
+    }
+    return (match == first.size()) && (first.size() == second.size());
 }
 
 /**

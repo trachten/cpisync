@@ -14,23 +14,26 @@
 
 class IBLTTest : public CPPUNIT_NS::TestFixture
 {
-    CPPUNIT_TEST_SUITE(IBLTTest);
-    CPPUNIT_TEST(testAll);
-    CPPUNIT_TEST(testReconstruct);
-    CPPUNIT_TEST_SUITE_END();
+  CPPUNIT_TEST_SUITE(IBLTTest);
+  CPPUNIT_TEST(testAll);
+  CPPUNIT_TEST(testReconstruct);
+  CPPUNIT_TEST(testIBLTinsertNRebuild);
+  CPPUNIT_TEST_SUITE_END();
 
-  public:
-    IBLTTest();
-    virtual ~IBLTTest();
-    void setUp();
-    void tearDown();
+public:
+  IBLTTest();
+  virtual ~IBLTTest();
+  void setUp();
+  void tearDown();
 
-    /**
+  /**
  	* Tests every function in IBLT together, except for size
  	*/
-    static void testAll();
+  static void testAll();
 
-    static void testReconstruct();
+  static void testReconstruct();
+
+  static void testIBLTinsertNRebuild();
 };
 
 #endif //CPISYNCLIB_IBLTTEST_H

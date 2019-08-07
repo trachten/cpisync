@@ -14,7 +14,6 @@
 #include <CPISync/Communicants/Communicant.h>
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Aux/SyncMethod.h>
-#include <CPISync/Aux/ConstantsAndTypes.h>
 
 // namespace info
 using std::clog;
@@ -47,6 +46,7 @@ using std::vector;
 class GenSync
 {
   public:
+    list<DataObject *> myData;
     /**
      * Specific GenSync constructor
      * @param cVec      The vector of other GenSync's with whom this data structure might
@@ -59,7 +59,7 @@ class GenSync
      *                      if not specified.
      * 
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject *> &data = list<DataObject *>());
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const DATA_RECON_TYPE dtype = DATA_RECON_TYPE::SET, const list<DataObject *> &data = list<DataObject *>());
 
     /**
      * Specific GenSync constructor
@@ -297,6 +297,7 @@ class GenSync
         string,                           // communication recorded in a string
         END                               // one after the end of iterable options
     };
+    DATA_RECON_TYPE DTYPE;
 
   private:
     // METHODS
@@ -305,12 +306,8 @@ class GenSync
      */
     GenSync();
 
-    // type of data for recon
-    DATA_RECON_TYPE dataType;
-
     // FIELDS
     /** A container for the data stored by this GenSync object. */
-    list<DataObject *> myData;
 
     /** A vector of communicants registered to be able to sync with this GenSync object. */
     vector<shared_ptr<Communicant>> myCommVec;
@@ -320,6 +317,7 @@ class GenSync
 
     /** The file to which to output any additions to the data structure. */
     shared_ptr<ofstream> outFile;
+    /** Data type for elements in the set**/
 };
 
 /**
@@ -338,8 +336,10 @@ class GenSync::Builder
                 mbar(DFT_MBAR),
                 bits(DFT_BITS),
                 numParts(DFT_PARTS),
-                hashes(HASHES),
-                numExpElem(DFT_EXPELEMS)
+                numExpElem(DFT_EXPELEMS),
+                setSize(DFT_SETSIZE),
+                numElemInSet(DFT_NUMELEMENTINSET)
+
     {
         myComm = nullptr;
         myMeth = nullptr;
@@ -458,9 +458,15 @@ class GenSync::Builder
         return *this;
     }
 
-    Builder &setofSets(bool setOfSets)
+    Builder &setSetSize(long SETSIZE)
     {
-        this->SETOFSETS = setOfSets;
+        this->setSize = SETSIZE;
+        return *this;
+    }
+
+    Builder &setNumElem(long NUMELEM)
+    {
+        this->numElemInSet = NUMELEM;
         return *this;
     }
 
@@ -488,8 +494,9 @@ class GenSync::Builder
     int numParts = Builder::UNDEF_NUM;      /** the number of partitions into which to divide recursively for interactive methods. */
     size_t numExpElem = Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
     string fileName = Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
+    long setSize = Builder::UNDEF_NUM;      /** size of child set in a IBLT shape **/
+    long numElemInSet = Builder::UNDEF_NUM; /** exp # of elements in a child set **/
     bool hashes = Builder::HASHES;
-    bool SETOFSETS = false;
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
@@ -506,6 +513,8 @@ class GenSync::Builder
     static const long DFT_BITS = 32;
     static const int DFT_PARTS = 2;
     static const size_t DFT_EXPELEMS = 50;
+    static const long DFT_NUMELEMENTINSET = 5;
+    static const long DFT_SETSIZE = 8;
     // ... initialized in .cpp file due to C++ quirks
     static const string DFT_HOST;
     static const string DFT_IO;

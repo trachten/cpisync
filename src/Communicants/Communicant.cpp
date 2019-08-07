@@ -309,7 +309,7 @@ void Communicant::commSend(const IBLT &iblt, bool sync)
 void Communicant::commSend(const IBLT::HashTableEntry &hte, size_t eltSize)
 {
     commSend(hte.count);
-    commSend((long)hte.keyCheck);
+    commSend(toStr<size_t>(hte.keyCheck));
     commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
     commSend(hte.valueSum, (unsigned int)eltSize);
 }
@@ -522,12 +522,66 @@ IBLT Communicant::commRecv_IBLT(size_t size, size_t eltSize)
     return theirs;
 }
 
+void Communicant::commSendPrime(const IBLT &iblt, bool sync)
+{
+    if (!sync)
+    {
+        commSend(toStr<size_t>(iblt.size()));
+        commSend(toStr<size_t>(iblt.eltSize()));
+    }
+
+    // Access the hashTable representation of iblt to serialize it
+    for (const IBLT::HashTableEntry &hte : iblt.hashTable)
+    {
+        commSend(hte, iblt.eltSize());
+    }
+
+    commSend((long)iblt.hashes.size());
+    for (const auto &hash : iblt.hashes)
+    {
+        commSend(toStr<hash_t>(hash));
+    }
+}
+
+IBLT Communicant::commRecv_IBLTPrime(size_t size, size_t eltSize)
+{
+    size_t numSize;
+    size_t numEltSize;
+
+    if (size == NOT_SET || eltSize == NOT_SET)
+    {
+        numSize = strTo<size_t>(commRecv_string());
+        numEltSize = strTo<size_t>(commRecv_string());
+    }
+    else
+    {
+        numSize = size;
+        numEltSize = eltSize;
+    }
+
+    IBLT theirs;
+    theirs.valueSize = numEltSize;
+
+    for (int ii = 0; ii < numSize; ii++)
+    {
+        theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
+    }
+    long hashNum = commRecv_long();
+
+    for (int ii = 0; ii < hashNum; ii++)
+    {
+        theirs.hashes.push_back(strTo<hash_t>(commRecv_string()));
+    }
+
+    return theirs;
+}
+
 IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize)
 {
     IBLT::HashTableEntry hte;
 
     hte.count = commRecv_long();
-    hte.keyCheck = (hash_t)commRecv_long();
+    hte.keyCheck = strTo<hash_t>(commRecv_string());
     hte.keySum = commRecv_ZZ();
     hte.valueSum = commRecv_ZZ((unsigned int)eltSize);
 

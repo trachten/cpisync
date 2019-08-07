@@ -11,7 +11,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-class DataObjectTest : public CPPUNIT_NS::TestFixture {
+class DataObjectTest : public CPPUNIT_NS::TestFixture
+{
     CPPUNIT_TEST_SUITE(DataObjectTest);
 
     CPPUNIT_TEST(testToZZAndInitZZ);
@@ -21,10 +22,12 @@ class DataObjectTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testPrint);
     CPPUNIT_TEST(testStreamInsertion);
     CPPUNIT_TEST(testLessThan);
+    CPPUNIT_TEST(testToPairAndInitPair);
+    CPPUNIT_TEST(testToSetAndInitSet);
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+  public:
     static const int TIMES = 50; // times to run a test
     static const int LOWER = 0;
     static const int UPPER = 50;
@@ -35,8 +38,8 @@ public:
     void setUp() override;
     void tearDown() override;
 
-private:
-	/**
+  private:
+    /**
  	* Tests constructing a DataObject with a ZZ and DataObject::toZZ
  	*/
     void testToZZAndInitZZ();
@@ -46,33 +49,36 @@ private:
 	 */
     static void testToStringAndInitString();
 
-	/**
+    /**
  	* Tests DataObject::to_string and constructing an empty DataObject
  	*/
     static void testToStringAndInitEmpty();
 
-	/**
+    /**
  	* Tests DataObject::to_char_array
  	*/
     void testToCharArray();
 
-	/**
+    /**
  	* Tests DataObject::print
  	*/
     void testPrint();
 
-	/**
+    /**
  	* Tests DataObject::operator<<
  	*/
     void testStreamInsertion();
 
-	/**
+    /**
  	* Tests DataObject::operator<
  	*/
     void testLessThan();
+
+    void testToSetAndInitSet();
+
+    void testToPairAndInitPair();
 };
 
-CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( DataObjectTest, DataObjectTest );
+CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(DataObjectTest, DataObjectTest);
 
 #endif /* DATAOBJECTTEST_H */
-

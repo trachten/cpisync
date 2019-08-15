@@ -61,19 +61,19 @@ int main(int argc, char *argv[]) {
             setNumExpectedElements(EXP_ELTS).
             build();
 
-    genSync.addElem(new DataObject('a'));
-    genSync.addElem(new DataObject('b'));
-    genSync.addElem(new DataObject('c'));
+    genSync.addElem(make_shared<DataObject>('a'));
+    genSync.addElem(make_shared<DataObject>('b'));
+    genSync.addElem(make_shared<DataObject>('c'));
 
     if(strcmp(argv[1], "client")==0) {
-        genSync.addElem(new DataObject('d'));
+        genSync.addElem(make_shared<DataObject>('d'));
 
         cout << "listening on port " << PORT << "..." << endl;
         genSync.startSync(0);
         cout << "sync succeeded." << endl;
 
     } else {
-        genSync.addElem(new DataObject('e'));
+        genSync.addElem(make_shared<DataObject>('e'));
 
         cout << "connecting on port " << PORT << "..." << endl;
         genSync.listenSync(0);

@@ -108,7 +108,7 @@ Relevant applications and extensions can be found at:
          GenSync mySyncClientOrServer = builder.build();
      ```
   2. Add elements to your GenSyncs (If you need to add large elements use the ZZ class from NTL)
-     * You may manually create a DataObject* (Data/DataObject.h) or pass a data type compatible with DataObject and one will be automatically created for you, returning a pointer to the newly created DataObject
+     * You may manually create a shared_ptr<DataObject> (Data/DataObject.h) or pass a data type compatible with DataObject and one will be automatically created for you, returning a pointer to the newly created DataObject
      ```cpp
          mySyncClientOrServer.addElem(NTL::rand_ZZ_p());
          mySyncClientOrServer.addElem(myLong);
@@ -123,31 +123,38 @@ Relevant applications and extensions can be found at:
   
   4. Collect relevant statistics
      ```cpp
-         mySyncClient.printStats();
-         mySyncClient.mySyncVec[0]->getXmitBytes();
-         mySyncClient.mySyncVec[0]->getRecvBytes();
-         mySyncClient.mySyncVec[0]->getSyncTime();
+        //The sync index is decided by the order you added your sync in
+        //If your GenSync has only 1 sync the index is 0
+         mySyncClient.printStats(syncIndex); //Returns a string of formatted stats about your sync
+         mySyncClient.mySyncVec[syncIndex]->getName(); //Retruns the name and parameters for your sync
+         mySyncClient.getXmitBytes(syncIndex); //Returns the number of bytes transmitted by this sync
+         mySyncClient.getRecvBytes(syncIndex); //Returns the number of bytes received by this sync
+         mySyncClient.getCommTime(syncIndex); //Returns the amount of time in seconds that the sync spent sending and receiving info through a socket
+         mySyncClient.getIdleTime(syncIndex); //The amount of time spent waiting for a connection or for a peer to finish computation
+         mySyncClient.getCompTime(syncIndex); //The amount of time spent doing computations
+
+         
      ```
      
 
 ## Parameters & Syncs:
    * **Included Sync Protocols:**
        * CPISync
-            * Perform the procedure described [here](http://ipsit.bu.edu/documents/ieee-it3-web.pdf). The maximum number of differences that can be reconciled must be specified by setting mBar.
+            * Perform the procedure described [here](http://ipsit.bu.edu/documents/ieee-it3-web.pdf). The maximum number of differences that can be reconciled must be specified by setting mBar. The server does the necessary computations while the client waits, and returns the required values to the client
        * CPISync_OneLessRound
-            * Perform CPISync with set elements represented in full in order to reduce the amount of rounds of communication by one (No hash inverse round of communication)
+            * Perform CPISync with set elements represented in full in order to reduce the amount of rounds of communication by one (No hash inverse round of communication). The server does the necessary computations while the client waits, and returns the required values to the client
        * OneWayCPISync
-            * Perform CPISync in one direction, only adding new elements from the client to the server. The client's elements are not updated.
+            * Perform CPISync in one direction, only adding new elements from the client to the server. The client's elements are not updated. The server does the necessary computations and determines what elements they need to add to their set. The client does not receive a return message and does not have their elements updated
        * ProbCPISync
-            * Perform CPISync with a given mBar but if the amount of differences is larger than that, double mBar until the sync is successful
+            * Perform CPISync with a given mBar but if the amount of differences is larger than that, double mBar until the sync is successful. The server does the necessary computations while the client waits, and returns the required values to the client
        * InteractiveCPISync
-            * Perform CPISync but if there are more than mBar differences, divide the set into `numPartitions` subsets and attempt to CPISync again. This recurses until the sync is successful.
+            * Perform CPISync but if there are more than mBar differences, divide the set into `numPartitions` subsets and attempt to CPISync again. This recurses until the sync is successful. The server does the necessary computations while the client waits, and returns the required values to the client
        * FullSync
-            * Each peer sends their set contents in its entirety and the set differences are determined and repaired
+            * The client sends the server its set contents and the server determines what elements it needs from the clients set. The server also determines what elements the client needs and sends them back.
        * IBLTSync
-            * Each peer encodes their set into an [Invertible Bloom Lookup Table](https://arxiv.org/pdf/1101.2245.pdf) with a size determined by NumExpElements and sends it to their peer. The differences are determined by "subtracting" the IBLT's from each other and attempting to peel the resulting IBLT
+            * Each peer encodes their set into an [Invertible Bloom Lookup Table](https://arxiv.org/pdf/1101.2245.pdf) with a size determined by NumExpElements and the client sends their IBLT to their per. The differences are determined by "subtracting" the IBLT's from each other and attempting to peel the resulting IBLT. The server peer then returns the elements that the client peer needs to update their set
        * OneWayIBLTSync
-            * Perform IBLTSync  but only the server peer has their set elements updated
+            * The client sends their IBLT to their server peer and the server determines what elements they need to add to their set. The client does not receive a return message and does not update their set
    * **Builder Sync Parameters:**
        * setProtocol: Set the protocol that your sync will execute
            * *All syncs*

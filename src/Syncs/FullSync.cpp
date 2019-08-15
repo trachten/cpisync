@@ -26,20 +26,22 @@ string FullSync::printElem() {
 
 }
 
-bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
+bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf){
     try{
         Logger::gLog(Logger::METHOD, "Entering FullSync::SyncClient");
 
         // call parent method for bookkeeping
         SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf);
-        
+        mySyncStats.timerStart(SyncStats::IDLE_TIME);
         // connect to the other party
         commSync->commConnect();
+        mySyncStats.timerEnd(SyncStats::IDLE_TIME);
 
         // send my set:
-        
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
         // first send the amount of DataObjects...
         commSync->commSend(SyncMethod::getNumElem());
+
 
         // then send each DataObject.
         for (auto iter = SyncMethod::beginElements(); iter != SyncMethod::endElements(); iter++) {
@@ -49,20 +51,19 @@ bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
         // receive response from server with differences
         selfMinusOther = commSync->commRecv_DoList();
         otherMinusSelf = commSync->commRecv_DoList();
+        mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
         stringstream msg;
         msg << "FullSync succeeded." << endl;
-        msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
-        msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
+        msg << "self - other = " << printListOfSharedPtrs(selfMinusOther) << endl;
+        msg << "other - self = " << printListOfSharedPtrs(otherMinusSelf) << endl;
         Logger::gLog(Logger::METHOD, msg.str());
 
         commSync->commClose();
 
 		//Record Stats
-		recvBytes = commSync->getRecvBytes();
-		xmitBytes = commSync->getXmitBytes();
-		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-			 - commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+        mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
+        mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
 
         return true;
     } catch(SyncFailureException& s) {
@@ -71,49 +72,54 @@ bool FullSync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObje
     }
     
 }
-bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf){
+bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf){
     try {
         Logger::gLog(Logger::METHOD, "Entering FullSync::SyncServer");
 
         // call parent method for bookkeeping
         SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf);
-        
+
+        mySyncStats.timerStart(SyncStats::IDLE_TIME);
         // listen for other party
         commSync->commListen();
+        mySyncStats.timerEnd(SyncStats::IDLE_TIME);
 
-        // receive client list once it is sent
-        
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
         // first, receive how many DataObjects have been sent...
         const long SIZE = commSync->commRecv_long();
 
         // then receive each DataObject and store to a multiset
-        multiset<DataObject*, cmp<DataObject*>> other;
+        multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> other;
         for (int ii = 0; ii < SIZE; ii++) {
             other.insert(commSync->commRecv_DataObject());
         }
+        mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
+
+        mySyncStats.timerStart(SyncStats::COMP_TIME);
         // Calculate differences between two lists and splice onto respective lists
         rangeDiff(myData.begin(), myData.end(), other.begin(), other.end(), back_inserter(selfMinusOther));
         rangeDiff(other.begin(), other.end(), myData.begin(), myData.end(), back_inserter(otherMinusSelf));
+        mySyncStats.timerEnd(SyncStats::COMP_TIME);
 
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
         // send back differences. our otherMinusSelf is their selfMinusOther and v.v.
         commSync->commSend(otherMinusSelf);
         commSync->commSend(selfMinusOther);
+        mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
         stringstream msg;
         msg << "FullSync succeeded." << endl;
-        msg << "self - other = " << printListOfPtrs(selfMinusOther) << endl;
-        msg << "other - self = " << printListOfPtrs(otherMinusSelf) << endl;
+        msg << "self - other = " << printListOfSharedPtrs(selfMinusOther) << endl;
+        msg << "other - self = " << printListOfSharedPtrs(otherMinusSelf) << endl;
 
         Logger::gLog(Logger::METHOD, msg.str());
 
         commSync->commClose();
 
 		//Record Stats
-		recvBytes = commSync->getRecvBytes();
-		xmitBytes = commSync->getXmitBytes();
-		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-				 - commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+        mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
+        mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
 
         return true;
     } catch (SyncFailureException& s) {
@@ -123,21 +129,21 @@ bool FullSync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObje
     
 }
 
-bool FullSync::addElem(DataObject* newDatum){
+bool FullSync::addElem(shared_ptr<DataObject> newDatum){
     Logger::gLog(Logger::METHOD,"Entering FullSync::addElem");
 
     if(!SyncMethod::addElem(newDatum)) return false;
     myData.insert(newDatum);
-    Logger::gLog(Logger::METHOD, "Successfully added DataObject* {" + newDatum->print() + "}");
+    Logger::gLog(Logger::METHOD, "Successfully added shared_ptr<DataObject> {" + newDatum->print() + "}");
     return true;
     
 }
 
-bool FullSync::delElem(DataObject* newDatum){
+bool FullSync::delElem(shared_ptr<DataObject> newDatum){
     Logger::gLog(Logger::METHOD, "Entering FullSync::delElem");
 
     if(!SyncMethod::delElem(newDatum)) return false;
     myData.erase(newDatum);
-    Logger::gLog(Logger::METHOD, "Successfully removed DataObject* {" + newDatum->print() + "}");
+    Logger::gLog(Logger::METHOD, "Successfully removed shared_ptr<DataObject> {" + newDatum->print() + "}");
     return true;
 }

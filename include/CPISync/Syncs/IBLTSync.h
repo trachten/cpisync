@@ -29,10 +29,27 @@ public:
     ~IBLTSync() override;
 
     // Implemented parent class methods
-    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
-    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
-    bool addElem(DataObject* datum) override;
-    bool delElem(DataObject* datum) override;
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
+    bool addElem(shared_ptr<DataObject> datum) override;
+    bool delElem(shared_ptr<DataObject> datum) override;
+      /**
+     * Deal with elements in OtherMinusSelf after finishing a specific sync function.
+     * Works only when data type for elements is SET
+     * @param *add function pointer to the addElem function in GenSync class
+     * @param *del function pointer to the delElem function in GenSync class
+     * @param otherMinusSelf list of dataObjects, received from every specific sync function
+     * @param myData list of dataObjects, containing all elems saved in the data structure
+     **/
+    template <class T>
+    static void postProcessing_SET(list<shared_ptr<DataObject>> otherMinusSelf, list<shared_ptr<DataObject>> myData, void (T::*add)(shared_ptr<DataObject>), bool (T::*del)(shared_ptr<DataObject>), T *pGenSync)
+    {
+        for (auto elem : otherMinusSelf)
+        {
+        (pGenSync->*add)(elem);
+        }
+    }
+
     string getName() override;
 protected:
     // one way flag

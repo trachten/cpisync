@@ -26,23 +26,22 @@ void CPISyncTest::testCPIAddDelElem() {
 	// number of elems to add
 	const int ITEMS = 50;
 	CPISync cpisync(mBar, eltSizeSq, err,0);
-
-	multiset<DataObject *, cmp<DataObject*>> elts;
+	multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> elts;
 
 	// check that add works
 	for(int ii = 0; ii < ITEMS; ii++) {
-		DataObject* item = new DataObject(randZZ());
+		shared_ptr<DataObject> item = make_shared<DataObject>(randZZ());
 		elts.insert(item);
 		CPPUNIT_ASSERT(cpisync.addElem(item));
 	}
 
 	// check that elements can be recovered correctly through iterators
-	multiset<DataObject *, cmp<DataObject*>> resultingElts;
+	multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> resultingElts;
 	for(auto iter = cpisync.beginElements(); iter != cpisync.endElements(); ++iter) {
 		resultingElts.insert(*iter);
 	}
 
-	vector<DataObject *> diff;
+	vector<shared_ptr<DataObject>> diff;
 	rangeDiff(resultingElts.begin(), resultingElts.end(), elts.begin(), elts.end(), back_inserter(diff));
 	CPPUNIT_ASSERT(diff.empty());
 
@@ -50,6 +49,9 @@ void CPISyncTest::testCPIAddDelElem() {
 	for(auto dop : elts) {
 		CPPUNIT_ASSERT(cpisync.delElem(dop));
 	}
+
+	//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
+	elts.clear();
 
 	CPPUNIT_ASSERT(cpisync.printElem().empty());
 }
@@ -192,22 +194,22 @@ void CPISyncTest::testInterCPIAddDelElem() {
 	const int ITEMS = 50;
 	InterCPISync interCpiSync(mBar, eltSizeSq, err, partitions);
 
-	multiset<DataObject *, cmp<DataObject*>> elts;
+	multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> elts;
 
 	// check that add works
 	for(int ii = 0; ii < ITEMS; ii++) {
-		DataObject* item = new DataObject(randZZ());
+		shared_ptr<DataObject> item = make_shared<DataObject>(randZZ());
 		elts.insert(item);
 		CPPUNIT_ASSERT(interCpiSync.addElem(item));
 	}
 
 	// check that elements can be recovered correctly through iterators
-	multiset<DataObject *, cmp<DataObject*>> resultingElts;
+	multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> resultingElts;
 	for(auto iter = interCpiSync.beginElements(); iter != interCpiSync.endElements(); ++iter) {
 		resultingElts.insert(*iter);
 	}
 
-	vector<DataObject *> diff;
+	vector<shared_ptr<DataObject>> diff;
 	rangeDiff(resultingElts.begin(), resultingElts.end(), elts.begin(), elts.end(), back_inserter(diff));
 	CPPUNIT_ASSERT(diff.empty());
 

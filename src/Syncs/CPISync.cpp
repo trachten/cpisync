@@ -279,7 +279,7 @@ bool CPISync::set_reconcile(const long otherSetSize, const vec_ZZ_p &otherEvals,
 Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
     if (otherSetSize < 1) {
         // Jin's optimization:  if the other set has nothing, just send over my evaluations
-        map<ZZ, DataObject * >::iterator itCPI;
+        map<ZZ, shared_ptr<DataObject> >::iterator itCPI;
 
         for (itCPI = CPI_hash.begin(); itCPI != CPI_hash.end(); itCPI++)
             append(delta_self, to_ZZ_p(itCPI->first));
@@ -312,14 +312,14 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
     return true;
 }
 
-void CPISync::_sendSetElem(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
+void CPISync::_sendSetElem(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
 						   const ZZ_p &element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
         selfMinusOther.push_back(_invHash(element));
     else {
         // Translate to an actual string and send it to the client
-        DataObject *dop = CPI_hash[rep(element)];
+        shared_ptr<DataObject>dop = CPI_hash[rep(element)];
         if (dop == nullptr)
             throw SyncFailureException("Element not found - decrease probability of error requirement for sync.");
         commSync->commSend(*dop);
@@ -329,21 +329,21 @@ void CPISync::_sendSetElem(const shared_ptr<Communicant> &commSync, list<DataObj
     }
 }
 
-void CPISync::_recvSetElem(const shared_ptr<Communicant> &commSync, list<DataObject *> &otherMinusSelf, ZZ_p element) {
+void CPISync::_recvSetElem(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &otherMinusSelf, ZZ_p element) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::recvSetElem");
     if (!hashQ || oneWay) // these cases don't require an additional round of string exchanges
         otherMinusSelf.push_back(_invHash(std::move(element)));
     else {
         // receive the actual string from the client
-        DataObject *dop = commSync->commRecv_DataObject();
+        shared_ptr<DataObject>dop = commSync->commRecv_DataObject();
 
         Logger::gLog(Logger::METHOD, string("Received string " + dop->to_string()));
         otherMinusSelf.push_back(dop);
     }
 }
 
-void CPISync::_makeStructures(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-							  list<DataObject *> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
+void CPISync::_makeStructures(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+							  list<shared_ptr<DataObject>> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::makeStructures");
     // Send self minus other
     try {
@@ -401,9 +401,10 @@ void CPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay
     Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
-bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) {
+bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncClient");
 
+    mySyncStats.timerStart(SyncStats::COMP_TIME);
 	//Reset currDiff to 1 at the start of the sync so that the correct upper bound can be found if the dataset has changed
     if(probCPI) currDiff = 1;
 
@@ -418,14 +419,20 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
         // 0.5  verify commonality initial parameters
         // ... connect to the other party
         if (!keepAlive) {
+            mySyncStats.timerStart(SyncStats::IDLE_TIME);
             commSync->commConnect();
+            mySyncStats.timerEnd(SyncStats::IDLE_TIME);
 
             // ... check that the other side is doing the same synchronization
+            mySyncStats.timerStart(SyncStats::COMM_TIME);
             SendSyncParam(commSync, oneWay);
+            mySyncStats.timerEnd(SyncStats::COMM_TIME);
         }
 
         // 1. Transmit characteristic polynomial values
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
         commSync->commSend((long) CPI_hash.size()); // ... first outputs how many set elements the client has
+        mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
         // ... produce the values in a list:  [x1 x2 x3 ... ]
         vec_ZZ_p valList;
@@ -433,11 +440,19 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
             append(valList, CPI_evals[ii]);
         for (int ii = 0; ii < redundant_k; ii++)
             append(valList, CPI_evals[currDiff + ii]);
+
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
         commSync->commSend(valList);
+        mySyncStats.timerEnd(SyncStats::COMM_TIME);
+
         valList.kill();
       
         // 2. Get more characteristic polynomial values if needed
+        mySyncStats.timerStart(SyncStats::IDLE_TIME);
+        //Waiting for peer to determine if they have failed or not (Assumes time to communicate this byte is insignificant)
         while (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG)) {
+            mySyncStats.timerEnd(SyncStats::IDLE_TIME);
+
             if (!probCPI || currDiff == maxDiff) {
                 // CPISync failed
                 delta_other.kill();
@@ -446,26 +461,35 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
                     commSync->commClose();
 
 				//Record Stats
-				recvBytes = commSync->getRecvBytes();
-				xmitBytes = commSync->getXmitBytes();
-				syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-						- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
-
+                double idle_comm = mySyncStats.totalTime();
+                mySyncStats.timerEnd(SyncStats::COMP_TIME); //This is total sync time
+                mySyncStats.increment(SyncStats::COMP_TIME,-idle_comm); // Subtract idle and comm time from the total sync time to get CPU Time
+                mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
+                mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
                 return false;
             } else {
                 // Send more samples and try again
                 vec_ZZ_p tmp_vec;
                 for (long ii = 0; ii < min(currDiff, maxDiff - currDiff); ii++)
                     append(tmp_vec, CPI_evals[currDiff +redundant_k + ii]);
+
+                mySyncStats.timerStart(SyncStats::COMM_TIME);
                 commSync->commSend(tmp_vec);
+                mySyncStats.timerEnd(SyncStats::COMM_TIME);
+
                 currDiff = min(currDiff * 2, maxDiff);
                 tmp_vec.kill();
             }
+            mySyncStats.timerStart(SyncStats::IDLE_TIME);
         }
+        mySyncStats.timerEnd(SyncStats::IDLE_TIME);
+
 
         if (!oneWay) {
+            mySyncStats.timerStart(SyncStats::COMM_TIME);
             delta_other = commSync->commRecv_vec_ZZ_p();
             delta_self = commSync->commRecv_vec_ZZ_p();
+            mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
             Logger::gLog(Logger::METHOD, string("CPISync succeeded.\n")
                     + "   self - other =  " + toStr<vec_ZZ_p > (delta_self) + "\n"
@@ -485,10 +509,11 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
             commSync->commClose();
 
         //Record Stats
-		recvBytes = commSync->getRecvBytes();
-		xmitBytes = commSync->getXmitBytes();
-		syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-				- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+        double idle_comm = mySyncStats.totalTime();
+        mySyncStats.timerEnd(SyncStats::COMP_TIME); //This is total sync time
+        mySyncStats.increment(SyncStats::COMP_TIME,-idle_comm); // Subtract idle and comm time from the total sync time to get CPU Time
+        mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
+        mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
 
         return true;
     } catch (SyncFailureException& s) {
@@ -497,8 +522,9 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObjec
     }
 }
 
-bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
+bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>>& selfMinusOther, list<shared_ptr<DataObject>>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncServer");
+    mySyncStats.timerStart(SyncStats::COMP_TIME); //This is total sync time
 
     //Reset currDiff to 1 at the start of the sync so that the correct upper bound can be found if the dataset has changed
 	if(probCPI) currDiff = 1;
@@ -519,17 +545,24 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
         // Set up listening on the port
         Logger::gLog(Logger::METHOD, "Server: Started listening to: " + commSync->getName());
 
+        mySyncStats.timerStart(SyncStats::IDLE_TIME);
         commSync->commListen();
+        mySyncStats.timerEnd(SyncStats::IDLE_TIME);
+
 
         // ... verify sync parameters
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
         RecvSyncParam(commSync, oneWay);
+        mySyncStats.timerEnd(SyncStats::COMM_TIME);
     }
 
 
     // Perform synchronization
     // .. listen for data
-    otherSetSize = commSync->commRecv_long();
+    mySyncStats.timerStart(SyncStats::COMM_TIME);
+    otherSetSize = commSync->commRecv_long(); //This also includes some idle time but we lump it into communication time
     recv_meta = commSync->commRecv_vec_ZZ_p();
+    mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
     bool result = true; // continues looping while result is true
     do {
@@ -577,9 +610,11 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
                 Logger::gLog(Logger::METHOD, "CPISync succeeded.\n");
 
                 if (!oneWay) {
-					commSync->commSend(SYNC_OK_FLAG); // sync succeeded
+                    mySyncStats.timerStart(SyncStats::COMM_TIME);
+                    commSync->commSend(SYNC_OK_FLAG); // sync succeeded
 					commSync->commSend(delta_self);
                     commSync->commSend(delta_other);
+                    mySyncStats.timerEnd(SyncStats::COMM_TIME);
                 }
 
                 Logger::gLog(Logger::METHOD, string("... results:\n")
@@ -601,13 +636,20 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
 
         if (!succeed) { // if synchronization has failed for some reason
             Logger::gLog(Logger::METHOD, "Not successfully synced!\n");
-            if (!oneWay)
+            if (!oneWay) {
+                mySyncStats.timerStart(SyncStats::COMM_TIME);
                 commSync->commSend(SYNC_FAIL_FLAG); // send just one character with the flag
+                mySyncStats.timerEnd(SyncStats::COMM_TIME);
+            }
+
             if (!probCPI || currDiff == maxDiff) {
                 result = false;
                 break;
             } else {
-                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p();
+                mySyncStats.timerStart(SyncStats::COMM_TIME);
+                vec_ZZ_p recv_new = commSync->commRecv_vec_ZZ_p(); //Not strictly comm_time
+                mySyncStats.timerStart(SyncStats::COMM_TIME);
+
                 append(recv_meta, recv_new);
                 currDiff = min(currDiff * 2, maxDiff);
             }
@@ -624,20 +666,21 @@ bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObjec
     self_hash.clear();
     recv_hash.clear();
 
-	//Record Stats
-	recvBytes = commSync->getRecvBytes();
-	xmitBytes = commSync->getXmitBytes();
-	syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-			- commSync->getResetTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
+    //Record Stats
+    double idle_comm = mySyncStats.totalTime();
+    mySyncStats.timerEnd(SyncStats::COMP_TIME); //This is total sync time
+    mySyncStats.increment(SyncStats::COMP_TIME,-idle_comm); // Subtract idle and comm time from the total sync time to get CPU Time
+    mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
+    mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
 
     return result;
 }
 
-void CPISync::sendAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther) {
+void CPISync::sendAllElem(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::sendAllElem");
     commSync->commSend((long) CPI_hash.size()); // first send the size
 
-    map< ZZ, DataObject * >::iterator it;
+    map< ZZ, shared_ptr<DataObject> >::iterator it;
     for (it = CPI_hash.begin();
             it != CPI_hash.end();
             it++) {
@@ -647,22 +690,22 @@ void CPISync::sendAllElem(const shared_ptr<Communicant>& commSync, list<DataObje
     }
 }
 
-void CPISync::receiveAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf) {
+void CPISync::receiveAllElem(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::receiveAllElem");
     long size = commSync->commRecv_long();
 
     for (int ii = 0; ii < size; ii++) {
-        DataObject* dop = commSync->commRecv_DataObject();
+        shared_ptr<DataObject> dop = commSync->commRecv_DataObject();
         otherMinusSelf.push_back(dop);
     }
 
     Logger::gLog(Logger::COMM_DETAILS, "Received all node elements.");
 }
 
-DataObject * CPISync::_invHash(ZZ_p num) const {
+shared_ptr<DataObject> CPISync::_invHash(ZZ_p num) const {
     Logger::gLog(Logger::METHOD,"Entering CPISync::invHash");
     const ZZ &numZZ = rep(num);
-    auto *result = new DataObject(numZZ);
+    shared_ptr<DataObject> result = make_shared<DataObject>(numZZ);
     return result;
 }
 
@@ -670,7 +713,7 @@ ZZ_p CPISync::_makeData(ZZ_p num) const {
     return to_ZZ_p(rep(num) % DATA_MAX);
 }
 
-ZZ_p CPISync::_hash(const DataObject *datum) const {
+ZZ_p CPISync::_hash(const shared_ptr<DataObject>datum) const {
     ZZ num = datum->to_ZZ(); // convert the datum to a ZZ
 
     if (!hashQ && (num >= DATA_MAX))
@@ -687,7 +730,7 @@ ZZ_p CPISync::_hash2(const long num) const {
 
 // update metadata when add an element
 
-bool CPISync::addElem(DataObject * datum) {
+bool CPISync::addElem(shared_ptr<DataObject> datum) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::addElem");
     int ii;
     
@@ -729,7 +772,7 @@ bool CPISync::addElem(DataObject * datum) {
 }
 
 // update metadata when delete an element by index
-bool CPISync::delElem(DataObject * newDatum) {
+bool CPISync::delElem(shared_ptr<DataObject> newDatum) {
     Logger::gLog(Logger::METHOD, "Entering CPISync::delElem");
 
     // call the parent method to take care of bookkeeping
@@ -762,7 +805,7 @@ bool CPISync::delElem(DataObject * newDatum) {
 string CPISync::printElem() {
     stringstream result("");
 
-    map< ZZ, DataObject * >::iterator it;
+    map< ZZ, shared_ptr<DataObject> >::iterator it;
     for (it = CPI_hash.begin(); it != CPI_hash.end(); it++)
         result << (it->second)->to_string() << " [hash=" << (it->first) << "], ";
     return result.str();

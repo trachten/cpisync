@@ -44,6 +44,27 @@ public:
      */
     explicit DataObject(const string& str);
     
+     /**
+     * Constructs a data object from pair of {index, elements} where index is in long type
+     * @param index index in a templated type
+     * @param elems a list containing all the data objects
+     **/
+    template <class T>
+    explicit DataObject(const T index, const list<shared_ptr<DataObject>> elems)
+    {
+        string str = toStr<T>(index) + " ";
+        for (auto itr : elems)
+            str += itr->to_string() + " ";
+        str.pop_back();
+        myBuffer = pack(str);
+    }
+
+    /**
+     * Constructs a data object that contains the given multiset
+     * @param tarSet The set to place in the DataObject
+     **/
+    explicit DataObject(const multiset<shared_ptr<DataObject>> tarSet);
+
     /**
      * Constructs a data object that contains the given object of type T, which must
      * be translatable to a string with the global toStr function.  In effect, this constructor
@@ -70,6 +91,30 @@ public:
      *         The string could have null bytes and non-printable characters.
      */
     string to_string() const;
+
+    /**
+    * @return a multiset containing all the data object in the set
+    **/
+    multiset<shared_ptr<DataObject>> to_Set() const;
+
+    /**
+     * @param ind no specific usage but to indicate class type T for the first 
+     *        element in the element pair
+     * @return a pair {long ,list<shared_ptr<DataObject>>}
+     **/
+    template <class T>
+    pair<T, list<shared_ptr<DataObject>>> to_pair(){
+        
+        string str = unpack(myBuffer);
+        auto splt = split(str, " ");
+
+        T out = strTo<T>(splt[0]);
+        list<shared_ptr<DataObject>> outList;
+        for (int ii = 1; ii < splt.size(); ii++)
+            outList.push_back(make_shared<DataObject>(splt[ii]));
+        return {out, outList};
+    }
+
 
     /**
      * @param len Stores the length of the char array (upon return)

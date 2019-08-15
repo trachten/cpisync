@@ -34,14 +34,14 @@ void GenSyncTest::tearDown(){}
 
 void GenSyncTest::testAddRemoveElems() {
 
-    vector<DataObject *> objectsPtr;
+    vector<shared_ptr<DataObject>> objectsPtr;
 
     // create one object that is convertible to a DataObject
     ZZ *last = new ZZ(randZZ());
-	DataObject* newDO;
+	shared_ptr<DataObject> newDO;
     // create elts-1 random DataObjects (the last element will be `last`)
     for (unsigned long ii = 0; ii < ELTS - 1; ii++) {
-        objectsPtr.push_back(new DataObject(randZZ()));
+        objectsPtr.push_back(make_shared<DataObject>(randZZ()));
     }
 
     // create all configurations of GenSyncs (created using both constructors)
@@ -79,11 +79,9 @@ void GenSyncTest::testAddRemoveElems() {
     }
 
     //Mem clean-up
-    delete newDO;
     delete last;
-    for(auto & ptr : objectsPtr){
-        delete ptr;
-    }
+	//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
+	objectsPtr.clear();
 }
 
 void GenSyncTest::testAddRemoveSyncMethodAndComm() {
@@ -147,15 +145,11 @@ void GenSyncTest::testCounters() {
     auto before = std::chrono::high_resolution_clock::now();
 	//(oneWay = false, probSync = false)
 	CPPUNIT_ASSERT(syncTest(genSyncOther, genSync, false,false,false,false,false));
-    auto after = std::chrono::high_resolution_clock::now();
-    double res = genSync.getSyncTime(0);
 
     // check that Communicant counters == the respective GenSync counters
     CPPUNIT_ASSERT_EQUAL(cs->getXmitBytes(), genSync.getXmitBytes(0));
     CPPUNIT_ASSERT_EQUAL(cs->getRecvBytes(), genSync.getRecvBytes(0));
 
-    // `res` should be positive and less than the time spent in syncTest
-    CPPUNIT_ASSERT(res <= duration_cast<microseconds>(after - before).count() && res >= 0);
 }
 
 void GenSyncTest::testPort() {
@@ -232,7 +226,7 @@ void GenSyncTest::testTwoWayProbSync() {
 
 void GenSyncTest::testOneWayProbSync() {
 	//TODO: Error check port opening to make sure port is not already in use
-	for(int ii = 1 ; ii < NUM_TESTS; ii++) {
+	for(int ii = 1 ; ii < NUM_TESTS + 1; ii++) {
 		GenSync GenSyncServer = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
 				setComm(GenSync::SyncComm::socket).

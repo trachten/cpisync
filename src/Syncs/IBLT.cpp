@@ -31,6 +31,16 @@ hash_t IBLT::_hashK(const ZZ &item, long kk) {
     return _hash(shash(toStr(item)), kk-1);
 }
 
+hash_t IBLT::_setHash(multiset<shared_ptr<DataObject>> &tarSet)
+{
+    hash_t outHash = 0;
+    for (auto itr : tarSet)
+    {
+        outHash += _hashK(itr->to_ZZ(), 1);
+    }
+    return outHash;
+}
+
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
 
@@ -187,4 +197,89 @@ size_t IBLT::size() const {
 
 size_t IBLT::eltSize() const {
     return valueSize;
+}
+
+string IBLT::toString() const
+{
+    string outStr = "";
+    for (auto entry : hashTable)
+    {
+        outStr += toStr<long>(entry.count) + ","
+                + toStr<hash_t>(entry.keyCheck) + ","
+                + toStr<ZZ>(entry.keySum) + "," 
+                + toStr<ZZ>(entry.valueSum) 
+                + "\n";
+    }
+    outStr.pop_back();
+    return outStr;
+}
+
+void IBLT::reBuild(string &inStr)
+{
+    vector<string> entries = split(inStr, "\n");
+    int index = 0;
+    for (auto entry : entries)
+    {
+        vector<string> infos = split(entry, ",");
+        HashTableEntry curEntry;
+        curEntry.count = strTo<long>(infos[0]);
+        curEntry.keyCheck = strTo<hash_t>(infos[1]);
+        curEntry.keySum = strTo<ZZ>(infos[2]);
+        curEntry.valueSum = strTo<ZZ>(infos[3]);
+        this->hashTable[index] = curEntry;
+        index++;
+    }
+}
+
+void IBLT::insertIBLT(IBLT &chldIBLT, hash_t &chldHash)
+{
+
+    ZZ ibltZZ = strToZZ(chldIBLT.toString());
+    // conv can't be applied to hash_t types, have to use toStr&strTo functions
+    // instead.
+    _insert(1, ibltZZ, strTo<ZZ>(toStr<hash_t>(chldHash)));
+}
+
+void IBLT::eraseIBLT(IBLT &chldIBLT, hash_t &chldHash)
+{
+    ZZ ibltZZ = strToZZ(chldIBLT.toString());
+    _insert(-1, ibltZZ, strTo<ZZ>(toStr<hash_t>(chldHash)));
+}
+
+void IBLT::insertIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
+{
+    hash_t setHash = _setHash(tarSet);
+
+    // Put chld set into a chld IBLT
+    IBLT chldIBLT(expnChldSet, elemSize);
+    for (auto itr : tarSet)
+    {
+        chldIBLT.insert(itr->to_ZZ(), itr->to_ZZ());
+    }
+
+    // Put the pair(chld IBLT, hash of set) into the outer IBLT T
+    insertIBLT(chldIBLT, setHash);
+
+    hashes.push_back(setHash);
+}
+
+void IBLT::eraseIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
+{
+    hash_t setHash = _setHash(tarSet);
+
+    IBLT chldIBLT(expnChldSet, elemSize);
+    for (auto itr : tarSet)
+    {
+        chldIBLT.insert(itr->to_ZZ(), itr->to_ZZ());
+    }
+    eraseIBLT(chldIBLT, setHash);
+    // delete set hash in the vector
+    for (auto itr = hashes.begin(); itr < hashes.end(); itr++)
+    {
+        if ((*itr) == setHash)
+        {
+            hashes.erase(itr);
+            break;
+        }
+    }
 }

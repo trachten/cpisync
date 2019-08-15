@@ -110,13 +110,29 @@ public:
      */
     void commSend(const ustring& str, unsigned int numBytes);
 
+
+    /**
+     * Send IBLT together with saved hashes
+     * @param iblt the target iblt to be sent
+     * @param sync iff true when the expsize and element size are known
+     * */
+    void commSendIBLTNHash(const IBLT &iblt, bool sync);
+
+
+    /**
+     * Receive an IBLT together with its hashes
+     * @param size the expected # entry for IBLT
+     * @param eltSize size for elements stored in IBLT
+     * */
+    IBLT commRecv_IBLTNHash(size_t size, size_t eltSize);
+    
     /**
      * Sends a data object over the line
      * @param do The data object to send
      */
     void commSend(DataObject &dob);
 
-    void commSend(list<DataObject *> &dob);
+    void commSend(list<shared_ptr<DataObject>> &dob);
 
     void commSend(DataPriorityObject &dob);
 
@@ -124,7 +140,7 @@ public:
      * Sends a list of data object pointers over the line.
      * @param lst The list to be transmitted.
      */
-    void commSend(const list<DataObject *> &lst);
+    void commSend(const list<shared_ptr<DataObject>> &lst);
 
     /**
      * Sends a string over the line.
@@ -235,9 +251,9 @@ public:
      * Receives and creates DataObject, returning a pointer to it.
      * @return A pointer to the received DataObject.
      */
-    DataObject *commRecv_DataObject();
+    shared_ptr<DataObject>commRecv_DataObject();
 
-    list<DataObject *> commRecv_DataObject_List();
+    list<shared_ptr<DataObject>> commRecv_DataObject_List();
 
     DataPriorityObject *commRecv_DataObject_Priority();
 
@@ -245,7 +261,7 @@ public:
      * Receives a list of Data Objects and transforms this into a list of pointers to DataObjects.
      * @return A pointer to the transformed list.
      */
-    list<DataObject *> commRecv_DoList();
+    list<shared_ptr<DataObject>> commRecv_DoList();
 
     /**
      *  Specialized receive functions for specific data types.
@@ -308,15 +324,9 @@ public:
      */
     long getRecvBytesTot();
 
-    /**
-     * @return The count of CPU seconds when {@link #resetCounters} was called.
-     */
-	std::chrono::high_resolution_clock::time_point getResetTime();
+    double getCommTime();
 
-    /**
-     * @return The count of CPU seconds when this object was created.
-     */
-	std::chrono::high_resolution_clock::time_point getTotalTime();
+    double getCommTimeTot();
 
     /**
      * @return A name for this communicant.
@@ -350,15 +360,17 @@ protected:
      */
     void addRecvBytes(long numBytes);
 
-    // FIELDS
+    void addCommTime(std::chrono::high_resolution_clock::time_point startClock);
+
+        // FIELDS
     long xferBytes; /** The number of bytes that have been transferred since the last reset. */
     long xferBytesTot; /** The total number of bytes transferred since the creation of this communicant. */
 
     long recvBytes; /** The number of bytes that have been received since the last reset. */
     long recvBytesTot; /** The total number of bytes that have been received since the creation of this communicant. */
 
-    std::chrono::high_resolution_clock::time_point resetTime; /** CPU seconds at the last reset. */
-	std::chrono::high_resolution_clock::time_point totalTime; /** CPU seconds at the creation of this communicant. */
+    double commTime; /** The amount of time spent sending and receiving information for this sync since the last reset*/
+    double commTimeTot; /** The total amount of time that this sync has been actively syncing during */
 
     int MOD_SIZE;    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/
 

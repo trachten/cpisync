@@ -23,11 +23,11 @@ public:
      * @param index starts at 0, as in C arrays
      * @returns the index-th entry in the data object container
      */
-    virtual DataObject* get(int index)=0;
+    virtual shared_ptr<DataObject> get(int index)=0;
 
 	// pure virtual function for writing a data object
        // index starts at 1?
-	virtual void put(DataObject* mydata)=0;
+	virtual void put(shared_ptr<DataObject> mydata)=0;
 
 	// pure virtual function for deleting a data object by index
 	virtual void delObj(int index)=0;
@@ -36,7 +36,7 @@ public:
 	int size();
         
     // output a list of pointers to the objects in the container
-    virtual list<DataObject *> dump()=0;
+    virtual list<shared_ptr<DataObject>> dump()=0;
 
 protected:
 	// number of objects in this container

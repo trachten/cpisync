@@ -72,7 +72,7 @@ void BenchmarkTest::TimedSyncThreshold()
 
 			CPPUNIT_ASSERT(benchmarkSync(CPISyncClient[ii], CPISyncServer[ii], difs, difs, difs, false, false));
 			syncStatsMax = CPISyncServer[ii].printStats(0);
-			if (CPISyncServer[ii].getSyncTime(0) > MAX_TIME)
+			if (CPISyncServer[ii].getTotalTime(0) > MAX_TIME)
 				break;
 			syncStats = CPISyncServer[ii].printStats(0);
 		}
@@ -97,7 +97,7 @@ void BenchmarkTest::TimedSyncThreshold()
 		CPPUNIT_ASSERT(benchmarkSync(IBLTGenClient[0], IBLTGenServer[0], difs, difs, difs, true, false));
 
 		syncStatsMax = IBLTGenServer[0].printStats(0);
-		if (IBLTGenServer[0].getSyncTime(0) > MAX_TIME)
+		if (IBLTGenServer[0].getTotalTime(0) > MAX_TIME)
 			break;
 		syncStats = IBLTGenServer[0].printStats(0);
 	}

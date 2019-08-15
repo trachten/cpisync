@@ -15,6 +15,9 @@
 class IBLTTest : public CPPUNIT_NS::TestFixture{
     CPPUNIT_TEST_SUITE(IBLTTest);
     CPPUNIT_TEST(testAll);
+    CPPUNIT_TEST(testReconstruct);
+    CPPUNIT_TEST(testIBLTinsertNRebuild);
+
     CPPUNIT_TEST_SUITE_END();
 public:
     IBLTTest();
@@ -26,6 +29,17 @@ public:
  	* Tests every function in IBLT together, except for size
  	*/
     static void testAll();
+
+    /**
+     * Test reconstruct an IBLT from string
+     * */
+    static void testReconstruct();
+
+    /**
+     * test serialize an IBLT and deserialize
+     * */
+    static void testIBLTinsertNRebuild();
+
 };
 
 

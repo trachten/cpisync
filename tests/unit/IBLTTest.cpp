@@ -51,3 +51,55 @@ void IBLTTest::testAll() {
     CPPUNIT_ASSERT(iblt.listEntries(plus, minus));
     CPPUNIT_ASSERT_EQUAL(items.size(), plus.size() + minus.size());
 }
+
+void IBLTTest::testReconstruct()
+{
+    vector<pair<ZZ, ZZ>> pos, neg, ref, neg1, pos1;
+    const int SIZE = 10;
+    const size_t ITEM_SIZE = sizeof(ZZ(0));
+    IBLT iblt(SIZE, ITEM_SIZE);
+    for (int ii = 1; ii < SIZE; ii++)
+    {
+        iblt.insert(ZZ(ii), ZZ(ii));
+        ref.push_back({ZZ(ii), ZZ(ii)});
+    }
+    string str = iblt.toString();
+    IBLT b(SIZE, ITEM_SIZE);
+    b.reBuild(str);
+    // Make sure everything's same between original IBLT and reconstructed IBLT
+    CPPUNIT_ASSERT_EQUAL(str, b.toString());
+    // Make sure basic functions can still be applied to reconstructed one
+    CPPUNIT_ASSERT(b.listEntries(pos, neg));
+}
+
+void IBLTTest::testIBLTinsertNRebuild()
+{
+    multiset<shared_ptr<DataObject>> result;
+    set<ZZ> setZZ;
+    const int expEntries = 20;
+    const int BYTE = 8;
+
+    IBLT tarIBLT(expEntries, BYTE);
+
+    for (int ii = 0; ii < expEntries; ii++)
+    {
+        int before = setZZ.size();
+        ZZ data = randZZ();
+        setZZ.insert(data);
+        while (before == setZZ.size())
+        {
+            data = randZZ();
+            setZZ.insert(data);
+        }
+        shared_ptr<DataObject> tar = make_shared<DataObject>(data);
+        result.insert(tar);
+        tarIBLT.insert(tar->to_ZZ(), tar->to_ZZ());
+    }
+    IBLT myIBLT(expEntries, BYTE);
+
+    myIBLT.insertIBLT(result, BYTE, expEntries);
+
+    vector<pair<ZZ, ZZ>> pos, neg;
+    myIBLT.listEntries(pos, neg);
+    CPPUNIT_ASSERT_EQUAL(tarIBLT.toString(), zzToString(pos[0].first));
+}

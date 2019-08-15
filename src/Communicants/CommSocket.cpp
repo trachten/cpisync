@@ -22,6 +22,7 @@ CommSocket::~CommSocket() {
 }
 
 void CommSocket::commListen() {
+    auto startTime = std::chrono::high_resolution_clock::now();
     // variable initialization
     state = Listening;
 
@@ -69,13 +70,14 @@ void CommSocket::commListen() {
 
     // Initialization data
     resetCommCounters();  // reset all transmission counters
-
+    addCommTime(startTime);
     Logger::gLog(Logger::METHOD, "Listening on port " + toStr(remotePort));
 }
 
 void CommSocket::commConnect() {
     // variables initialization
     state = Connecting;
+    auto startTime = std::chrono::high_resolution_clock::now();
 
     // create a new socket
     int sockDesc = socket(AF_INET, SOCK_STREAM, 0);
@@ -145,6 +147,7 @@ void CommSocket::commConnect() {
 
     // Initialization data
     resetCommCounters();  // reset all transmission counters
+    addCommTime(startTime);
     Logger::gLog(Logger::METHOD, "Connected to host " + remoteHost + " on port " + toStr(remotePort));
 }
 
@@ -174,6 +177,7 @@ void CommSocket::commSend(const char* toSend, const int len) {
 
     bool doAgain;
     do {
+        auto startTime = std::chrono::high_resolution_clock::now();
         if ((numSent = send(my_fd, toSend, numBytes * sizeof (char), 0)) == -1) {
             string numBytesString;
             string stateString;
@@ -194,6 +198,7 @@ void CommSocket::commSend(const char* toSend, const int len) {
         } else {
             doAgain = false;
         }
+        addCommTime(startTime);
         addXmitBytes(numBytes);  // update the byte transfer counter
     } while (doAgain);
 }

@@ -30,7 +30,7 @@ public:
   string getName() { return "Priority CPISync\n";}
 
 protected:
-        map< DataObject , DataObject * > priority_map;
+        map< DataObject , shared_ptr<DataObject> > priority_map;
 };
 
 #endif

@@ -137,7 +137,7 @@ Relevant applications and extensions can be found at:
         //The sync index is decided by the order you added your sync in
         //If your GenSync has only 1 sync the index is 0
          mySyncClient.printStats(syncIndex); //Returns a string of formatted stats about your sync
-         mySyncClient.mySyncVec[syncIndex]->getName(); //Retruns the name and parameters for your sync
+         mySyncClient.mySyncVec[syncIndex]->getName(); //Returns the name and parameters for your sync
          mySyncClient.getXmitBytes(syncIndex); //Returns the number of bytes transmitted by this sync
          mySyncClient.getRecvBytes(syncIndex); //Returns the number of bytes received by this sync
          mySyncClient.getCommTime(syncIndex); //Returns the amount of time in seconds that the sync spent sending and receiving info through a socket

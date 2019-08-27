@@ -4,8 +4,6 @@ This is the source code for set reconciliation from the CPISync project by [BU N
 
 Current Version - 2.0.3
 
-------------------------------
-
 
 ## References:
 

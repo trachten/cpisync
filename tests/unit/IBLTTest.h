@@ -15,8 +15,8 @@
 class IBLTTest : public CPPUNIT_NS::TestFixture{
     CPPUNIT_TEST_SUITE(IBLTTest);
     CPPUNIT_TEST(testAll);
-    CPPUNIT_TEST(testReconstruct);
-    CPPUNIT_TEST(testIBLTinsertNRebuild);
+    CPPUNIT_TEST(SerializeTest);
+    CPPUNIT_TEST(IBLTNestedInsertRetrieveTest);
 
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -31,14 +31,14 @@ public:
     static void testAll();
 
     /**
-     * Test reconstruct an IBLT from string
+     * Test serilize and de-serialize
      * */
-    static void testReconstruct();
+    static void SerializeTest();
 
     /**
-     * test serialize an IBLT and deserialize
+     * Test serialize and de-serialize in actual use in IBLT add and list functions
      * */
-    static void testIBLTinsertNRebuild();
+    static void IBLTNestedInsertRetrieveTest();
 
 };
 

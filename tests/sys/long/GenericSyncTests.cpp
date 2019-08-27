@@ -231,7 +231,7 @@ void GenSyncTest::testOneWayProbSync() {
 				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
 				setComm(GenSync::SyncComm::socket).
 				setBits(eltSize).
-				setNumExpectedElements(numExpElem).
+				setExpNumElems(numExpElem).
 				setPort(port + 1 + ii). //Shift port up by one after each use to circumvent port closure issue
 				build();
 
@@ -239,7 +239,7 @@ void GenSyncTest::testOneWayProbSync() {
 				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
 				setComm(GenSync::SyncComm::socket).
 				setBits(eltSize).
-				setNumExpectedElements(numExpElem).
+				setExpNumElems(numExpElem).
 				setPort(port + 1 + ii).
 				build();
 

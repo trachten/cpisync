@@ -17,7 +17,7 @@
  * @param innerSize size of a inner element in a child set
  * */
 
-IBLTSetOfSets::IBLTSetOfSets(size_t expected, size_t eltSize, size_t chldSize, size_t innerSize) : myIBLT(expected, eltSize)
+IBLTSetOfSets::IBLTSetOfSets(size_t expected, size_t chldSize, size_t innerSize) : myIBLT(expected, sizeof(ZZ))
 {
     Logger::gLog(Logger::METHOD, "Entering IBLTSetOfSets::IBLTSetOfSets");
     expNumElems = expected;
@@ -180,90 +180,27 @@ bool IBLTSetOfSets::SyncServer(const shared_ptr<Communicant> &commSync, list<sha
         // find minimum difference between each pair of chldIBLT
         // difference between two chld set is at most 2 * chldsize
         mySyncStats.timerStart(SyncStats::COMP_TIME);
-        for (auto &itr : positiveChld)
-        {
-            size_t MIN = 2 * childSize;
-            // rebuild Ta in Ea/Eb from string
-            string info = zzToString(itr.first);
-            IBLT II(childSize, elemSize);
-            II.reBuild(info);
 
-            // for storing missing elements in the child set
-            // best pos -> elements on child set in Client but not Server
-            // best neg -> elements on child set in Server but not Client
-            vector<pair<ZZ, ZZ>> best_POS, best_NEG;
-
-            // record by its hash
-            ZZ JHash;
-            for (auto &itrJ : negativeChld)
-            {
-                // rebuild Tb in Eb/Ea from string
-                string infoJ = zzToString(itrJ.first);
-                IBLT JJ(childSize, elemSize);
-                JJ.reBuild(infoJ);
-
-                vector<pair<ZZ, ZZ>> curPos, curNeg;
-                IBLT res = II - JJ;
-
-                if (res.listEntries(curPos, curNeg))
-                {
-                    size_t curDist = curPos.size() + curNeg.size();
-                    if (curDist < MIN && curDist > 0)
-                    {
-                        best_POS = curPos;
-                        best_NEG = curNeg;
-                        MIN = curDist;
-                        JHash = itrJ.second;
-                    }
-                }
-            }
-
-            // add missing elements and its chldset index into SMO OMS
-            // {childset Hash, missing element}
-
-            list<shared_ptr<DataObject>> elements;
-            for (auto entry : best_NEG)
-            {
-                elements.push_back(make_shared<DataObject>(entry.first));
-            }
-            // construct dataobject from {ZZ,list<shared_ptr<DataObject>>}
-            // to ensure minimum changes on genSync
-            notOnThat.push_back(make_shared<DataObject>(itr.second, elements));
-            elements.clear();
-            for (auto entry : best_POS)
-            {
-                elements.push_back(make_shared<DataObject>(entry.first));
-            }
-            notOnThis.push_back(make_shared<DataObject>(JHash, elements));
-            elements.clear();
-        }
-
+        auto result = _decodeInnerIBLT(positiveChld,negativeChld);
+        notOnThis = result.first;
+        notOnThat = result.second;
+        
         // Rebuild otherMinusSelf
         // Iterate through each pair of combination to find if hash matches
         for (auto itr : notOnThis)
         {
-
             auto curInfo = itr->to_pair<ZZ>();
             ZZ index = curInfo.first;
 
-            if (curInfo.second.size() != 0)
+            long curInd = 0;
+            for (auto hash : myIBLT.hashes)
             {
-                long curInd = 0;
-                for (auto hash : myIBLT.hashes)
+                if (conv<ZZ>(hash) == index)
                 {
-
-                    if (conv<ZZ>(hash) == index)
-                    {
-                        auto out = (reWrite(curInd, curInfo.second))->to_pair<long>();
-                        otherMinusSelf.push_back(reWrite(curInd, curInfo.second));
-
-                        auto it = mySet.begin();
-                        advance(it, curInd);
-
-                        break;
-                    }
-                    curInd++;
+                    otherMinusSelf.push_back(reWrite(curInd, curInfo.second));
+                    break;
                 }
+                curInd++;
             }
         }
         // Rebuid SelfMinusOther
@@ -301,7 +238,7 @@ bool IBLTSetOfSets::SyncServer(const shared_ptr<Communicant> &commSync, list<sha
 
         stringstream msg;
         msg << "IBLTSetOfSets " << (success ? "succeeded" : "may not have completely succeeded") << endl;
-        //msg << "[Server] self - other = " << printSetofSets(selfMinusOther) << endl;
+        msg << "[Server] self - other = " << printSetofSets(selfMinusOther) << endl;
         //msg << "[Server] other - self = " << printSetofSets(otherMinusSelf) << endl;
         Logger::gLog(Logger::METHOD, msg.str());
 
@@ -330,14 +267,18 @@ bool IBLTSetOfSets::addElem(shared_ptr<DataObject> elem)
 
 bool IBLTSetOfSets::delElem(shared_ptr<DataObject> elem)
 {
+    string str = printSet(elem->to_Set());
     bool success = SyncMethod::delElem(elem);
-
     // Transfer the dataobject to set and delete it
     auto tarSet = elem->to_Set();
     myIBLT.eraseIBLT(tarSet, elemSize, childSize);
-
     // Remove the element in mySet
-    mySet.erase(std::remove(mySet.begin(), mySet.end(), elem), mySet.end());
+    auto it = std::find(mySet.begin(),mySet.end(), elem);
+    if(it != mySet.end())
+        mySet.erase(it);
+    else
+        success = false;
+
     return success;
 }
 
@@ -360,4 +301,92 @@ shared_ptr<DataObject> IBLTSetOfSets::reWrite(long index, list<shared_ptr<DataOb
 string IBLTSetOfSets::getName()
 {
     return "IBLTSetOfSets\n   * expected number of elements = " + toStr(expNumElems) + "\n   * size of values =  " + toStr(myIBLT.eltSize()) + "\n   * size of inner values =  " + toStr(elemSize) + "\n";
+}
+
+pair<list<shared_ptr<DataObject>>,list<shared_ptr<DataObject>>> IBLTSetOfSets::_decodeInnerIBLT(
+                                                            vector<pair<ZZ, ZZ>> &positiveChld, 
+                                                            vector<pair<ZZ, ZZ>> &negativeChld)
+{
+
+    list<shared_ptr<DataObject>> notOnThis, notOnThat;
+    vector<long> decoded;
+    for (auto &itr : positiveChld)
+    {
+        size_t MIN = SIZE_MAX;
+        // rebuild Ta in Ea/Eb from string
+        string info = zzToString(itr.first);
+        IBLT II(childSize, elemSize);
+        II.reBuild(info);
+
+        // for storing missing elements in the child set
+        // best pos -> elements on child set in Client but not Server
+        // best neg -> elements on child set in Server but not Client
+        vector<pair<ZZ, ZZ>> best_POS, best_NEG;
+
+        // record by its hash
+        ZZ JHash;
+        long index = 0;
+        long delInd;
+        long cmp = LONG_MAX;
+        for (auto &itrJ : negativeChld)
+        {
+            // rebuild Tb in Eb/Ea from string
+            string infoJ = zzToString(itrJ.first);
+            IBLT JJ(childSize, elemSize);
+            JJ.reBuild(infoJ);
+
+            vector<pair<ZZ, ZZ>> curPos, curNeg;
+
+
+            if ((JJ-II).listEntries(curNeg, curPos))
+            {
+                size_t curDist = curPos.size() + curNeg.size();
+                if ((curDist <= MIN))
+                {
+                    auto it = std::find(decoded.begin(),decoded.end(),index);
+                    if(it == decoded.end()){
+                        // Add elements to shorter set if there're duplicated elements in set
+                        if((curDist != MIN) || mySet[index]->to_Set().size() < mySet[delInd]->to_Set().size()){
+                            best_POS = curPos;
+                            best_NEG = curNeg;
+                            MIN = curDist;
+                            JHash = itrJ.second;
+                            delInd = index;
+                        }
+                    }
+                }
+            }
+
+            index ++;
+        }
+        // avoid two iblt decoding with same other iblt
+        // this case will happen when difference between two parent set is big
+        decoded.push_back(delInd);
+
+        // add missing elements and its chldset index into SMO OMS
+        // {childset Hash, missing element}
+
+        list<shared_ptr<DataObject>> elements;
+        if(best_NEG.size()!=0){
+            for (auto entry : best_NEG)
+                elements.push_back(make_shared<DataObject>(entry.first));
+            // construct dataobject from {ZZ,list<shared_ptr<DataObject>>}
+            // to ensure minimum changes on genSync
+            notOnThat.push_back(make_shared<DataObject>(itr.second, elements));
+        }
+        elements.clear();
+
+        if(best_POS.size()!=0){
+            for (auto entry : best_POS)
+                elements.push_back(make_shared<DataObject>(entry.first));
+            notOnThis.push_back(make_shared<DataObject>(JHash, elements));
+        }
+        elements.clear();
+    }
+
+    // free allocated memory
+    positiveChld.clear();
+    negativeChld.clear();
+    decoded.clear();
+    return {notOnThis,notOnThat};
 }

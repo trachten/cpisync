@@ -250,6 +250,15 @@ void IBLT::insertIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, 
 {
     hash_t setHash = _setHash(tarSet);
 
+    // make sure the hash is unique even for duplicate sets
+    auto it = std::find(hashes.begin(),hashes.end(),setHash);
+
+    while(it != hashes.end()){
+        setHash = _hash(setHash,1);
+        it = std::find(hashes.begin(),hashes.end(),setHash);
+    }
+    
+    hashes.push_back(setHash);
     // Put chld set into a chld IBLT
     IBLT chldIBLT(expnChldSet, elemSize);
     for (auto itr : tarSet)
@@ -260,12 +269,39 @@ void IBLT::insertIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, 
     // Put the pair(chld IBLT, hash of set) into the outer IBLT T
     insertIBLT(chldIBLT, setHash);
 
-    hashes.push_back(setHash);
 }
 
 void IBLT::eraseIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
 {
     hash_t setHash = _setHash(tarSet);
+    
+    // delete set hash in the vector
+    bool found = false;
+
+    // if target hash not in current structure, hash again and perform another round of search
+    long curInd = 0;
+    while(true){
+        for (auto itr = hashes.begin(); itr < hashes.end(); itr++)
+        {
+            if ((*itr) == setHash)
+            {
+                hashes.erase(itr);
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            setHash = _hash(setHash,1);
+            curInd++;
+        }
+        else
+            break;
+
+        if(curInd > this->size()){
+            Logger::error_and_quit("Error deleting target set: Not found in current structure");
+        }
+    }
+
 
     IBLT chldIBLT(expnChldSet, elemSize);
     for (auto itr : tarSet)
@@ -273,13 +309,5 @@ void IBLT::eraseIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, s
         chldIBLT.insert(itr->to_ZZ(), itr->to_ZZ());
     }
     eraseIBLT(chldIBLT, setHash);
-    // delete set hash in the vector
-    for (auto itr = hashes.begin(); itr < hashes.end(); itr++)
-    {
-        if ((*itr) == setHash)
-        {
-            hashes.erase(itr);
-            break;
-        }
-    }
+
 }

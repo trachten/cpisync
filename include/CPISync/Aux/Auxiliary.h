@@ -298,30 +298,6 @@ inline string multisetPrint(const multiset<string>& container) {
     return result;
 }
 
-/**
- * Compare if two set have elements with same content. Can also use multisetDiff functions
- *          but that one won't work when input variable is a pointer
- * @param first first multiset to be compared
- * @param second second multiset to be compared
- * @return true iff two sets have same contents
- */
-template <class T>
-bool cmpMultiset(const multiset<T> first, const multiset<T> second)
-{
-    long match = 0;
-    for (auto itr1 : first)
-    {
-        for (auto itr2 : second)
-        {
-            if (toStr(itr1->to_ZZ()) == toStr(itr2->to_ZZ()))
-            {
-                match++;
-                break;
-            }
-        }
-    }
-    return (match == first.size()) && (first.size() == second.size());
-}
 
 /**
  * Returns the multi-set intersection of <first> and <second>.
@@ -353,6 +329,26 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
+}
+
+/**
+ * Compare if two set have elements with same content. Can also use multisetDiff functions
+ *          but that one won't work when input variable is a pointer
+ * @param first first multiset to be compared
+ * @param second second multiset to be compared
+ * @return true iff two sets have same contents
+ */
+template <class T>
+bool cmpMultiset(const multiset<T> first, const multiset<T> second)
+{
+    multiset<ZZ> fir_vec, sec_vec;
+
+    for(auto ii:first)
+        fir_vec.insert(ii->to_ZZ());
+    for(auto jj:second)
+        sec_vec.insert(jj->to_ZZ());
+    
+    return (multisetDiff(fir_vec,sec_vec).size() + multisetDiff(sec_vec,fir_vec).size() == 0);
 }
 
 /**

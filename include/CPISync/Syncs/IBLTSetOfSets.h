@@ -24,11 +24,10 @@ public:
   /*
      * Constructor. This IBLT is the T in the paper which is also the only thing needed to be transmitted between server and client
      * @param expected The expected number of elements being stored
-     * @param eltSize The size for IBLT(ZZ type)
      * @param chldSize # elements in the child set
      * @param innerSize size of the single element in the child set
      */
-  IBLTSetOfSets(size_t expected, size_t eltSize, size_t chldSize, size_t innerSize);
+  IBLTSetOfSets(size_t expected, size_t chldSize, size_t innerSize);
   ~IBLTSetOfSets() override;
 
   // Implemented parent class methods
@@ -105,6 +104,14 @@ private:
   // IBLT instance variable for storing data
   // Every pair element put in this IBLT is actually like (chldIBLT, chldSet.hash)
   IBLT myIBLT;
+  
+  /**
+   *  decode procedure for inner IBLT
+   * @param postiveChld serialized IBLT {IBLT, hash} peeled from positive count
+   * @param negativeChld serialized IBLT {IBLT, hash} peeled from negative count
+   * @return two list containing missing elements, elements are pair of {hash, missing elements} serialized in a data object type
+   **/
+  pair<list<shared_ptr<DataObject>>,list<shared_ptr<DataObject>>> _decodeInnerIBLT(vector<pair<ZZ, ZZ>> &positiveChld, vector<pair<ZZ, ZZ>> &negativeChld);
 
   // a data object containing all child set in this class
   // each child set is represented as a dataobject

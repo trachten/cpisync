@@ -23,9 +23,9 @@ void IBLTSetOfSetsTest::tearDown()
 {
 }
 
-void IBLTSetOfSetsTest::testGetStrings()
+void IBLTSetOfSetsTest::TestIBLTGetName()
 {
-    IBLTSetOfSets IBLTSetOfSets(0, 0, 0, 0);
+    IBLTSetOfSets IBLTSetOfSets(0, 0, 0);
 
     CPPUNIT_ASSERT(!IBLTSetOfSets.getName().empty());
 }
@@ -33,37 +33,89 @@ void IBLTSetOfSetsTest::testGetStrings()
 void IBLTSetOfSetsTest::IBLTSetOfSetsSetReconcileTest()
 {
     const int BITS = sizeof(randZZ());
-    const long numElemChldSet = 5;
+    const int NUM_EXP_ELEMS = 100; //This is the number of elements you expect in the union of each set and its respective pair set
 
-    GenSync GenSyncServer = GenSync::Builder()
-                                .setProtocol(GenSync::SyncProtocol::IBLTSetOfSets)
-                                .setComm(GenSync::SyncComm::socket)
-                                .setBits(BITS)
-                                .setNumExpectedElements(100)
-                                .setNumElem(10)
-                                .setChldSetSize(BITS)
-                                .build();
+    for(int ii = 0; ii < NUM_TESTS ; ii++){
+        const long NUM_EXP_ELEMS_CHILD_SET = (rand()% 10 + 1); //This is the number of sets
+        GenSync GenSyncServer = GenSync::Builder()
+				.setProtocol(GenSync::SyncProtocol::IBLTSetOfSets)
+				.setComm(GenSync::SyncComm::socket)
+				.setBits(BITS)
+				.setExpNumElems(NUM_EXP_ELEMS)
+				.setExpNumElemChild(NUM_EXP_ELEMS_CHILD_SET * 2)
+                .build();
 
-    GenSync GenSyncClient = GenSync::Builder()
-                                .setProtocol(GenSync::SyncProtocol::IBLTSetOfSets)
-                                .setComm(GenSync::SyncComm::socket)
-                                .setBits(BITS)
-                                .setNumExpectedElements(100)
-                                .setNumElem(10)
-                                .setChldSetSize(BITS)
-                                .build();
+        GenSync GenSyncClient = GenSync::Builder()
+				.setProtocol(GenSync::SyncProtocol::IBLTSetOfSets)
+				.setComm(GenSync::SyncComm::socket)
+				.setBits(BITS)
+				.setExpNumElems(NUM_EXP_ELEMS)
+				.setExpNumElemChild(NUM_EXP_ELEMS_CHILD_SET * 2)
+				.build();
 
-    //(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
-    CPPUNIT_ASSERT(SetOfSetsSyncTest(GenSyncClient, GenSyncServer, false, false, numElemChldSet));
+        CPPUNIT_ASSERT(SetOfSetsSyncTest(GenSyncClient, GenSyncServer, NUM_EXP_ELEMS_CHILD_SET, false, false,false));
+    }
 }
 
+void IBLTSetOfSetsTest::IBLTSetOfSetsLargeSync() {
+	const int BITS = sizeof(randZZ());
+	const int NUM_EXP_ELEMS = 400; //This is the number of elements you expect in the union of each set and its respective pair set
+
+	for(int ii = 0; ii < NUM_TESTS ; ii++){
+		const long NUM_EXP_ELEMS_CHILD_SET = (rand()%30 + 1); //This is the number of sets
+
+		GenSync GenSyncServer = GenSync::Builder()
+				.setProtocol(GenSync::SyncProtocol::IBLTSetOfSets)
+				.setComm(GenSync::SyncComm::socket)
+				.setBits(BITS)
+				.setExpNumElems(NUM_EXP_ELEMS)
+				.setExpNumElemChild(NUM_EXP_ELEMS_CHILD_SET * 2)
+				.build();
+
+		GenSync GenSyncClient = GenSync::Builder()
+				.setProtocol(GenSync::SyncProtocol::IBLTSetOfSets)
+				.setComm(GenSync::SyncComm::socket)
+				.setBits(BITS)
+				.setExpNumElems(NUM_EXP_ELEMS)
+				.setExpNumElemChild(NUM_EXP_ELEMS_CHILD_SET * 2)
+				.build();
+
+		CPPUNIT_ASSERT(SetOfSetsSyncTest(GenSyncClient, GenSyncServer, NUM_EXP_ELEMS_CHILD_SET,false, true,false));
+	}
+}
+
+void IBLTSetOfSetsTest::IBLTSetOfSetsSimilarSetSync() {
+	const int BITS = sizeof(randZZ());
+	const int NUM_EXP_ELEMS = 100; //This is the number of elements you expect in the union of each set and its respective pair set
+
+	for(int ii = 0; ii < NUM_TESTS ; ii++){
+		const long NUM_EXP_ELEMS_CHILD_SET = (rand()% 10 + 1); //This is the number of sets
+		GenSync GenSyncServer = GenSync::Builder()
+				.setProtocol(GenSync::SyncProtocol::IBLTSetOfSets)
+				.setComm(GenSync::SyncComm::socket)
+				.setBits(BITS)
+				.setExpNumElems(NUM_EXP_ELEMS)
+				.setExpNumElemChild(NUM_EXP_ELEMS_CHILD_SET * 2)
+				.build();
+
+		GenSync GenSyncClient = GenSync::Builder()
+				.setProtocol(GenSync::SyncProtocol::IBLTSetOfSets)
+				.setComm(GenSync::SyncComm::socket)
+				.setBits(BITS)
+				.setExpNumElems(NUM_EXP_ELEMS)
+				.setExpNumElemChild(NUM_EXP_ELEMS_CHILD_SET * 2)
+				.build();
+
+		CPPUNIT_ASSERT(SetOfSetsSyncTest(GenSyncClient, GenSyncServer, NUM_EXP_ELEMS_CHILD_SET,false, false,true));
+	}
+}
 
 void IBLTSetOfSetsTest::testAddDelElem()
 {
     // number of elems to add
     const int ITEMS = 50;
     const int size_chldset = 5;
-    IBLTSetOfSets IBLTSetOfSets(ITEMS, sizeof(randZZ()), size_chldset, sizeof(randZZ()));
+    IBLTSetOfSets IBLTSetOfSets(ITEMS, size_chldset, sizeof(randZZ()));
     list<shared_ptr<DataObject>> elts;
     // check that add works
     for (int jj = 0; jj < ITEMS; jj++)
@@ -101,7 +153,7 @@ void IBLTSetOfSetsTest::testAddDelElem()
     }
     else
     {
-        cout << "Size doesn't match" << endl;
+        Logger::error("Size doesn't match");
         CPPUNIT_ASSERT(false);
     }
 

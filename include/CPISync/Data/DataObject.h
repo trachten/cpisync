@@ -52,10 +52,10 @@ public:
     template <class T>
     explicit DataObject(const T index, const list<shared_ptr<DataObject>> elems)
     {
-        string str = toStr<T>(index) + " ";
+        string str = base64_encode(toStr<T>(index).c_str(), toStr<T>(index).length()) + " ";
         for (auto itr : elems)
-            str += itr->to_string() + " ";
-        str.pop_back();
+            str += base64_encode(itr->to_string().c_str(), itr->to_string().length()) + " ";
+        str = base64_encode(str.c_str(),str.length());
         myBuffer = pack(str);
     }
 
@@ -106,12 +106,12 @@ public:
     pair<T, list<shared_ptr<DataObject>>> to_pair(){
         
         string str = unpack(myBuffer);
-        auto splt = split(str, " ");
+        auto splt = split(base64_decode(str), " ");
 
-        T out = strTo<T>(splt[0]);
+        T out = strTo<T>(base64_decode(splt[0]));
         list<shared_ptr<DataObject>> outList;
         for (int ii = 1; ii < splt.size(); ii++)
-            outList.push_back(make_shared<DataObject>(splt[ii]));
+            outList.push_back(make_shared<DataObject>(base64_decode(splt[ii])));
         return {out, outList};
     }
 

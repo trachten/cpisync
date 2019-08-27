@@ -26,20 +26,18 @@ DataObject::DataObject(const multiset<shared_ptr<DataObject>> tarSet) : DataObje
 {
     string str = "";
     for (auto ii : tarSet)
-        str += ii->to_string() + " ";
-    str.pop_back(); // delete space at the end
+        str += base64_encode(ii->to_string().c_str(),ii->to_string().length()) + " ";
+    str = base64_encode(str.c_str(), str.length());
     myBuffer = pack(str);
 }
 
 multiset<shared_ptr<DataObject>> DataObject::to_Set() const
 {
     multiset<shared_ptr<DataObject>> result;
-    string str = unpack(myBuffer);
+    string str = base64_decode(unpack(myBuffer));
     auto splt = split(str, " ");
     for (auto itr : splt)
-    {
-        result.insert(make_shared<DataObject>(itr));
-    }
+        result.insert(make_shared<DataObject>(base64_decode(itr)));
     return result;
 }
 

@@ -83,14 +83,14 @@ inline vector<GenSync> builderCombos() {
                 case GenSync::SyncProtocol::FullSync:
                     break; // nothing needs to be done for a fullsync
                 case GenSync::SyncProtocol::IBLTSync:
-                    builder.
-                            setBits(eltSize).
-                            setNumExpectedElements(numExpElem);
+					builder.
+							setBits(eltSize).
+							setExpNumElems(numExpElem);
                     break;
                 case GenSync::SyncProtocol::OneWayIBLTSync:
-                    builder.
-                            setBits(eltSize).
-                            setNumExpectedElements(numExpElem);
+					builder.
+							setBits(eltSize).
+							setExpNumElems(numExpElem);
                     break;
                 default:
                     continue;
@@ -503,8 +503,11 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 	return false; // should never get here
 }
 
-/** Add random elements to server, client and reconciled for further tests
- * @param Multiset true iff multiset allowd for datatype
+/** Adds elements to the client and server GenSync and return a vector containing the elements that were added
+ *  This vector contains SERVER_MINUS_CLIENT elements that are only added to the server, followed by CLIENT_MINUS_SERVER
+ *  elements that are only on the client. The remaining elements are elements that both the server and client have
+ *  This vector can be used to determine what should be on the server and client before and after the sync for testing
+ * @param Multiset if true creates a multiset rather than a set
  * @param SIMILAR # of same elems between server and client
  * @param SERVER_MINUS_CLIENT # of elems on server but not on client
  * @oaram CLIENT_MINUS_SERVER # of elems on client but not on server
@@ -615,6 +618,138 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 	return objectsPtr;
 }
 
+/** Add data for set of sets data type
+ * @param GenSyncServer the server object
+ * @param GenSyncClient the client object
+ * @param reconciled data structure storing expected result after sync
+ * @param SIMILAR # elements that server and client have in common
+ * @param SERVER_MINUS_CLIENT # elems that are on server but not client
+ * @param CLIENT_MINUS_SERVER # elems that are on client but not on server
+ * @param numPerSet upper bound for # elems in a child set
+ * @param innerDiff upper bound for differences between each child set
+ */
+inline void addElemsSetofSets(GenSync &GenSyncServer,
+							  GenSync & GenSyncClient,
+							  multiset<string> &reconciled,
+							  long SIMILAR,
+							  long SERVER_MINUS_CLIENT,
+							  long CLIENT_MINUS_SERVER,
+							  long numPerSet,
+							  long innerDiff,
+							  bool similarSync
+							  ){
+
+	//For checking that elements added to each set are unique (no multisets)
+	std::set<ZZ> dataSet;
+
+	vector<shared_ptr<DataObject>> setofsets;
+	multiset<shared_ptr<DataObject>> objectPtrs;
+
+	shared_ptr<DataObject> serializedIBLT;
+
+	// Create SIMILAR number of sets that are identical between the client and server
+	for (long ii = 0; ii < SIMILAR; ii++)
+	{
+		// preObjPtr = objectPtrs;
+		if((rand() % 3 != 0)  || !similarSync || ii == 0){
+		objectPtrs.clear();
+		// create a single child set with no repeat elements
+		for (long jj = 0; jj < numPerSet; jj++)
+		{
+			ZZ data = randZZ();
+			//Checks if element you are trying to add is unique. If it isn't add a different element
+			while (!get<1>(dataSet.insert(data)))
+			{
+				if (dataSet.size() == pow(2, eltSize * 8))
+					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
+				data = randZZ();
+			}
+			//Insert your element into the child IBLT
+			objectPtrs.insert(make_shared<DataObject>(data));
+		}
+		}
+		//Serilize your IBLT and add it to the setofsets object and book keeping vars
+		//Will repeat a set creating a duplicate once every 3 times if similar sets is enabled
+			serializedIBLT = make_shared<DataObject>(objectPtrs);
+
+		setofsets.push_back(serializedIBLT);
+		GenSyncClient.addElem(serializedIBLT);
+		GenSyncServer.addElem(serializedIBLT);
+		reconciled.insert(serializedIBLT->print());
+	}
+
+	objectPtrs.clear();
+
+	// construct child IBLT with #innerDiff missing elems
+	for (long ii = 0; ii < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT)/2; ii++){
+		objectPtrs.clear();
+		for (long jj = 0; jj < numPerSet - innerDiff; jj++) {
+			ZZ data = randZZ();
+			//Checks if element you are trying to add is unique. If it isn't add a different element
+			while (!get<1>(dataSet.insert(data))) {
+				if (dataSet.size() == pow(2, eltSize * 8))
+					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " +
+											toStr(eltSize) + " bytes");
+				data = randZZ();
+			}
+			//Insert your element into the child IBLT
+			objectPtrs.insert(make_shared<DataObject>(data));
+		}
+		//Serilize your IBLT and add it to the setofsets object
+		setofsets.push_back(make_shared<DataObject>(objectPtrs));
+	}
+
+	//Serilize your IBLT and add it to the setofsets object and book keeping vars
+	for (int ii = SIMILAR; ii < SIMILAR + CLIENT_MINUS_SERVER/2; ii++)
+	{
+		auto curSet = setofsets[ii]->to_Set();
+		for(long jj =0; jj < innerDiff;jj++){
+			ZZ data = randZZ();
+			//Checks if element you are trying to add is unique. If it isn't add a different element
+			while (!get<1>(dataSet.insert(data)))
+			{
+				if (dataSet.size() == pow(2, eltSize * 8))
+					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
+				data = randZZ();
+			}
+			curSet.insert(make_shared<DataObject>(data));
+		}
+
+		//Serilize your IBLT and add it to the setofsets object and book keeping vars
+		serializedIBLT = make_shared<DataObject>(curSet);
+		GenSyncClient.addElem(serializedIBLT);
+		GenSyncServer.addElem(setofsets[ii]);
+		reconciled.insert(serializedIBLT->print());
+	}
+
+	// add #innerDiff different elements to the server side of the sync
+	for (int ii = SIMILAR + CLIENT_MINUS_SERVER/2; ii < SIMILAR + CLIENT_MINUS_SERVER/2 + SERVER_MINUS_CLIENT/2; ii++)
+	{
+		auto curSet = setofsets[ii]->to_Set();
+		for(long jj =0; jj < innerDiff;jj++){
+			ZZ data = randZZ();
+			//Checks if element you are trying to add is unique. If it isn't add a different element
+			while (!get<1>(dataSet.insert(data)))
+			{
+				if (dataSet.size() == pow(2, eltSize * 8))
+					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
+				data = randZZ();
+			}
+			curSet.insert(make_shared<DataObject>(data));
+		}
+
+		//Serilize your IBLT and add it to the setofsets object and book keeping vars
+		serializedIBLT = make_shared<DataObject>(curSet);
+		GenSyncServer.addElem(serializedIBLT);
+		GenSyncClient.addElem(setofsets[ii]);
+		reconciled.insert(serializedIBLT->print());
+	}
+
+	// free allocated memory (shared_ptrs)
+	objectPtrs.clear();
+	dataSet.clear();
+}
+
 /**
  * Runs tests assuring that two GenSync objects successfully sync sets via two-way communication
  * @param GenSyncServer Server GenSync
@@ -687,62 +822,66 @@ inline bool benchmarkSync(GenSync GenSyncClient, GenSync GenSyncServer, int SIMI
 	return success; // returns success status of tests
 }
 
-
-/**
- * This function handles the server client fork in CommSocketTest and is wrapped in a timer in the actual test
- * @port The port that the commSockets will make a connection on (8001)
- * @host The host that the commSockets will use (localhost)
+/** Sync test for IBLT set of sets funciton
+ * @param GenSyncClient the client object
+ * @param GenSyncServer the server object
+ * @param numPerSet upper bound for # of elements in a child set
+ * @param oneWay if true perform one-way sync //TODO: Implement one way sync for IBLT
+ * @param largeSync if true sync with large amount of data
+ * @param similarSync if true some of the internal sets will be very similar or identical
+ * @return true iff sync succeed
  */
-inline bool socketSendReceiveTest(){
-	const int LENGTH_LOW = 1; //Lower limit of string length for testing
-	const int LENGTH_HIGH = 100; //Upper limit of string length for testing
-	const int TIMES = 100; //Times to run commSocketTest
+inline bool SetOfSetsSyncTest(GenSync GenSyncClient, GenSync GenSyncServer, long numPerSet, bool oneWay, bool largeSync, bool similarSync)
+{
 
-	vector<string> sampleData;
+	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
+	bool success = true;
 
-	for(int ii = 0; ii < TIMES; ii++){
-		sampleData.push_back(randString(LENGTH_LOW,LENGTH_HIGH));
+	//If one way, run 1 time, if not run NUM_TESTS times
+	for (int ii = 0; ii < (oneWay ? 1 : NUM_TESTS); ii++)
+	{
+		//Similar = number of child sets
+		const unsigned int SIMILAR = largeSync ? 200 : 50;
+		//CLIENT_MINUS_SERVER must be even for this test case
+		const unsigned int CLIENT_MINUS_SERVER = largeSync ? 100 : 50;
+		const unsigned int SERVER_MINUS_CLIENT = CLIENT_MINUS_SERVER; // For set of sets SMC == CMS
+
+		// this protocol assumes d differences between two parent set
+		// thus the innerDiff should never be greater than the parent difference size
+		const int innerDiff = (rand()%(numPerSet/2));
+
+		// bookkeep the excepted elements after sync
+		multiset<string> reconciled;
+
+		addElemsSetofSets(GenSyncServer,GenSyncClient,reconciled,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,numPerSet,innerDiff, similarSync);
+
+		//Returns a boolean value for the success of the synchronization
+		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, false, false, SIMILAR,
+									  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT, reconciled, true);
+		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
+		success &= GenSyncServer.clearData();
+		success &= GenSyncClient.clearData();
+
+		reconciled.clear();
 	}
-
-	int chld_state;
-	pid_t pID = fork();
-	if (pID == 0) {
-		signal(SIGCHLD, SIG_IGN);
-		Logger::gLog(Logger::COMM,"created a server socket process");
-		CommSocket serverSocket(port,host);
-		serverSocket.commListen();
-
-		//If any of the tests fail return false
-		for(int ii = 0; ii < TIMES; ii++) {
-			if (!(serverSocket.commRecv(sampleData.at(ii).length()) == sampleData.at(ii))) {
-				serverSocket.commClose();
-				Logger::error_and_quit("Received message does not match sent message");
-				return false;
-			}
-		}
-
-		serverSocket.commClose();
-		exit(0);
-	} else if (pID < 0) {
-		Logger::error("Error forking in CommSocketTest");
-		return false;
-	} else {
-		Logger::gLog(Logger::COMM,"created a client socket process");
-		CommSocket clientSocket(port,host);
-		clientSocket.commConnect();
-
-		//Send each string from sampleData through the socket
-		for(int ii = 0; ii < TIMES; ii++)
-			clientSocket.commSend(sampleData.at(ii).c_str(),sampleData.at(ii).length());
-
-		clientSocket.commClose();
-		waitpid(pID, &chld_state, 0);
-	}
-	//If this point is reached, none of the tests have failed
-	return true;
+	return success; // returns success status of tests
 }
 
-
+/**
+ * Long term test for all sync functions with data type set
+ * @param GenSyncClient the client object
+ * @param GenSyncServer the server object
+ * @param SIMILAR # of elements for client and server have in common
+ * @param CLIENT_MINUS_SERVER # of elements that client has but not on server
+ * @param SERVER_MINUS_CLIENT # of elements that server has but not on client
+ * @param probSync true iff sync on a probablistic protocol
+ * @param Multiset true iff duplicate elems allowed
+ * @param syncParamTest true iff test for syncParam
+ * @param oneWay true iff sync on one-way protocol
+ * @param int difPerRound # for self/other or other/self during each round
+ * @param Rounds # of test rounds
+ * @return true iff sync succeed
+ */
 inline bool longTermSync(GenSync &GenSyncClient,
 						 GenSync &GenSyncServer,
 						 int SIMILAR,
@@ -753,7 +892,6 @@ inline bool longTermSync(GenSync &GenSyncClient,
 						 bool syncParamTest,
 						 bool oneWay,
 						 int difPerRound,
-						 bool details,
 						 const int Rounds)
 {
 
@@ -974,115 +1112,60 @@ inline bool longTermSync(GenSync &GenSyncClient,
 	}
 }
 
-inline bool SetOfSetsSyncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, bool largeSync, long numPerSet)
-{
 
-	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
-	//Don't seed oneWay tests because they loop on the outside of syncTest and you want different values for each run
-	if (!oneWay)
-		srand(3721);
-	bool success = true;
 
-	//If one way, run 1 time, if not run NUM_TESTS times
-	for (int ii = 0; ii < (oneWay ? 1 : NUM_TESTS); ii++)
-	{
-		// const unsigned int SIMILAR = largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1;			   // amt of elems common to both GenSyncs (!= 0)
-		// const unsigned int CLIENT_MINUS_SERVER = largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
-		// const unsigned int SERVER_MINUS_CLIENT = CLIENT_MINUS_SERVER;											   // For set of sets SMC == CMS
-		const unsigned int SIMILAR = 60;
-		const unsigned int CLIENT_MINUS_SERVER = 10;
-		const unsigned int SERVER_MINUS_CLIENT = CLIENT_MINUS_SERVER;
+/**
+ * This function handles the server client fork in CommSocketTest and is wrapped in a timer in the actual test
+ * @port The port that the commSockets will make a connection on (8001)
+ * @host The host that the commSockets will use (localhost)
+ */
+inline bool socketSendReceiveTest(){
+	const int LENGTH_LOW = 1; //Lower limit of string length for testing
+	const int LENGTH_HIGH = 100; //Upper limit of string length for testing
+	const int TIMES = 100; //Times to run commSocketTest
 
-		vector<shared_ptr<DataObject>> setofsets;
+	vector<string> sampleData;
 
-		// create the expected reconciled multiset
-		multiset<string> reconciled;
-
-		for (long jj = 0; jj < SIMILAR; jj++)
-		{
-			multiset<shared_ptr<DataObject>> objectsPtr;
-			std::set<ZZ> dataSet;
-			for (long ii = 0; ii < numPerSet; ii++)
-			{
-				ZZ data = randZZ();
-				while (!get<1>(dataSet.insert(data)))
-				{
-					if (dataSet.size() == pow(2, eltSize * 8))
-					{
-						string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
-						Logger::error_and_quit(errorMsg);
-					}
-					data = randZZ();
-				}
-				objectsPtr.insert(make_shared<DataObject>(data));
-			}
-			setofsets.push_back(make_shared<DataObject>(objectsPtr));
-		}
-
-		for (int jj = 0; jj < SIMILAR; jj++)
-		{
-			GenSyncClient.addElem(setofsets[jj]);
-			GenSyncServer.addElem(setofsets[jj]);
-			reconciled.insert(setofsets[jj]->print());
-		}
-
-		for (long jj = 0; jj < CLIENT_MINUS_SERVER; jj++)
-		{
-			multiset<shared_ptr<DataObject>> objectsPtr;
-			std::set<ZZ> dataSet;
-			for (long aa = 0; aa < numPerSet - 1; aa++)
-			{
-				ZZ data = randZZ();
-				while (!get<1>(dataSet.insert(data)))
-				{
-					if (dataSet.size() == pow(2, eltSize * 8))
-					{
-						string errorMsg = "Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes";
-						Logger::error_and_quit(errorMsg);
-					}
-					data = randZZ();
-				}
-				objectsPtr.insert(make_shared<DataObject>(data));
-			}
-			setofsets.push_back(make_shared<DataObject>(objectsPtr));
-		}
-
-		for (int jj = SIMILAR; jj < SIMILAR + CLIENT_MINUS_SERVER; jj++)
-		{
-
-			auto curSet = setofsets[jj]->to_Set();
-			long siz = curSet.size();
-			ZZ data = randZZ();
-			curSet.insert(make_shared<DataObject>(data));
-			while (siz == curSet.size())
-			{
-				data = randZZ();
-				curSet.insert(make_shared<DataObject>(data));
-			}
-
-			shared_ptr<DataObject> tar = make_shared<DataObject>(curSet);
-			if (jj % 2 == 0)
-			{
-				GenSyncServer.addElem(tar);
-				GenSyncClient.addElem(setofsets[jj]);
-			}
-			else
-			{
-				GenSyncClient.addElem(tar);
-				GenSyncServer.addElem(setofsets[jj]);
-			}
-			reconciled.insert(tar->print());
-		}
-		//Returns a boolean value for the success of the synchronization
-		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, false, false, SIMILAR,
-									  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT, reconciled, true);
-		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
-		// success &= GenSyncServer.clearData();
-		// success &= GenSyncClient.clearData();
-
-		setofsets.clear();
+	for(int ii = 0; ii < TIMES; ii++){
+		sampleData.push_back(randString(LENGTH_LOW,LENGTH_HIGH));
 	}
-	return success; // returns success status of tests
+
+	int chld_state;
+	pid_t pID = fork();
+	if (pID == 0) {
+		signal(SIGCHLD, SIG_IGN);
+		Logger::gLog(Logger::COMM,"created a server socket process");
+		CommSocket serverSocket(port,host);
+		serverSocket.commListen();
+
+		//If any of the tests fail return false
+		for(int ii = 0; ii < TIMES; ii++) {
+			if (!(serverSocket.commRecv(sampleData.at(ii).length()) == sampleData.at(ii))) {
+				serverSocket.commClose();
+				Logger::error_and_quit("Received message does not match sent message");
+				return false;
+			}
+		}
+
+		serverSocket.commClose();
+		exit(0);
+	} else if (pID < 0) {
+		Logger::error("Error forking in CommSocketTest");
+		return false;
+	} else {
+		Logger::gLog(Logger::COMM,"created a client socket process");
+		CommSocket clientSocket(port,host);
+		clientSocket.commConnect();
+
+		//Send each string from sampleData through the socket
+		for(int ii = 0; ii < TIMES; ii++)
+			clientSocket.commSend(sampleData.at(ii).c_str(),sampleData.at(ii).length());
+
+		clientSocket.commClose();
+		waitpid(pID, &chld_state, 0);
+	}
+	//If this point is reached, none of the tests have failed
+	return true;
 }
 
 #endif //CPISYNCLIB_GENERIC_SYNC_TESTS_H

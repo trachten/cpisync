@@ -256,7 +256,7 @@ int main(int argc, char *argv[]) {
             setMbar(mbar).
             setBits(bits).
             setNumPartitions(pFactor).
-            //setNumExpectedElements(expectElems).
+            //setExpNumElems(expectElems).
             setDataFile(fileName).
             build();
 
@@ -278,10 +278,10 @@ int main(int argc, char *argv[]) {
     bool syncSuccess;
     if (comm_flag == CLIENT) {
         Logger::gLog(Logger::METHOD, "\n[CLIENT]");
-        syncSuccess = theSync.startSync(0);
+        syncSuccess = theSync.clientSyncBegin(0);
     } else {
         Logger::gLog(Logger::METHOD, "\n[SERVER]");
-        syncSuccess = theSync.listenSync(0);
+        syncSuccess = theSync.serverSyncBegin(0);
     }
 
     // 4. Results

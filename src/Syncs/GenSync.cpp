@@ -115,7 +115,7 @@ bool GenSync::delElem(shared_ptr<DataObject> delPtr) {
 		//Iterate through mySyncVec and call that sync's delElem method
 		for (auto itAgt : mySyncVec) {
 			if (!itAgt->delElem(delPtr)) {
-				Logger::error("Error deleting item. SyncVec delete failed ");
+                Logger::error("Error deleting item. SyncVec delete failed ");
 				return false;
 			}
 		}
@@ -225,11 +225,11 @@ vector<shared_ptr<SyncMethod>>::iterator GenSync::getSyncAgt(int index) {
 // SYNCHRONIZATION METHODS
 
 // listen, receive data and conduct synchronization
-bool GenSync::listenSync(int method_num) {
-    Logger::gLog(Logger::METHOD, "Entering GenSync::listenSync");
+bool GenSync::serverSyncBegin(int sync_num) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::serverSyncBegin");
     // find the right syncAgent	
     auto syncAgent = mySyncVec.begin();
-    advance(syncAgent, method_num);
+    advance(syncAgent, sync_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
 
@@ -256,11 +256,11 @@ bool GenSync::listenSync(int method_num) {
 }
 
 // request connection, send data and get the result
-bool GenSync::startSync(int method_num) {
-    Logger::gLog(Logger::METHOD, "Entering GenSync::startSync");
+bool GenSync::clientSyncBegin(int sync_num) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::clientSyncBegin");
     // find the right syncAgent	
     auto syncAgentIt = mySyncVec.begin();
-    advance(syncAgentIt, method_num);
+    advance(syncAgentIt, sync_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
     vector<shared_ptr<Communicant>>::iterator itComm;
@@ -407,7 +407,7 @@ GenSync GenSync::Builder::build() {
             _postProcess = IBLTSync_HalfRound::postProcessing_SET;
             break;
         case SyncProtocol::IBLTSetOfSets:
-            myMeth = make_shared<IBLTSetOfSets>(numExpElem, setChldSize, numElemChldSet, bits);
+            myMeth = make_shared<IBLTSetOfSets>(numExpElem, numElemChldSet, bits);
             _postProcess = IBLTSetOfSets::postProcessing_IBLTSetOfSets;
             break;
         default:

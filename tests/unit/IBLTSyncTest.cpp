@@ -28,14 +28,14 @@ void IBLTSyncTest::IBLTSyncSetReconcileTest() {
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(numExpElem).
+			setExpNumElems(numExpElem).
 			build();
 
 	GenSync GenSyncClient = GenSync::Builder().
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(numExpElem).
+			setExpNumElems(numExpElem).
 			build();
 
 	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
@@ -49,14 +49,14 @@ void IBLTSyncTest::IBLTSyncMultisetReconcileTest() {
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(numExpElem).
+			setExpNumElems(numExpElem).
 			build();
 
 	GenSync GenSyncClient = GenSync::Builder().
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(numExpElem).
+			setExpNumElems(numExpElem).
 			build();
 
 	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = true, largeSync = false)
@@ -70,14 +70,14 @@ void IBLTSyncTest::IBLTSyncLargeSetReconcileTest() {
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(largeNumExpElems).
+			setExpNumElems(largeNumExpElems).
 			build();
 
 	GenSync GenSyncClient = GenSync::Builder().
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(largeNumExpElems).
+			setExpNumElems(largeNumExpElems).
 			build();
 
 	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = true)
@@ -127,14 +127,14 @@ void IBLTSyncTest::testIBLTParamMismatch(){
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
 			//Different number of expectedElements to ensure that mismatches cause failure properly
-			setNumExpectedElements(numExpElem + 100).
+			setExpNumElems(numExpElem + 100).
 			build();
 
 	GenSync GenSyncClient = GenSync::Builder().
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(numExpElem).
+			setExpNumElems(numExpElem).
 			build();
 
 	//(oneWay = false, probSync = true, syncParamTest = true, Multiset = false, largeSync = false)

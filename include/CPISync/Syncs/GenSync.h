@@ -194,7 +194,7 @@ public:
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return true iff all synchronizations were completed successfully
      */
-    bool listenSync(int sync_num = 0);
+    bool serverSyncBegin(int sync_num = 0);
 
     /**
      * Sequentially sends a specific synchronization request to each communicant.  If sync is successful,
@@ -204,7 +204,7 @@ public:
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return  true iff all synchronizations were completed successfully
      */
-    bool startSync(int sync_num);
+    bool clientSyncBegin(int sync_num);
 
 
 
@@ -444,7 +444,7 @@ public:
      * The number of elements expected to be in the sync data structure.  Some sync objects work are targeted toward
      * a specific number of elements.
      */
-    Builder& setNumExpectedElements(size_t theNumExpElems) {
+    Builder& setExpNumElems(size_t theNumExpElems) {
         this->numExpElem = theNumExpElems;
         return *this;
     }
@@ -462,13 +462,8 @@ public:
 		return *this;
 	}
 
-    Builder &setChldSetSize(long SETSIZE)
-    {
-        this->setChldSize = SETSIZE;
-        return *this;
-    }
 
-    Builder &setNumElem(long NUMELEM)
+    Builder &setExpNumElemChild(long NUMELEM)
     {
         this->numElemChldSet = NUMELEM;
         return *this;
@@ -499,7 +494,6 @@ private:
     size_t numExpElem=Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
     string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
 	bool hashes = Builder::HASHES;
-    long setChldSize = Builder::UNDEF_NUM;      /** size of child set in a IBLT shape **/
     long numElemChldSet = Builder::UNDEF_NUM; /** exp # of elements in a child set **/
 
 

@@ -62,7 +62,7 @@ void BenchmarkTest::TimedSyncThreshold()
 	for (int ii = 0; ii < twoWayCombos(1).size(); ii++)
 	{
 		difs = 1;
-		while (1)
+		while (true)
 		{
 			//Double the ammount of differences until the sync can not complete within MAX_TIME
 			difs *= 2;
@@ -88,7 +88,7 @@ void BenchmarkTest::TimedSyncThreshold()
 
 	//IBLT Sync tests
 	difs = 1;
-	while (1)
+	while (true)
 	{
 		difs *= 2;
 		vector<GenSync> IBLTGenClient = twoWayProbCombos(difs * 3);
@@ -103,11 +103,9 @@ void BenchmarkTest::TimedSyncThreshold()
 	}
 
 	//Report Stats
-	cout << endl
-		 << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << difs << " difs" << endl;
+	cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << difs << " difs" << endl;
 	cout << syncStats << endl;
-	cout << endl
-		 << "Maximum number of set differences (Multiples of 2) NOT able to synchronize in under " << MAX_TIME << " second(s): " << difs * 2 << " difs" << endl;
+	cout << endl << "Maximum number of set differences (Multiples of 2) NOT able to synchronize in under " << MAX_TIME << " second(s): " << difs * 2 << " difs" << endl;
 	cout << syncStatsMax;
 }
 
@@ -141,8 +139,7 @@ void BenchmarkTest::BitThresholdTest()
 		}
 
 		//Report Stats
-		cout << endl
-			 << "Maximum number of set differences (Multiples of 2) able to synchronize while sending less than " << MAX_BYTES << " bytes: " << difs << " difs" << endl;
+		cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize while sending less than " << MAX_BYTES << " bytes: " << difs << " difs" << endl;
 		cout << syncStats << endl;
 		cout << "Stats for the first sync that took more than " << MAX_BYTES << " bytes to complete: " << difs * 2 << " difs" << endl;
 		cout << syncStatsMax;
@@ -181,7 +178,6 @@ void BenchmarkTest::CPISyncLongTerm()
 	const int difPerRound = 3;   // # of elems to be added to client during each round
 	const bool multiSet = false; // true iff it's testing on multiset
 	bool success = true;		 // true iff test succeeds in the end
-	bool details = false;		 // true iff to show inner progress during test
 
 	// CPISyncs
 	vector<GenSync> CPISyncClient = twoWayCombos(dif * 2);
@@ -189,7 +185,7 @@ void BenchmarkTest::CPISyncLongTerm()
 
 	for (int ii = 0; ii < CPISyncClient.size(); ii++)
 	{
-		success &= longTermSync(CPISyncClient[ii], CPISyncServer[ii], similiar, dif, dif, false, false, false, false, difPerRound, details, testRounds);
+		success &= longTermSync(CPISyncClient[ii], CPISyncServer[ii], similiar, dif, dif, false, false, false, false, difPerRound, testRounds);
 	}
 
 	CPPUNIT_ASSERT(success);
@@ -203,7 +199,6 @@ void BenchmarkTest::IBLTSyncLongTerm()
 	const int difPerRound = 3;   // # of elems to be added to client during each round
 	const bool multiSet = false; // true iff it's testing on multiset
 	bool success = true;		 // true iff test succeeds in the end
-	bool details = false;		 // true iff to show inner progress during test
 
 	// # ExpElems should be the total expected # of set after reconciliation, but not m_bar which are used for twoWayCombos funciton
 	vector<GenSync> IBLTSyncClient = twoWayProbCombos(difPerRound * testRounds + dif + similiar);
@@ -211,7 +206,7 @@ void BenchmarkTest::IBLTSyncLongTerm()
 
 	for (int ii = 0; ii < IBLTSyncClient.size(); ii++)
 	{
-		success &= longTermSync(IBLTSyncClient[ii], IBLTSyncServer[ii], similiar, dif, dif, true, false, false, false, difPerRound, details, testRounds);
+		success &= longTermSync(IBLTSyncClient[ii], IBLTSyncServer[ii], similiar, dif, dif, true, false, false, false, difPerRound, testRounds);
 	}
 
 	CPPUNIT_ASSERT(success);

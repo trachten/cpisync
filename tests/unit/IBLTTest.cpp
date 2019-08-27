@@ -52,7 +52,7 @@ void IBLTTest::testAll() {
     CPPUNIT_ASSERT_EQUAL(items.size(), plus.size() + minus.size());
 }
 
-void IBLTTest::testReconstruct()
+void IBLTTest::SerializeTest()
 {
     vector<pair<ZZ, ZZ>> pos, neg, ref, neg1, pos1;
     const int SIZE = 10;
@@ -72,15 +72,16 @@ void IBLTTest::testReconstruct()
     CPPUNIT_ASSERT(b.listEntries(pos, neg));
 }
 
-void IBLTTest::testIBLTinsertNRebuild()
+void IBLTTest::IBLTNestedInsertRetrieveTest()
 {
     multiset<shared_ptr<DataObject>> result;
-    set<ZZ> setZZ;
+    std::set<ZZ> setZZ;
     const int expEntries = 20;
     const int BYTE = 8;
 
-    IBLT tarIBLT(expEntries, BYTE);
+    IBLT InsideIBLT(expEntries, BYTE);
 
+    //Add data to interior IBLT
     for (int ii = 0; ii < expEntries; ii++)
     {
         int before = setZZ.size();
@@ -91,15 +92,21 @@ void IBLTTest::testIBLTinsertNRebuild()
             data = randZZ();
             setZZ.insert(data);
         }
-        shared_ptr<DataObject> tar = make_shared<DataObject>(data);
-        result.insert(tar);
-        tarIBLT.insert(tar->to_ZZ(), tar->to_ZZ());
-    }
-    IBLT myIBLT(expEntries, BYTE);
 
-    myIBLT.insertIBLT(result, BYTE, expEntries);
+        shared_ptr<DataObject> InsideData = make_shared<DataObject>(data);
+        result.insert(InsideData);
+        InsideIBLT.insert(InsideData->to_ZZ(), InsideData->to_ZZ());
+    }
+
+
+    IBLT OutsideIBLT(expEntries, BYTE);
+
+    //Insert the inside IBLT into the outside IBLT
+    OutsideIBLT.insertIBLT(result, BYTE, expEntries);
 
     vector<pair<ZZ, ZZ>> pos, neg;
-    myIBLT.listEntries(pos, neg);
-    CPPUNIT_ASSERT_EQUAL(tarIBLT.toString(), zzToString(pos[0].first));
+    OutsideIBLT.listEntries(pos, neg);
+
+    //Make sure that the inside IBLT is the same as the decoded inside IBLT
+    CPPUNIT_ASSERT_EQUAL(InsideIBLT.toString(), zzToString(pos[0].first));
 }

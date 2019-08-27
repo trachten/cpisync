@@ -72,8 +72,8 @@ Relevant applications and extensions can be found at:
    * [cppunit](http://cppunit.sourceforge.net/doc/cvs/index.html) - For testing
    * [cmake](https://cmake.org) - For building
 
-- Ensure that compiler flags for relevant libraries are included (`-lCPISync -lntl -lpthread -lgmp` etc.)
-   - May also need to include `-std=c++11` on some devices
+- Ensure that compiler flags for relevant libraries are included (`-lcpisync -lntl -lpthread -lgmp` etc.)
+   - May also need to include `-std=c++11` on some machines
  
 * Dependency Install Linux
     * `sudo apt install cmake libgmp3-dev libcppunit-dev libpthread-stubs0-dev`

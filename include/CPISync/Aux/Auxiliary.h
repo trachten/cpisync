@@ -93,7 +93,7 @@ inline vector<string> split(string str, string sep)
 inline ZZ strToZZ(string str)
 {
     
-    const int c_range = 128; // value range for the char in output string
+    const int c_range = pow(2, 8 * sizeof(char)); // value range for the char in output string
 
     ZZ number = conv<ZZ>(str[0]);
     long len = str.length();
@@ -110,12 +110,13 @@ inline ZZ strToZZ(string str)
  * Convert a ZZ to string type. Can also work if there's non-number characters
  *  in the string comparing to toStr function below
  * @param num the ZZ to be converted
+ * @require input ZZ number must be generated from strToZZ function 
  * @return a string represented by the input ZZ
  */
 inline string zzToString(ZZ num)
 {
     long len;
-    const int c_range = 128; // value range for the char in input string
+    const int c_range = pow(2, 8 * sizeof(char)); // value range for the char in input string
     if (num == 0)
         len = 1;
     else

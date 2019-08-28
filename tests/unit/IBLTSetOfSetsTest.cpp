@@ -134,9 +134,7 @@ void IBLTSetOfSetsTest::testAddDelElem()
     list<shared_ptr<DataObject>> resultingElts;
 
     for (auto iter = IBLTSetOfSets.beginElements(); iter != IBLTSetOfSets.endElements(); ++iter)
-    {
         resultingElts.push_back(*iter);
-    }
 
     CPPUNIT_ASSERT_EQUAL(elts.size(), resultingElts.size());
     if (elts.size() == resultingElts.size())
@@ -159,7 +157,5 @@ void IBLTSetOfSetsTest::testAddDelElem()
 
     // check that delete works
     for (auto dop : elts)
-    {
         CPPUNIT_ASSERT(IBLTSetOfSets.delElem(dop));
-    }
 }

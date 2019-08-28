@@ -205,18 +205,16 @@ void CPISyncTest::testInterCPIAddDelElem() {
 
 	// check that elements can be recovered correctly through iterators
 	multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> resultingElts;
-	for(auto iter = interCpiSync.beginElements(); iter != interCpiSync.endElements(); ++iter) {
+	for(auto iter = interCpiSync.beginElements(); iter != interCpiSync.endElements(); ++iter)
 		resultingElts.insert(*iter);
-	}
 
 	vector<shared_ptr<DataObject>> diff;
 	rangeDiff(resultingElts.begin(), resultingElts.end(), elts.begin(), elts.end(), back_inserter(diff));
 	CPPUNIT_ASSERT(diff.empty());
 
 	// check that delElem works
-	for(auto dop : elts) {
+	for(auto dop : elts)
 		CPPUNIT_ASSERT(interCpiSync.delElem(dop));
-	}
 
 	CPPUNIT_ASSERT(interCpiSync.getNumElem() == 0);
 

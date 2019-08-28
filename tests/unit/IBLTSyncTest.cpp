@@ -99,18 +99,16 @@ void IBLTSyncTest::testAddDelElem() {
 
     // check that elements can be recovered correctly through iterators
     multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> resultingElts;
-    for(auto iter = ibltSync.beginElements(); iter != ibltSync.endElements(); ++iter) {
+    for(auto iter = ibltSync.beginElements(); iter != ibltSync.endElements(); ++iter)
         resultingElts.insert(*iter);
-    }
 
     vector<shared_ptr<DataObject>> diff;
     rangeDiff(resultingElts.begin(), resultingElts.end(), elts.begin(), elts.end(), back_inserter(diff));
     CPPUNIT_ASSERT(diff.empty());
 
     // check that delete works
-    for(auto dop : elts) {
+    for(auto dop : elts)
         CPPUNIT_ASSERT(ibltSync.delElem(dop));
-    }
 }
 
 void IBLTSyncTest::testGetStrings() {

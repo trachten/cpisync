@@ -383,7 +383,7 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 	// Set of sets
 	else
 		if (oneWay)
-			cout << "Not implemented yet"<< endl;
+			Logger::error_and_quit("Not implemented yet");
 		else
 			return ((success_signal) && checkReconSetofSets(resServer,reconciled) && svrRprt);
 
@@ -427,9 +427,8 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 			}
 
 			multiset<string> resClient;
-			for (auto dop : GenSyncClient.dumpElements()) {
+			for (auto dop : GenSyncClient.dumpElements())
 				resClient.insert(dop);
-			}
 
 			clientReconcileSuccess = clientReport.success;
 			//If syncParamTest only the result of the fork handle is relevant
@@ -479,9 +478,8 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 		}
 
 		multiset<string> resServer;
-		for (auto dop : GenSyncServer.dumpElements()) {
+		for (auto dop : GenSyncServer.dumpElements())
 			resServer.insert(dop);
-		}
 
 		if(!syncParamTest){
 			if (probSync) {
@@ -565,16 +563,13 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 			{
 				//Every 10 elements will have 1 pair and 1 triplet of elements
 				if (kk % 10 == 0 || kk % 10 == 2 || kk % 10 == 3)
-				{
 					objectsPtr.push_back(make_shared<DataObject>(data));
-				}
 				else
 				{ //Prevent elements that have already been added from being added again data = randZZ();
 					//While you fail to add an element to the set (Because it is a duplicate)
 					while (!get<1>(dataSet.insert(data)))
-					{
 						data = rep(random_ZZ_p());
-					}
+
 					objectsPtr.push_back(make_shared<DataObject>(data));
 				}
 			}
@@ -591,15 +586,11 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 
 	// add data objects unique to the server
 	for (int jj = 0; jj < SERVER_MINUS_CLIENT; jj++)
-	{
 		GenSyncServer.addElem(objectsPtr[jj]);
-	}
 
 	// add data objects unique to the client
 	for (int jj = SERVER_MINUS_CLIENT; jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++)
-	{
 		GenSyncClient.addElem(objectsPtr[jj]);
-	}
 
 	// add common data objects to both
 	for (int jj = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
@@ -609,11 +600,8 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 		GenSyncServer.addElem(objectsPtr[jj]);
 	}
 
-
 	for (int ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; ii++)
-	{
 		reconciled.insert(objectsPtr[ii]->print());
-	}
 
 	return objectsPtr;
 }
@@ -652,23 +640,23 @@ inline void addElemsSetofSets(GenSync &GenSyncServer,
 	{
 		// preObjPtr = objectPtrs;
 		if((rand() % 3 != 0)  || !similarSync || ii == 0){
-		objectPtrs.clear();
-		// create a single child set with no repeat elements
-		for (long jj = 0; jj < numPerSet; jj++)
-		{
-			ZZ data = randZZ();
-			//Checks if element you are trying to add is unique. If it isn't add a different element
-			while (!get<1>(dataSet.insert(data)))
+			objectPtrs.clear();
+			// create a single child set with no repeat elements
+			for (long jj = 0; jj < numPerSet; jj++)
 			{
-				if (dataSet.size() == pow(2, eltSize * 8))
-					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
-				data = randZZ();
+				ZZ data = randZZ();
+				//Checks if element you are trying to add is unique. If it isn't add a different element
+				while (!get<1>(dataSet.insert(data)))
+				{
+					if (dataSet.size() == pow(2, eltSize * 8))
+						Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
+					data = randZZ();
+				}
+				//Insert your element into the child IBLT
+				objectPtrs.insert(make_shared<DataObject>(data));
 			}
-			//Insert your element into the child IBLT
-			objectPtrs.insert(make_shared<DataObject>(data));
 		}
-		}
-		//Serilize your IBLT and add it to the setofsets object and book keeping vars
+		//Serialize your IBLT and add it to the setofsets object and book keeping vars
 		//Will repeat a set creating a duplicate once every 3 times if similar sets is enabled
 			serializedIBLT = make_shared<DataObject>(objectPtrs);
 
@@ -688,8 +676,7 @@ inline void addElemsSetofSets(GenSync &GenSyncServer,
 			//Checks if element you are trying to add is unique. If it isn't add a different element
 			while (!get<1>(dataSet.insert(data))) {
 				if (dataSet.size() == pow(2, eltSize * 8))
-					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " +
-											toStr(eltSize) + " bytes");
+					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
 				data = randZZ();
 			}
 			//Insert your element into the child IBLT
@@ -926,7 +913,6 @@ inline bool longTermSync(GenSync &GenSyncClient,
 
 		for (curRound = 0; curRound < Rounds; curRound++)
 		{
-
 			if (curRound != 0)
 			{
 				SIMILAR += CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT;
@@ -987,9 +973,7 @@ inline bool longTermSync(GenSync &GenSyncClient,
 
 	// Fork error
 	else if (pID < 0)
-	{
 		Logger::error_and_quit("Fork error in sync test");
-	}
 
 	// Server Process
 	else
@@ -1060,9 +1044,7 @@ inline bool longTermSync(GenSync &GenSyncClient,
 
 			multiset<string> resServer;
 			for (auto dop : GenSyncServer.dumpElements())
-			{
 				resServer.insert(dop);
-			}
 
 			if (!syncParamTest)
 			{
@@ -1070,13 +1052,10 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				{
 					// True if the elements added during reconciliation were elements that the server was lacking that the client had
 					// and if information was transmitted during the fork
-
 					serverReconcileSuccess &= (multisetDiff(reconciled, resServer).size() < CLIENT_MINUS_SERVER) && serverReport.success && (serverReport.bytes > 0) && (resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
 
 					if (!oneWay)
-					{
 						serverReconcileSuccess &= success_signal;
-					}
 				}
 				else
 				{
@@ -1088,9 +1067,7 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				}
 			}
 			else
-			{
 				serverReconcileSuccess &= serverReport.success;
-			}
 
 			// if this is the last round
 			if (curRound == Rounds - 1)

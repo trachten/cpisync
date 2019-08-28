@@ -41,9 +41,7 @@ void BenchmarkTest::CPISyncErrorBenchmark()
 		{
 			bool success = benchmarkSync(CPISyncClient.at(ii), CPISyncServer.at(ii), SIMILAR, DIFS, DIFS, false, false);
 			if (!success)
-			{
 				failCount++;
-			}
 		}
 		//If more test failed than the calculated failExpected, then CPISync's error may not be properly bounded
 		CPPUNIT_ASSERT(failCount < failExpected);
@@ -123,7 +121,7 @@ void BenchmarkTest::BitThresholdTest()
 	for (int ii = 0; ii < twoWayCombos(1).size(); ii++)
 	{
 		difs = 1;
-		while (1)
+		while (true)
 		{
 			//Double the ammount of differences until the sync can not complete without sending more than MAX_BYTEs
 			difs *= 2;
@@ -147,7 +145,7 @@ void BenchmarkTest::BitThresholdTest()
 
 	//IBLT Sync tests
 	difs = 1;
-	while (1)
+	while (true)
 	{
 		difs *= 2;
 		vector<GenSync> IBLTGenClient = twoWayProbCombos(difs * 3);
@@ -176,7 +174,6 @@ void BenchmarkTest::CPISyncLongTerm()
 	const int dif = 4;			 // Initial difference size for both A/B and B/A
 	const int similiar = 32;	 // size of A^B
 	const int difPerRound = 3;   // # of elems to be added to client during each round
-	const bool multiSet = false; // true iff it's testing on multiset
 	bool success = true;		 // true iff test succeeds in the end
 
 	// CPISyncs
@@ -197,7 +194,6 @@ void BenchmarkTest::IBLTSyncLongTerm()
 	const int dif = 4;			 // Initial difference size for both A/B and B/A
 	const int similiar = 32;	 // size of A^B
 	const int difPerRound = 3;   // # of elems to be added to client during each round
-	const bool multiSet = false; // true iff it's testing on multiset
 	bool success = true;		 // true iff test succeeds in the end
 
 	// # ExpElems should be the total expected # of set after reconciliation, but not m_bar which are used for twoWayCombos funciton
@@ -232,9 +228,7 @@ void BenchmarkTest::IBLTSyncErrBenchMark()
 		{
 			bool success = benchmarkSync(IBLTSyncClient.at(ii), IBLTSyncServer.at(ii), SIMILAR, DIFS, DIFS, true, false);
 			if (!success)
-			{
 				failCount++;
-			}
 		}
 		//If more test failed than the calculated failExpected, then IBLTSync's error may not be properly bounded
 		CPPUNIT_ASSERT(failCount < failExpected);

@@ -40,9 +40,8 @@ void GenSyncTest::testAddRemoveElems() {
     ZZ *last = new ZZ(randZZ());
 	shared_ptr<DataObject> newDO;
     // create elts-1 random DataObjects (the last element will be `last`)
-    for (unsigned long ii = 0; ii < ELTS - 1; ii++) {
+    for (unsigned long ii = 0; ii < ELTS - 1; ii++)
         objectsPtr.push_back(make_shared<DataObject>(randZZ()));
-    }
 
     // create all configurations of GenSyncs (created using both constructors)
     auto combos = standardCombos();
@@ -64,15 +63,14 @@ void GenSyncTest::testAddRemoveElems() {
 
         // create a multiset containing the string representation of objects stored in GenSync
         multiset<string> res;
-        for (auto dop : genSync.dumpElements()) {
+        for (auto dop : genSync.dumpElements())
             res.insert(dop);
-        }
 
         CPPUNIT_ASSERT(multisetDiff(res, objectsStr).empty());
 
-        for(auto elem : objectsPtr) {
+        for(auto elem : objectsPtr)
             genSync.delElem(elem);
-        }
+
         //Remove the data that was added with the template
         genSync.delElem(newDO);
         CPPUNIT_ASSERT(genSync.dumpElements().empty());
@@ -180,10 +178,9 @@ void GenSyncTest::testTwoWaySync() {
 	vector<GenSync> twoWayClient = twoWayCombos(mBar);
 	vector<GenSync> twoWayServer = twoWayCombos(mBar);
 	// sync every GenSync configuration with itself
-	for (int ii = 0; ii < twoWayClient.size(); ii++) {
+	for (int ii = 0; ii < twoWayClient.size(); ii++)
 		//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
 		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false, false, false, false));
-	}
 }
 
 void GenSyncTest::testOneWaySync() {

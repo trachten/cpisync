@@ -19,25 +19,22 @@ void IBLTTest::setUp() {
     srand(SEED);
 }
 
-void IBLTTest::tearDown() {
-}
+void IBLTTest::tearDown() {}
 
 void IBLTTest::testAll() {
     vector<pair<ZZ, ZZ>> items;
     const int SIZE = 50; // should be even
     const size_t ITEM_SIZE = sizeof(randZZ());
-    for(int ii = 0; ii < SIZE; ii++) {
+
+    for(int ii = 0; ii < SIZE; ii++)
         items.push_back({randZZ(), randZZ()});
-    }
 
     IBLT iblt(SIZE, ITEM_SIZE);
-    for(int ii=0; ii < SIZE/2; ii++) {
+    for(int ii=0; ii < SIZE/2; ii++)
         iblt.insert(items.at(ii).first, items.at(ii).second);
-    }
 
-    for(int ii=SIZE/2; ii < SIZE; ii++) {
+    for(int ii=SIZE/2; ii < SIZE; ii++)
         iblt.erase(items.at(ii).first, items.at(ii).second);
-    }
 
     for(int ii=0; ii < SIZE; ii++) {
         IBLT ibltCopy(iblt); // make a copy each time because getting is destructive
@@ -64,12 +61,12 @@ void IBLTTest::SerializeTest()
         ref.push_back({ZZ(ii), ZZ(ii)});
     }
     string str = iblt.toString();
-    IBLT b(SIZE, ITEM_SIZE);
-    b.reBuild(str);
+    IBLT reconstructedIBLT(SIZE, ITEM_SIZE);
+    reconstructedIBLT.reBuild(str);
     // Make sure everything's same between original IBLT and reconstructed IBLT
-    CPPUNIT_ASSERT_EQUAL(str, b.toString());
+    CPPUNIT_ASSERT_EQUAL(str, reconstructedIBLT.toString());
     // Make sure basic functions can still be applied to reconstructed one
-    CPPUNIT_ASSERT(b.listEntries(pos, neg));
+    CPPUNIT_ASSERT(reconstructedIBLT.listEntries(pos, neg));
 }
 
 void IBLTTest::IBLTNestedInsertRetrieveTest()

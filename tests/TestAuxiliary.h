@@ -828,9 +828,9 @@ inline bool SetOfSetsSyncTest(GenSync GenSyncClient, GenSync GenSyncServer, long
 	for (int ii = 0; ii < (oneWay ? 1 : NUM_TESTS); ii++)
 	{
 		//Similar = number of child sets
-		const unsigned int SIMILAR = largeSync ? 200 : 50;
+		const unsigned int SIMILAR = largeSync ? 100 : 50;
 		//CLIENT_MINUS_SERVER must be even for this test case
-		const unsigned int CLIENT_MINUS_SERVER = largeSync ? 100 : 50;
+		const unsigned int CLIENT_MINUS_SERVER = largeSync ? 50 : 25;
 		const unsigned int SERVER_MINUS_CLIENT = CLIENT_MINUS_SERVER; // For set of sets SMC == CMS
 
 		// this protocol assumes d differences between two parent set

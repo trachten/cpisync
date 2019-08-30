@@ -374,37 +374,30 @@ GenSync GenSync::Builder::build() {
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<CPISync>(mbar, bits, errorProb, 0, hashes);
-            _postProcess = CPISync::postProcessing_SET;
-            break;
+\            break;
         case SyncProtocol::ProbCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb, hashes);
-            _postProcess = ProbCPISync::postProcessing_SET;
-            break;
+\            break;
         case SyncProtocol::InteractiveCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts, hashes);
-            _postProcess = InterCPISync::postProcessing_SET;
             break;
         case SyncProtocol::OneWayCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
-            _postProcess = CPISync_HalfRound::postProcessing_SET;
             break;
         case SyncProtocol::FullSync:
             myMeth = make_shared<FullSync>();
-            _postProcess = FullSync::postProcessing_SET;
             break;
         case SyncProtocol::IBLTSync:
             myMeth = make_shared<IBLTSync>(numExpElem, bits);
-            _postProcess = IBLTSync::postProcessing_SET;
             break;
         case SyncProtocol::OneWayIBLTSync:
             myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
-            _postProcess = IBLTSync_HalfRound::postProcessing_SET;
             break;
         case SyncProtocol::IBLTSetOfSets:
             myMeth = make_shared<IBLTSetOfSets>(numExpElem, numElemChldSet, bits);

@@ -7,7 +7,9 @@
  * This algorithm is mentioned by Michael Mitzenmacher Tom Morgan in https://arxiv.org/pdf/1707.05867.pdf.
  *
  * There is a small probability that most, but not all, of the differences will be uncovered as a result
- * of this sync. The probability as mentioned in the paper is 1/poly(d), where d is the difference between two set
+ * of this sync. The probability as mentioned in the paper is 1/poly(d), where d is the difference between two set.
+ * 
+ * TODO: parameter in constructor to control failing probablity
  *
  * Created by Zifan Wang on 7/30/2019.
  */

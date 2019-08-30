@@ -117,9 +117,9 @@ public:
     string toString() const;
 
     /**
-         * Rebuild IBLT from string infos
-         * @param inStr IBLT hashtableentries in string type, converted by toString function above
-        */
+     * fill the hashTable with a string generated from IBLT.toString() function
+     * @param inStr a readable ascii string generted from IBLT.toString() function
+    */
     void reBuild(string &inStr);
     /**
      * Subtracts two IBLTs.

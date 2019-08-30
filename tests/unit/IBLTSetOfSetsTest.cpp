@@ -7,6 +7,7 @@
 #include <CPISync/Syncs/GenSync.h>
 #include <CPISync/Syncs/IBLTSetOfSets.h>
 #include "TestAuxiliary.h"
+
 CPPUNIT_TEST_SUITE_REGISTRATION(IBLTSetOfSetsTest);
 
 IBLTSetOfSetsTest::IBLTSetOfSetsTest() = default;
@@ -19,14 +20,11 @@ void IBLTSetOfSetsTest::setUp()
     srand(SEED);
 }
 
-void IBLTSetOfSetsTest::tearDown()
-{
-}
+void IBLTSetOfSetsTest::tearDown(){}
 
 void IBLTSetOfSetsTest::TestIBLTGetName()
 {
     IBLTSetOfSets IBLTSetOfSets(0, 0, 0);
-
     CPPUNIT_ASSERT(!IBLTSetOfSets.getName().empty());
 }
 

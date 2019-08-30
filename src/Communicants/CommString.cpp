@@ -38,7 +38,6 @@ void CommString::commSend(const char *toSend, const int numBytes) {
     // save the next bytes to the string stream
     stream->write(toSend, numBytes);
     addXmitBytes(numBytes); // update the byte transfer counter
-    addCommTime(startTime);
 }
 
 string CommString::commRecv(unsigned long numBytes) {
@@ -49,7 +48,6 @@ string CommString::commRecv(unsigned long numBytes) {
     stream->read(tmpBuf, numBytes);
 
     addRecvBytes(numBytes); // update the received byte counter
-    addCommTime(startTime);
 
     return string(tmpBuf, numBytes);
 }

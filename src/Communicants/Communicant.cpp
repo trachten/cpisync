@@ -5,18 +5,18 @@
 
 Communicant::Communicant() {
     resetCommCounters();
-    xferBytesTot = xferBytes = recvBytesTot = recvBytes = commTime = commTimeTot = 0;
+    xferBytesTot = xferBytes = recvBytesTot = recvBytes = 0;
     MOD_SIZE = NOT_SET;
 }
 
 Communicant::~Communicant() = default;
 
 void Communicant::resetCommCounters() {
-    commTime = xferBytes = recvBytes = 0;
+    xferBytes = recvBytes = 0;
 }
 
 void Communicant::hardResetCommCounters() {
-    commTime = commTimeTot = xferBytes = recvBytes = xferBytesTot = recvBytesTot = 0;
+    xferBytes = recvBytes = xferBytesTot = recvBytesTot = 0;
 }
 
 string Communicant::getName() {
@@ -39,13 +39,6 @@ long Communicant::getRecvBytesTot() {
     return recvBytesTot;
 }
 
-double Communicant::getCommTime() {
-    return commTime;
-}
-
-double Communicant::getCommTimeTot() {
-    return commTimeTot;
-}
 
 void Communicant::addXmitBytes(long numBytes) {
     xferBytes += numBytes;
@@ -57,12 +50,6 @@ void Communicant::addRecvBytes(long numBytes) {
     recvBytesTot += numBytes;
 }
 
-void Communicant::addCommTime(std::chrono::high_resolution_clock::time_point startClock){
-        commTime += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startClock).count() * 1e-6;
-//        cout << "commTime:" << commTime << endl;
-        commTimeTot += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startClock).count() * 1e-6;
-//        cout << "commTimeTot" <<commTimeTot << endl;
-}
 
 bool Communicant::establishModRecv(bool oneWay /* = false */) {
     ZZ otherModulus = commRecv_ZZ();

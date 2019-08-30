@@ -324,9 +324,6 @@ public:
      */
     long getRecvBytesTot();
 
-    double getCommTime();
-
-    double getCommTimeTot();
 
     /**
      * @return A name for this communicant.
@@ -360,7 +357,6 @@ protected:
      */
     void addRecvBytes(long numBytes);
 
-    void addCommTime(std::chrono::high_resolution_clock::time_point startClock);
 
         // FIELDS
     long xferBytes; /** The number of bytes that have been transferred since the last reset. */
@@ -368,9 +364,6 @@ protected:
 
     long recvBytes; /** The number of bytes that have been received since the last reset. */
     long recvBytesTot; /** The total number of bytes that have been received since the creation of this communicant. */
-
-    double commTime; /** The amount of time spent sending and receiving information for this sync since the last reset*/
-    double commTimeTot; /** The total amount of time that this sync has been actively syncing during */
 
     int MOD_SIZE;    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/
 

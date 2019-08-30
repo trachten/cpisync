@@ -187,7 +187,8 @@ public:
      * Sequentially listens for a synchronization request from each communicant.
      * In other words, listens and waits for a synchronization request from the first
      * communicant.  When that request comes through and synchronization is complete,
-     * listens for a request from the second communicant ...
+     * listens for a request from the second communicant. At the beginning of each sync
+     * stats that have been collected are reset
      * @param sync_num  The method of synchronization request to listen for.  This is
      *          an index into the vector of synchronization methods supplied upon construction.
      *          Thus, if the first synchronization method supplied in the Constructor is
@@ -198,7 +199,8 @@ public:
 
     /**
      * Sequentially sends a specific synchronization request to each communicant.  If sync is successful,
-     * then the server ends up with data that is synchronized to the client.
+     * then the server ends up with data that is synchronized to the client. Each time this is called the stats for
+     * this GenSync are reset
      * @param sync_num  This is an index into the vector of synchronization methods supplied upon construction.
      *          Thus, if the first synchronization method supplied in the constructor is
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.

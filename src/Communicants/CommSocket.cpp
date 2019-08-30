@@ -70,7 +70,6 @@ void CommSocket::commListen() {
 
     // Initialization data
     resetCommCounters();  // reset all transmission counters
-    addCommTime(startTime);
     Logger::gLog(Logger::METHOD, "Listening on port " + toStr(remotePort));
 }
 
@@ -147,7 +146,6 @@ void CommSocket::commConnect() {
 
     // Initialization data
     resetCommCounters();  // reset all transmission counters
-    addCommTime(startTime);
     Logger::gLog(Logger::METHOD, "Connected to host " + remoteHost + " on port " + toStr(remotePort));
 }
 
@@ -198,7 +196,6 @@ void CommSocket::commSend(const char* toSend, const int len) {
         } else {
             doAgain = false;
         }
-        addCommTime(startTime);
         addXmitBytes(numBytes);  // update the byte transfer counter
     } while (doAgain);
 }

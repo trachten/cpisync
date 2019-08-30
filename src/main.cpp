@@ -256,7 +256,6 @@ int main(int argc, char *argv[]) {
             setMbar(mbar).
             setBits(bits).
             setNumPartitions(pFactor).
-            //setExpNumElems(expectElems).
             setDataFile(fileName).
             build();
 

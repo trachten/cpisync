@@ -4,6 +4,8 @@ This is the source code for set reconciliation from the CPISync project by [BU N
 
 Current Version - 2.0.3
 
+------------------------------
+
 
 ## References:
 
@@ -70,8 +72,8 @@ Relevant applications and extensions can be found at:
    * [cppunit](http://cppunit.sourceforge.net/doc/cvs/index.html) - For testing
    * [cmake](https://cmake.org) - For building
 
-- Ensure that compiler flags for relevant libraries are included (`-lcpisync -lntl -lpthread -lgmp` etc.)
-   - May also need to include `-std=c++11` on some machines
+- Ensure that compiler flags for relevant libraries are included (`-lCPISync -lntl -lpthread -lgmp` etc.)
+   - May also need to include `-std=c++11` on some devices
  
 * Dependency Install Linux
     * `sudo apt install cmake libgmp3-dev libcppunit-dev libpthread-stubs0-dev`
@@ -132,12 +134,12 @@ Relevant applications and extensions can be found at:
          mySyncClient.clientSyncBegin(0);  //Multiple syncs or communicants may be added to one GenSync
      ```
   
-  4. Collect relevant statistics (Stats reset when a new sync is started)
+  4. Collect relevant statistics
      ```cpp
         //The sync index is decided by the order you added your sync in
         //If your GenSync has only 1 sync the index is 0
          mySyncClient.printStats(syncIndex); //Returns a string of formatted stats about your sync
-         mySyncClient.mySyncVec[syncIndex]->getName(); //Returns the name and parameters for your sync
+         mySyncClient.mySyncVec[syncIndex]->getName(); //Retruns the name and parameters for your sync
          mySyncClient.getXmitBytes(syncIndex); //Returns the number of bytes transmitted by this sync
          mySyncClient.getRecvBytes(syncIndex); //Returns the number of bytes received by this sync
          mySyncClient.getCommTime(syncIndex); //Returns the amount of time in seconds that the sync spent sending and receiving info through a socket
@@ -173,7 +175,7 @@ Relevant applications and extensions can be found at:
 ## GenSync Builder Parameters:
 * **setProtocol:** Set the protocol that your sync will execute (from the list above)
     * *All syncs*
-*  **setComm:** Set the communication method your sync will use (CommSocket and CommString)
+*  **setComm:** Set the communication method your sync will use (CommSocket and CommString). Comm String is for local testing
     * *All Syncs*
 *  **setPort & setHost:** Set the port & host that your socket will use
     * *Any socket based syncs*
@@ -198,7 +200,7 @@ Relevant applications and extensions can be found at:
 
 
            
-------------------------------
+## [Documentation](WIKI.md)
 
 Acknowledgments:  NSF
 

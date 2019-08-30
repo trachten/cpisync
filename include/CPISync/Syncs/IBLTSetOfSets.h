@@ -2,8 +2,9 @@
 
 /*
  * The IBLT sync on set of sets data structure is performed by regarding each child set as a small IBLT and putting them
- * into a bigger IBLT together with their hash. This algorithm is mentioned by Michael Mitzenmacher Tom Morgan in
- * https://arxiv.org/pdf/1707.05867.pdf.
+ * into a bigger IBLT together with their hash. Use generic IBLT sync method to find different child sets and try to decode
+ * each pair of child sets to find missing elements, which takes O(d^3) where d is the symmetric difference.
+ * This algorithm is mentioned by Michael Mitzenmacher Tom Morgan in https://arxiv.org/pdf/1707.05867.pdf.
  *
  * There is a small probability that most, but not all, of the differences will be uncovered as a result
  * of this sync. The probability as mentioned in the paper is 1/poly(d), where d is the difference between two set
@@ -24,10 +25,10 @@ public:
   /*
      * Constructor. This IBLT is the T in the paper which is also the only thing needed to be transmitted between server and client
      * @param expected The expected number of elements being stored
-     * @param chldSize # elements in the child set
-     * @param innerSize size of the single element in the child set
+     * @param numElemChld upper bound of # elements in the child set
+     * @param elemSize size of the single element in the child set
      */
-  IBLTSetOfSets(size_t expected, size_t chldSize, size_t innerSize);
+  IBLTSetOfSets(size_t expected, size_t numElemChld, size_t elemSize);
   ~IBLTSetOfSets() override;
 
   // Implemented parent class methods

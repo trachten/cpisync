@@ -231,7 +231,7 @@ void IBLT::reBuild(string &inStr)
     }
 }
 
-void IBLT::insertIBLT(IBLT &chldIBLT, hash_t &chldHash)
+void IBLT::insert(IBLT &chldIBLT, hash_t &chldHash)
 {
 
     ZZ ibltZZ = strToZZ(chldIBLT.toString());
@@ -240,13 +240,13 @@ void IBLT::insertIBLT(IBLT &chldIBLT, hash_t &chldHash)
     _insert(1, ibltZZ, strTo<ZZ>(toStr<hash_t>(chldHash)));
 }
 
-void IBLT::eraseIBLT(IBLT &chldIBLT, hash_t &chldHash)
+void IBLT::erase(IBLT &chldIBLT, hash_t &chldHash)
 {
     ZZ ibltZZ = strToZZ(chldIBLT.toString());
     _insert(-1, ibltZZ, strTo<ZZ>(toStr<hash_t>(chldHash)));
 }
 
-void IBLT::insertIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
+void IBLT::insert(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
 {
     hash_t setHash = _setHash(tarSet);
 
@@ -267,11 +267,11 @@ void IBLT::insertIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, 
     }
 
     // Put the pair(chld IBLT, hash of set) into the outer IBLT T
-    insertIBLT(chldIBLT, setHash);
+    insert(chldIBLT, setHash);
 
 }
 
-void IBLT::eraseIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
+void IBLT::erase(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
 {
     hash_t setHash = _setHash(tarSet);
     
@@ -308,6 +308,6 @@ void IBLT::eraseIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, s
     {
         chldIBLT.insert(itr->to_ZZ(), itr->to_ZZ());
     }
-    eraseIBLT(chldIBLT, setHash);
+    erase(chldIBLT, setHash);
 
 }

@@ -46,8 +46,8 @@ public:
     
      /**
      * Constructs a data object from pair of {index, elements} where index is in long type
-     * @param index index in a templated type
-     * @param elems a list containing all the data objects
+     * @param index a number in a templated type
+     * @param elems a list containing data objects
      **/
     template <class T>
     explicit DataObject(const T index, const list<shared_ptr<DataObject>> elems)

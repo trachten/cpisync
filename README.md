@@ -132,7 +132,7 @@ Relevant applications and extensions can be found at:
          mySyncClient.clientSyncBegin(0);  //Multiple syncs or communicants may be added to one GenSync
      ```
   
-  4. Collect relevant statistics
+  4. Collect relevant statistics (Stats reset when a new sync is started)
      ```cpp
         //The sync index is decided by the order you added your sync in
         //If your GenSync has only 1 sync the index is 0

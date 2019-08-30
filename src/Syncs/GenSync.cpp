@@ -368,18 +368,22 @@ GenSync GenSync::Builder::build() {
     theComms.push_back(myComm);
 
     invalid_argument noMbar("Must define <mbar> explicitly for this sync.");
+
+    // set default post process function pointer
+    _postProcess = SyncMethod::postProcessing_SET;
+    
     switch (proto)
     {
         case SyncProtocol::CPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<CPISync>(mbar, bits, errorProb, 0, hashes);
-\            break;
+            break;
         case SyncProtocol::ProbCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;
             myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb, hashes);
-\            break;
+            break;
         case SyncProtocol::InteractiveCPISync:
             if (mbar == Builder::UNDEF_NUM)
                 throw noMbar;

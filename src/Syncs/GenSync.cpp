@@ -367,7 +367,7 @@ GenSync GenSync::Builder::build() {
     }
     theComms.push_back(myComm);
 
-    invalid_argument noMbar("Must define <mbar> explicitly for this sync.");
+    invalid_argument noMbar("Must definec <mbar> explicitly for this sync.");
     switch (proto)
     {
         case SyncProtocol::CPISync:

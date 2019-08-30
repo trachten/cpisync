@@ -45,9 +45,9 @@ public:
     explicit DataObject(const string& str);
     
      /**
-     * Constructs a data object from pair of {index, elements} where index is in long type
-     * @param index index in a templated type
-     * @param elems a list containing all the data objects
+     * Constructs a data object that contains a given pair {number, list of elements}
+     * @param index a number in a templated type
+     * @param elems a list containing pointers to data object
      **/
     template <class T>
     explicit DataObject(const T index, const list<shared_ptr<DataObject>> elems)
@@ -60,10 +60,10 @@ public:
     }
 
     /**
-     * Constructs a data object that contains the given multiset
-     * @param tarSet The set to place in the DataObject
+     * Constructs a data object that contains a given set
+     * @param mySet The set to place in the DataObject
      **/
-    explicit DataObject(const multiset<shared_ptr<DataObject>> tarSet);
+    explicit DataObject(const multiset<shared_ptr<DataObject>> mySet);
 
     /**
      * Constructs a data object that contains the given object of type T, which must

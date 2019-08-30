@@ -86,7 +86,7 @@ bool IBLTSetOfSets::SyncClient(const shared_ptr<Communicant> &commSync, list<sha
                             // call reWrite function to add elements to current child set and return a make_shared<DataObject>
                             auto out = (reWrite(index, curInfo))->to_pair<long>();
                             otherMinusSelf.push_back(reWrite(index, curInfo));
-                            Logger::gLog(Logger::METHOD_DETAILS, "[Client] " + toStr(out.first) + " should be " + printSet(out.second));
+                            Logger::gLog(Logger::METHOD_DETAILS, "[Client] " + toStr(out.first) + " should be " + AuxSetOfSets::printSet(out.second));
                         }
                         index++;
                     }
@@ -113,8 +113,8 @@ bool IBLTSetOfSets::SyncClient(const shared_ptr<Communicant> &commSync, list<sha
             mySyncStats.timerEnd(SyncStats::COMP_TIME);
 
             stringstream msg;
-            msg << "[Client] other - self = " << printSetofSets(otherMinusSelf) << endl;
-            msg << "[Client] self - other = " << printSetofSets(selfMinusOther) << endl;
+            msg << "[Client] other - self = " << AuxSetOfSets::printSetofSets(otherMinusSelf) << endl;
+            msg << "[Client] self - other = " << AuxSetOfSets::printSetofSets(selfMinusOther) << endl;
             Logger::gLog(Logger::METHOD, msg.str());
         }
         mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
@@ -238,8 +238,7 @@ bool IBLTSetOfSets::SyncServer(const shared_ptr<Communicant> &commSync, list<sha
 
         stringstream msg;
         msg << "IBLTSetOfSets " << (success ? "succeeded" : "may not have completely succeeded") << endl;
-        msg << "[Server] self - other = " << printSetofSets(selfMinusOther) << endl;
-        //msg << "[Server] other - self = " << printSetofSets(otherMinusSelf) << endl;
+        msg << "[Server] self - other = " << AuxSetOfSets::printSetofSets(selfMinusOther) << endl;
         Logger::gLog(Logger::METHOD, msg.str());
 
         mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
@@ -260,18 +259,17 @@ bool IBLTSetOfSets::addElem(shared_ptr<DataObject> elem)
 {
     bool success = SyncMethod::addElem(elem);
     auto tarSet = elem->to_Set();
-    myIBLT.insertIBLT(tarSet, elemSize, childSize);
+    myIBLT.insert(tarSet, elemSize, childSize);
     mySet.push_back(elem);
     return success;
 }
 
 bool IBLTSetOfSets::delElem(shared_ptr<DataObject> elem)
 {
-    string str = printSet(elem->to_Set());
     bool success = SyncMethod::delElem(elem);
     // Transfer the dataobject to set and delete it
     auto tarSet = elem->to_Set();
-    myIBLT.eraseIBLT(tarSet, elemSize, childSize);
+    myIBLT.erase(tarSet, elemSize, childSize);
     // Remove the element in mySet
     auto it = std::find(mySet.begin(),mySet.end(), elem);
     if(it != mySet.end())

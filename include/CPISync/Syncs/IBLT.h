@@ -95,28 +95,31 @@ public:
      */
     bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
     /**
-         * Insert a set into chldIBLT and put chldIBLT into current IBLT
-         * @param tarSet target set to be added to IBLT
-        */
-    void insertIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
+     * Insert a set of elements into IBLT
+     * @param tarSet target set to be added to IBLT
+     * @param elemSize size of element in the set
+     * @param expnChldSet expected number of elements in the target set
+    */
+    void insert(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
 
     /**
-         * Delete an IBLT by a given set
-         * @param tarSet the target set to be deleted
-         * @param elemSize size of element in the chld set
-        */
-    void eraseIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
+     * Delete a set of elements from IBLT
+     * @param tarSet the target set to be deleted
+     * @param elemSize size of element in the chld set
+     * @param expnChldSet expected number of elements in the target set
+    */
+    void erase(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
 
     /**
-         * Convert IBLT to string
-         * @return string
-        */
+     * Convert IBLT to a readable string
+     * @return string
+    */
     string toString() const;
 
     /**
-         * Rebuild IBLT from string infos
-         * @param inStr IBLT hashtableentries in string type, converted by toString function above
-        */
+     * fill the hashTable with a string generated from IBLT.toString() function
+     * @param inStr a readable ascii string generted from IBLT.toString() function
+    */
     void reBuild(string &inStr);
     /**
      * Subtracts two IBLTs.
@@ -157,13 +160,13 @@ private:
     * @param chldIBLT the IBLT to be inserted
     * @param chldHash a value represent in the hash_t type
     * */
-    void insertIBLT(IBLT &chldIBLT, hash_t &chldHash);
+    void insert(IBLT &chldIBLT, hash_t &chldHash);
 
     /* Erase an IBLT together with a value into a bigger IBLT
     * @param chldIBLT the IBLT to be erased
     * @param chldHash a value represent in the hash_t type
     * */
-    void eraseIBLT(IBLT &chldIBLT, hash_t &chldHash);
+    void erase(IBLT &chldIBLT, hash_t &chldHash);
 
     // Represents each entry in the iblt
     class HashTableEntry

@@ -248,7 +248,7 @@ bool GenSync::serverSyncBegin(int sync_num) {
             return false;
         }
 
-        // add any items that were found in the reconciliation
+        // post process and add any items that were found in the reconciliation
         _PostProcessing(otherMinusSelf, myData, &GenSync::addElem, &GenSync::delElem, this);
     }
 

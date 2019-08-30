@@ -99,7 +99,7 @@ void IBLTTest::IBLTNestedInsertRetrieveTest()
     IBLT OutsideIBLT(expEntries, BYTE);
 
     //Insert the inside IBLT into the outside IBLT
-    OutsideIBLT.insertIBLT(result, BYTE, expEntries);
+    OutsideIBLT.insert(result, BYTE, expEntries);
 
     vector<pair<ZZ, ZZ>> pos, neg;
     OutsideIBLT.listEntries(pos, neg);

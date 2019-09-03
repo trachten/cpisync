@@ -4,8 +4,8 @@
 //
 
 #include "IBLTSyncTest.h"
-#include "Syncs/GenSync.h"
-#include "Syncs/IBLTSync.h"
+#include <CPISync/Syncs/GenSync.h>
+#include <CPISync/Syncs/IBLTSync.h>
 #include "TestAuxiliary.h"
 CPPUNIT_TEST_SUITE_REGISTRATION(IBLTSyncTest);
 
@@ -14,61 +14,101 @@ IBLTSyncTest::IBLTSyncTest() = default;
 IBLTSyncTest::~IBLTSyncTest() = default;
 
 void IBLTSyncTest::setUp() {
-    const int SEED = 91;
+    const int SEED = 93;
     srand(SEED);
 }
 
 void IBLTSyncTest::tearDown() {
 }
 
-void IBLTSyncTest::justSyncTest() {
+void IBLTSyncTest::IBLTSyncSetReconcileTest() {
     const int BITS = sizeof(randZZ());
-    const int EXP_ELEM = UCHAR_MAX * 2;
 
-    GenSync GenSyncServer = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::IBLTSync).
-            setComm(GenSync::SyncComm::socket).
-            setBits(BITS).
-            setNumExpectedElements(EXP_ELEM).
-            build();
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setExpNumElems(numExpElem).
+			build();
 
-    GenSync GenSyncClient = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::IBLTSync).
-            setComm(GenSync::SyncComm::socket).
-            setBits(BITS).
-            setNumExpectedElements(EXP_ELEM).
-            build();
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setExpNumElems(numExpElem).
+			build();
 
-	CPPUNIT_ASSERT(syncTestProb(GenSyncClient,GenSyncServer));
+	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, false, false));
+}
+
+void IBLTSyncTest::IBLTSyncMultisetReconcileTest() {
+	const int BITS = sizeof(randZZ());
+
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setExpNumElems(numExpElem).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setExpNumElems(numExpElem).
+			build();
+
+	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = true, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, true, false));
+}
+
+void IBLTSyncTest::IBLTSyncLargeSetReconcileTest() {
+	const int BITS = sizeof(randZZ());
+
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setExpNumElems(largeNumExpElems).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setComm(GenSync::SyncComm::socket).
+			setBits(BITS).
+			setExpNumElems(largeNumExpElems).
+			build();
+
+	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true,false,false,true));
 }
 
 void IBLTSyncTest::testAddDelElem() {
     // number of elems to add
     const int ITEMS = 50;
     IBLTSync ibltSync(ITEMS, sizeof(randZZ()));
-    multiset<DataObject *, cmp<DataObject*>> elts;
+    multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> elts;
 
     // check that add works
     for(int ii = 0; ii < ITEMS; ii++) {
-        DataObject* item = new DataObject(randZZ());
+        shared_ptr<DataObject> item = make_shared<DataObject>(randZZ());
         elts.insert(item);
         CPPUNIT_ASSERT(ibltSync.addElem(item));
     }
 
     // check that elements can be recovered correctly through iterators
-    multiset<DataObject *, cmp<DataObject*>> resultingElts;
-    for(auto iter = ibltSync.beginElements(); iter != ibltSync.endElements(); ++iter) {
+    multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> resultingElts;
+    for(auto iter = ibltSync.beginElements(); iter != ibltSync.endElements(); ++iter)
         resultingElts.insert(*iter);
-    }
 
-    vector<DataObject *> diff;
+    vector<shared_ptr<DataObject>> diff;
     rangeDiff(resultingElts.begin(), resultingElts.end(), elts.begin(), elts.end(), back_inserter(diff));
     CPPUNIT_ASSERT(diff.empty());
 
     // check that delete works
-    for(auto dop : elts) {
+    for(auto dop : elts)
         CPPUNIT_ASSERT(ibltSync.delElem(dop));
-    }
 }
 
 void IBLTSyncTest::testGetStrings() {
@@ -78,24 +118,23 @@ void IBLTSyncTest::testGetStrings() {
 }
 
 void IBLTSyncTest::testIBLTParamMismatch(){
-	const int BITS = sizeof(randZZ());
-	const int EXP_ELEM = UCHAR_MAX * 2;
-	const int EXP_ELEM_OTHER = EXP_ELEM + 100;
+    const int BITS = sizeof(randZZ());
 
-	GenSync GenSyncServer = GenSync::Builder().
+    GenSync GenSyncServer = GenSync::Builder().
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(EXP_ELEM_OTHER).
+			//Different number of expectedElements to ensure that mismatches cause failure properly
+			setExpNumElems(numExpElem + 100).
 			build();
 
 	GenSync GenSyncClient = GenSync::Builder().
 			setProtocol(GenSync::SyncProtocol::IBLTSync).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
-			setNumExpectedElements(EXP_ELEM).
+			setExpNumElems(numExpElem).
 			build();
 
-	//oneWay = false, prob = true, syncParamTest = true
-	CPPUNIT_ASSERT(!(_syncTest(GenSyncClient,GenSyncServer,false,true,true)));
+	//(oneWay = false, probSync = true, syncParamTest = true, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, true, true, false, false)));
 }

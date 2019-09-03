@@ -1,6 +1,6 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-#include "Data/DataObject.h"
+#include <CPISync/Data/DataObject.h>
 #include "NTL/ZZ_pXFactoring.h"
 
 // namespaces
@@ -21,6 +21,26 @@ DataObject::DataObject(const ZZ &datum)  : DataObject() {
 DataObject::DataObject(const string& str) : DataObject() {
     myBuffer = RepIsInt?strTo<ZZ>(str):pack(str);
 }
+
+DataObject::DataObject(const multiset<shared_ptr<DataObject>> tarSet) : DataObject()
+{
+    string str = "";
+    for (auto ii : tarSet)
+        str += base64_encode(ii->to_string().c_str(),ii->to_string().length()) + " ";
+    str = base64_encode(str.c_str(), str.length());
+    myBuffer = pack(str);
+}
+
+multiset<shared_ptr<DataObject>> DataObject::to_Set() const
+{
+    multiset<shared_ptr<DataObject>> result;
+    string str = base64_decode(unpack(myBuffer));
+    auto splt = split(str, " ");
+    for (auto itr : splt)
+        result.insert(make_shared<DataObject>(base64_decode(itr)));
+    return result;
+}
+
 
 ZZ DataObject::pack(const string& theStr) {
     return ZZFromBytes(reinterpret_cast<const unsigned char*>(theStr.data()), theStr.length());   

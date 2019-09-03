@@ -15,8 +15,10 @@
 class FullSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(FullSyncTest);
     
-    CPPUNIT_TEST(justSyncTest);
-    CPPUNIT_TEST(testAddDelElem);
+    CPPUNIT_TEST(FullSyncSetReconcileTest);
+    CPPUNIT_TEST(FullSyncMultisetReconcileTest);
+	CPPUNIT_TEST(FullSyncLargeSetReconcileTest);
+	CPPUNIT_TEST(testAddDelElem);
     CPPUNIT_TEST(testGetStrings);
             
     CPPUNIT_TEST_SUITE_END();
@@ -28,9 +30,22 @@ public:
     void tearDown() override;
 
 	/**
- 	* Test reconciliation
+ 	* Test full reconciliation of a set with FullSync protocol (All elements are exchanged and the sets are updated
+	* to be the Union of the two sets
  	*/
-    static void justSyncTest();
+    static void FullSyncSetReconcileTest();
+
+	/**
+	 * Test full reconciliation of a multiset with FullSync protocol (All elements are exchanged and the sets are
+	 * updated to be the Union of the two sets
+	 */
+    static void FullSyncMultisetReconcileTest();
+
+	/**
+	* Test full reconciliation of a set with FullSync protocol (All elements are exchanged and the sets are updated
+	* to be the Union of the two sets
+	*/
+	static void FullSyncLargeSetReconcileTest();
 
 	/**
  	* Test adding and deleting elements

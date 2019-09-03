@@ -5,8 +5,8 @@
  * Created on November 5, 2011, 8:49 PM
  */
 
-#include "Aux/Auxiliary.h"
-#include "Communicants/CommString.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Communicants/CommString.h>
 
 CommString::CommString(const string& initial, bool base64) {
     if (base64)
@@ -34,18 +34,22 @@ void CommString::commClose() {
 }
 
 void CommString::commSend(const char *toSend, const int numBytes) {
+    std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
     // save the next bytes to the string stream
     stream->write(toSend, numBytes);
     addXmitBytes(numBytes); // update the byte transfer counter
+    addCommTime(startTime);
 }
 
 string CommString::commRecv(unsigned long numBytes) {
     // returns the next few bytes from the string stream
+    std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
     auto *tmpBuf = new char[numBytes]; // buffer into which received bytes are placed
     stream->read(tmpBuf, numBytes);
 
     addRecvBytes(numBytes); // update the received byte counter
+    addCommTime(startTime);
 
     return string(tmpBuf, numBytes);
 }

@@ -7,7 +7,7 @@
  */
 
 #include "DataObjectTest.h"
-#include "Data/DataObject.h"
+#include <CPISync/Data/DataObject.h>
 
 using namespace std;
 
@@ -36,7 +36,7 @@ void DataObjectTest::testToZZAndInitZZ(){
 
 void DataObjectTest::testToStringAndInitString(){
     for(int ii = 0; ii < TIMES; ii++) {
-        const string ss = randIntString();
+        const string ss = toStr(rand());
         const string tt = randString(LOWER, UPPER);
 
         // do twice for false and true case

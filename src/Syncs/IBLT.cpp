@@ -5,7 +5,7 @@
 // Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
 //
 
-#include "Syncs/IBLT.h"
+#include <CPISync/Syncs/IBLT.h>
 
 IBLT::IBLT() = default;
 IBLT::~IBLT() = default;
@@ -26,9 +26,19 @@ hash_t IBLT::_hash(const hash_t& initial, long kk) {
     return _hash(shash(toStr(initial)), kk-1);
 }
 
-hash_t IBLT::hashK(const ZZ& item, long kk) {
+hash_t IBLT::_hashK(const ZZ &item, long kk) {
     std::hash<std::string> shash; // stl uses MurmurHashUnaligned2 for calculating the hash of a string
     return _hash(shash(toStr(item)), kk-1);
+}
+
+hash_t IBLT::_setHash(multiset<shared_ptr<DataObject>> &tarSet)
+{
+    hash_t outHash = 0;
+    for (auto itr : tarSet)
+    {
+        outHash += _hashK(itr->to_ZZ(), 1);
+    }
+    return outHash;
 }
 
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
@@ -40,13 +50,13 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     }
 
     for(int ii=0; ii < N_HASH; ii++){
-        hash_t hk = hashK(key, ii);
+        hash_t hk = _hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
         IBLT::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
 
         entry.count += plusOrMinus;
         entry.keySum ^= key;
-        entry.keyCheck ^= hashK(key, N_HASHCHECK);
+        entry.keyCheck ^= _hashK(key, N_HASHCHECK);
         if (entry.empty()) {
             entry.valueSum.kill();
         }
@@ -70,7 +80,7 @@ bool IBLT::get(ZZ key, ZZ& result){
     long bucketsPerHash = hashTable.size()/N_HASH;
     for (long ii = 0; ii < N_HASH; ii++) {
         long startEntry = ii*bucketsPerHash;
-        unsigned long hk = hashK(key, ii);
+        unsigned long hk = _hashK(key, ii);
         const IBLT::HashTableEntry& entry = hashTable[startEntry + (hk%bucketsPerHash)];
 
         if (entry.empty()) {
@@ -115,7 +125,7 @@ bool IBLT::get(ZZ key, ZZ& result){
 bool IBLT::HashTableEntry::isPure() const
 {
     if (count == 1 || count == -1) {
-        hash_t check = hashK(keySum, N_HASHCHECK);
+        hash_t check = _hashK(keySum, N_HASHCHECK);
         return (keyCheck == check);
     }
     return false;
@@ -187,4 +197,117 @@ size_t IBLT::size() const {
 
 size_t IBLT::eltSize() const {
     return valueSize;
+}
+
+string IBLT::toString() const
+{
+    string outStr = "";
+    for (auto entry : hashTable)
+    {
+        outStr += toStr<long>(entry.count) + ","
+                + toStr<hash_t>(entry.keyCheck) + ","
+                + toStr<ZZ>(entry.keySum) + "," 
+                + toStr<ZZ>(entry.valueSum) 
+                + "\n";
+    }
+    outStr.pop_back();
+    return outStr;
+}
+
+void IBLT::reBuild(string &inStr)
+{
+    vector<string> entries = split(inStr, "\n");
+    int index = 0;
+    for (auto entry : entries)
+    {
+        vector<string> infos = split(entry, ",");
+        HashTableEntry curEntry;
+        curEntry.count = strTo<long>(infos[0]);
+        curEntry.keyCheck = strTo<hash_t>(infos[1]);
+        curEntry.keySum = strTo<ZZ>(infos[2]);
+        curEntry.valueSum = strTo<ZZ>(infos[3]);
+        this->hashTable[index] = curEntry;
+        index++;
+    }
+}
+
+void IBLT::insertIBLT(IBLT &chldIBLT, hash_t &chldHash)
+{
+
+    ZZ ibltZZ = strToZZ(chldIBLT.toString());
+    // conv can't be applied to hash_t types, have to use toStr&strTo functions
+    // instead.
+    _insert(1, ibltZZ, strTo<ZZ>(toStr<hash_t>(chldHash)));
+}
+
+void IBLT::eraseIBLT(IBLT &chldIBLT, hash_t &chldHash)
+{
+    ZZ ibltZZ = strToZZ(chldIBLT.toString());
+    _insert(-1, ibltZZ, strTo<ZZ>(toStr<hash_t>(chldHash)));
+}
+
+void IBLT::insertIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
+{
+    hash_t setHash = _setHash(tarSet);
+
+    // make sure the hash is unique even for duplicate sets
+    auto it = std::find(hashes.begin(),hashes.end(),setHash);
+
+    while(it != hashes.end()){
+        setHash = _hash(setHash,1);
+        it = std::find(hashes.begin(),hashes.end(),setHash);
+    }
+    
+    hashes.push_back(setHash);
+    // Put chld set into a chld IBLT
+    IBLT chldIBLT(expnChldSet, elemSize);
+    for (auto itr : tarSet)
+    {
+        chldIBLT.insert(itr->to_ZZ(), itr->to_ZZ());
+    }
+
+    // Put the pair(chld IBLT, hash of set) into the outer IBLT T
+    insertIBLT(chldIBLT, setHash);
+
+}
+
+void IBLT::eraseIBLT(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet)
+{
+    hash_t setHash = _setHash(tarSet);
+    
+    // delete set hash in the vector
+    bool found = false;
+
+    // if target hash not in current structure, hash again and perform another round of search
+    long curInd = 0;
+    while(true){
+        for (auto itr = hashes.begin(); itr < hashes.end(); itr++)
+        {
+            if ((*itr) == setHash)
+            {
+                hashes.erase(itr);
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            setHash = _hash(setHash,1);
+            curInd++;
+        }
+        else
+            break;
+
+        if(curInd > this->size()){
+            Logger::error_and_quit("Error deleting target set: Not found in current structure");
+        }
+    }
+
+
+    IBLT chldIBLT(expnChldSet, elemSize);
+    for (auto itr : tarSet)
+    {
+        chldIBLT.insert(itr->to_ZZ(), itr->to_ZZ());
+    }
+    eraseIBLT(chldIBLT, setHash);
+
 }

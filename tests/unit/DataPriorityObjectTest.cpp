@@ -7,7 +7,7 @@
  */
 
 #include "DataPriorityObjectTest.h"
-#include "Data/DataPriorityObject.h"
+#include <CPISync/Data/DataPriorityObject.h>
 
 
 using namespace std;

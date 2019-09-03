@@ -26,6 +26,7 @@ private:
 
 	/**
  	* Tests sending and receiving a string of characters through a socket
+	* @note: This test reports a failure if it has not completed after WAIT_TIME seconds (1 second)
  	*/
     void SocketSendAndReceiveTest();
 

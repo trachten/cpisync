@@ -53,28 +53,6 @@ void AuxiliaryTest::testToStr() {
     CPPUNIT_ASSERT(resultZZpStr == expectedZZpStr);
 }
 
-void AuxiliaryTest::testSplit()
-{
-    vector<string> stringA;
-    string stringB = "";
-    for (int ii = 0; ii < 10; ii++)
-    {
-        stringA.push_back(toStr<int>(ii));
-        stringB += toStr<int>(ii) + " ";
-    }
-    CPPUNIT_ASSERT_EQUAL(stringA.size(), split(stringB, " ").size());
-    auto it = stringA.begin();
-    vector<string> _stringB = split(stringB, " ");
-    auto it2 = _stringB.begin();
-
-    for (int ii = 0; ii < 10; ii++)
-    {
-        CPPUNIT_ASSERT_EQUAL(*it, *it2);
-        it++;
-        it2++;
-    }
-}
-
 void AuxiliaryTest::testBase64_encode() {
     std::string expectedEncode = "_MMwdA==";
   

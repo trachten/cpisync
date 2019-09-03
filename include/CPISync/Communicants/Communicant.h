@@ -15,6 +15,8 @@
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Data/DataPriorityObject.h>
 #include <CPISync/Syncs/IBLT.h>
+#include <CPISync/Syncs/DiffEstimators/WrappedBloomFilter.h>
+#include <CPISync/Syncs/DiffEstimators/Strata.h>
 
 // namespace imports
 using namespace NTL;
@@ -110,32 +112,14 @@ public:
      */
     void commSend(const ustring& str, unsigned int numBytes);
 
-
-    /**
-     * Send IBLT together with saved hashes
-     * @param iblt the target iblt to be sent
-     * @param sync iff true when the expsize and element size are known
-     * */
-    void commSendIBLTNHash(const IBLT &iblt, bool sync);
-
-
-    /**
-     * Receive an IBLT together with its hashes
-     * @param size the expected # entry for IBLT
-     * @param eltSize size for elements stored in IBLT
-     * */
-    IBLT commRecv_IBLTNHash(size_t size, size_t eltSize);
-    
     /**
      * Sends a data object over the line
      * @param do The data object to send
      */
     void commSend(DataObject &dob);
 
-	/**
-	 * Send a data priority object over the line
-	 * @param dob The data object to send
-	 */
+    void commSend(list<shared_ptr<DataObject>> &dob);
+
     void commSend(DataPriorityObject &dob);
 
     /**
@@ -151,9 +135,9 @@ public:
     void commSend(const string& str);
 
     /**
-	 * Sends a ustring over the line.
-	 * @param str The ustring to send.
-	 */
+ * Sends a ustring over the line.
+ * @param str The ustring to send.
+ */
     void commSend(const ustring& ustr);
 
     /**
@@ -200,6 +184,20 @@ public:
      * @note Does not work for negative numbers.
      */
     void commSend(const ZZ_p &num);
+
+    // Specialized send functions for specific data types
+    /**
+     * Send a strata over the line
+     * @param strata a strata to be send
+     **/
+    void commSend(Strata strata);
+
+    // Specialized send functions for specific data types
+    /**
+     * Send a wrapped bloom filter over the line
+     * @param wbf A wrapped bloom filter to be send
+     * */
+    void commSend(WrappedBloomFilter wbf);
 
     /**
      * Sends a vec_ZZ_p.
@@ -260,6 +258,12 @@ public:
     DataPriorityObject *commRecv_DataObject_Priority();
 
     /**
+     * Receives and creates strata
+     * @return A strata sent from the other communicant
+     **/
+    Strata commRecv_strata();
+
+    /**
      * Receives a list of Data Objects and transforms this into a list of pointers to DataObjects.
      * @return A pointer to the transformed list.
      */
@@ -294,6 +298,11 @@ public:
      */
     IBLT commRecv_IBLT(size_t size = NOT_SET, size_t eltSize = NOT_SET);
 
+    /**
+     * Receives a wrapped bloom filter
+     * */
+    WrappedBloomFilter commRecv_WBF();
+
     // Informational
 
     /**
@@ -326,6 +335,9 @@ public:
      */
     long getRecvBytesTot();
 
+    double getCommTime();
+
+    double getCommTimeTot();
 
     /**
      * @return A name for this communicant.

@@ -6,7 +6,6 @@
 
 #include <CPISync/Syncs/DataObjC.h>
 #include <CPISync/Aux/Exceptions.h>
-#include "DataObject.h"
 
 class DataFileC: public DataObjC
 {

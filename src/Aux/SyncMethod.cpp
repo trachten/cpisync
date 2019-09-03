@@ -22,8 +22,8 @@ if (!commSync->establishModRecv(oneWay)) // establish ZZ_p modulus - must be fir
 }
 
 
+//SYNC METHOD STATS RECORDING
 
-//SyncStats methods start here
 SyncMethod::SyncStats::SyncStats(){
     xmitBytes = recvBytes = commTime = compTime = idleTime = 0;
 }

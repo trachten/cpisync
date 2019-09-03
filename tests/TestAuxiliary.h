@@ -83,14 +83,14 @@ inline vector<GenSync> builderCombos() {
                 case GenSync::SyncProtocol::FullSync:
                     break; // nothing needs to be done for a fullsync
                 case GenSync::SyncProtocol::IBLTSync:
-					builder.
-							setBits(eltSize).
-							setExpNumElems(numExpElem);
+                    builder.
+                            setBits(eltSize).
+                            setNumExpectedElements(numExpElem);
                     break;
                 case GenSync::SyncProtocol::OneWayIBLTSync:
-					builder.
-							setBits(eltSize).
-							setExpNumElems(numExpElem);
+                    builder.
+                            setBits(eltSize).
+                            setNumExpectedElements(numExpElem);
                     break;
                 default:
                     continue;
@@ -115,7 +115,6 @@ inline vector<GenSync> builderCombos() {
     }
     return ret;
 }
-
 
 /**
  * @return a vector of GenSyncs of every Sync Protocol/Communicant combination created with the Constructor (No builder helper)
@@ -341,55 +340,6 @@ inline vector<GenSync> fileCombos() {
 }
 
 /**
- * Check if two structure representing set of sets have same contents
- * @param tar target set containing child sets
- * @param reconciled template set containing child sets
- * @return true iff two sets have same elements in each child sets
- */
-inline bool checkReconSetofSets(multiset<string> tar, multiset<string> reconciled){
-	long match = 0;
-	for (auto itrRec : reconciled)
-	{
-		auto recon = DataObject(base64_decode(itrRec)).to_Set();
-		for (auto itrRes : tar)
-		{
-			auto res = DataObject(base64_decode(itrRes)).to_Set();
-			if (cmpMultiset(recon, res))
-			{
-				match++;
-				break;
-			}
-		}
-	}
-	return (match == reconciled.size());
-}
-
-/**
- * Check if server has reconciled successfully
- * @param resServer datastructure containing all elements on server side
- * @param reconciled datastructure containing all elements that server should have
- * @param setofSets true iff datatype is set of sets
- * @param oneWay true iff syncing on one way protocol
- * @param success_signal signal sent from child process indicating success status
- * @param svrRprt signal from server process indicating success status from forkHandle
- */
-inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &reconciled ,bool setofSets, bool oneWay, bool success_signal, bool svrRprt){
-	
-	if (!setofSets)
-		if (oneWay)
-			return (resServer == reconciled && svrRprt);
-		else
-			return ((success_signal) && (reconciled == resServer) && svrRprt);
-	// Set of sets
-	else
-		if (oneWay)
-			Logger::error_and_quit("Not implemented yet");
-		else
-			return ((success_signal) && checkReconSetofSets(resServer,reconciled) && svrRprt);
-
-}
-
-/**
  * Runs client (child process) and server (parent process) returning a boolean for the success or failure of the sync
  * @param GenSyncClient The GenSync object that plays the role of client in the sync.
  * @param GenSyncServer The GenSync object that plays the role of server in the sync.
@@ -405,8 +355,7 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
  * result of both forkHandles anded together)
  */inline bool syncTestForkHandle(GenSync& GenSyncClient, GenSync& GenSyncServer,bool oneWay, bool probSync,bool syncParamTest,
 								  const unsigned int SIMILAR,const unsigned int CLIENT_MINUS_SERVER,
-								  const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled,
-								  bool setofSets){
+								  const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled){
 	bool success_signal;
 	int chld_state;
 	int my_opt = 0;
@@ -439,12 +388,8 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 					clientReconcileSuccess &= (multisetDiff(reconciled, resClient).size() < (SERVER_MINUS_CLIENT)
 											&& (clientReport.bytes > 0) && (resClient.size() > SIMILAR + CLIENT_MINUS_SERVER));
 				}
-				else {
-					if (!setofSets)
-						clientReconcileSuccess &= (resClient == reconciled);
-					else
-						clientReconcileSuccess &= checkReconSetofSets(resClient,reconciled);
-				}
+				else
+					clientReconcileSuccess &= (resClient == reconciled);
 			}
 		}
 		else{
@@ -454,9 +399,8 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 		//chld_state will be nonzero if clientReconcileSuccess is nonzero (nonzero = true, zero = false)
 		exit(clientReconcileSuccess);
 	}
-	else if (pID < 0) {
+	else if (pID < 0)
 		Logger::error_and_quit("Fork error in sync test");
-	}
 	else {
 		// wait for child process to complete
 		waitpid(pID, &chld_state, my_opt);
@@ -489,11 +433,16 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 											  && serverReport.success && (serverReport.bytes > 0)
 											  && (resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
 
-				if (oneWay) return (serverReconcileSuccess);
-				else return (serverReconcileSuccess && success_signal);
-			} 
-			else 
-				return checkServerSuccess(resServer,reconciled,setofSets,oneWay,success_signal,serverReport.success);
+				if (oneWay)
+					return (serverReconcileSuccess);
+				else
+					return (serverReconcileSuccess && success_signal);
+			} else {
+				if (oneWay)
+					return (resServer == reconciled && serverReport.success);
+				else
+					return ((success_signal) && (reconciled == resServer) && serverReport.success);
+			}
 		}
 		else
 			return serverReport.success;
@@ -501,11 +450,12 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 	return false; // should never get here
 }
 
+
 /** Adds elements to the client and server GenSync and return a vector containing the elements that were added
  *  This vector contains SERVER_MINUS_CLIENT elements that are only added to the server, followed by CLIENT_MINUS_SERVER
  *  elements that are only on the client. The remaining elements are elements that both the server and client have
  *  This vector can be used to determine what should be on the server and client before and after the sync for testing
- * @param Multiset if true creates a multiset rather than a set
+ * @param Multiset true iff multiset allowd for datatype
  * @param SIMILAR # of same elems between server and client
  * @param SERVER_MINUS_CLIENT # of elems on server but not on client
  * @oaram CLIENT_MINUS_SERVER # of elems on client but not on server
@@ -515,34 +465,27 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
  * @param Rounds # of round to be performed for sync, only used for long term test
  * @param difPerRound # of elems added during each round, only used for long term test
  */
-inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMILAR, 
-						const long SERVER_MINUS_CLIENT, 
-						const long CLIENT_MINUS_SERVER, 
-						GenSync &GenSyncServer,
-						GenSync &GenSyncClient,
-						multiset<string> &reconciled,
-						const long Rounds = 0,
-						const long difPerRound = 0
-						)
+inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMILAR,
+												  const long SERVER_MINUS_CLIENT,
+												  const long CLIENT_MINUS_SERVER,
+												  GenSync &GenSyncServer,
+												  GenSync &GenSyncClient,
+												  multiset<string> &reconciled,
+												  const long Rounds = 0,
+												  const long difPerRound = 0)
 {
-
 	vector<shared_ptr<DataObject>> objectsPtr;
 	std::set<ZZ> dataSet;
 	ZZ data = rep(random_ZZ_p());
-
 	//Creates a set of unique elements
-	if (!Multiset)
-	{
-		for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + Rounds * difPerRound; jj++)
-		{
+	if (!Multiset){
+		for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + Rounds * difPerRound; jj++){
 			//Checks if elements have already been added before adding them to objectsPtr to ensure that sync is being
 			//performed on a set rather than a multiset
 			data = rep(random_ZZ_p());
 			//While you fail to add an element to the set  (Because it is a duplicate)
-			while (!get<1>(dataSet.insert(data)))
-			{
-				if (dataSet.size() == pow(2, eltSize * 8))
-				{
+			while (!get<1>(dataSet.insert(data))){
+				if (dataSet.size() == pow(2, eltSize * 8)){
 					string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
 					Logger::error_and_quit(errorMsg);
 				}
@@ -551,21 +494,20 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 			objectsPtr.push_back(make_shared<DataObject>(data));
 		}
 	}
-	//Adds elements to objectsPtr and intentionally duplicates some of the elements to create a multiset
-	else
-	{
+		//Adds elements to objectsPtr and intentionally duplicates some of the elements to create a multiset
+	else{
 		int addElemCount = SERVER_MINUS_CLIENT;
 		//Adds elements to objects pointer for SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER and SIMILAR (hence 3 loops)
 		//Must be split to prevent half of a pair being added to SERVER_MINUS_CLIENT and the other half to CLIENT_MINUS_SERVER
-		for (int jj = 0; jj < 3; jj++)
-		{
-			for (int kk = 0; kk < addElemCount; kk++)
-			{
+		for (int jj = 0; jj < 3; jj++){
+			for (int kk = 0; kk < addElemCount; kk++){
 				//Every 10 elements will have 1 pair and 1 triplet of elements
-				if (kk % 10 == 0 || kk % 10 == 2 || kk % 10 == 3)
+				if (kk % 10 == 0 || kk % 10 == 2 || kk % 10 == 3){
 					objectsPtr.push_back(make_shared<DataObject>(data));
-				else
-				{ //Prevent elements that have already been added from being added again data = randZZ();
+				}
+				else{
+
+				    //Prevent elements that have already been added from being added again data = randZZ();
 					//While you fail to add an element to the set (Because it is a duplicate)
 					while (!get<1>(dataSet.insert(data)))
 						data = rep(random_ZZ_p());
@@ -593,12 +535,11 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 		GenSyncClient.addElem(objectsPtr[jj]);
 
 	// add common data objects to both
-	for (int jj = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
-		 jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + SIMILAR; jj++)
-	{
+	for (int jj = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + SIMILAR; jj++){
 		GenSyncClient.addElem(objectsPtr[jj]);
 		GenSyncServer.addElem(objectsPtr[jj]);
 	}
+
 
 	for (int ii = 0; ii < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; ii++)
 		reconciled.insert(objectsPtr[ii]->print());
@@ -606,135 +547,28 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 	return objectsPtr;
 }
 
-/** Add data for set of sets data type
- * @param GenSyncServer the server object
- * @param GenSyncClient the client object
- * @param reconciled data structure storing expected result after sync
- * @param SIMILAR # elements that server and client have in common
- * @param SERVER_MINUS_CLIENT # elems that are on server but not client
- * @param CLIENT_MINUS_SERVER # elems that are on client but not on server
- * @param numPerSet upper bound for # elems in a child set
- * @param innerDiff upper bound for differences between each child set
- */
-inline void addElemsSetofSets(GenSync &GenSyncServer,
-							  GenSync & GenSyncClient,
-							  multiset<string> &reconciled,
-							  long SIMILAR,
-							  long SERVER_MINUS_CLIENT,
-							  long CLIENT_MINUS_SERVER,
-							  long numPerSet,
-							  long innerDiff,
-							  bool similarSync
-							  ){
+inline int DifEstForkTest(GenSync &GenSyncClient, GenSync &GenSyncServer, int estimator_index, int comm_index, int sync_index){
+		int symDifs;
 
-	//For checking that elements added to each set are unique (no multisets)
-	std::set<ZZ> dataSet;
-
-	vector<shared_ptr<DataObject>> setofsets;
-	multiset<shared_ptr<DataObject>> objectPtrs;
-
-	shared_ptr<DataObject> serializedIBLT;
-
-	// Create SIMILAR number of sets that are identical between the client and server
-	for (long ii = 0; ii < SIMILAR; ii++)
-	{
-		// preObjPtr = objectPtrs;
-		if((rand() % 3 != 0)  || !similarSync || ii == 0){
-			objectPtrs.clear();
-			// create a single child set with no repeat elements
-			for (long jj = 0; jj < numPerSet; jj++)
-			{
-				ZZ data = randZZ();
-				//Checks if element you are trying to add is unique. If it isn't add a different element
-				while (!get<1>(dataSet.insert(data)))
-				{
-					if (dataSet.size() == pow(2, eltSize * 8))
-						Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
-					data = randZZ();
-				}
-				//Insert your element into the child IBLT
-				objectPtrs.insert(make_shared<DataObject>(data));
-			}
+		pid_t pID = fork();
+		//Child
+		if (pID == 0) {
+			signal(SIGCHLD, SIG_IGN);
+			Logger::gLog(Logger::COMM,"created a server process");
+			GenSyncServer.ServerSetDifEst(estimator_index,comm_index,sync_index);
+			exit(0);
 		}
-		//Serialize your IBLT and add it to the setofsets object and book keeping vars
-		//Will repeat a set creating a duplicate once every 3 times if similar sets is enabled
-			serializedIBLT = make_shared<DataObject>(objectPtrs);
+		else if (pID < 0)
+			Logger::error_and_quit("Fork failed in DifEstForkTest function");
 
-		setofsets.push_back(serializedIBLT);
-		GenSyncClient.addElem(serializedIBLT);
-		GenSyncServer.addElem(serializedIBLT);
-		reconciled.insert(serializedIBLT->print());
-	}
+		//Parent
+		else
+			symDifs = GenSyncClient.ClientSetDifEst(estimator_index,comm_index,sync_index);
 
-	objectPtrs.clear();
+		//Update the server afterwards because the changes made in the child process were not saved
+		GenSyncServer.getSyncAgt(sync_index)[sync_index]->SetSymDiffs(symDifs);
 
-	// construct child IBLT with #innerDiff missing elems
-	for (long ii = 0; ii < (CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT)/2; ii++){
-		objectPtrs.clear();
-		for (long jj = 0; jj < numPerSet - innerDiff; jj++) {
-			ZZ data = randZZ();
-			//Checks if element you are trying to add is unique. If it isn't add a different element
-			while (!get<1>(dataSet.insert(data))) {
-				if (dataSet.size() == pow(2, eltSize * 8))
-					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
-				data = randZZ();
-			}
-			//Insert your element into the child IBLT
-			objectPtrs.insert(make_shared<DataObject>(data));
-		}
-		//Serilize your IBLT and add it to the setofsets object
-		setofsets.push_back(make_shared<DataObject>(objectPtrs));
-	}
-
-	//Serilize your IBLT and add it to the setofsets object and book keeping vars
-	for (int ii = SIMILAR; ii < SIMILAR + CLIENT_MINUS_SERVER/2; ii++)
-	{
-		auto curSet = setofsets[ii]->to_Set();
-		for(long jj =0; jj < innerDiff;jj++){
-			ZZ data = randZZ();
-			//Checks if element you are trying to add is unique. If it isn't add a different element
-			while (!get<1>(dataSet.insert(data)))
-			{
-				if (dataSet.size() == pow(2, eltSize * 8))
-					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
-				data = randZZ();
-			}
-			curSet.insert(make_shared<DataObject>(data));
-		}
-
-		//Serilize your IBLT and add it to the setofsets object and book keeping vars
-		serializedIBLT = make_shared<DataObject>(curSet);
-		GenSyncClient.addElem(serializedIBLT);
-		GenSyncServer.addElem(setofsets[ii]);
-		reconciled.insert(serializedIBLT->print());
-	}
-
-	// add #innerDiff different elements to the server side of the sync
-	for (int ii = SIMILAR + CLIENT_MINUS_SERVER/2; ii < SIMILAR + CLIENT_MINUS_SERVER/2 + SERVER_MINUS_CLIENT/2; ii++)
-	{
-		auto curSet = setofsets[ii]->to_Set();
-		for(long jj =0; jj < innerDiff;jj++){
-			ZZ data = randZZ();
-			//Checks if element you are trying to add is unique. If it isn't add a different element
-			while (!get<1>(dataSet.insert(data)))
-			{
-				if (dataSet.size() == pow(2, eltSize * 8))
-					Logger::error_and_quit("Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes");
-				data = randZZ();
-			}
-			curSet.insert(make_shared<DataObject>(data));
-		}
-
-		//Serilize your IBLT and add it to the setofsets object and book keeping vars
-		serializedIBLT = make_shared<DataObject>(curSet);
-		GenSyncServer.addElem(serializedIBLT);
-		GenSyncClient.addElem(setofsets[ii]);
-		reconciled.insert(serializedIBLT->print());
-	}
-
-	// free allocated memory (shared_ptrs)
-	objectPtrs.clear();
-	dataSet.clear();
+		return symDifs;
 }
 
 /**
@@ -752,7 +586,7 @@ inline void addElemsSetofSets(GenSync &GenSyncServer,
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, bool probSync, bool syncParamTest,
-						bool Multiset,bool largeSync){
+					 bool Multiset,bool largeSync, bool useDifEst){
 
 	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
 	//Don't seed oneWay tests because they loop on the outside of syncTest and you want different values for each run
@@ -766,12 +600,17 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 		const unsigned int SERVER_MINUS_CLIENT = largeSync ? (rand() % largeLimit) + 1: (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
 
 		multiset<string> reconciled;
-		
+
 		// add elements to server, client and reconciled
 		auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
-		//Returns a boolean value for the success of the synchronization
+
+		//Use the set dif estimator to set mBar;
+		if(useDifEst)
+			DifEstForkTest(GenSyncClient, GenSyncServer, 0,0,0);
+
+        //Returns a boolean value for the success of the synchronization
 		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
-									  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
+									  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled);
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 		success &= GenSyncServer.clearData();
 		success &= GenSyncClient.clearData();
@@ -791,304 +630,87 @@ inline bool benchmarkSync(GenSync GenSyncClient, GenSync GenSyncServer, int SIMI
 							int SERVER_MINUS_CLIENT, bool probSync, bool Multiset){
 
 	bool success = true;
+	vector<shared_ptr<DataObject>> objectsPtr;
+	std::set < ZZ > dataSet;
+	ZZ data = rep(random_ZZ_p());
 
-	multiset<string> reconciled;
-	auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
+	//Creates a set of unique elements
+	if(!Multiset) {
+		for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++) {
+			//Checks if elements have already been added before adding them to objectsPtr to ensure that sync is being
+			//performed on a set rather than a multiset
+			data = rep(random_ZZ_p());
+			//While you fail to add an element to the set  (Because it is a duplicate)
+			while (!get<1>(dataSet.insert(data))) {
+				if(dataSet.size() == pow(2,eltSize*8)){
+					string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
+					Logger::error_and_quit(errorMsg);
+				}
+				data = rep(random_ZZ_p());
+			}
+			objectsPtr.push_back(make_shared<DataObject>(data));
+		}
+	}
+	//Adds elements to objectsPtr and intentionally duplicates some of the elements to create a multiset
+	else{
+		int addElemCount = SERVER_MINUS_CLIENT;
+		//Adds elements to objects pointer for SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER and SIMILAR (hence 3 loops)
+		//Must be split to prevent half of a pair being added to SERVER_MINUS_CLIENT and the other half to CLIENT_MINUS_SERVER
+		for(int jj = 0; jj < 3; jj++) {
+			for (int kk = 0; kk < addElemCount; kk++) {
+				//Every 10 elements will have 1 pair and 1 triplet of elements
+				if (kk % 10 == 0 || kk % 10 == 2 || kk % 10 == 3)
+					objectsPtr.push_back(make_shared<DataObject>(data));
+				else { //Prevent elements that have already been added from being added again data = randZZ();
+					//While you fail to add an element to the set (Because it is a duplicate)
+					while (!get<1>(dataSet.insert(data)))
+						data = rep(random_ZZ_p());
+
+					objectsPtr.push_back(make_shared<DataObject>(data));
+				}
+			}
+			//Re-randomize the data between the different sections of the vector
+			data = rep(random_ZZ_p());
+
+			//Change the number of elements to add
+			if(jj == 0) addElemCount = CLIENT_MINUS_SERVER;
+			else if(jj == 1) addElemCount = SIMILAR;
+		}
+	}
+
+	// add data objects unique to the server
+	for (int jj = 0; jj < SERVER_MINUS_CLIENT; jj++)
+		GenSyncServer.addElem(objectsPtr[jj]);
+
+	// add data objects unique to the client
+	for (int jj = SERVER_MINUS_CLIENT; jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++)
+		GenSyncClient.addElem(objectsPtr[jj]);
+
+
+	// add common data objects to both
+	for (int jj = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER;
+		 jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + SIMILAR; jj++) {
+		GenSyncClient.addElem(objectsPtr[jj]);
+		GenSyncServer.addElem(objectsPtr[jj]);
+	}
+
+	// create the expected reconciled multiset
+	multiset <string> reconciled;
+	for (auto dop : objectsPtr)
+		reconciled.insert(dop->print());
 
 	//Returns a boolean value for the success of the synchronization
 	success &= syncTestForkHandle(GenSyncClient, GenSyncServer, false, probSync, false, SIMILAR,
-								  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
+								  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled);
 	//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 	success &= GenSyncServer.clearData();
 	success &= GenSyncClient.clearData();
 
 	//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
 	objectsPtr.clear();
-	reconciled.clear();
 
 	return success; // returns success status of tests
 }
-
-/** Sync test for IBLT set of sets funciton
- * @param GenSyncClient the client object
- * @param GenSyncServer the server object
- * @param numPerSet upper bound for # of elements in a child set
- * @param oneWay if true perform one-way sync //TODO: Implement one way sync for IBLT
- * @param largeSync if true sync with large amount of data
- * @param similarSync if true some of the internal sets will be very similar or identical
- * @return true iff sync succeed
- */
-inline bool SetOfSetsSyncTest(GenSync GenSyncClient, GenSync GenSyncServer, long numPerSet, bool oneWay, bool largeSync, bool similarSync)
-{
-
-	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
-	bool success = true;
-
-	//If one way, run 1 time, if not run NUM_TESTS times
-	for (int ii = 0; ii < (oneWay ? 1 : NUM_TESTS); ii++)
-	{
-		//Similar = number of child sets
-		const unsigned int SIMILAR = largeSync ? 100 : 50;
-		//CLIENT_MINUS_SERVER must be even for this test case
-		const unsigned int CLIENT_MINUS_SERVER = largeSync ? 50 : 25;
-		const unsigned int SERVER_MINUS_CLIENT = CLIENT_MINUS_SERVER; // For set of sets SMC == CMS
-
-		// this protocol assumes d differences between two parent set
-		// thus the innerDiff should never be greater than the parent difference size
-		const int innerDiff = (rand()%(numPerSet/2));
-
-		// bookkeep the excepted elements after sync
-		multiset<string> reconciled;
-
-		addElemsSetofSets(GenSyncServer,GenSyncClient,reconciled,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,numPerSet,innerDiff, similarSync);
-
-		//Returns a boolean value for the success of the synchronization
-		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, false, false, SIMILAR,
-									  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT, reconciled, true);
-		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
-		success &= GenSyncServer.clearData();
-		success &= GenSyncClient.clearData();
-
-		reconciled.clear();
-	}
-	return success; // returns success status of tests
-}
-
-/**
- * Long term test for all sync functions with data type set
- * @param GenSyncClient the client object
- * @param GenSyncServer the server object
- * @param SIMILAR # of elements for client and server have in common
- * @param CLIENT_MINUS_SERVER # of elements that client has but not on server
- * @param SERVER_MINUS_CLIENT # of elements that server has but not on client
- * @param probSync true iff sync on a probablistic protocol
- * @param Multiset true iff duplicate elems allowed
- * @param syncParamTest true iff test for syncParam
- * @param oneWay true iff sync on one-way protocol
- * @param int difPerRound # for self/other or other/self during each round
- * @param Rounds # of test rounds
- * @return true iff sync succeed
- */
-inline bool longTermSync(GenSync &GenSyncClient,
-						 GenSync &GenSyncServer,
-						 int SIMILAR,
-						 int CLIENT_MINUS_SERVER,
-						 int SERVER_MINUS_CLIENT,
-						 bool probSync,
-						 bool Multiset,
-						 bool syncParamTest,
-						 bool oneWay,
-						 int difPerRound,
-						 const int Rounds)
-{
-
-
-	// Generate processes for reconciliation
-	bool success = true;
-	bool success_signal;
-	int chld_state;
-	int my_opt = 0;
-
-	bool serverReconcileSuccess = true, clientReconcileSuccess = true;
-	long curRound = 0;
-
-	multiset<string> reconciled;
-
-	auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled,Rounds,difPerRound);
-
-	const long refillIndex = reconciled.size();
-
-	pid_t pID = fork();
-
-	// Client Process
-	if (pID == 0)
-	{
-		signal(SIGCHLD, SIG_IGN);
-
-		// create a client socket
-		// receive status from server before each round of sync
-		// send status to server when finishing sync
-		CommSocket clientSocket(8080, host);
-		clientSocket.commListen();
-
-		for (curRound = 0; curRound < Rounds; curRound++)
-		{
-			if (curRound != 0)
-			{
-				SIMILAR += CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT;
-				SERVER_MINUS_CLIENT = difPerRound;
-				CLIENT_MINUS_SERVER = 0; // Only add elements on server during each round on this side
-
-				for (int ii = 0; ii < difPerRound; ii++)
-				{
-					GenSyncServer.addElem(objectsPtr[refillIndex + (curRound - 1) * difPerRound + ii]);
-					reconciled.insert(objectsPtr[refillIndex + (curRound - 1) * difPerRound + ii]->print());
-				}
-
-				// waiting for start signal from server side
-				string str = "start" + toStr(curRound);
-				while (true)
-					if (clientSocket.commRecv(str.length()) == str.c_str())
-						break;
-			}
-
-			if (!oneWay)
-			{
-				// reconcile client with server
-				forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
-
-				//Print stats about sync
-				if (/*clientReport.success*/ false)
-				{
-					cout << "\nCLIENT RECON STATS:\n";
-					cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
-						 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
-					cout << GenSyncClient.printStats(0);
-				}
-				clientReconcileSuccess &= clientReport.success;
-			}
-			else
-			{
-				//Checks that the size of the client has not changed if the sync is one way
-				clientReconcileSuccess &= (GenSyncClient.dumpElements().size() == SIMILAR + CLIENT_MINUS_SERVER);
-			}
-
-			if (curRound != Rounds - 1)
-			{
-				// send current round status to server
-				string send = toStr(curRound);
-				clientSocket.commSend(send.c_str(), send.length());
-				string status = (clientReconcileSuccess) ? "1" : "0";
-				clientSocket.commSend(status.c_str(), 1);
-			}
-
-			else
-			{
-				// close the socket and kill the process for the last round
-				clientSocket.commClose();
-				exit(clientReconcileSuccess);
-			}
-		}
-	}
-
-	// Fork error
-	else if (pID < 0)
-		Logger::error_and_quit("Fork error in sync test");
-
-	// Server Process
-	else
-	{
-		// create a server socket
-		// send signal to client and ask for start of sync
-		// receive signal from client when it finishes sync
-		CommSocket serverSocket(8080, host);
-		serverSocket.commConnect();
-
-		for (curRound = 0; curRound < Rounds; curRound++)
-		{
-
-			if (curRound != 0)
-			{
-				SIMILAR += CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT;
-				SERVER_MINUS_CLIENT = 0;
-				CLIENT_MINUS_SERVER = difPerRound; // Only add elements on client during each round
-
-				// add more elements to client
-				for (int ii = 0; ii < difPerRound; ii++)
-				{
-					GenSyncClient.addElem(objectsPtr[refillIndex + (curRound - 1) * difPerRound + ii]);
-					reconciled.insert(objectsPtr[refillIndex + (curRound - 1) * difPerRound + ii]->print());
-				}
-			}
-
-			if (curRound != Rounds - 1)
-			{
-				// waiting for success signal from child process
-				// send by socket
-				string expstr = toStr(curRound);
-				string rec;
-				while (true)
-					if ((rec = serverSocket.commRecv(expstr.length())) == toStr(curRound))
-					{
-						success_signal = (serverSocket.commRecv(1) == "1");
-						break;
-					}
-			}
-			else
-			{
-				// waiting for success signal from child process
-				// send by signal from killing process
-				waitpid(pID, &chld_state, my_opt);
-				// close server socket
-				serverSocket.commClose();
-				//chld_state will be nonzero if clientReconcileSuccess is nonzero
-				success_signal = chld_state;
-			}
-
-			// reconcile server with client
-			forkHandleReport serverReport;
-			if (oneWay)
-				serverReport = forkHandleServer(GenSyncServer, GenSyncClient);
-			else
-				serverReport = forkHandle(GenSyncServer, GenSyncClient);
-
-			//Print stats about sync
-			if (/*clientReport.success*/ false)
-			{
-				cout << "\nSERVER RECON STATS:\n";
-				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
-					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
-				cout << GenSyncServer.printStats(0);
-				cout << "\n";
-			}
-
-			multiset<string> resServer;
-			for (auto dop : GenSyncServer.dumpElements())
-				resServer.insert(dop);
-
-			if (!syncParamTest)
-			{
-				if (probSync)
-				{
-					// True if the elements added during reconciliation were elements that the server was lacking that the client had
-					// and if information was transmitted during the fork
-					serverReconcileSuccess &= (multisetDiff(reconciled, resServer).size() < CLIENT_MINUS_SERVER) && serverReport.success && (serverReport.bytes > 0) && (resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
-
-					if (!oneWay)
-						serverReconcileSuccess &= success_signal;
-				}
-				else
-				{
-					bool checkReconciled = (resServer == reconciled);
-					if (oneWay)
-						serverReconcileSuccess &= (checkReconciled & serverReport.success);
-					else
-						serverReconcileSuccess &= (success_signal & checkReconciled & serverReport.success);
-				}
-			}
-			else
-				serverReconcileSuccess &= serverReport.success;
-
-			// if this is the last round
-			if (curRound == Rounds - 1)
-			{
-				// clear dynamically allocated memory for reuse
-				serverReconcileSuccess &= GenSyncServer.clearData() && GenSyncClient.clearData();
-				objectsPtr.clear();
-
-				return serverReconcileSuccess;
-			}
-
-			// not last round, send signal to client and ask for starting another round
-			else
-			{
-				string str = "start" + toStr(curRound + 1);
-				serverSocket.commSend(str.c_str(), str.length());
-			}
-		}
-	}
-}
-
 
 
 /**
@@ -1103,9 +725,8 @@ inline bool socketSendReceiveTest(){
 
 	vector<string> sampleData;
 
-	for(int ii = 0; ii < TIMES; ii++){
+	for(int ii = 0; ii < TIMES; ii++)
 		sampleData.push_back(randString(LENGTH_LOW,LENGTH_HIGH));
-	}
 
 	int chld_state;
 	pid_t pID = fork();
@@ -1143,6 +764,316 @@ inline bool socketSendReceiveTest(){
 	}
 	//If this point is reached, none of the tests have failed
 	return true;
+}
+
+/* This function generate non-duplicated items and added to the target set.
+ * @params difPerRound # of items to be added to target
+ * @params Multiset true iff add items to a multiset
+ * @return a vector containing data objects added to the target for ease of refilling elements to client/server.
+ */
+inline vector<shared_ptr<DataObject>> addMoreElems(multiset<string> &reconciled, const long difPerRound, bool Multiset)
+{
+	//Creates a set of unique elements
+	vector<shared_ptr<DataObject>> objectsPtr;
+	std::set<ZZ> dataSet;
+	ZZ data = rep(random_ZZ_p());
+	auto elem = make_shared<DataObject>(data);
+	if (!Multiset)
+	{
+		for (unsigned long jj = 0; jj < difPerRound; jj++)
+		{
+			//Checks if elements have already been added before adding them to objectsPtr to ensure that sync is being
+			//performed on a set rather than a multiset
+			//While elements to be added is in the reconciled set
+			while (reconciled.find(elem->print()) != reconciled.end())
+			{
+				if (dataSet.size() == pow(2, eltSize * 8))
+				{
+					string errorMsg = "Attempting to add more elements to a set that can be represented by " + toStr(eltSize) + " bytes";
+					Logger::error_and_quit(errorMsg);
+				}
+				data = rep(random_ZZ_p());
+				elem = make_shared<DataObject>(data);
+			}
+			objectsPtr.push_back(elem);
+
+			// Also add elements to the expected renconciled set
+
+			reconciled.insert(elem->print());
+		}
+	}
+	//Adds elements to objectsPtr and intentionally duplicates some of the elements to create a multiset
+	else
+	{
+		//Only add elements to the server side.
+		for (int kk = 0; kk < difPerRound; kk++)
+		{
+			//Every 10 elements will have 1 pair and 1 triplet of elements
+			if (kk % 10 == 0 || kk % 10 == 2 || kk % 10 == 3)
+			{
+				objectsPtr.push_back(elem);
+				reconciled.insert(elem->print());
+			}
+			else
+			{ //Prevent elements that have already been added from being added again data = randZZ();
+				//While you fail to add an element to the set (Because it is a duplicate)
+				while (reconciled.find(elem->print()) != reconciled.end())
+				{
+					data = rep(random_ZZ_p());
+					elem = make_shared<DataObject>(data);
+				}
+				objectsPtr.push_back(elem);
+				reconciled.insert(elem->print());
+			}
+		}
+		//Re-randomize the data between the different sections of the vector
+		data = rep(random_ZZ_p());
+	}
+	return objectsPtr;
+}
+
+/**
+ * Runs longTerm tests to assure that there's no issues after a bunch of continuous reconciliations between two set
+ * @param GenSyncServer Server GenSync
+ * @param GenSyncClient Client GenSync
+ * @param SIMILAR Amount of elements common to both genSyncs
+ * @param CLIENT_MINUS_SERVER amt of elements unique to client
+ * @param SERVER_MINUS_CLIENT amt of elements unique to server
+ * @param reconciled The expected reconciled dataset
+ * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
+ * @param Multiset true iff you would like to test syncing a multiset
+ * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
+ * of the sets (For parameter mismatch testing)
+ * @param oneWay true iff the sync will be one way (only server is reconciled). One way syncs require that the looping be done
+ * around the constructor of the GenSync Object and the port be changed each test because of how processes handle port closures.
+ * This means that for oneWay syncs syncTest will only loop once internally and the function will have to be called again from the test
+ * @param difPerRound elements# to be added to client during each round of sync
+ * @param details true if you would like to see more details during the test
+ * @param Rounds Amount of rounds for the whole test
+ * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
+ */
+inline bool longTermSync(GenSync &GenSyncClient,
+						 GenSync &GenSyncServer,
+						 int SIMILAR,
+						 int CLIENT_MINUS_SERVER,
+						 int SERVER_MINUS_CLIENT,
+						 bool probSync,
+						 bool Multiset,
+						 bool syncParamTest,
+						 bool oneWay,
+						 int difPerRound,
+						 const int Rounds)
+{
+	bool success = true;
+	vector<shared_ptr<DataObject>> objectsPtr;
+	std::set<ZZ> dataSet;
+	ZZ data = rep(random_ZZ_p());
+
+	//Creates a set of unique elements
+	if (!Multiset)
+	{
+		for (unsigned long jj = 0; jj < SIMILAR + SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++)
+		{
+			//Checks if elements have already been added before adding them to objectsPtr to ensure that sync is being
+			//performed on a set rather than a multiset
+			data = rep(random_ZZ_p());
+			//While you fail to add an element to the set  (Because it is a duplicate)
+			while (!get<1>(dataSet.insert(data)))
+			{
+				if (dataSet.size() == pow(2, eltSize * 8))
+				{
+					string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
+					Logger::error_and_quit(errorMsg);
+				}
+				data = rep(random_ZZ_p());
+			}
+			objectsPtr.push_back(make_shared<DataObject>(data));
+		}
+	}
+	//Adds elements to objectsPtr and intentionally duplicates some of the elements to create a multiset
+	else
+	{
+		int addElemCount = SERVER_MINUS_CLIENT;
+		//Adds elements to objects pointer for SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER and SIMILAR (hence 3 loops)
+		//Must be split to prevent half of a pair being added to SERVER_MINUS_CLIENT and the other half to CLIENT_MINUS_SERVER
+		for (int jj = 0; jj < 3; jj++)
+		{
+			for (int kk = 0; kk < addElemCount; kk++)
+			{
+				//Every 10 elements will have 1 pair and 1 triplet of elements
+				if (kk % 10 == 0 || kk % 10 == 2 || kk % 10 == 3)
+					objectsPtr.push_back(make_shared<DataObject>(data));
+
+				else
+				{ //Prevent elements that have already been added from being added again data = randZZ();
+					//While you fail to add an element to the set (Because it is a duplicate)
+					while (!get<1>(dataSet.insert(data)))
+						data = rep(random_ZZ_p());
+
+					objectsPtr.push_back(make_shared<DataObject>(data));
+				}
+			}
+			//Re-randomize the data between the different sections of the vector
+			data = rep(random_ZZ_p());
+
+			//Change the number of elements to add
+			if (jj == 0)
+				addElemCount = CLIENT_MINUS_SERVER;
+			else if (jj == 1)
+				addElemCount = SIMILAR;
+		}
+	}
+
+	// add data objects unique to the server
+	for (int jj = 0; jj < SERVER_MINUS_CLIENT; jj++)
+		GenSyncServer.addElem(objectsPtr[jj]);
+
+	// add data objects unique to the client
+	for (int jj = SERVER_MINUS_CLIENT; jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj++)
+		GenSyncClient.addElem(objectsPtr[jj]);
+
+	// add common data objects to both
+	for (int jj = SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER; jj < SERVER_MINUS_CLIENT + CLIENT_MINUS_SERVER + SIMILAR; jj++)
+	{
+		GenSyncClient.addElem(objectsPtr[jj]);
+		GenSyncServer.addElem(objectsPtr[jj]);
+	}
+
+	// create the expected reconciled multiset
+	multiset<string> reconciled;
+	for (auto dop : objectsPtr)
+		reconciled.insert(dop->print());
+
+	// Generate processes for reconciliation
+	bool success_signal;
+	int chld_state;
+	int my_opt = 0;
+
+	bool serverReconcileSuccess = true, clientReconcileSuccess = true;
+	int curRound = 0;
+	vector<shared_ptr<DataObject>> refill;
+	while (curRound < Rounds)
+	{
+		curRound++;
+		auto h = GenSyncServer.dumpElements();
+		multiset<string> beforeAdd, client;
+		for (auto itr : h)
+			beforeAdd.insert(itr);
+
+		if (curRound != 1)
+		{
+			SIMILAR += CLIENT_MINUS_SERVER;
+			SERVER_MINUS_CLIENT = 0;
+			CLIENT_MINUS_SERVER = difPerRound; // Only add elements on client during each round
+
+			refill = addMoreElems(reconciled, difPerRound, Multiset);
+
+			for (auto itr : refill)
+				GenSyncClient.addElem(itr);
+		}
+		for (auto itr : GenSyncClient.dumpElements())
+			client.insert(itr);
+
+		pid_t pID = fork();
+
+		// Client Process
+		if (pID == 0)
+		{
+			signal(SIGCHLD, SIG_IGN);
+			if (!oneWay)
+			{
+				// reconcile client with server
+				forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
+
+				//Print stats about sync
+				if (/*clientReport.success*/ false)
+				{
+					cout << "\nCLIENT RECON STATS:\n";
+					cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
+						 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
+					cout << GenSyncClient.printStats(0);
+				}
+
+				multiset<string> resClient;
+				for (auto dop : GenSyncClient.dumpElements())
+					resClient.insert(dop);
+
+				clientReconcileSuccess = clientReport.success;
+			}
+			if (oneWay)
+				//Checks that the size of the client has not changed if the sync is one way
+				clientReconcileSuccess &= (GenSyncClient.dumpElements().size() == SIMILAR + CLIENT_MINUS_SERVER);
+
+			//chld_state will be nonzero if clientReconcileSuccess is nonzero(nonzero = true, zero = false)
+			exit(clientReconcileSuccess);
+		}
+
+		// Fork error
+		else if (pID < 0)
+			Logger::error_and_quit("Fork error in sync test");
+
+		// Server Process
+		else
+		{
+
+			// wait for child process to complete
+			waitpid(pID, &chld_state, my_opt);
+			//chld_state will be nonzero if clientReconcileSuccess is nonzero
+			success_signal = chld_state;
+
+			// reconcile server with client
+			forkHandleReport serverReport;
+			if (oneWay)
+				serverReport = forkHandleServer(GenSyncServer, GenSyncClient);
+			else
+				serverReport = forkHandle(GenSyncServer, GenSyncClient);
+
+			//Print stats about sync
+			if (/*clientReport.success*/ false)
+			{
+				cout << "\nSERVER RECON STATS:\n";
+				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
+					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
+				cout << GenSyncServer.printStats(0);
+				cout << "\n";
+			}
+			multiset<string> resServer;
+			for (auto dop : GenSyncServer.dumpElements())
+				resServer.insert(dop);
+
+			if (!syncParamTest)
+			{
+				if (probSync)
+				{
+					// True if the elements added during reconciliation were elements that the server was lacking that the client had
+					// and if information was transmitted during the fork
+
+					serverReconcileSuccess &= (multisetDiff(reconciled, resServer).size() < CLIENT_MINUS_SERVER) && serverReport.success && (serverReport.bytes > 0) && (resServer.size() > SIMILAR + SERVER_MINUS_CLIENT);
+
+					if (!oneWay)
+						serverReconcileSuccess &= success_signal;
+				}
+				else
+				{
+					bool checkReconciled = (resServer == resServer);
+					if (oneWay)
+						serverReconcileSuccess &= (checkReconciled & serverReport.success);
+					else
+						serverReconcileSuccess &= (success_signal & checkReconciled & serverReport.success);
+				}
+			}
+			else
+				serverReconcileSuccess &= serverReport.success;
+
+			if (curRound == Rounds)
+			{
+				//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
+				objectsPtr.clear();
+
+				return serverReconcileSuccess;
+			}
+		}
+	}
 }
 
 #endif //CPISYNCLIB_GENERIC_SYNC_TESTS_H

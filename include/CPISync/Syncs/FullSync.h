@@ -43,23 +43,6 @@ public:
     bool delElem(shared_ptr<DataObject> newDatum) override;
     inline string getName() override { return "Full Sync"; }
 
-      /**
-     * Deal with elements in OtherMinusSelf after finishing a specific sync function.
-     * Works only when data type for elements is SET
-     * @param *add function pointer to the addElem function in GenSync class
-     * @param *del function pointer to the delElem function in GenSync class
-     * @param otherMinusSelf list of dataObjects, received from every specific sync function
-     * @param myData list of dataObjects, containing all elems saved in the data structure
-     **/
-    template <class T>
-    static void postProcessing_SET(list<shared_ptr<DataObject>> otherMinusSelf, list<shared_ptr<DataObject>> myData, void (T::*add)(shared_ptr<DataObject>), bool (T::*del)(shared_ptr<DataObject>), T *pGenSync)
-    {
-        for (auto elem : otherMinusSelf)
-        {
-        (pGenSync->*add)(elem);
-        }
-    }
-
 
     /**
      * @return A string representing the elements stored in the FullSync object.

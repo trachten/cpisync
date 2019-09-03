@@ -41,7 +41,9 @@ void BenchmarkTest::CPISyncErrorBenchmark()
 		{
 			bool success = benchmarkSync(CPISyncClient.at(ii), CPISyncServer.at(ii), SIMILAR, DIFS, DIFS, false, false);
 			if (!success)
+			{
 				failCount++;
+			}
 		}
 		//If more test failed than the calculated failExpected, then CPISync's error may not be properly bounded
 		CPPUNIT_ASSERT(failCount < failExpected);
@@ -60,7 +62,7 @@ void BenchmarkTest::TimedSyncThreshold()
 	for (int ii = 0; ii < twoWayCombos(1).size(); ii++)
 	{
 		difs = 1;
-		while (true)
+		while (1)
 		{
 			//Double the ammount of differences until the sync can not complete within MAX_TIME
 			difs *= 2;
@@ -86,7 +88,7 @@ void BenchmarkTest::TimedSyncThreshold()
 
 	//IBLT Sync tests
 	difs = 1;
-	while (true)
+	while (1)
 	{
 		difs *= 2;
 		vector<GenSync> IBLTGenClient = twoWayProbCombos(difs * 3);
@@ -101,9 +103,11 @@ void BenchmarkTest::TimedSyncThreshold()
 	}
 
 	//Report Stats
-	cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << difs << " difs" << endl;
+	cout << endl
+		 << "Maximum number of set differences (Multiples of 2) able to synchronize in under " << MAX_TIME << " second(s): " << difs << " difs" << endl;
 	cout << syncStats << endl;
-	cout << endl << "Maximum number of set differences (Multiples of 2) NOT able to synchronize in under " << MAX_TIME << " second(s): " << difs * 2 << " difs" << endl;
+	cout << endl
+		 << "Maximum number of set differences (Multiples of 2) NOT able to synchronize in under " << MAX_TIME << " second(s): " << difs * 2 << " difs" << endl;
 	cout << syncStatsMax;
 }
 
@@ -121,7 +125,7 @@ void BenchmarkTest::BitThresholdTest()
 	for (int ii = 0; ii < twoWayCombos(1).size(); ii++)
 	{
 		difs = 1;
-		while (true)
+		while (1)
 		{
 			//Double the ammount of differences until the sync can not complete without sending more than MAX_BYTEs
 			difs *= 2;
@@ -137,7 +141,8 @@ void BenchmarkTest::BitThresholdTest()
 		}
 
 		//Report Stats
-		cout << endl << "Maximum number of set differences (Multiples of 2) able to synchronize while sending less than " << MAX_BYTES << " bytes: " << difs << " difs" << endl;
+		cout << endl
+			 << "Maximum number of set differences (Multiples of 2) able to synchronize while sending less than " << MAX_BYTES << " bytes: " << difs << " difs" << endl;
 		cout << syncStats << endl;
 		cout << "Stats for the first sync that took more than " << MAX_BYTES << " bytes to complete: " << difs * 2 << " difs" << endl;
 		cout << syncStatsMax;
@@ -145,7 +150,7 @@ void BenchmarkTest::BitThresholdTest()
 
 	//IBLT Sync tests
 	difs = 1;
-	while (true)
+	while (1)
 	{
 		difs *= 2;
 		vector<GenSync> IBLTGenClient = twoWayProbCombos(difs * 3);
@@ -174,6 +179,7 @@ void BenchmarkTest::CPISyncLongTerm()
 	const int dif = 4;			 // Initial difference size for both A/B and B/A
 	const int similiar = 32;	 // size of A^B
 	const int difPerRound = 3;   // # of elems to be added to client during each round
+	const bool multiSet = false; // true iff it's testing on multiset
 	bool success = true;		 // true iff test succeeds in the end
 
 	// CPISyncs
@@ -194,6 +200,7 @@ void BenchmarkTest::IBLTSyncLongTerm()
 	const int dif = 4;			 // Initial difference size for both A/B and B/A
 	const int similiar = 32;	 // size of A^B
 	const int difPerRound = 3;   // # of elems to be added to client during each round
+	const bool multiSet = false; // true iff it's testing on multiset
 	bool success = true;		 // true iff test succeeds in the end
 
 	// # ExpElems should be the total expected # of set after reconciliation, but not m_bar which are used for twoWayCombos funciton
@@ -228,7 +235,9 @@ void BenchmarkTest::IBLTSyncErrBenchMark()
 		{
 			bool success = benchmarkSync(IBLTSyncClient.at(ii), IBLTSyncServer.at(ii), SIMILAR, DIFS, DIFS, true, false);
 			if (!success)
+			{
 				failCount++;
+			}
 		}
 		//If more test failed than the calculated failExpected, then IBLTSync's error may not be properly bounded
 		CPPUNIT_ASSERT(failCount < failExpected);

@@ -18,6 +18,7 @@ class CPISyncTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST(CPISyncSetReconcileTest);
 	CPPUNIT_TEST(CPISyncMultisetReconcileTest);
 	CPPUNIT_TEST(CPISyncLargeSetReconcileTest);
+	CPPUNIT_TEST(CPISyncSetSymDifsTest);
 	CPPUNIT_TEST(ProbCPISyncSetReconcileTest);
 	CPPUNIT_TEST(ProbCPISyncMultisetReconcileTest);
 	CPPUNIT_TEST(ProbCPISyncLargeSetReconcileTest);
@@ -59,10 +60,15 @@ public:
 	void CPISyncMultisetReconcileTest();
 
 	/*
-	 * Test a synchronization of large sets using CPISync. This test may be limited by the heap size of a users machine
-	 * TODO: Add a number here once the sie of "Large" is chosen
+	 * Tests synchronizing using CPISync with an mBar set by each type of dif estimator
+	 * //TODO: Add the rest of the dif estimators to this test once they are done
 	 */
 	void CPISyncLargeSetReconcileTest();
+
+	/*
+	 * Test that SetSymDifs properly changes mBar and all parameters dependent on mBar
+	 */
+	void CPISyncSetSymDifsTest();
 
 	/**
 	 * Test the synchronization of sets using ProbCPISync

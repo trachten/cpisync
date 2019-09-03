@@ -43,6 +43,7 @@ CPISync::CPISync(long m_bar, long bits, int epsilon, int redundant, bool hashes 
 maxDiff(m_bar), probEps(epsilon), hashQ(hashes) {
 Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
 
+
     // set default parameters
     if (hashQ) {
     /* if hashes are being used, we have to account for the probability of a collision by
@@ -67,7 +68,6 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
     else
       bitNum = bits;
 
-    currDiff = maxDiff;
 
     if (redundant == 0) // i.e. use the probability of error to calculate redundancy
         redundant_k = to_long(CeilToZZ(to_RR(epsilon) / bitNum));
@@ -79,11 +79,10 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
     if (redundant_k <= 0) //k at least 1
         redundant_k = 1;
 
-    DATA_MAX = power(ZZ_TWO, bitNum);
-    fieldSize = NextPrime(DATA_MAX + maxDiff + redundant_k);
-    ZZ_p::init(fieldSize);
+	DATA_MAX = power(ZZ_TWO, bitNum);
 
-    initData(maxDiff + redundant_k); // initialize sample locations and metadata
+	//Sets m_bar as well as some of the parameters that are dependent on mBar
+	SetSymDiffs(maxDiff);
 }
 
 CPISync::~CPISync() {
@@ -368,8 +367,10 @@ void CPISync::SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay
     commSync->commSend(maxDiff);
     commSync->commSend(bitNum);
     commSync->commSend(probEps);
+
     if (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG))
         throw SyncFailureException("Sync parameters do not match.");
+
     Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
@@ -404,6 +405,9 @@ void CPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay
 bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncClient");
 
+    if(maxDiff == -1)
+    	Logger::error_and_quit("mBar not set before sync. Either set mBar or call a ClientSetDifEst before syncing");
+
     mySyncStats.timerStart(SyncStats::COMP_TIME);
 	//Reset currDiff to 1 at the start of the sync so that the correct upper bound can be found if the dataset has changed
     if(probCPI) currDiff = 1;
@@ -428,7 +432,6 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_pt
             SendSyncParam(commSync, oneWay);
             mySyncStats.timerEnd(SyncStats::COMM_TIME);
         }
-
         // 1. Transmit characteristic polynomial values
         mySyncStats.timerStart(SyncStats::COMM_TIME);
         commSync->commSend((long) CPI_hash.size()); // ... first outputs how many set elements the client has
@@ -444,7 +447,6 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_pt
         mySyncStats.timerStart(SyncStats::COMM_TIME);
         commSync->commSend(valList);
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
-
         valList.kill();
       
         // 2. Get more characteristic polynomial values if needed
@@ -524,7 +526,11 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_pt
 
 bool CPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>>& selfMinusOther, list<shared_ptr<DataObject>>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::SyncServer");
-    mySyncStats.timerStart(SyncStats::COMP_TIME); //This is total sync time
+
+	if(maxDiff == -1)
+		Logger::error_and_quit("mBar not set before sync. Either set mBar or call a ServerSetDifEst before syncing");
+
+    mySyncStats.timerStart(SyncStats::COMP_TIME); //Comp Time is calculated here by (Total Time - IDLE_TIME - COMM_TIME)
 
     //Reset currDiff to 1 at the start of the sync so that the correct upper bound can be found if the dataset has changed
 	if(probCPI) currDiff = 1;
@@ -801,6 +807,25 @@ bool CPISync::delElem(shared_ptr<DataObject> newDatum) {
     Logger::gLog(Logger::METHOD_DETAILS, "... (CPISync) removed item " + newDatum->print() + ".");
     return true;
 }
+
+
+void CPISync::SetSymDiffs(long mBar){
+	maxDiff = mBar;
+	currDiff = mBar;
+
+	fieldSize = NextPrime(DATA_MAX + mBar + redundant_k);
+	ZZ_p::init(fieldSize);
+
+	//Need to add elements again here because the finite field size has changed
+
+	initData(mBar + redundant_k); // initialize sample locations and metadata
+
+	//Recalculate CPI_evaluations when m_bar is changed
+	for(int ii = 0; ii < elements.size(); ii++)
+		for(int jj = 0; jj < sampleLoc.length();jj++)
+				CPI_evals[jj] *= (sampleLoc[jj] - _hash(elements[ii]));
+}
+
 
 string CPISync::printElem() {
     stringstream result("");

@@ -31,7 +31,6 @@ using std::list;
 
 typedef paryTree<CPISync_ExistingConnection> pTree;
 
-//TODO: Fix stat reporting for InterCPI (Curerntly only reports stats for the last node rather than the entire tree)
 class InterCPISync : public SyncMethod {
 public:
 
@@ -44,7 +43,7 @@ public:
      * @param epsilon An upper bound on the probability of error of the synchronization,
      *    expressed in its negative log.  In other words, the actually probability of error
      *    is upper bounded by 2^-epsilon.  Must be non-negative.
-     * 
+     *
      *    Internal parameters are tweaked to guarantee this subject to the assumption that there be at least 2 items
      *    in the union of the two sets that are being synchronized.
      * 
@@ -63,6 +62,7 @@ public:
      * Connect as a client to a specific communicant and computes differences between the two (without actually updating them).
      * %R:  Sync_Server must have been called at that communicant.
      * 
+     *
      * @param commSync The communicant to whom to connect.
      * @param selfMinusOther A result of reconciliation.  Elements that I have that the other SyncMethod does not.
      * @param otherMinusSelf A result of reconciliation.  Elements that the other SyncMethod has that I do not.
@@ -104,24 +104,6 @@ public:
                 + "\n   * perr (for each CPISync node) = 2^-" + toStr(probEps) + "\n   * mbar = " + toStr(maxDiff)
                 + "\n   * pFactor = " + toStr(pFactor) + "\n   * Evaluation Points = " + toStr(redundant_k) + '\n';
     }
-
-      /**
-     * Deal with elements in OtherMinusSelf after finishing a specific sync function.
-     * Works only when data type for elements is SET
-     * @param *add function pointer to the addElem function in GenSync class
-     * @param *del function pointer to the delElem function in GenSync class
-     * @param otherMinusSelf list of dataObjects, received from every specific sync function
-     * @param myData list of dataObjects, containing all elems saved in the data structure
-     **/
-    template <class T>
-    static void postProcessing_SET(list<shared_ptr<DataObject>> otherMinusSelf, list<shared_ptr<DataObject>> myData, void (T::*add)(shared_ptr<DataObject>), bool (T::*del)(shared_ptr<DataObject>), T *pGenSync)
-    {
-        for (auto elem : otherMinusSelf)
-        {
-        (pGenSync->*add)(elem);
-        }
-    }
-
 
 
 protected:

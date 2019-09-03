@@ -7,6 +7,7 @@
 #include <vector>
 #include <memory>
 #include <CPISync/Communicants/Communicant.h>
+#include <CPISync/Syncs/DiffEstimators/DiffEstimator.h>
 
 // namespaces
 using std::vector;
@@ -80,7 +81,17 @@ public:
         return before > elements.size(); // true iff there were more elements before removal than after
     };
 
-    // INFORMATIONAL
+    /**
+     * take in a value for the estimated number of symmetric differences and do the calculations for that specific sync
+     * that are dependent upon this value.
+     * @param symDifs The number of expected symDifs between the two sets
+     */
+	virtual void SetSymDiffs(long symDifs){
+		Logger::error("Setting symmetric diffs for a syncMethod not reliant on this parameter");
+	}
+
+
+	// INFORMATIONAL
     /**
      * @return A human-readable name for the synchronization method.
      */
@@ -90,23 +101,6 @@ public:
     long getNumElem() const {
         return elements.size();
     }
-        /**
-     * Deal with elements in OtherMinusSelf after finishing a specific sync function.
-     * Works only when data type for elements is SET
-     * @param *add function pointer to the addElem function in GenSync class
-     * @param *del function pointer to the delElem function in GenSync class
-     * @param otherMinusSelf list of dataObjects, received from every specific sync function
-     * @param myData list of dataObjects, containing all elems saved in the data structure
-     **/
-    template <class T>
-    static void postProcessing_SET(list<shared_ptr<DataObject>> otherMinusSelf, list<shared_ptr<DataObject>> myData, void (T::*add)(shared_ptr<DataObject>), bool (T::*del)(shared_ptr<DataObject>), T *pGenSync)
-    {
-        for (auto elem : otherMinusSelf)
-        {
-            (pGenSync->*add)(elem);
-        }
-    }
-
 
     /**
      * @return An iterator pointing to the first element in the data structure
@@ -119,68 +113,69 @@ public:
     vector<shared_ptr<DataObject>>::const_iterator endElements() { return elements.end();}
 
 
+    //SYNC STATS
 
     /**
      * A class containing statistics about a sync and methods for modifying these stats
      */
     class SyncStats{
-    public:
+		public:
 
-        enum StatID { XMIT, RECV, COMM_TIME, IDLE_TIME, COMP_TIME, ALL }; //Stat specifiers
+			enum StatID { XMIT, RECV, COMM_TIME, IDLE_TIME, COMP_TIME, ALL }; //Stat specifiers
 
-        SyncStats();
-        ~SyncStats() = default;
+			SyncStats();
+			~SyncStats() = default;
 
-        /**
-         * Resets specified counter to 0
-         */
-        void reset(StatID statID);
+			/**
+			 * Resets specified counter to 0
+			 */
+			void reset(StatID statID);
 
-        /**
-         * @param statID The stat you would like to return
-         * @return The stat specified by statID
-         * Does not support ALL
-         */
-        double getStat(StatID statID);
+			/**
+			 * @param statID The stat you would like to return
+			 * @return The stat specified by statID
+			 * Does not support ALL
+			 */
+			double getStat(StatID statID);
 
-        /**
-         * Increment the specified stat by the specified amount
-         * @param statID The stat to increment
-         * @param incr how much to increment the given stat by
-         */
-        void increment(StatID statID, double incr);
+			/**
+			 * Increment the specified stat by the specified amount
+			 * @param statID The stat to increment
+			 * @param incr how much to increment the given stat by
+			 */
+			void increment(StatID statID, double incr);
 
-        /**
-         * starts a timer for the specified StatID. Only works for time type StatIDs
-         * @param timerID The id of the timer you would like to start
-         */
-        void timerStart(StatID timerID);
+			/**
+			 * starts a timer for the specified StatID. Only works for time type StatIDs
+			 * @param timerID The id of the timer you would like to start
+			 */
+			void timerStart(StatID timerID);
 
-        /**
-         * End the timer for the specified "time" type stat adding the time since the start to the relevant time stat
-         * @param timerID The id of the timer you would like to end
-         * @requires timerStart must have been called for the same StatID before use
-         */
-        void timerEnd(StatID timerID);
+			/**
+			 * End the timer for the specified "time" type stat adding the time since the start to the relevant time stat
+			 * @param timerID The id of the timer you would like to end
+			 * @requires timerStart must have been called for the same StatID before use
+			 */
+			void timerEnd(StatID timerID);
 
-        /**
-         * @return The total time required for this sync to complete
-         */
-        double totalTime(){ return commTime + idleTime + compTime; };
+			/**
+			 * @return The total time required for this sync to complete
+			 */
+			double totalTime(){ return commTime + idleTime + compTime; };
 
-    private:
-        long xmitBytes; /** The total amount of bytes that this sync has transmitted */
-        long recvBytes; /** The total amount of bytes that this sync has received*/
+		private:
+			long xmitBytes; /** The total amount of bytes that this sync has transmitted */
+			long recvBytes; /** The total amount of bytes that this sync has received*/
 
-        std::chrono::high_resolution_clock::time_point commStart;
-        double commTime; /** The total amount of time that this time has spent sending and receiving through sockets */
+			std::chrono::high_resolution_clock::time_point commStart;
+			double commTime; /** The total amount of time that this time has spent sending and receiving through sockets */
 
-        std::chrono::high_resolution_clock::time_point idleStart;
-        double idleTime; /** The total time spent waiting for your peer (listening, waiting for computation etc) */
+			std::chrono::high_resolution_clock::time_point idleStart;
+			double idleTime; /** The total time spent waiting for your peer (listening, waiting for computation etc) */
 
-        std::chrono::high_resolution_clock::time_point compStart;
-        double compTime; /** The total amount time taken to finish the computation for this sync */
-    };
+			std::chrono::high_resolution_clock::time_point compStart;
+			double compTime; /** The total amount time taken to finish the computation for this sync */
+	};
 
     /**
      * An object that collects stats about a sync
@@ -207,10 +202,10 @@ protected:
      * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
      */
     virtual void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false);
-    
-    SYNC_TYPE SyncID; /** A number that uniquely identifies a given synchronization protocol. */
-    
-private:
+
+
+	SYNC_TYPE SyncID; /** A number that uniquely identifies a given synchronization protocol. */
+
     vector<shared_ptr<DataObject>> elements; /** Pointers to the elements stored in the data structure. */
 };
 

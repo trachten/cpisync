@@ -42,6 +42,8 @@ public:
      * @param epsilon An upper bound on the probability of error of the synchronization,
      *    expressed in its negative log.  In other words, the actually probability of error
      *    is upper bounded by 2^-epsilon.
+     * @param difEstimator The protocol you would like to use in order to estimate the number of symmetric
+     * 		differences before each sync. If this is not "Parameter" m_bar will be ignored
      * 
      *    Internal parameters are tweaked to guarantee this, subject to an assumption
      *    that an internal hash does not collide, and that there be at least 2 items

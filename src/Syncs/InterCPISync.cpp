@@ -22,10 +22,15 @@ InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,boo
 	/**
 	 * ProbEps: Derivation
 	 * Probability of failure for each CPISync node = 2^-Epsilon
-	 * 1-(1-P[error per node])^maxNodes <= 2^-Epsilon //Probability of 1 or more errors occuring:
+	 * 1-(1-P[error per node])^maxNodes <= 2^-Epsilon //Probability of 1 or more errors occurring:
 	 * max nodes for InterCPISync = 1 + (symDifs*partition/m_bar)*ceil(bits* log_p(2))
 	 * Then solve for P[error per node] to find the epsilon_0(Epsilon for each CPISync node) needed
 	 * for each CPISync in order to bound the total error by the given epsilon
+	 *
+	 * This is a very conservative bound on the error as it is very unlikely that interCPISync will actually need to recurse
+	 * the maximum amount of times
+	 *
+	 * (Large Floats) RRs are necessary here to prevent underflow which causes probEps to be 0
 	 */
 
 	Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
@@ -96,6 +101,10 @@ bool InterCPISync::addElem(shared_ptr<DataObject> newDatum) {
 
 bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>>& selfMinusOther, list<shared_ptr<DataObject>>& otherMinusSelf) {
     Logger::gLog(Logger::METHOD, "Entering InterCPISync::SyncClient");
+
+	if(maxDiff == -1)
+		Logger::error_and_quit("mBar not set before sync. Either set mBar or call a ClientSetDifEst before syncing");
+
     // 0. Set up communicants
     if(!useExisting) {
         mySyncStats.timerStart(SyncStats::IDLE_TIME);

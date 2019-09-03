@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(cpisync)
+project(CPISync)
 set(CMAKE_CXX_STANDARD 11)
 
 include(CTest)
@@ -14,12 +14,14 @@ set(AUX_DIR ${SRC_DIR}/Aux)
 set(DATA_DIR ${SRC_DIR}/Data)
 set(COMM_DIR ${SRC_DIR}/Communicants)
 set(SYNC_DIR ${SRC_DIR}/Syncs)
+set(DIFF_EST_DIR ${SYNC_DIR}/DiffEstimators)
 
 set(INCLUDE include/CPISync)
 set(AUX_DIR_INC ${INCLUDE}/Aux)
 set(DATA_DIR_INC ${INCLUDE}/Data)
 set(COMM_DIR_INC ${INCLUDE}/Communicants)
 set(SYNC_DIR_INC ${INCLUDE}/Syncs)
+set(DIFF_EST_DIR_INCLUDE ${SYNC_DIR_INC}/DiffEstimators)
 
 #Test directory structure
 set(TEST_DIR tests)
@@ -51,10 +53,16 @@ set(SOURCE_FILES
         ${SYNC_DIR}/HashSync.cpp
         ${SYNC_DIR}/IBLT.cpp
         ${SYNC_DIR}/IBLTSync.cpp
-        ${SYNC_DIR}/IBLTSetOfSets.cpp
         ${SYNC_DIR}/FullSync.cpp
 
-        ${SRC_DIR}/main.cpp)
+        ${DIFF_EST_DIR}/MinWiseSketches.cpp
+        ${DIFF_EST_DIR}/StrataEst.cpp
+        ${DIFF_EST_DIR}/Strata.cpp
+        ${DIFF_EST_DIR}/WrappedBloomFilter.cpp
+        ${DIFF_EST_DIR}/WBFEst.cpp
+
+        ${SRC_DIR}/main.cpp
+)
 
 set(HEADERS
 
@@ -87,11 +95,18 @@ set(HEADERS
         ${SYNC_DIR_INC}/HashSync.h
         ${SYNC_DIR_INC}/IBLT.h
         ${SYNC_DIR_INC}/IBLTSync.h
-        ${SYNC_DIR_INC}/IBLTSetOfSets.h
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
         ${SYNC_DIR_INC}/InterCPISync.h
         ${SYNC_DIR_INC}/PrioCPISync.h
-        ${SYNC_DIR_INC}/ProbCPISync.h)
+        ${SYNC_DIR_INC}/ProbCPISync.h
+
+        ${DIFF_EST_DIR_INCLUDE}/DiffEstimator.h
+        ${DIFF_EST_DIR_INCLUDE}/MinWiseSketches.h
+        ${DIFF_EST_DIR_INCLUDE}/StrataEst.h
+        ${DIFF_EST_DIR_INCLUDE}/Strata.h
+        ${DIFF_EST_DIR_INCLUDE}/WrappedBloomFilter.h
+        ${DIFF_EST_DIR_INCLUDE}/WBFEst.h
+)
 
 include_directories(include)
 include_directories(tests)
@@ -103,19 +118,19 @@ include_directories(${CMAKE_INSTALL_INCLUDEDIR})
 link_directories(${CMAKE_INSTALL_LIBDIR})
 
 # Add libs and executables
-add_library(cpisync STATIC ${SOURCE_FILES} ${HEADERS})
-target_include_directories(cpisync PRIVATE ${CMAKE_SOURCE_DIR}/include)
-TARGET_LINK_LIBRARIES(cpisync ntl cppunit pthread gmp)
+add_library(CPISync STATIC ${SOURCE_FILES} ${HEADERS})
+target_include_directories(CPISync PRIVATE ${CMAKE_SOURCE_DIR}/include)
+TARGET_LINK_LIBRARIES(CPISync ntl cppunit pthread gmp)
 
-install(CODE "FILE(REMOVE_RECURSE ${CMAKE_INSTALL_INCLUDEDIR}/cpisync)") #Remove the existing CPISync library data and reinstall
-install(CODE "FILE(REMOVE_RECURSE ${CMAKE_INSTALL_LIBDIR}/libcpisync.a)") #Remove the existing CPISync library data and reinstall
-install(TARGETS cpisync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(CODE "FILE(REMOVE_RECURSE ${CMAKE_INSTALL_INCLUDEDIR}/CPISync)") #Remove the existing CPISync library data and reinstall
+install(CODE "FILE(REMOVE_RECURSE ${CMAKE_INSTALL_LIBDIR}/libCPISync.a)") #Remove the existing CPISync library data and reinstall
+install(TARGETS CPISync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/CPISync) #create a new folder for CPISync inside of the system include directory
 install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/CPISync COMPONENT devel) #copy the contents of the include folder into the system include directory
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
-target_link_libraries(TryMe cpisync ntl cppunit pthread gmp)
+target_link_libraries(TryMe CPISync ntl cppunit pthread gmp)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add
@@ -126,7 +141,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} cpisync ntl cppunit pthread gmp)
+        TARGET_LINK_LIBRARIES(${name} CPISync ntl cppunit pthread gmp)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()
@@ -145,9 +160,9 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A library for remote file synchronization
 set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_SOURCE_DIR}/README.md)
 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
 set(CPACK_PACKAGE_NAME "CPISync")
-set(CPACK_PACKAGE_VERSION_MAJOR "2")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "3")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(CPACK_PACKAGE_CONTACT "Ari Trachtenberg")
 set(CPAKC_PACKAGE_VENDOR "NISLAB")
 set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})

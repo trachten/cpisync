@@ -4,6 +4,7 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <chrono>
 
 #include <CPISync/Syncs/GenSync.h>
 #include <CPISync/Aux/Exceptions.h>
@@ -16,8 +17,9 @@
 #include <CPISync/Syncs/IBLTSync.h>
 #include <CPISync/Syncs/IBLTSync_HalfRound.h>
 #include <CPISync/Syncs/CPISync_HalfRound.h>
-#include <CPISync/Syncs/IBLTSetOfSets.h>
-#include <chrono>
+#include <CPISync/Syncs/DiffEstimators/MinWiseSketches.h>
+#include <CPISync/Syncs/DiffEstimators/StrataEst.h>
+#include <CPISync/Syncs/DiffEstimators/WBFEst.h>
 
 using namespace std::chrono;
 
@@ -29,12 +31,11 @@ GenSync::GenSync() = default;
 /**
  * Construct a specific GenSync object
  */
-GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, void (*postProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync), const list<shared_ptr<DataObject>> &data)
-{
+GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec,const vector<shared_ptr<DiffEstimator>> &dVec, const list<shared_ptr<DataObject>> &data) {
     myCommVec = cVec;
     mySyncVec = mVec;
+    myEstimatorVec = dVec;
     outFile = nullptr; // no output file is being used
-    _PostProcessing = postProcessing;
 
     // add each datum one by one
     auto itData = data.begin();
@@ -42,12 +43,10 @@ GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<share
         addElem(*itData);
 }
 
-GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string& fileName,
-		void (*postProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync)){
+GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string& fileName, const vector<shared_ptr<DiffEstimator>> &dVec) {
     myCommVec = cVec;
     mySyncVec = mVec;
-	_PostProcessing = postProcessing;
-
+	myEstimatorVec = dVec;
 	outFile = nullptr; // add elements without writing to the file at first
     Logger::gLog(Logger::METHOD, "Entering GenSync::GenSync");
     // read data from a file
@@ -62,6 +61,7 @@ GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<share
 
     // register the file to which new data should be appended
     outFile = std::make_shared<ofstream>(fileName.c_str(), ios::app);
+
 }
 
 // destruct a gensync object
@@ -109,7 +109,7 @@ bool GenSync::delElem(shared_ptr<DataObject> delPtr) {
 		//Iterate through mySyncVec and call that sync's delElem method
 		for (auto itAgt : mySyncVec) {
 			if (!itAgt->delElem(delPtr)) {
-                Logger::error("Error deleting item. SyncVec delete failed ");
+				Logger::error("Error deleting item. SyncVec delete failed ");
 				return false;
 			}
 		}
@@ -135,6 +135,10 @@ bool GenSync::clearData(){
 	}
 
 	return success && myData.empty();
+}
+
+bool clearSyncData(int syncIndex){
+
 }
 
 const list<string> GenSync::dumpElements() {
@@ -202,7 +206,6 @@ void GenSync::addSyncAgt(const shared_ptr<SyncMethod>& newAgt, int index) {
 
 
 // delete a syncmethod from the vector at the index position
-
 void GenSync::delSyncAgt(int index) {
 	mySyncVec.erase(getSyncAgt(index));
 }
@@ -219,11 +222,11 @@ vector<shared_ptr<SyncMethod>>::iterator GenSync::getSyncAgt(int index) {
 // SYNCHRONIZATION METHODS
 
 // listen, receive data and conduct synchronization
-bool GenSync::serverSyncBegin(int sync_num) {
-    Logger::gLog(Logger::METHOD, "Entering GenSync::serverSyncBegin");
+bool GenSync::serverSync(int method_num) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::serverSync");
     // find the right syncAgent	
     auto syncAgent = mySyncVec.begin();
-    advance(syncAgent, sync_num);
+    advance(syncAgent, method_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
 
@@ -243,18 +246,21 @@ bool GenSync::serverSyncBegin(int sync_num) {
         }
 
         // add any items that were found in the reconciliation
-        _PostProcessing(otherMinusSelf, myData, &GenSync::addElem, &GenSync::delElem, this);
+        list<shared_ptr<DataObject>>::iterator itDO;
+        for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++) {
+            addElem(*itDO);
+        }
     }
 
     return syncSuccess;
 }
 
 // request connection, send data and get the result
-bool GenSync::clientSyncBegin(int sync_num) {
-    Logger::gLog(Logger::METHOD, "Entering GenSync::clientSyncBegin");
+bool GenSync::clientSync(int method_num) {
+    Logger::gLog(Logger::METHOD, "Entering GenSync::clientSync");
     // find the right syncAgent	
     auto syncAgentIt = mySyncVec.begin();
-    advance(syncAgentIt, sync_num);
+    advance(syncAgentIt, method_num);
 
     bool syncSuccess = true; // true if all syncs so far were successful
     vector<shared_ptr<Communicant>>::iterator itComm;
@@ -277,12 +283,49 @@ bool GenSync::clientSyncBegin(int sync_num) {
         }
 
         // add any items that were found in the reconciliation
-        _PostProcessing(otherMinusSelf, myData, &GenSync::addElem, &GenSync::delElem, this);
+        list<shared_ptr<DataObject>>::iterator itDO;
+        for (itDO = otherMinusSelf.begin(); itDO != otherMinusSelf.end(); itDO++)
+            addElem(*itDO);
     }
 
     Logger::gLog(Logger::METHOD, "Sync succeeded:  " + toStr(syncSuccess));
     return syncSuccess;
 
+}
+
+int GenSync::ServerSetDifEst(int estimator_index, int comm_index, int sync_index /* = -1*/){
+	int symDifs = myEstimatorVec[estimator_index]->ServerDifEst(myCommVec[comm_index],myData);
+
+	if(sync_index == -1) //If sync_index is -1 then update the symDif parameters for every element in mySyncVec
+		for(auto itr : mySyncVec) itr->SetSymDiffs(symDifs);
+	else //Update the sync specified by sync_index
+        mySyncVec[sync_index]->SetSymDiffs(symDifs);
+
+	return symDifs;
+}
+
+int GenSync::ClientSetDifEst(int estimator_index, int comm_index, int sync_index /* = -1*/){
+	int symDifs = myEstimatorVec[estimator_index]->ClientDifEst(myCommVec[comm_index],myData);
+
+	if(sync_index == -1) //If sync_index is -1 then update the symDif parameters for every element in mySyncVec
+		for(auto itr : mySyncVec) itr->SetSymDiffs(symDifs);
+	else //Update the sync specified by sync_index
+		mySyncVec[sync_index]->SetSymDiffs(symDifs);
+
+	return symDifs;
+}
+
+void GenSync::addSetDifAgent(const shared_ptr<DiffEstimator>& newAgt, int index) {
+	// add the agent to the sync agents vector
+	auto idxIter = myEstimatorVec.begin();
+	advance(idxIter, index);
+	myEstimatorVec.insert(idxIter, newAgt);
+}
+
+// delete a syncmethod from the vector at the index position
+void GenSync::delSetDifAgent(int index){
+	auto itr = myEstimatorVec.begin() + index;
+	myEstimatorVec.erase(itr);
 }
 
 const long GenSync::getXmitBytes(int syncIndex) const {
@@ -338,10 +381,11 @@ int GenSync::getPort(int commIndex) {
 GenSync GenSync::Builder::build() {
     // variables of possible use
     vector<shared_ptr<Communicant>> theComms;
-    vector<shared_ptr<SyncMethod>> theMeths;
+    vector<shared_ptr<SyncMethod>> theSyncProto;
+	vector<shared_ptr<DiffEstimator>> theDiffProto;
 
     // check pre-conditions
-    if (proto == SyncProtocol::UNDEFINED)
+    if (syncProto == SyncProtocol::UNDEFINED)
         throw invalid_argument("The synchronization protocol has not been defined.");
     if (comm == SyncComm::UNDEFINED)
         throw invalid_argument("No communication protocol defined.");
@@ -361,58 +405,53 @@ GenSync GenSync::Builder::build() {
     }
     theComms.push_back(myComm);
 
-    invalid_argument noMbar("Must define <mbar> explicitly for this sync.");
-    switch (proto)
-    {
+    switch (syncProto) {
         case SyncProtocol::CPISync:
-            if (mbar == Builder::UNDEF_NUM)
-                throw noMbar;
-            myMeth = make_shared<CPISync>(mbar, bits, errorProb, 0, hashes);
-            _postProcess = CPISync::postProcessing_SET;
-            break;
+			mySyncMeth = make_shared<CPISync>(mbar, bits, errorProb,0,hashes);
+			break;
         case SyncProtocol::ProbCPISync:
-            if (mbar == Builder::UNDEF_NUM)
-                throw noMbar;
-            myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb, hashes);
-            _postProcess = ProbCPISync::postProcessing_SET;
-            break;
+			mySyncMeth = make_shared<ProbCPISync>(mbar, bits, errorProb,hashes);
+			break;
         case SyncProtocol::InteractiveCPISync:
-            if (mbar == Builder::UNDEF_NUM)
-                throw noMbar;
-            myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts, hashes);
-            _postProcess = InterCPISync::postProcessing_SET;
+            mySyncMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts,hashes);
             break;
         case SyncProtocol::OneWayCPISync:
-            if (mbar == Builder::UNDEF_NUM)
-                throw noMbar;
-            myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
-            _postProcess = CPISync_HalfRound::postProcessing_SET;
+            mySyncMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
             break;
         case SyncProtocol::FullSync:
-            myMeth = make_shared<FullSync>();
-            _postProcess = FullSync::postProcessing_SET;
+            mySyncMeth = make_shared<FullSync>();
             break;
         case SyncProtocol::IBLTSync:
-            myMeth = make_shared<IBLTSync>(numExpElem, bits);
-            _postProcess = IBLTSync::postProcessing_SET;
+            mySyncMeth = make_shared<IBLTSync>(numExpElem, bits);
             break;
         case SyncProtocol::OneWayIBLTSync:
-            myMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
-            _postProcess = IBLTSync_HalfRound::postProcessing_SET;
-            break;
-        case SyncProtocol::IBLTSetOfSets:
-            myMeth = make_shared<IBLTSetOfSets>(numExpElem, numElemChldSet, bits);
-            _postProcess = IBLTSetOfSets::postProcessing_IBLTSetOfSets;
+            mySyncMeth = make_shared<IBLTSync_HalfRound>(numExpElem, bits);
             break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }
-    theMeths.push_back(myMeth);
+    theSyncProto.push_back(mySyncMeth);
 
-    if (fileName.empty()) // is data to be drawn from a file?
-        return GenSync(theComms, theMeths, _postProcess);
+    switch (diffProto){
+    	case DiffProtocol::MinWiseSketches:
+			myDiffEst = make_shared<MinWiseSketches>(difEstError);
+    		break;
+		case DiffProtocol::StrataEst:
+			myDiffEst = make_shared<StrataEst>(difEstError);
+			break;
+		case DiffProtocol::WrappedBloomFilter:
+			myDiffEst = make_shared<WBFEst>(difEstError);
+			break;
+		default:
+			break;
+    }
+    if(myDiffEst != nullptr)
+	    theDiffProto.push_back(myDiffEst);
+
+	if (fileName.empty()) // is data to be drawn from a file?
+        return GenSync(theComms, theSyncProto, theDiffProto);
     else
-        return GenSync(theComms, theMeths, fileName);
+        return GenSync(theComms, theSyncProto, fileName, theDiffProto);
 }
 
 // static consts

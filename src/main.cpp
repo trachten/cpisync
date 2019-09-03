@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
             proto=GenSync::SyncProtocol::OneWayIBLTSync;
             break;
     }
-    //Logger::gLog(Logger::METHOD, "Sync Method:  " + toStr(proto));
+    //Logger::gLog(Logger::METHOD, "Sync Method:  " + toStr(syncProto));
 
 
     // ... communicants
@@ -256,7 +256,7 @@ int main(int argc, char *argv[]) {
             setMbar(mbar).
             setBits(bits).
             setNumPartitions(pFactor).
-            //setExpNumElems(expectElems).
+            //setNumExpectedElements(expectElems).
             setDataFile(fileName).
             build();
 
@@ -278,10 +278,10 @@ int main(int argc, char *argv[]) {
     bool syncSuccess;
     if (comm_flag == CLIENT) {
         Logger::gLog(Logger::METHOD, "\n[CLIENT]");
-        syncSuccess = theSync.clientSyncBegin(0);
+        syncSuccess = theSync.clientSync(0);
     } else {
         Logger::gLog(Logger::METHOD, "\n[SERVER]");
-        syncSuccess = theSync.serverSyncBegin(0);
+        syncSuccess = theSync.serverSync(0);
     }
 
     // 4. Results
@@ -291,11 +291,6 @@ int main(int argc, char *argv[]) {
         //clock_gettime(CLOCK_REALTIME, &timerEnd);
         timespec timeTaken = diff(timerStart, timerEnd);
         double totalTime = (timeTaken.tv_sec) + (double) timeTaken.tv_nsec / 1000000000;
-//        // Report statistics
-//        cout << endl << "   Data transferred: " << comm->getXferBytesTot() << " bytes" << endl
-//             << "   Data received:    " << comm->getRecvBytesTot() << " bytes" << endl
-//             << "   Total Time elapsed:    " << (double) totalTime <<" seconds." <<endl
-//             << "   CPU Time elapsed:      " << (double) (clock() - comm->getLastTimeTot()) / CLOCKS_PER_SEC << " seconds." << endl;
         exit(SYNC_SUCCESS);
     }
     else

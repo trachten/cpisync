@@ -14,6 +14,7 @@
 #include <CPISync/Communicants/Communicant.h>
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Aux/SyncMethod.h>
+#include <CPISync/Syncs/DiffEstimators/DiffEstimator.h>
 
 // namespace info
 using std::string;
@@ -33,6 +34,7 @@ using std::ios;
 using std::invalid_argument;
 using std::runtime_error;
 using std::shared_ptr;
+
 /**
  * Implements a data structure for storing sets of data
  * in a manner that is designed for efficient synchronization.
@@ -53,12 +55,14 @@ public:
      * @param mVec      The vector of synchronization methods that this GenSync
      *                      should be prepared to use.  The order of these methods
      *                      is significant.
+     * @param dVec      The vector of diff estimation protocols that can be used to estimate mBar before a sync. Defaults
+     * 						to an empty vector if none is provided
      * @param data       The initial data with which to populate the data structure.  The data is added element by element
      *                      so that synchronization method metadata can be properly maintained.  Initilizes to the empty list
      *                      if not specified.
-     * 
+
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, void (*postProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync) = SyncMethod::postProcessing_SET, const list<shared_ptr<DataObject>> &data = list<shared_ptr<DataObject>>());
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec,const vector<shared_ptr<DiffEstimator>> &dVec = vector<shared_ptr<DiffEstimator>>(), const list<shared_ptr<DataObject>> &data = list<shared_ptr<DataObject>>());
 
     /**
      * Specific GenSync constructor
@@ -70,9 +74,11 @@ public:
      * @param fileName   The name of a file from which to read (line by line) initial elements of
      *                   this data structure.  As elements are added to this data structure, they
      *                   are also stored in the file.
+     * @param dVec      The vector of diff estimation protocols that can be used to estimate mBar before a sync. Defaults
+     * 						to an empty vector if none is provided
+
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string& fileName,
-    		void (*postProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync) = SyncMethod::postProcessing_SET);
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const string& fileName,const vector<shared_ptr<DiffEstimator>> &dVec = vector<shared_ptr<DiffEstimator>>());
 
     // DATA MANIPULATION
     /**
@@ -111,6 +117,13 @@ public:
      * @return True if data appears to have been successfully cleared, false otherwise
      */
     bool clearData();
+
+    /**
+     * Resets the internal data stored by the syncMethod at syncIndex
+     * @param syncIndex the index of the sync agent in mysyncvec you would like to clear data from
+     * @return if this appears to have succeeded successfully
+     */
+    bool clearSyncData(int syncIndex);
 
     /**
      * @return a list of string representations of the elements stored in the data structure
@@ -195,7 +208,7 @@ public:
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return true iff all synchronizations were completed successfully
      */
-    bool serverSyncBegin(int sync_num = 0);
+    bool serverSync(int sync_num = 0);
 
     /**
      * Sequentially sends a specific synchronization request to each communicant.  If sync is successful,
@@ -205,8 +218,45 @@ public:
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return  true iff all synchronizations were completed successfully
      */
-    bool clientSyncBegin(int sync_num);
+    bool clientSync(int sync_num);
 
+	//SET DIFFERENCE ESTIMATION METHODS
+
+	/**
+	 * Estimates the number of set differences between the client and server set using the protocol specified by the
+	 * DiffEstimator object in position estimator_num of myEstimatorVec. This updates the relevent parameters in each
+	 * sync in mySyncVec. This is the server side of this estimation process.
+	 * @param estimator_index the index in the myEstimatorVec you would like to use to get your estimate
+	 * @param comm_index the index of the comm agent you would like to use for the diff estimate
+	 * @param sync_index the index of the sync that you would like to update the parameters of (or if -1 update all)
+	 * @return the estimate of mBar
+	 */
+	int ServerSetDifEst(int estimator_index, int comm_index, int sync_index = -1);
+
+	/**
+	 * Estimates the number of set differences between the client and server set using the protocol specified by the
+	 * DiffEstimator object in position estimator_num of myEstimatorVec. This updates the relevent parameters in each
+	 * sync in mySyncVec. This is the client side of this estimation process.
+	 * @param estimator_index the index in the myEstimatorVec you would like to use to get your estimate
+	 * @param comm_index the index of the comm agent you would like to use for the diff estimate
+	 * @param sync_index the index of the sync that you would like to update the parameters of (or if -1 update all)
+	 * @return the estimate of mBar
+	 */
+	int ClientSetDifEst(int estimator_index, int comm_index, int sync_index = -1);
+
+	// SET DIFFERENCE AGENT MANIPULATION
+
+	/**
+	 * Add a new set dif agent to myEstimatorVec from a shared pointer to the diffEstimator object. This object is
+	 * added at the index specified
+	 */
+	void addSetDifAgent(const shared_ptr<DiffEstimator>& newAgt, int index = 0);
+
+	/**
+	 * Delete the agent at the given index in the agent vector.
+	 * @param index  Index of the agent to delete.
+	 */
+	void delSetDifAgent(int index);
 
 
     // INFORMATIONAL
@@ -289,7 +339,6 @@ public:
     enum class SyncProtocol {
         UNDEFINED, // not yet defined
         BEGIN, // beginning of iterable option
-        // CPISync and variants
         CPISync= static_cast<int>(BEGIN),
         CPISync_OneLessRound,
         CPISync_HalfRound,
@@ -299,7 +348,6 @@ public:
         FullSync,
         IBLTSync,
         OneWayIBLTSync,
-        IBLTSetOfSets,
         END     // one after the end of iterable options
     };
 
@@ -311,6 +359,12 @@ public:
         END     // one after the end of iterable options
     };
 
+	enum class DiffProtocol : byte {
+		UNDEFINED,
+		WrappedBloomFilter,
+		MinWiseSketches,
+		StrataEst
+	};
 
 
 private:
@@ -319,10 +373,6 @@ private:
      * No argument constructor ... should not be used
      */
     GenSync();
-
-    /** A pointer to the postprocessing function **/
-    void (*_PostProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync);
-
 
     // FIELDS
     /** A container for the data stored by this GenSync object. */
@@ -334,10 +384,12 @@ private:
     /** A vector of synchronization methods that can be used to sync with this GenSync object. */
     vector<shared_ptr<SyncMethod>> mySyncVec;
 
-    /** The file to which to output any additions to the data structure. */
+	/** vector of objects that handles the estimation of symmetric differences */
+	vector<shared_ptr<DiffEstimator>> myEstimatorVec;
+
+	/** The file to which to output any additions to the data structure. */
     shared_ptr<ofstream> outFile;
 };
-
 
 /**
  * A class for building GenSync objects in a more user-friendly manner.
@@ -347,7 +399,8 @@ public:
 
     /** Constructor - makes all fields undefined. */
     Builder() :
-    proto(DFT_PROTO),
+    syncProto(DFT_SYNC),
+    diffProto(DFT_DIFF),
     host(DFT_HOST),
     port(DFT_PRT),
     ioStr(DFT_IO),
@@ -359,7 +412,7 @@ public:
     hashes(HASHES),
     numExpElem(DFT_EXPELEMS){
         myComm = nullptr;
-        myMeth = nullptr;
+        mySyncMeth = nullptr;
     }
 
     /**
@@ -372,9 +425,17 @@ public:
      * Sets the protocol to be used for synchronization.
      */
     Builder& setProtocol(SyncProtocol theProto) {
-        this->proto = theProto;
+        this->syncProto = theProto;
         return *this;
     }
+
+    /**
+     * Sets the protocol to be used for estimating the number of symmetric differences
+     */
+	Builder& setDiffProtocol(DiffProtocol theProto) {
+		this->diffProto = theProto;
+		return *this;
+	}
 
     /**
      * Sets the host to which to connect for synchronization in a socket-based sync.
@@ -445,7 +506,7 @@ public:
      * The number of elements expected to be in the sync data structure.  Some sync objects work are targeted toward
      * a specific number of elements.
      */
-    Builder& setExpNumElems(size_t theNumExpElems) {
+    Builder& setNumExpectedElements(size_t theNumExpElems) {
         this->numExpElem = theNumExpElems;
         return *this;
     }
@@ -463,27 +524,26 @@ public:
 		return *this;
 	}
 
-
-    Builder &setExpNumElemChild(long NUMELEM)
-    {
-        this->numElemChldSet = NUMELEM;
-        return *this;
+	/**
+	 * A larger value here will result in more bytes of communication
+	 * @param theError The number of hashes that you would like to use for doing minHashSketch set dif est
+	 * //TODO: This is currently beign used as the number of hashes for minHashes but should instead be an error percent that the numhashes is calculated from
+	 */
+	Builder& setDifEstErr(int 	theError){
+		this->difEstError = theError;
+		return *this;
     }
-
-
     /**
      * Destructor - clear up any possibly allocated internal variables
      */
     ~Builder() {
-        //if (myComm != NULL)
-        //    delete myComm;
-        //if (myMeth != NULL)
-        //    delete myMeth;
+
     }
 
 private:
-    SyncProtocol proto; /** the sync protocol to implement */
-    SyncComm comm; /** communication means for the synchronization */
+    SyncProtocol syncProto; /** the sync protocol to implement */
+	DiffProtocol diffProto; /** the set diff estimation protocol to use. If unset assume it is specified */
+	SyncComm comm; /** communication means for the synchronization */
     string host; /** the host with which to connect for a socket-based sync */
     int port; /** connection port for a socket-based sync */
     int errorProb; /** negative log of the upper bound on the probability of error tolerance of the sync */
@@ -495,22 +555,22 @@ private:
     size_t numExpElem=Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
     string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
 	bool hashes = Builder::HASHES;
-    long numElemChldSet = Builder::UNDEF_NUM; /** exp # of elements in a child set **/
-
+	int difEstError = Builder::UNDEF_NUM; // TODO: change this. Currently the number of hashes to use but it should be the negative log of the prob of error
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
-    shared_ptr<SyncMethod> myMeth;
-    // bookkeeping postprocessing function pointer
-    void (*_postProcess)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync);
+    shared_ptr<SyncMethod> mySyncMeth;
+    shared_ptr<DiffEstimator> myDiffEst;
+
     // DEFAULT constants
     static const bool HASHES = false;
     static const long UNDEF_NUM = -1;
     static const string UNDEF_STR;
-    static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;
+    static const SyncProtocol DFT_SYNC = SyncProtocol::UNDEFINED;
+    static const DiffProtocol DFT_DIFF = DiffProtocol::UNDEFINED;
     static const int DFT_PRT = 8001;
     static const bool DFT_BASE64 = true;
-    static const long DFT_MBAR = UNDEF_NUM; // this parameter *must* be specified for sync to work
+    static const long DFT_MBAR = -1;
     static const long DFT_BITS = 32;
     static const int DFT_PARTS = 2;
     static const size_t DFT_EXPELEMS = 50;

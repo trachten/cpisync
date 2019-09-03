@@ -10,6 +10,7 @@
 #include <NTL/ZZ_pXFactoring.h>
 #include <CPISync/Aux/Auxiliary.h>
 #include <CPISync/Aux/SyncMethod.h>
+#include <CPISync/Syncs/GenSync.h>
 
 // namespaces
 
@@ -44,6 +45,7 @@ public:
    * @param redundant The number of redundant points used for verification.  If this is zero,
    *    then this redundancy is computed directly from the allowed probability of error.
    * @param hashes Should data be stored as is, or first reduced via a hash
+
    * 
    *    Internal parameters are tweaked to guarantee this, subject to an assumption
    *    that an internal hash does not collide, and that there be at least 2 items
@@ -105,24 +107,6 @@ public:
       bool result = addElem(newDO);
       return result;
   }
-
-    /**
-   * Deal with elements in OtherMinusSelf after finishing a specific sync function.
-   * Works only when data type for elements is SET
-   * @param *add function pointer to the addElem function in GenSync class
-   * @param *del function pointer to the delElem function in GenSync class
-   * @param otherMinusSelf list of dataObjects, received from every specific sync function
-   * @param myData list of dataObjects, containing all elems saved in the data structure
-   **/
-  template <class T>
-  static void postProcessing_SET(list<shared_ptr<DataObject>> otherMinusSelf, list<shared_ptr<DataObject>> myData, void (T::*add)(shared_ptr<DataObject>), bool (T::*del)(shared_ptr<DataObject>), T *pGenSync)
-  {
-    for (auto elem : otherMinusSelf)
-    {
-      (pGenSync->*add)(elem);
-    }
-  }
-
 
   // update metadata when an element is being deleted (the element is supplied by index)
   bool delElem(shared_ptr<DataObject> newDatum) override;
@@ -261,7 +245,13 @@ protected:
    */
   void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
 
+   /**
+    * Set MBar and recalculate the parameters that are dependent on mBar
+    */
+	void SetSymDiffs(long mBar) override;
+
 private:
+
   /**
    * Computes a hash of the given datum of size bit_num, used internally within CPISync.
    * Initial synchronization actually occurs only on these hashes.
@@ -309,7 +299,6 @@ private:
    * the element is simply appended to the otherMinusSelf list.
    */
   void _recvSetElem(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &otherMinusSelf, ZZ_p element);
-
 
   /**
    * Helper function for Sync_Client and Sync_Server.  Sends a second round to the other

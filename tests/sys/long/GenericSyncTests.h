@@ -15,7 +15,6 @@
 
 class GenSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(GenSyncTest);
-
     CPPUNIT_TEST(testAddRemoveElems);
     CPPUNIT_TEST(testGetName);
     CPPUNIT_TEST(testBuilder);
@@ -26,7 +25,6 @@ class GenSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testAddRemoveSyncMethodAndComm);
     CPPUNIT_TEST(testCounters);
     CPPUNIT_TEST(testPort);
-
 	CPPUNIT_TEST_SUITE_END();
 public:
     GenSyncTest();
@@ -45,6 +43,7 @@ public:
 	* Test syncing all GenSyncs with two-way SyncMethods
 	* i.e all sync methods that are able to update both the client and server
 	*/
+
     static void testTwoWaySync();
 
 	/**

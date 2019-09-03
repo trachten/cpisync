@@ -8,7 +8,10 @@
 #include <CPISync/Syncs/IBLTSync.h>
 
 IBLTSync::IBLTSync(size_t expected, size_t eltSize) : myIBLT(expected, eltSize) {
-    expNumElems = expected;
+	// Might be better to Initialize IBLT at the beginning of each sync rather
+	// than here because the number of elements may change between creation use or
+	// may be used multiple times but this works for now
+	expNumElems = expected;
     oneWay = false;
 }
 

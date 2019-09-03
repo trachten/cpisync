@@ -23,7 +23,6 @@ class AuxiliaryTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testMultisetDiff);
     CPPUNIT_TEST(testMultisetUnion);
     CPPUNIT_TEST(testMultisetSubset);
-	CPPUNIT_TEST(testSplit);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -45,11 +44,6 @@ private:
 	 */
     static void testToStr();
 
-	/**
-	 * Test split string to vector
-	 **/
-	static void testSplit();
-	
 	/**
 	 * Tests encoding strings to base64 (Only use 0-9,a-z,A-Z and +/) {Equals sign is used as padding}
 	 */

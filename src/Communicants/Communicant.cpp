@@ -39,6 +39,14 @@ long Communicant::getRecvBytesTot() {
     return recvBytesTot;
 }
 
+double Communicant::getCommTime() {
+    return commTime;
+}
+
+double Communicant::getCommTimeTot() {
+    return commTimeTot;
+}
+
 void Communicant::addXmitBytes(long numBytes) {
     xferBytes += numBytes;
     xferBytesTot += numBytes;
@@ -133,6 +141,16 @@ void Communicant::commSend(DataObject& dob) {
 
     // for now, just send the data object as a string ... this can be optimized
     commSend(dob.to_string());
+}
+
+void Communicant::commSend(list<shared_ptr<DataObject>> &dob) {
+  // send the size of the list
+  commSend((long) dob.size());
+
+  // then every entry in it
+  for (shared_ptr<DataObject>&dop : dob) {
+    commSend(*dop); // request the data object
+  }
 }
 
 void Communicant::commSend(DataPriorityObject& dob) {
@@ -263,61 +281,6 @@ void Communicant::commSend(const ZZ& num, int size) {
     commSend(ustring(toSend, num_size), num_size);
 
 }
-
-void Communicant::commSendIBLTNHash(const IBLT &iblt, bool sync)
-{
-    if (!sync)
-    {
-        commSend(toStr<size_t>(iblt.size()));
-        commSend(toStr<size_t>(iblt.eltSize()));
-    }
-
-    // Access the hashTable representation of iblt to serialize it
-    for (const IBLT::HashTableEntry &hte : iblt.hashTable)
-    {
-        commSend(hte, iblt.eltSize());
-    }
-
-    commSend((long)iblt.hashes.size());
-    for (const auto &hash : iblt.hashes)
-    {
-        commSend(toStr<hash_t>(hash));
-    }
-}
-
-IBLT Communicant::commRecv_IBLTNHash(size_t size, size_t eltSize)
-{
-    size_t numSize;
-    size_t numEltSize;
-
-    if (size == NOT_SET || eltSize == NOT_SET)
-    {
-        numSize = strTo<size_t>(commRecv_string());
-        numEltSize = strTo<size_t>(commRecv_string());
-    }
-    else
-    {
-        numSize = size;
-        numEltSize = eltSize;
-    }
-
-    IBLT theirs;
-    theirs.valueSize = numEltSize;
-
-    for (int ii = 0; ii < numSize; ii++)
-    {
-        theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
-    }
-    long hashNum = commRecv_long();
-
-    for (int ii = 0; ii < hashNum; ii++)
-    {
-        theirs.hashes.push_back(strTo<hash_t>(commRecv_string()));
-    }
-
-    return theirs;
-}
-
 
 ustring Communicant::commRecv_ustring(unsigned int numBytes) {
     string received = commRecv(numBytes);
@@ -483,4 +446,41 @@ IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
     hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
 
     return hte;
+}
+
+void Communicant::commSend(WrappedBloomFilter wbf){
+    commSend(toStr(wbf.size()));
+
+    for(long ii=0 ; ii< wbf.size(); ii++)
+        commSend(wbf.getCell(ii));
+}
+
+WrappedBloomFilter Communicant::commRecv_WBF(){
+    long curSize = strTo<long>(commRecv_string());
+    
+    vector<long> cells;
+    for(long ii=0; ii< curSize; ii++)
+        cells.push_back(commRecv_long());
+
+    WrappedBloomFilter outWBF(cells);
+    return outWBF;
+}
+
+void Communicant::commSend(Strata strata){
+
+    commSend(toStr(strata.size()));
+
+    for(long ii=0; ii < (long)strata.size();ii++)
+        commSend(strata.getCell(ii));
+}
+
+Strata Communicant::commRecv_strata(){
+    vector<IBLT> cells;
+    auto outLen = strTo<size_t>(commRecv_string());
+
+    for(long ii=0; ii< (long)outLen; ii++){
+        cells.push_back(commRecv_IBLT());
+    }
+    Strata strata(cells);
+    return strata;   
 }

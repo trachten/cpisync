@@ -29,10 +29,11 @@ public:
     ~IBLTSync() override;
 
     // Implemented parent class methods
-    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
-    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
-    bool addElem(DataObject* datum) override;
-    bool delElem(DataObject* datum) override;
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
+    bool addElem(shared_ptr<DataObject> datum) override;
+    bool delElem(shared_ptr<DataObject> datum) override;
+
     string getName() override;
 protected:
     // one way flag

@@ -20,15 +20,15 @@ public:
 	~DataFileC();
 
 	// read a data object from the file
-	void get(DataObject* mydata, int index);
+	void get(shared_ptr<DataObject> mydata, int index);
 
 	// write a data object into the file
-	void put(DataObject* mydata, int index);
+	void put(shared_ptr<DataObject>, int index);
 
 	// delete a data object by index
 	void delObj(int index);
         
-	list<DataObject *> dump() {
+	list<shared_ptr<DataObject>> dump() {
 		throw new UnimplementedMethodException("Not yet implemented!");
 	}
 

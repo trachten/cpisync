@@ -61,7 +61,7 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
         if (pID == 0) {
             signal(SIGCHLD, SIG_IGN);
             Logger::gLog(Logger::COMM,"created a server process");
-            server.listenSync(method_num);
+			server.serverSyncBegin(method_num);
 			exit(0);
         } else if (pID < 0) {
             //handle_error("error to fork a child process");
@@ -69,10 +69,10 @@ inline forkHandleReport forkHandle(GenSync& client, GenSync server) {
             throw err;
         } else {
             Logger::gLog(Logger::COMM,"created a client process");
-			result.success = client.startSync(method_num);
+			result.success = client.clientSyncBegin(method_num);
 
 			result.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
-            result.CPUtime = client.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            result.CPUtime = client.getCommTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
             result.bytes = client.getXmitBytes(method_num);
             waitpid(pID, &chld_state, my_opt);
         }
@@ -109,7 +109,7 @@ inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
 		if (pID == 0) {
 			signal(SIGCHLD, SIG_IGN);
 			Logger::gLog(Logger::COMM,"created a client process");
-			client.startSync(method_num);
+			client.clientSyncBegin(method_num);
 			exit(0);
 		} else if (pID < 0) {
 			//handle_error("error to fork a child process");
@@ -117,9 +117,9 @@ inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
 			throw err;
 		} else {
 			Logger::gLog(Logger::COMM,"created a server process");
-			server.listenSync(method_num);
+			server.serverSyncBegin(method_num);
 			result.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
-			result.CPUtime = server.getSyncTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+			result.CPUtime = server.getCommTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
 			result.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
 			waitpid(pID, &chld_state, my_opt);
 			result.success=true;

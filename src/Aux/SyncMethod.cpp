@@ -3,6 +3,7 @@
 #include <CPISync/Communicants/Communicant.h>
 #include <CPISync/Aux/SyncMethod.h>
 #include <CPISync/Aux/Exceptions.h>
+#include <CPISync/Aux/Logger.h>
 
 SyncMethod::SyncMethod() {
     SyncID = SYNC_TYPE::GenericSync; // synchronization type
@@ -19,3 +20,6 @@ void SyncMethod::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool one
 if (!commSync->establishModRecv(oneWay)) // establish ZZ_p modulus - must be first
       throw SyncFailureException("Sync parameters do not match between communicants.");   
 }
+
+
+

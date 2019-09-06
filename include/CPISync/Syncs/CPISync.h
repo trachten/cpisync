@@ -66,7 +66,7 @@ public:
    * @param otherMinusSelf A result of reconciliation.  Elements that the other Communicant has that I do not.
    * @return true iff the connection and subsequent synchronization appear to be successful.
    */
-  bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+  bool SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
 
   /**
    * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
@@ -77,7 +77,7 @@ public:
    * @param otherMinusSelf A result of reconciliation.  Elements that the other Communicant has that I do not.
    * @return true iff the connection and subsequent synchronization appear to be successful.
    */
-  bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+  bool SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
 
 
   /**
@@ -85,7 +85,7 @@ public:
    * @param commSync The Communicant to whom to connect.
    * @param selfMinusOther All elements transmitted are added to this parameter, passed by reference.
    */
-  void sendAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther);
+  void sendAllElem(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther);
 
   /**
    * Receives elements from a Communicant.
@@ -93,21 +93,21 @@ public:
    * @param otherMinusSelf All elements received are added to this parameter, passed by reference.
    * @requires A connection to the other Communicant must already be present.
    */
-  static void receiveAllElem(const shared_ptr<Communicant>& commSync, list<DataObject*> &otherMinusSelf);
+  static void receiveAllElem(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &otherMinusSelf);
   /*
    ** update metadata when an element is being added
    */
-  bool addElem(DataObject* newDatum) override;
+  bool addElem(shared_ptr<DataObject> newDatum) override;
 
   template <typename T>
   bool addElem(T* newDatum) {
-      auto *newDO = new DataObject(*newDatum);
+      auto *newDO = make_shared<DataObject>(*newDatum);
       bool result = addElem(newDO);
       return result;
   }
 
   // update metadata when an element is being deleted (the element is supplied by index)
-  bool delElem(DataObject* newDatum) override;
+  bool delElem(shared_ptr<DataObject> newDatum) override;
 
   /**
    * @return A string with some internal information about this object.
@@ -152,7 +152,7 @@ protected:
   int redundant_k; /** the number of redundant samples of the characteristic polynomial to evaluate.
                          *  This relates to the probability of error for the synchronization. */
 
-  map< ZZ, DataObject * > CPI_hash; /** list of pairs, one for each element in the set (to be synchronized).
+  map< ZZ, shared_ptr<DataObject> > CPI_hash; /** list of pairs, one for each element in the set (to be synchronized).
                                            *  The first item in the pair is a hash (a long integer) 
                                            *  of the second item, which is the set element.
                                            *  All operations are done on the hashes, and this look-up table can be used to retrieve
@@ -253,12 +253,12 @@ private:
    * @note If there is a collision between two elements under this hash, it is possible that the synchronization
    * will fail.  This probability is not included in the probability of error computation.
    */
-  ZZ_p _hash(const DataObject *datum) const;
+  ZZ_p _hash(const shared_ptr<DataObject>datum) const;
 
   /**
    * Inverts the hash above when the noHash boolean is set
    */
-  DataObject* _invHash(ZZ_p num) const;
+  shared_ptr<DataObject> _invHash(ZZ_p num) const;
 
   /**
    * A secondary hash used for disambiguating set elements with the same hash.
@@ -283,21 +283,21 @@ private:
    *      procedure applies the appropriate unhashing to send the actual element (rather than its hash).
    * @throws SyncFailureException if a synchronization error is detected.
    */
-  void _sendSetElem(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther, const ZZ_p &element);
+  void _sendSetElem(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther, const ZZ_p &element);
 
   /**
    * Receives one set element, properly unhashed, from the other side
    * @param element The set element to receive.  If no hash is used, nothing must actually be received ...
    * the element is simply appended to the otherMinusSelf list.
    */
-  void _recvSetElem(const shared_ptr<Communicant> &commSync, list<DataObject *> &otherMinusSelf, ZZ_p element);
+  void _recvSetElem(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &otherMinusSelf, ZZ_p element);
 
 
   /**
    * Helper function for Sync_Client and Sync_Server.  Sends a second round to the other
    * communicant translating reconciled hashes into actual strings.
    */
-  void _makeStructures(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-					   list<DataObject *> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
+  void _makeStructures(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+					   list<shared_ptr<DataObject>> &otherMinusSelf, vec_ZZ_p &delta_self, vec_ZZ_p &delta_other);
 };
 #endif

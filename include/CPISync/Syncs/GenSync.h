@@ -58,7 +58,7 @@ public:
      *                      if not specified.
      * 
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, const list<DataObject*> &data = list<DataObject*>());
+    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, void (*postProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync) = SyncMethod::postProcessing_SET, const list<shared_ptr<DataObject>> &data = list<shared_ptr<DataObject>>());
 
     /**
      * Specific GenSync constructor
@@ -80,20 +80,19 @@ public:
      * %R:  newDatum cannot have size larger than a long
      * %M:  If a file is associated with this object, then updates are stored in that file.
      */
-    void addElem(DataObject* newDatum);
+    void addElem(shared_ptr<DataObject> newDatum);
 
     /**
      * Adds a new datum into the existing GenSync data structure
      * @param newDatum The datum to be added ... must be of a type compatible with
      * @return A pointer to the new data object created so that if needed it can be removed later with delete
-     * the global toStr templated function.
      * %R:  newDatum cannot have size larger than a long
      * %M:  If a file is associated with this object, then updates are stored in that file.
     */
     template <typename T>
-    DataObject* addElem(T* newDatum) {
+    shared_ptr<DataObject> addElem(T* newDatum) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
-        auto *newDO = new DataObject(*newDatum);
+        shared_ptr<DataObject> newDO = make_shared<DataObject>(*newDatum);
         addElem(newDO);
         return newDO;
     }
@@ -104,7 +103,7 @@ public:
      * @param delPtr a DataObject that contains the data that you would like to delete from the sync
      * @return True if the delete appears to have completed successfully, false otherwise
      */
-    bool delElem(DataObject* delPtr);
+    bool delElem(shared_ptr<DataObject> delPtr);
 
     /**
      * Calls delElem on every element in the myData list
@@ -188,53 +187,67 @@ public:
      * Sequentially listens for a synchronization request from each communicant.
      * In other words, listens and waits for a synchronization request from the first
      * communicant.  When that request comes through and synchronization is complete,
-     * listens for a request from the second communicant ...
+     * listens for a request from the second communicant. At the beginning of each sync
+     * stats that have been collected are reset
      * @param sync_num  The method of synchronization request to listen for.  This is
      *          an index into the vector of synchronization methods supplied upon construction.
      *          Thus, if the first synchronization method supplied in the Constructor is
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return true iff all synchronizations were completed successfully
      */
-    bool listenSync(int sync_num = 0);
+    bool serverSyncBegin(int sync_num = 0);
 
     /**
      * Sequentially sends a specific synchronization request to each communicant.  If sync is successful,
-     * then the server ends up with data that is synchronized to the client.
+     * then the server ends up with data that is synchronized to the client. Each time this is called the stats for
+     * this GenSync are reset
      * @param sync_num  This is an index into the vector of synchronization methods supplied upon construction.
      *          Thus, if the first synchronization method supplied in the constructor is
      *          a CPISync method, then sync_num=0 (the default value) will listen for a CPISync sync request.
      * @return  true iff all synchronizations were completed successfully
      */
-    bool startSync(int sync_num);
+    bool clientSyncBegin(int sync_num);
 
 
 
     // INFORMATIONAL
 
     /**
-     * This returns stats that are used by SyncMethod to update the actual stats in the elements of the SyncVec
-     * If you would like the actual stats for the sync use GenSync.SyncVec[index].getXmitBytes() or parse printStats()
-     * @param commIndex The index of the Communicant to query (in the order that they were added)
-     * @return The number of bytes transmitted by the Communicant and index #commIndex.
+     * @param syncIndex The index of the Sync to query (in the order that they were added)
+     * @return The number of bytes transmitted for this sync to complete
      */
-    const long getXmitBytes(int commIndex) const;
+    const long getXmitBytes(int syncIndex) const;
 
     /**
-     * This returns stats that are used by SyncMethod to update the actual stats in the elements of the SyncVec
-     * If you would like the actual stats for the sync use GenSync.SyncVec[index].getRecvBytes() or parse printStats()
-     * @param commIndex The index of the Communicant to query (in the order that they were added)
-     * @return The number of bytes received by the Communicant and index #commIndex.
+     * @param syncIndex The index of the Sync to query (in the order that they were added)
+     * @return The number of bytes received for this sync to complete
      */
-    const long getRecvBytes(int commIndex) const;
+    const long getRecvBytes(int syncIndex) const;
 
     /**
-     * This returns stats that are used by SyncMethod to update the actual stats in the elements of the SyncVec
-     * If you would like the actual stats for the sync use GenSync.SyncVec[index].getSyncTime() or parse printStats()
-     * @param commIndex The index of the Communicant to query (in the order that they were added)
-     * @return The amount of CPU time (in seconds) since the last sync request by the Communicant and index #commIndex.
-     *          if there was no sync request, the creation time is used.
+     * @param syncIndex The index of the Sync to query (in the order that they were added)
+     * @return The amount of time that this sync spent sending and receiving information (Not doing computations)
      */
-    const double getSyncTime(int commIndex) const;
+    const double getCommTime(int syncIndex) const;
+
+    /**
+     * @param syncIndex The index of the Sync to query (in the order that they were added)
+     * @return The amount of time that this sync spent sending and receiving information (Not doing computations)
+     */
+    const double getIdleTime(int syncIndex) const;
+
+
+    /**
+     * @param syncIndex The index of the Sync to query (in the order that they were added)
+     * @return The amount of time that this sync spent doing computations (Not listening, sending, receiving etc.)
+     */
+    const double getCompTime(int syncIndex) const;
+
+    /**
+     * @param syncIndex The index of the Sync to query (in the order that they were added)
+     * @return The amount of time that this sync spent doing computations (Not listening, sending, receiving etc.)
+     */
+    const double getTotalTime(int syncIndex) const;
 
     /*
      * @param commIndex The index of the Communicant to query (in the order that they were added)
@@ -287,6 +300,7 @@ public:
         FullSync,
         IBLTSync,
         OneWayIBLTSync,
+        IBLTSetOfSets,
         END     // one after the end of iterable options
     };
 
@@ -298,6 +312,8 @@ public:
         END     // one after the end of iterable options
     };
 
+
+
 private:
     // METHODS
     /**
@@ -305,10 +321,13 @@ private:
      */
     GenSync();
 
+    /** A pointer to the postprocessing function **/
+    void (*_PostProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync);
+
 
     // FIELDS
     /** A container for the data stored by this GenSync object. */
-    list<DataObject*> myData;
+    list<shared_ptr<DataObject>> myData;
 
     /** A vector of communicants registered to be able to sync with this GenSync object. */
     vector<shared_ptr<Communicant>> myCommVec;
@@ -427,7 +446,7 @@ public:
      * The number of elements expected to be in the sync data structure.  Some sync objects work are targeted toward
      * a specific number of elements.
      */
-    Builder& setNumExpectedElements(size_t theNumExpElems) {
+    Builder& setExpNumElems(size_t theNumExpElems) {
         this->numExpElem = theNumExpElems;
         return *this;
     }
@@ -444,6 +463,14 @@ public:
 		this->hashes = theHash;
 		return *this;
 	}
+
+
+    Builder &setExpNumElemChild(long NUMELEM)
+    {
+        this->numElemChldSet = NUMELEM;
+        return *this;
+    }
+
 
     /**
      * Destructor - clear up any possibly allocated internal variables
@@ -469,11 +496,14 @@ private:
     size_t numExpElem=Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
     string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
 	bool hashes = Builder::HASHES;
+    long numElemChldSet = Builder::UNDEF_NUM; /** exp # of elements in a child set **/
+
 
     // ... bookkeeping variables
     shared_ptr<Communicant> myComm;
     shared_ptr<SyncMethod> myMeth;
-
+    // bookkeeping postprocessing function pointer
+    void (*_postProcess)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync);
     // DEFAULT constants
     static const bool HASHES = false;
     static const long UNDEF_NUM = -1;

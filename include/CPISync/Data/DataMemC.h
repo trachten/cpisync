@@ -19,10 +19,10 @@ public:
 	~DataMemC();
 
     // read data from memory
-    DataObject* get(int index);
+    shared_ptr<DataObject> get(int index);
 
     // write data into memory
-    void put(DataObject* mydata, int index);
+    void put(shared_ptr<DataObject> mydata, int index);
 
     // write data into memory
     void delObj(int index);

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(CPISync)
+project(cpisync)
 set(CMAKE_CXX_STANDARD 11)
 
 include(CTest)
@@ -51,6 +51,7 @@ set(SOURCE_FILES
         ${SYNC_DIR}/HashSync.cpp
         ${SYNC_DIR}/IBLT.cpp
         ${SYNC_DIR}/IBLTSync.cpp
+        ${SYNC_DIR}/IBLTSetOfSets.cpp
         ${SYNC_DIR}/FullSync.cpp
 
         ${SRC_DIR}/main.cpp)
@@ -86,6 +87,7 @@ set(HEADERS
         ${SYNC_DIR_INC}/HashSync.h
         ${SYNC_DIR_INC}/IBLT.h
         ${SYNC_DIR_INC}/IBLTSync.h
+        ${SYNC_DIR_INC}/IBLTSetOfSets.h
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
         ${SYNC_DIR_INC}/InterCPISync.h
         ${SYNC_DIR_INC}/PrioCPISync.h
@@ -96,21 +98,24 @@ include_directories(tests)
 
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
+link_directories(/usr/local/lib64)
+include_directories(${CMAKE_INSTALL_INCLUDEDIR})
+link_directories(${CMAKE_INSTALL_LIBDIR})
 
 # Add libs and executables
-add_library(CPISync STATIC ${SOURCE_FILES} ${HEADERS})
-target_include_directories(CPISync PRIVATE ${CMAKE_SOURCE_DIR}/include)
-TARGET_LINK_LIBRARIES(CPISync ntl cppunit pthread gmp)
+add_library(cpisync STATIC ${SOURCE_FILES} ${HEADERS})
+target_include_directories(cpisync PRIVATE ${CMAKE_SOURCE_DIR}/include)
+TARGET_LINK_LIBRARIES(cpisync ntl cppunit pthread gmp)
 
-install(CODE "FILE(REMOVE_RECURSE /usr/local/include/CPISync)") #Remove the existing CPISync library data and reinstall
-install(CODE "FILE(REMOVE_RECURSE /usr/local/lib/libCPISync.a)") #Remove the existing CPISync library data and reinstall
-install(TARGETS CPISync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(CODE "FILE(REMOVE_RECURSE ${CMAKE_INSTALL_INCLUDEDIR}/cpisync)") #Remove the existing CPISync library data and reinstall
+install(CODE "FILE(REMOVE_RECURSE ${CMAKE_INSTALL_LIBDIR}/libcpisync.a)") #Remove the existing CPISync library data and reinstall
+install(TARGETS cpisync LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/CPISync) #create a new folder for CPISync inside of the system include directory
 install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/CPISync COMPONENT devel) #copy the contents of the include folder into the system include directory
 
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
-target_link_libraries(TryMe CPISync ntl cppunit pthread gmp)
+target_link_libraries(TryMe cpisync ntl cppunit pthread gmp)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add
@@ -121,7 +126,7 @@ macro(add_group_test dir name)
 
     FOREACH(test ${testPaths})
         GET_FILENAME_COMPONENT(testName ${test} NAME_WE)
-        TARGET_LINK_LIBRARIES(${name} CPISync ntl cppunit pthread gmp)
+        TARGET_LINK_LIBRARIES(${name} cpisync ntl cppunit pthread gmp)
         ADD_TEST(${testName} ${name})
     ENDFOREACH(test)
 endmacro()
@@ -132,3 +137,20 @@ add_group_test(${UNIT_TEST_DIR} UnitTest)
 add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
 add_group_test(${BENCHMARK_TEST_DIR} Benchmark)
+
+#Packaging
+set(CPACK_GENERATOR "RPM;DEB")
+set(CPACK_PACKAGE_VERSION ${VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A library for remote file synchronization research")
+set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_SOURCE_DIR}/README.md)
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
+set(CPACK_PACKAGE_NAME "CPISync")
+set(CPACK_PACKAGE_VERSION_MAJOR "2")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "3")
+set(CPACK_PACKAGE_CONTACT "Ari Trachtenberg")
+set(CPAKC_PACKAGE_VENDOR "NISLAB")
+set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${CPACK_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
+set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST /usr/local /usr/local/lib64 /usr/local/lib /usr/local/include)
+include(CPack)

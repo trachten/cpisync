@@ -77,22 +77,22 @@ void FullSyncTest::testAddDelElem() {
     // number of elems to add
     const int ITEMS = 50;
     FullSync fs;
-    multiset<DataObject *, cmp<DataObject*>> elts;
+    multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> elts;
 
     // check that add works
     for(int ii = 0; ii < ITEMS; ii++) {
-        DataObject* item = new DataObject(randZZ());
+        shared_ptr<DataObject> item = make_shared<DataObject>(randZZ());
         elts.insert(item);
         CPPUNIT_ASSERT(fs.addElem(item));
     }
 
     // check that elements can be recovered correctly through iterators
-    multiset<DataObject *, cmp<DataObject*>> resultingElts;
+    multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> resultingElts;
     for(auto iter = fs.beginElements(); iter != fs.endElements(); ++iter) {
         resultingElts.insert(*iter);
     }
 
-    vector<DataObject *> diff;
+    vector<shared_ptr<DataObject>> diff;
     rangeDiff(resultingElts.begin(), resultingElts.end(), elts.begin(), elts.end(), back_inserter(diff));
     CPPUNIT_ASSERT(diff.empty());
 

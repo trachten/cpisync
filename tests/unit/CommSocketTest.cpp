@@ -32,9 +32,9 @@ void CommSocketTest::SocketSendAndReceiveTest() {
 	int status = 0;
 	//Wrap the test in a timer that terminates if it has not completed in under WAIT_TIME seconds
 	pid_t timer_pid = fork();
-	if (timer_pid < 0) {
+	if (timer_pid < 0)
 		Logger::error_and_quit("Error in forking SocketSendAndReceiveTest");
-	}
+
 		//Test process
 	else if (timer_pid == 0) {
 		bool success;
@@ -52,9 +52,8 @@ void CommSocketTest::SocketSendAndReceiveTest() {
 			CPPUNIT_FAIL("Sockets did not establish a connection in time");
 			kill(timer_pid, 0);
 		}
-		else if(result == -1) {
-			Logger::error_and_quit("Fork error in CommSocketTest::SocketSendAndRecieve");
-		}
+		else if(result == -1)
+			Logger::error_and_quit("Fork error in CommSocketTest::SocketSendAndReceive");
 		//Else test has already completed and the success status has been reported
 	}
 }

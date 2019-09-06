@@ -68,7 +68,7 @@ public:
      * @param otherMinusSelf A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
 
     /**
      * Waits for a client to connect from a specific communicant and computes differences between the two (without actually updating them).
@@ -78,33 +78,32 @@ public:
      * @param otherMinusSlef A result of reconciliation.  Elements that the other SyncMethod has that I do not.
      * @return true iff the connection and subsequent synchronization appear to be successful.
      */
-    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
 
     /*
      ** update metadata when an element is being added.
      * The maximum number of elements that the data structure can store is 1<<bitNum
      */
-    bool addElem(DataObject* newDatum) override;
+    bool addElem(shared_ptr<DataObject> newDatum) override;
 
     template <typename T>
     bool addElem(T* newDatum) {
         Logger::gLog(Logger::METHOD, "Entering GenSync::addElem");
-        DataObject *newDO = new DataObject(*newDatum);
+        shared_ptr<DataObject>newDO = make_shared<DataObject>(*newDatum);
         return addElem(newDO);
     }
 
     // update metadata when an element is being deleted (the element is supplied by index)
-    bool delElem(DataObject* newDatum) override;
+    bool delElem(shared_ptr<DataObject> newDatum) override;
 
 		/**
 		 * Displays some internal information about this object.
 		 */
     string getName() override {
         return string("Interactive CPISync\n   * bitNum = ") + toStr(bitNum)
-                + "\n   * perr = 2^-" + toStr(probEps) + "\n   * mbar = " + toStr(maxDiff)
+                + "\n   * perr (for each CPISync node) = 2^-" + toStr(probEps) + "\n   * mbar = " + toStr(maxDiff)
                 + "\n   * pFactor = " + toStr(pFactor) + "\n   * Evaluation Points = " + toStr(redundant_k) + '\n';
     }
-
 
 protected:
 
@@ -154,35 +153,35 @@ private:
      * @note Collisions of this hash will render InterCPI less efficient, but should not
      * otherwise cause the synchronization to fail.
      */
-    ZZ_p _hash(DataObject *datum) const;
+    ZZ_p _hash(shared_ptr<DataObject>datum) const;
 
     // Recursive versions of public methods
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
-     * @see Sync_Client(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
+     * @see Sync_Client(shared_ptr<Communicant> commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf)
      * @param treeNode The current node in the tree to synchronize
      * @modifies selfMinusOther - Adds to items discovered to be in my set but not the others'
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      * @return true iff all constituent sync's succeeded
      */
-    bool _SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-					 list<DataObject *> &otherMinusSelf, pTree *&treeNode);
+    bool _SyncClient(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+					 list<shared_ptr<DataObject>> &otherMinusSelf, pTree *&treeNode);
 
-    bool _SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-					 list<DataObject *> &otherMinusSelf, pTree *treeNode, const ZZ &begRange,const ZZ &endRange);
+    bool _SyncClient(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+					 list<shared_ptr<DataObject>> &otherMinusSelf, pTree *treeNode, const ZZ &begRange,const ZZ &endRange);
     /**
      * Recursive version of the public method of the same name.  Parameters are the same except those listed.
-     * @see Sync_Server(shared_ptr<Communicant> commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf)
+     * @see Sync_Server(shared_ptr<Communicant> commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf)
      * @param treeNode The current node in the tree to synchronize
      * @modifies selfMinusOther - Adds to items discovered to be in my set but not the others'
      * @modifies otherMinusself - Adds to items discovered to be in the others' set but not in mine
      *     * @return true iff all constituent sync's succeeded
      */
-    bool _SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-					 list<DataObject *> &otherMinusSelf, pTree *&treeNode);
+    bool _SyncServer(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+					 list<shared_ptr<DataObject>> &otherMinusSelf, pTree *&treeNode);
 
-    bool _SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-					 list<DataObject *> &otherMinusSelf, pTree *treeNode,
+    bool _SyncServer(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+					 list<shared_ptr<DataObject>> &otherMinusSelf, pTree *treeNode,
 					 const ZZ &begRange,
 					 const ZZ &endRange);
 
@@ -197,7 +196,7 @@ private:
      * @param endRange The end item of the current node's range
      * @return true iff the addition is successful
      */
-    bool _addElem(DataObject *newDatum, pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange);
+    bool _addElem(shared_ptr<DataObject>newDatum, pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange);
 
     /**
 	 * Recursive helper function to delElem
@@ -208,7 +207,7 @@ private:
 	 * @param endRange The end item of the current node's hash range
 	 * @return true iff the deletion appears to be successful
 	 */
-	bool _delElem(DataObject* newDatum, pTree * &treeNode, const ZZ &begRange, const ZZ &endRange);
+	bool _delElem(shared_ptr<DataObject> newDatum, pTree * &treeNode, const ZZ &begRange, const ZZ &endRange);
 
 
 		/**

@@ -14,6 +14,7 @@
 #include <NTL/ZZ.h>
 #include <sstream>
 #include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Data/DataObject.h>
 
 using std::vector;
 using std::hash;
@@ -93,7 +94,33 @@ public:
      * @return true iff the operation has successfully recovered the entire list
      */
     bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
+    /**
+     * Insert a set of elements into IBLT
+     * @param tarSet target set to be added to IBLT
+     * @param elemSize size of element in the set
+     * @param expnChldSet expected number of elements in the target set
+    */
+    void insert(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
 
+    /**
+     * Delete a set of elements from IBLT
+     * @param tarSet the target set to be deleted
+     * @param elemSize size of element in the chld set
+     * @param expnChldSet expected number of elements in the target set
+    */
+    void erase(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
+
+    /**
+     * Convert IBLT to a readable string
+     * @return string
+    */
+    string toString() const;
+
+    /**
+     * fill the hashTable with a string generated from IBLT.toString() function
+     * @param inStr a readable ascii string generted from IBLT.toString() function
+    */
+    void reBuild(string &inStr);
     /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
@@ -112,6 +139,9 @@ public:
      * @return the size of a value stored in the IBLT.
      */
     size_t eltSize() const;
+
+    vector<hash_t> hashes; /* vector for all hashes of sets */
+
 private:
     // local data
 
@@ -124,6 +154,19 @@ private:
     // Returns the kk-th unique hash of the zz that produced initial.
     static hash_t _hashK(const ZZ &item, long kk);
     static hash_t _hash(const hash_t& initial, long kk);
+    static hash_t _setHash(multiset<shared_ptr<DataObject>> &tarSet);
+
+    /* Insert an IBLT together with a value into a bigger IBLT
+    * @param chldIBLT the IBLT to be inserted
+    * @param chldHash a value represent in the hash_t type
+    * */
+    void insert(IBLT &chldIBLT, hash_t &chldHash);
+
+    /* Erase an IBLT together with a value into a bigger IBLT
+    * @param chldIBLT the IBLT to be erased
+    * @param chldHash a value represent in the hash_t type
+    * */
+    void erase(IBLT &chldIBLT, hash_t &chldHash);
 
     // Represents each entry in the iblt
     class HashTableEntry

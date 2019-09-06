@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
     //clock_gettime(CLOCK_REALTIME, &timerStart);
 
     // ... default values
-    list<DataObject*> data;
+    list<shared_ptr<DataObject>> data;
     string cStr; // initially unused
     string host; // for Communication Sockets
     int port = 10000; // default port for Communication Sockets
@@ -256,7 +256,6 @@ int main(int argc, char *argv[]) {
             setMbar(mbar).
             setBits(bits).
             setNumPartitions(pFactor).
-            //setNumExpectedElements(expectElems).
             setDataFile(fileName).
             build();
 
@@ -268,7 +267,7 @@ int main(int argc, char *argv[]) {
         cout << "Set element #0: ";
         getline(cin, str);
         while (!str.empty()) {
-            theSync.addElem(new DataObject(str)); // add this datum to our list
+            theSync.addElem(make_shared<DataObject>(str)); // add this datum to our list
             cout << "Set element #" << ++ii << ": ";
             getline(cin, str);
         }
@@ -278,10 +277,10 @@ int main(int argc, char *argv[]) {
     bool syncSuccess;
     if (comm_flag == CLIENT) {
         Logger::gLog(Logger::METHOD, "\n[CLIENT]");
-        syncSuccess = theSync.startSync(0);
+        syncSuccess = theSync.clientSyncBegin(0);
     } else {
         Logger::gLog(Logger::METHOD, "\n[SERVER]");
-        syncSuccess = theSync.listenSync(0);
+        syncSuccess = theSync.serverSyncBegin(0);
     }
 
     // 4. Results

@@ -48,19 +48,8 @@ InterCPISync::~InterCPISync() {
 	_deleteTree(treeNode);
 }
 
-void InterCPISync::_deleteTree(pTree *treeNode){
-	Logger::gLog(Logger::METHOD,"Entering InterCPISync::deleteTree");
-	if (treeNode == nullptr)
-		return; // i.e. nothing to do
-	else {
-		for (int ii = 0; ii < pFactor; ii++) {
-			_deleteTree(treeNode->child[ii]);
-		}
-		delete treeNode;
-	}
-}
 
-bool InterCPISync::delElem(DataObject* datum) {
+bool InterCPISync::delElem(shared_ptr<DataObject> datum) {
     Logger::gLog(Logger::METHOD,"Entering InterCPISync::delElem");
     if(!SyncMethod::delElem(datum)) return false; // run the parent's version first
 
@@ -82,9 +71,7 @@ bool InterCPISync::delElem(DataObject* datum) {
 	}
 }
 
-
-
-bool InterCPISync::addElem(DataObject* newDatum) {
+bool InterCPISync::addElem(shared_ptr<DataObject> newDatum) {
 	/* recursively add an element to all appropriate nodes until:
 	* 1.  We reach a leaf node with <m_bar entries.
 	* 2.  We reach a node with range < m_bar
@@ -107,83 +94,209 @@ bool InterCPISync::addElem(DataObject* newDatum) {
 	//  return addElem(newDatum, treeNode, NULL, ZZ_ZERO, DATA_MAX); // use the recursive helper method
 }
 
-ZZ_p InterCPISync::_hash(DataObject *datum) const {
-	ZZ num = datum->to_ZZ(); // convert the datum to a ZZ
-	return to_ZZ_p(num % DATA_MAX); // reduce to bit_num bits and make into a ZZ_p
+bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>>& selfMinusOther, list<shared_ptr<DataObject>>& otherMinusSelf) {
+    Logger::gLog(Logger::METHOD, "Entering InterCPISync::SyncClient");
+    // 0. Set up communicants
+    if(!useExisting) {
+        mySyncStats.timerStart(SyncStats::IDLE_TIME);
+        commSync->commConnect();
+        mySyncStats.timerEnd(SyncStats::IDLE_TIME);
+    }
+
+    mySyncStats.timerStart(SyncStats::COMM_TIME);
+    // ... check that the other side is doing the same synchronization
+    SendSyncParam(commSync);
+    mySyncStats.timerEnd(SyncStats::COMM_TIME);
+
+    // 1. Do the sync
+    pTree *parentNode = treeNode;//Create a copy of the root node - Just to make sure that it is not deleted
+    commSync->hardResetCommCounters(); //Because each CPISync will reset the communicant stats need to reset and use the "total" fields
+    bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
+                  && _SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges
+
+    if (result) { // Sync succeeded
+        Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
+                                     + "   self - other =  " + printListOfSharedPtrs(selfMinusOther) + "\n"
+                                     + "   other - self =  " + printListOfSharedPtrs(otherMinusSelf) + "\n"
+                                     + "\n");
+    }
+    else
+        Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
+
+    // Close communicants
+    if(!useExisting) commSync->commClose();
+
+    //Record Stats
+
+
+    return result;
 }
 
-bool InterCPISync::_createTreeNode(pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange) {
-	Logger::gLog(Logger::METHOD,"Entering InterCPISync::createTreeNode");
-	treeNode = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k, hashes),pFactor);
+void InterCPISync::SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::SendSyncParam");
+    // take care of parent sync method
+    SyncMethod::SendSyncParam(commSync);
 
-	CPISync *curr = treeNode->getDatum(); // the current node
+    commSync->commSend(enumToByte(SyncID));
+    commSync->commSend(maxDiff);
+    commSync->commSend(bitNum);
+    commSync->commSend(probEps);
+    commSync->commSend(pFactor);
 
-	if (parent != nullptr) {
-		// add all appropriate parent info
-		CPISync *par = parent->getDatum(); // the parent node
+    if (commSync->commRecv_byte() == SYNC_FAIL_FLAG) throw SyncFailureException("Sync parameters do not match.");
 
-		for (auto elem = par->beginElements(); elem != par->endElements(); elem++) {
-			ZZ elemZZ = rep(_hash(*elem));
-			if (elemZZ >= begRange && elemZZ < endRange && !curr->addElem(*elem)) //if element is in range and add fails
-				return false;
-		}
-	}
-	return true;
+    Logger::gLog(Logger::COMM, "Sync parameters match");
 }
 
-bool InterCPISync::_addElem(DataObject *newDatum, pTree *&treeNode, pTree *parent, const ZZ &begRange,
-							const ZZ &endRange) {
-	Logger::gLog(Logger::METHOD,"Entering InterCPISync::addElem");
-	Logger::gLog(Logger::METHOD_DETAILS, ".  (InterCPISync) adding in range " + toStr(begRange) + " - " + toStr(endRange));
-	CPISync *curr;
 
-	// if the current node is empty, create it
-	if (treeNode == nullptr) {
-		_createTreeNode(treeNode, parent, begRange, endRange); // create a new tree node here
-		curr = treeNode->getDatum();
+void InterCPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::RecvSyncParam");
+    // take care of parent sync method
+    SyncMethod::RecvSyncParam(commSync);
 
-		if (parent == nullptr) // I'm at the root of the tree ... nothing was propagated, so add the new datum
-			if (!curr->addElem(newDatum))
-				return false;
-	}
-	else { // treeNode was not null ... just add the newDatum
-		curr = treeNode->getDatum();
-		if (!curr->addElem(newDatum)) return false; //Add to current node
-	}
+    byte theSyncID = commSync->commRecv_byte();
+    long mbarClient = commSync->commRecv_long();
+    long bitsClient = commSync->commRecv_long();
+    int epsilonClient = commSync->commRecv_int();
+    long pFactorClient = commSync->commRecv_long();
 
-	// do we need to add to its children as well?
-	if (curr->getNumElem() > 0 && endRange - begRange > 1) { // keep dividing until we have no elements or we reach a cell with only one value in its range
-		// find the correct child
-		ZZ step = (endRange - begRange) / pFactor;
+    if (theSyncID != enumToByte(SyncID) || mbarClient != maxDiff || bitsClient != bitNum || epsilonClient != probEps || pFactor != pFactorClient) {
+        // report a failure to establish sync parameters
+        commSync->commSend(SYNC_FAIL_FLAG);
+        Logger::gLog(Logger::COMM, "Sync parameters differ from client to server: Client has (" +
+                                   toStr(mbarClient) + "," + toStr(bitsClient) + "," + toStr(epsilonClient) + "," + toStr(pFactorClient) +
+                                   ").  Server has (" + toStr(maxDiff) + "," + toStr(bitNum) + "," + toStr(probEps) + "," + toStr(pFactor) + ").");
+        throw SyncFailureException("Sync parameters do not match.");
+    }
+    commSync->commSend(SYNC_OK_FLAG);
+    Logger::gLog(Logger::COMM, "Sync parameters match");
+}
 
-		if (step == 0) { // minimum step size is 1 - this will leave some partitions unused
-			step=1;
-		}
+bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>>& selfMinusOther, list<shared_ptr<DataObject>>& otherMinusSelf) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
 
-		long childPos = to_long((addElemHashID - begRange) / step);
-		if (childPos >= pFactor) childPos = pFactor - 1; // lump all final elements into the last child
+    bool result = SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf);
+    // 0. Set up communicants
+    if(!useExisting) {
+        mySyncStats.timerStart(SyncStats::IDLE_TIME);
+        commSync->commListen();
+        mySyncStats.timerEnd(SyncStats::IDLE_TIME);
+    }
 
-		ZZ newBegin = begRange + childPos * step; // beginning point of the range of the appropriate child
-		ZZ newEnd = (childPos == pFactor - 1) ?
-			endRange : // last elements lumped into the last child
-			min(newBegin + step, endRange); // don't overrun the end range of the parent node
+    mySyncStats.timerStart(SyncStats::COMM_TIME);
+    // ... verify sync parameters
+    RecvSyncParam(commSync);
+    mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
-		// recursively add newDatum to the appropriate child
-		if (!_addElem(newDatum, treeNode->child[childPos], treeNode, newBegin, newEnd)) return false;
+    // 1. Do the sync
+    pTree * parentNode = treeNode;
+    commSync->hardResetCommCounters(); //Because each CPISync will reset the communicant stats need to reset and use the "total" fields
+    result &= _SyncServer(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);
+    if (result) { // Sync succeeded
+        Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
+                                     + "   self - other =  " + printListOfSharedPtrs(selfMinusOther) + "\n"
+                                     + "   other - self =  " + printListOfSharedPtrs(otherMinusSelf) + "\n"
+                                     + "\n");
+    } else
+        Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
 
-		// create nodes for all NULL children
-		for (long ii = 0; ii < pFactor - 1; ii++)
-			if (treeNode->child[ii] == nullptr)
-				_createTreeNode(treeNode->child[ii], treeNode, begRange + ii * step, begRange + (ii + 1) * step);
 
-		if (treeNode->child[pFactor - 1] == nullptr) // last case is special
-			_createTreeNode(treeNode->child[pFactor - 1], treeNode, begRange + (pFactor - 1) * step, endRange);
-	}
-	return true;
+
+    // 2. Close communicants
+    if(!useExisting) commSync->commClose();
+
+    return result;
 }
 
 //Private
-bool InterCPISync::_delElem(DataObject* datum, pTree * &node, const ZZ &begRange, const ZZ &endRange) {
+void InterCPISync::_deleteTree(pTree *treeNode){
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::deleteTree");
+    if (treeNode == nullptr)
+        return; // i.e. nothing to do
+    else {
+        for (int ii = 0; ii < pFactor; ii++) {
+            _deleteTree(treeNode->child[ii]);
+        }
+        delete treeNode;
+    }
+}
+
+ZZ_p InterCPISync::_hash(shared_ptr<DataObject>datum) const {
+    ZZ num = datum->to_ZZ(); // convert the datum to a ZZ
+    return to_ZZ_p(num % DATA_MAX); // reduce to bit_num bits and make into a ZZ_p
+}
+
+bool InterCPISync::_createTreeNode(pTree *&treeNode, pTree *parent, const ZZ &begRange, const ZZ &endRange) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::createTreeNode");
+    treeNode = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k, hashes),pFactor);
+
+    CPISync *curr = treeNode->getDatum(); // the current node
+
+    if (parent != nullptr) {
+        // add all appropriate parent info
+        CPISync *par = parent->getDatum(); // the parent node
+
+        for (auto elem = par->beginElements(); elem != par->endElements(); elem++) {
+            ZZ elemZZ = rep(_hash(*elem));
+            if (elemZZ >= begRange && elemZZ < endRange && !curr->addElem(*elem)) //if element is in range and add fails
+                return false;
+        }
+    }
+    return true;
+}
+
+bool InterCPISync::_addElem(shared_ptr<DataObject>newDatum, pTree *&treeNode, pTree *parent, const ZZ &begRange,
+                            const ZZ &endRange) {
+    Logger::gLog(Logger::METHOD,"Entering InterCPISync::addElem");
+    Logger::gLog(Logger::METHOD_DETAILS, ".  (InterCPISync) adding in range " + toStr(begRange) + " - " + toStr(endRange));
+    CPISync *curr;
+
+    // if the current node is empty, create it
+    if (treeNode == nullptr) {
+        _createTreeNode(treeNode, parent, begRange, endRange); // create a new tree node here
+        curr = treeNode->getDatum();
+
+        if (parent == nullptr) // I'm at the root of the tree ... nothing was propagated, so add the new datum
+            if (!curr->addElem(newDatum))
+                return false;
+    }
+    else { // treeNode was not null ... just add the newDatum
+        curr = treeNode->getDatum();
+        if (!curr->addElem(newDatum)) return false; //Add to current node
+    }
+
+    // do we need to add to its children as well?
+    if (curr->getNumElem() > 0 && endRange - begRange > 1) { // keep dividing until we have no elements or we reach a cell with only one value in its range
+        // find the correct child
+        ZZ step = (endRange - begRange) / pFactor;
+
+        if (step == 0) { // minimum step size is 1 - this will leave some partitions unused
+            step=1;
+        }
+
+        long childPos = to_long((addElemHashID - begRange) / step);
+        if (childPos >= pFactor) childPos = pFactor - 1; // lump all final elements into the last child
+
+        ZZ newBegin = begRange + childPos * step; // beginning point of the range of the appropriate child
+        ZZ newEnd = (childPos == pFactor - 1) ?
+                    endRange : // last elements lumped into the last child
+                    min(newBegin + step, endRange); // don't overrun the end range of the parent node
+
+        // recursively add newDatum to the appropriate child
+        if (!_addElem(newDatum, treeNode->child[childPos], treeNode, newBegin, newEnd)) return false;
+
+        // create nodes for all NULL children
+        for (long ii = 0; ii < pFactor - 1; ii++)
+            if (treeNode->child[ii] == nullptr)
+                _createTreeNode(treeNode->child[ii], treeNode, begRange + ii * step, begRange + (ii + 1) * step);
+
+        if (treeNode->child[pFactor - 1] == nullptr) // last case is special
+            _createTreeNode(treeNode->child[pFactor - 1], treeNode, begRange + (pFactor - 1) * step, endRange);
+    }
+    return true;
+}
+
+bool InterCPISync::_delElem(shared_ptr<DataObject> datum, pTree * &node, const ZZ &begRange, const ZZ &endRange) {
 	// Compute the hash of the element to find out which children to search if it is present in the parent
 	addElemHashID = rep(_hash(datum));
 
@@ -220,61 +333,14 @@ bool InterCPISync::_delElem(DataObject* datum, pTree * &node, const ZZ &begRange
 	else return true;
 }
 
-void InterCPISync::SendSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
-	Logger::gLog(Logger::METHOD,"Entering InterCPISync::SendSyncParam");
-	// take care of parent sync method
-	SyncMethod::SendSyncParam(commSync);
 
-	commSync->commSend(enumToByte(SyncID));
-	commSync->commSend(maxDiff);
-	commSync->commSend(bitNum);
-	commSync->commSend(probEps);
-	commSync->commSend(pFactor);
 
-	if (commSync->commRecv_byte() == SYNC_FAIL_FLAG) throw SyncFailureException("Sync parameters do not match.");
 
-	Logger::gLog(Logger::COMM, "Sync parameters match");
-}
-
-bool InterCPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
-	Logger::gLog(Logger::METHOD, "Entering InterCPISync::SyncClient");
-	// 0. Set up communicants
-	if(!useExisting)
-		commSync->commConnect();
-	// ... check that the other side is doing the same synchronization
-	SendSyncParam(commSync);
-
-	// 1. Do the sync
-	pTree *parentNode = treeNode;//Create a copy of the root node - Just to make sure that it is not deleted
-	commSync->hardResetCommCounters(); //Because each CPISync will reset the communicant stats need to reset and use the "total" fields
-	bool result = SyncMethod::SyncClient(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
-		&& _SyncClient(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);//Call the modified Sync with data Ranges
-
-	if (result) { // Sync succeeded
-	Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
-			+ "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
-			+ "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
-			+ "\n");
-	}
-	else
-		Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
-
-	// Close communicants
-	if(!useExisting) commSync->commClose();
-
-	//Record Stats
-	recvBytes = commSync->getRecvBytesTot();
-	xmitBytes = commSync->getXmitBytesTot();
-	syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-			 - commSync->getTotalTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
-
-	return result;
-}
 
 // Recursive helper function for SyncClient
 
-bool InterCPISync::_SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-							   list<DataObject *> &otherMinusSelf, pTree *&treeNode) {
+bool InterCPISync::_SyncClient(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+							   list<shared_ptr<DataObject>> &otherMinusSelf, pTree *&treeNode) {
 	Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncClient");
 		try {
 			// Declare whether we have an empty node or not
@@ -320,69 +386,10 @@ bool InterCPISync::_SyncClient(const shared_ptr<Communicant> &commSync, list<Dat
 		}
 }
 
-void InterCPISync::RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay /* = false */) {
-	Logger::gLog(Logger::METHOD,"Entering InterCPISync::RecvSyncParam");
-	// take care of parent sync method
-	SyncMethod::RecvSyncParam(commSync);
-
-	byte theSyncID = commSync->commRecv_byte();
-	long mbarClient = commSync->commRecv_long();
-	long bitsClient = commSync->commRecv_long();
-	int epsilonClient = commSync->commRecv_int();
-	long pFactorClient = commSync->commRecv_long();
-
-	if (theSyncID != enumToByte(SyncID) || mbarClient != maxDiff || bitsClient != bitNum || epsilonClient != probEps || pFactor != pFactorClient) {
-		// report a failure to establish sync parameters
-		commSync->commSend(SYNC_FAIL_FLAG);
-		Logger::gLog(Logger::COMM, "Sync parameters differ from client to server: Client has (" +
-				toStr(mbarClient) + "," + toStr(bitsClient) + "," + toStr(epsilonClient) + "," + toStr(pFactorClient) +
-				").  Server has (" + toStr(maxDiff) + "," + toStr(bitNum) + "," + toStr(probEps) + "," + toStr(pFactor) + ").");
-		throw SyncFailureException("Sync parameters do not match.");
-	}
-	commSync->commSend(SYNC_OK_FLAG);
-	Logger::gLog(Logger::COMM, "Sync parameters match");
-}
-
-bool InterCPISync::SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*>& selfMinusOther, list<DataObject*>& otherMinusSelf) {
-	Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
-
-	// 0. Set up communicants
-	if(!useExisting)
-	  commSync->commListen();
-
-	// ... verify sync parameters
-	RecvSyncParam(commSync);
-
-	// 1. Do the sync
-	pTree * parentNode = treeNode;
-	commSync->hardResetCommCounters(); //Because each CPISync will reset the communicant stats need to reset and use the "total" fields
-	bool result = SyncMethod::SyncServer(commSync, selfMinusOther, otherMinusSelf) // also call the parent to establish bookkeeping variables
-		  && _SyncServer(commSync, selfMinusOther, otherMinusSelf, parentNode, ZZ_ZERO, DATA_MAX);
-	if (result) { // Sync succeeded
-	Logger::gLog(Logger::METHOD, string("Interactive sync succeeded.\n")
-			+ "   self - other =  " + printListOfPtrs(selfMinusOther) + "\n"
-			+ "   other - self =  " + printListOfPtrs(otherMinusSelf) + "\n"
-			+ "\n");
-	} else
-	Logger::gLog(Logger::METHOD, "Synchronization failed.  Please increase bit size of elements or reduce partition factor.");
-
-
-
-	// 2. Close communicants
-	if(!useExisting) commSync->commClose();
-
-	// 3. Record stats
-	recvBytes = commSync->getRecvBytesTot();
-	xmitBytes = commSync->getXmitBytesTot();
-	syncTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()
-			- commSync->getTotalTime()).count() * 1e-6; //Microsecond granularity converted to seconds to conserve precision
-
-	return result;
-}
 
 // Recursive helper function for SyncServer
-bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-							   list<DataObject *> &otherMinusSelf, pTree *&treeNode) {
+bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+							   list<shared_ptr<DataObject>> &otherMinusSelf, pTree *&treeNode) {
 
 	Logger::gLog(Logger::METHOD,"Entering InterCPISync::SyncServer");
 	// Declare whether we have an empty node or not
@@ -429,55 +436,82 @@ bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<Dat
 	}
 }
 
-bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-							   list<DataObject *> &otherMinusSelf, pTree *treeNode, const ZZ &begRange,
+bool InterCPISync::_SyncServer(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+							   list<shared_ptr<DataObject>> &otherMinusSelf, pTree *treeNode, const ZZ &begRange,
 							   const ZZ &endRange) {
 
 	//Establish initial Handshakes - Check If I have nothing or If Client has nothing
 	int response;
 
 	if(treeNode == nullptr || treeNode->getDatum()->getNumElem() == 0){
-		commSync->commSend(SYNC_NO_INFO);
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
+        commSync->commSend(SYNC_NO_INFO);
 		response = commSync->commRecv_byte();
 		if(response!=SYNC_NO_INFO)
 			CPISync::receiveAllElem(commSync, otherMinusSelf);
-		return true;
-	}
-	else
-		commSync->commSend(SYNC_SOME_INFO);
 
-	CPISync * node = treeNode->getDatum();
-	response = commSync->commRecv_byte();
-	if(response == SYNC_NO_INFO)
-	{
-		node->sendAllElem(commSync, selfMinusOther); // send all I've got
-		return true;
-	}
-	else
-	{
-        //Attempt Sync on current node
-		if (!node->SyncServer(commSync, selfMinusOther, otherMinusSelf)) { // sync failure - create Children and go try to sync
-			commSync->commSend(SYNC_FAIL_FLAG);
+        mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
+        mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
 
-            auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k,hashes),pFactor);
-			createChildren(treeNode, tempTree, begRange, endRange);//Create child Nodes;
-			treeNode = tempTree;				    //Update the current parent node(parent node only used for referencing the child nodes)
-			ZZ step = (endRange - begRange)/pFactor;
-			//if(step ==0) step = 1;
-			for(int ii=0;ii<pFactor-1;ii++)
-			{
-				_SyncServer(commSync, selfMinusOther, otherMinusSelf, treeNode->child[ii], begRange + (ii * step),
-							begRange + (ii + 1) * step);
-			}//Last child needs to handle odd pFactors
-			_SyncServer(commSync, selfMinusOther, otherMinusSelf, treeNode->child[pFactor - 1],
-						begRange + ((pFactor - 1) * step), endRange);
-		}
-		else
-		{
-			commSync->commSend(SYNC_OK_FLAG);
-		}
-		return true;
+        mySyncStats.timerEnd(SyncStats::COMM_TIME);
+        return true;
 	}
+	else {
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
+        commSync->commSend(SYNC_SOME_INFO);
+        mySyncStats.timerEnd(SyncStats::COMM_TIME);
+
+        mySyncStats.timerStart(SyncStats::IDLE_TIME);
+        response = commSync->commRecv_byte();
+        mySyncStats.timerEnd(SyncStats::IDLE_TIME);
+
+        CPISync *node = treeNode->getDatum();
+
+        mySyncStats.timerStart(SyncStats::COMM_TIME);
+        if (response == SYNC_NO_INFO) {
+            node->sendAllElem(commSync, selfMinusOther); // send all I've got
+            mySyncStats.timerEnd(SyncStats::COMM_TIME);
+            return true;
+        } else {
+            mySyncStats.timerEnd(SyncStats::COMM_TIME);
+            //Attempt Sync on current node
+            if (!node->SyncServer(commSync, selfMinusOther,
+                                  otherMinusSelf)) { // sync failure - create Children and go try to sync
+
+                // Accumulate stats from each CPISync in InterCPISyncs mySyncStats object
+                mySyncStats.increment(SyncStats::XMIT, node->mySyncStats.getStat(SyncStats::XMIT));
+                mySyncStats.increment(SyncStats::RECV, node->mySyncStats.getStat(SyncStats::RECV));
+                mySyncStats.increment(SyncStats::COMM_TIME, node->mySyncStats.getStat(SyncStats::COMM_TIME));
+                mySyncStats.increment(SyncStats::IDLE_TIME, node->mySyncStats.getStat(SyncStats::IDLE_TIME));
+                mySyncStats.increment(SyncStats::COMP_TIME, node->mySyncStats.getStat(SyncStats::COMP_TIME));
+
+
+                mySyncStats.timerStart(SyncStats::COMM_TIME);
+                commSync->commSend(SYNC_FAIL_FLAG);
+                mySyncStats.timerEnd(SyncStats::COMM_TIME);
+
+                mySyncStats.timerStart(SyncStats::COMP_TIME);
+                auto *tempTree = new pTree(
+                        new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k, hashes), pFactor);
+                createChildren(treeNode, tempTree, begRange, endRange);//Create child Nodes;
+                treeNode = tempTree;                    //Update the current parent node(parent node only used for referencing the child nodes)
+                ZZ step = (endRange - begRange) / pFactor;
+                mySyncStats.timerEnd(SyncStats::COMP_TIME);
+                //if(step ==0) step = 1;
+                for (int ii = 0; ii < pFactor - 1; ii++) {
+                    _SyncServer(commSync, selfMinusOther, otherMinusSelf, treeNode->child[ii], begRange + (ii * step),
+                                begRange + (ii + 1) * step);
+                }//Last child needs to handle odd pFactors
+                _SyncServer(commSync, selfMinusOther, otherMinusSelf, treeNode->child[pFactor - 1],
+                            begRange + ((pFactor - 1) * step), endRange);
+            } else {
+                mySyncStats.timerStart(SyncStats::COMM_TIME);
+                commSync->commSend(SYNC_OK_FLAG);
+                mySyncStats.timerEnd(SyncStats::COMM_TIME);
+            }
+            return true;
+        }
+    }
 }
 
 void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ& begRange, const ZZ& endRange){
@@ -508,8 +542,8 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
 	}
 }
 
-bool InterCPISync::_SyncClient(const shared_ptr<Communicant> &commSync, list<DataObject *> &selfMinusOther,
-							   list<DataObject *> &otherMinusSelf, pTree *treeNode, const ZZ &begRange,
+bool InterCPISync::_SyncClient(const shared_ptr<Communicant> &commSync, list<shared_ptr<DataObject>> &selfMinusOther,
+							   list<shared_ptr<DataObject>> &otherMinusSelf, pTree *treeNode, const ZZ &begRange,
 							   const ZZ &endRange)
 {
 	try{
@@ -517,42 +551,58 @@ bool InterCPISync::_SyncClient(const shared_ptr<Communicant> &commSync, list<Dat
 		int response;
 		if(treeNode == nullptr)
 		{
-			commSync->commSend(SYNC_NO_INFO);
+            mySyncStats.timerStart(SyncStats::COMM_TIME);
+            commSync->commSend(SYNC_NO_INFO);
 			response = commSync->commRecv_byte();
-			if (response != SYNC_NO_INFO) // it is not the case that both nodes are empty
+            if (response != SYNC_NO_INFO) // it is not the case that both nodes are empty
 				CPISync::receiveAllElem(commSync, otherMinusSelf);
-			return true;
+            mySyncStats.timerEnd(SyncStats::COMM_TIME);
+            return true;
 		} else
-			commSync->commSend(SYNC_SOME_INFO); // I have some elements
-		
-		CPISync *node = treeNode->getDatum(); // the current node
-		response = commSync->commRecv_byte(); // get the other Communicants initial declaration
+            mySyncStats.timerStart(SyncStats::COMM_TIME);
+            commSync->commSend(SYNC_SOME_INFO); // I have some elements
+            response = commSync->commRecv_byte(); // get the other Communicants initial declaration
 
-		Logger::gLog(Logger::METHOD_DETAILS, "My node has " + toStr(node->getNumElem()) + " elements.");
-		Logger::gLog(Logger::COMM, " ... data is " + node->printElem());
-		if (response == SYNC_NO_INFO) {// Case 1:  I have something; the other has nothing
-			node->sendAllElem(commSync, selfMinusOther); // send all I've got
-			return true;
-		} else { // Case 2: We both have something
-			// synchronize the current node
-			node->SyncClient(commSync, selfMinusOther, otherMinusSelf); // attempt synchroniztion
-			if (commSync->commRecv_byte() == SYNC_FAIL_FLAG) 
-			{ // i.e. the sync is reported by the Server to have failed; recurse
-                auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k,hashes),pFactor);
-				createChildren(treeNode, tempTree, begRange, endRange);//Create child Nodes;
-				treeNode = tempTree;				    //Update the current parent node(temp parent only children are used)
-				ZZ step = (endRange - begRange)/pFactor;
-				//if(step ==0) step = 1;
-				for(int ii=0;ii<pFactor-1;ii++)
-				{
-					_SyncClient(commSync, selfMinusOther, otherMinusSelf, treeNode->child[ii], begRange + (ii * step),
-								begRange + (ii + 1) * step);
-				}//Last Child needs to handle odd pFactors
-				_SyncClient(commSync, selfMinusOther, otherMinusSelf, treeNode->child[pFactor - 1],
-							begRange + ((pFactor - 1) * step), endRange);
-			}
-			return true;
-		}
+            CPISync *node = treeNode->getDatum(); // the current node
+
+            Logger::gLog(Logger::METHOD_DETAILS, "My node has " + toStr(node->getNumElem()) + " elements.");
+            Logger::gLog(Logger::COMM, " ... data is " + node->printElem());
+            if (response == SYNC_NO_INFO) {// Case 1:  I have something; the other has nothing
+                node->sendAllElem(commSync, selfMinusOther); // send all I've got
+                mySyncStats.timerEnd(SyncStats::COMM_TIME);
+                return true;
+            } else { // Case 2: We both have something
+                // synchronize the current node
+                mySyncStats.timerEnd(SyncStats::COMM_TIME);
+                node->SyncClient(commSync, selfMinusOther, otherMinusSelf); // attempt synchroniztion
+
+                // Accumulate stats from each CPISync in InterCPISyncs mySyncStats object
+                mySyncStats.increment(SyncStats::XMIT,node->mySyncStats.getStat(SyncStats::XMIT));
+                mySyncStats.increment(SyncStats::RECV,node->mySyncStats.getStat(SyncStats::RECV));
+                mySyncStats.increment(SyncStats::COMM_TIME,node->mySyncStats.getStat(SyncStats::COMM_TIME));
+                mySyncStats.increment(SyncStats::IDLE_TIME,node->mySyncStats.getStat(SyncStats::IDLE_TIME));
+                mySyncStats.increment(SyncStats::COMP_TIME,node->mySyncStats.getStat(SyncStats::COMP_TIME));
+
+                if (commSync->commRecv_byte() == SYNC_FAIL_FLAG)
+                { // i.e. the sync is reported by the Server to have failed; recurse
+                    mySyncStats.timerStart(SyncStats::COMP_TIME);
+                    auto *tempTree = new pTree(new CPISync_ExistingConnection(maxDiff, bitNum, probEps, redundant_k,hashes),pFactor);
+                    createChildren(treeNode, tempTree, begRange, endRange);//Create child Nodes;
+                    treeNode = tempTree;				    //Update the current parent node(temp parent only children are used)
+                    ZZ step = (endRange - begRange)/pFactor;
+                    mySyncStats.timerEnd(SyncStats::COMP_TIME);
+
+                    //if(step ==0) step = 1;
+                    for(int ii=0;ii<pFactor-1;ii++)
+                    {
+                        _SyncClient(commSync, selfMinusOther, otherMinusSelf, treeNode->child[ii], begRange + (ii * step),
+                                    begRange + (ii + 1) * step);
+                    }//Last Child needs to handle odd pFactors
+                    _SyncClient(commSync, selfMinusOther, otherMinusSelf, treeNode->child[pFactor - 1],
+                                begRange + ((pFactor - 1) * step), endRange);
+                }
+                return true;
+            }
 	} catch (const SyncFailureException& s) {
 		Logger::gLog(Logger::METHOD_DETAILS, s.what());
 		commSync->commClose();

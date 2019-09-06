@@ -33,13 +33,13 @@ class HashSync : SyncMethod {
      HashSync(shared_ptr<SyncMethod> theSyncObject, int hashUB);
 
   // inherited
-  bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+  bool SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
 
-  bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject*> &selfMinusOther, list<DataObject*> &otherMinusSelf) override;
+  bool SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
 
-  bool addElem(DataObject* newDatum) override;
+  bool addElem(shared_ptr<DataObject> newDatum) override;
 
-  bool delElem(DataObject* newDatum) override;
+  bool delElem(shared_ptr<DataObject> newDatum) override;
 
  protected:
      /**
@@ -49,14 +49,14 @@ class HashSync : SyncMethod {
       * @param input The input DataObject to be hashed.
       * @return A ZZ in the range 0..{@code hashUB}-1
       */
-     ZZ hash(const DataObject *input) {
+     ZZ hash(const shared_ptr<DataObject>input) {
        return (input->to_ZZ()%largerPrime)%hashUB;
      }
 
      shared_ptr<SyncMethod> syncObject;
 
   // maps a hash value to [ the memory where the hashed object is kept, the DataObject that was hashed to get this ]
-     std::map<ZZ, std::pair<DataObject*,DataObject *> > myHashMap;
+     std::map<ZZ, std::pair<shared_ptr<DataObject>,shared_ptr<DataObject>> > myHashMap;
      ZZ hashUB;
      ZZ largerPrime; // a prime number larger than hashUB (for use in hash computations)
 
@@ -65,7 +65,7 @@ class HashSync : SyncMethod {
   /**
    * Maps a point to a hashed value to the pointer to the original value that produced the hash.
    */
-    DataObject* _mapHashToOrig(DataObject *hashPtr) {
+    shared_ptr<DataObject> _mapHashToOrig(shared_ptr<DataObject>hashPtr) {
       return myHashMap[hashPtr->to_ZZ()].second;
     }
 };

@@ -5,8 +5,7 @@
 
 Communicant::Communicant() {
     resetCommCounters();
-    xferBytesTot = recvBytesTot = 0;
-    totalTime = std::chrono::high_resolution_clock::now();
+    xferBytesTot = xferBytes = recvBytesTot = recvBytes = 0;
     MOD_SIZE = NOT_SET;
 }
 
@@ -14,13 +13,10 @@ Communicant::~Communicant() = default;
 
 void Communicant::resetCommCounters() {
     xferBytes = recvBytes = 0;
-	resetTime = std::chrono::high_resolution_clock::now();
 }
 
 void Communicant::hardResetCommCounters() {
-	xferBytes = recvBytes = xferBytesTot = recvBytesTot = 0;
-	resetTime = std::chrono::high_resolution_clock::now();
-	totalTime = std::chrono::high_resolution_clock::now();
+    xferBytes = recvBytes = xferBytesTot = recvBytesTot = 0;
 }
 
 string Communicant::getName() {
@@ -43,13 +39,6 @@ long Communicant::getRecvBytesTot() {
     return recvBytesTot;
 }
 
-std::chrono::high_resolution_clock::time_point Communicant::getResetTime() {
-    return resetTime;
-}
-
-std::chrono::high_resolution_clock::time_point Communicant::getTotalTime() {
-    return totalTime;
-}
 
 void Communicant::addXmitBytes(long numBytes) {
     xferBytes += numBytes;
@@ -60,6 +49,7 @@ void Communicant::addRecvBytes(long numBytes) {
     recvBytes += numBytes;
     recvBytesTot += numBytes;
 }
+
 
 bool Communicant::establishModRecv(bool oneWay /* = false */) {
     ZZ otherModulus = commRecv_ZZ();
@@ -142,12 +132,12 @@ void Communicant::commSend(DataObject& dob) {
     commSend(dob.to_string());
 }
 
-void Communicant::commSend(list<DataObject *> &dob) {
+void Communicant::commSend(list<shared_ptr<DataObject>> &dob) {
   // send the size of the list
   commSend((long) dob.size());
 
   // then every entry in it
-  for (DataObject *&dop : dob) {
+  for (shared_ptr<DataObject>&dop : dob) {
     commSend(*dop); // request the data object
   }
 }
@@ -160,10 +150,10 @@ void Communicant::commSend(DataPriorityObject& dob) {
     commSend(dob.to_priority_string());
 }
 
-void Communicant::commSend(const list<DataObject*> &lst) {
+void Communicant::commSend(const list<shared_ptr<DataObject>> &lst) {
     Logger::gLog(Logger::COMM, "... attempting to send: DataObject list ...");
 
-    list<DataObject*>::const_iterator it;
+    list<shared_ptr<DataObject>>::const_iterator it;
     commSend((long) lst.size()); // the number of elements in the list
 
     for (it = lst.begin(); it != lst.end(); it++)
@@ -259,7 +249,7 @@ void Communicant::commSend(const IBLT& iblt, bool sync) {
 
 void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
     commSend(hte.count);
-    commSend((long) hte.keyCheck);
+    commSend(toStr<size_t>(hte.keyCheck));
     commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
     commSend(hte.valueSum, (unsigned int) eltSize);
 }
@@ -280,6 +270,61 @@ void Communicant::commSend(const ZZ& num, int size) {
     commSend(ustring(toSend, num_size), num_size);
 
 }
+
+void Communicant::commSendIBLTNHash(const IBLT &iblt, bool sync)
+{
+    if (!sync)
+    {
+        commSend(toStr<size_t>(iblt.size()));
+        commSend(toStr<size_t>(iblt.eltSize()));
+    }
+
+    // Access the hashTable representation of iblt to serialize it
+    for (const IBLT::HashTableEntry &hte : iblt.hashTable)
+    {
+        commSend(hte, iblt.eltSize());
+    }
+
+    commSend((long)iblt.hashes.size());
+    for (const auto &hash : iblt.hashes)
+    {
+        commSend(toStr<hash_t>(hash));
+    }
+}
+
+IBLT Communicant::commRecv_IBLTNHash(size_t size, size_t eltSize)
+{
+    size_t numSize;
+    size_t numEltSize;
+
+    if (size == NOT_SET || eltSize == NOT_SET)
+    {
+        numSize = strTo<size_t>(commRecv_string());
+        numEltSize = strTo<size_t>(commRecv_string());
+    }
+    else
+    {
+        numSize = size;
+        numEltSize = eltSize;
+    }
+
+    IBLT theirs;
+    theirs.valueSize = numEltSize;
+
+    for (int ii = 0; ii < numSize; ii++)
+    {
+        theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
+    }
+    long hashNum = commRecv_long();
+
+    for (int ii = 0; ii < hashNum; ii++)
+    {
+        theirs.hashes.push_back(strTo<hash_t>(commRecv_string()));
+    }
+
+    return theirs;
+}
+
 
 ustring Communicant::commRecv_ustring(unsigned int numBytes) {
     string received = commRecv(numBytes);
@@ -308,15 +353,15 @@ ustring Communicant::commRecv_ustring() {
     return ustr;
 }
 
-DataObject* Communicant::commRecv_DataObject() {
-    DataObject *res = new DataObject(commRecv_string());
+shared_ptr<DataObject> Communicant::commRecv_DataObject() {
+    shared_ptr<DataObject>res = make_shared<DataObject>(commRecv_string());
     Logger::gLog(Logger::COMM, "... received: DataObject " + res->to_string());
 
     return res;
 }
 
-list<DataObject *> Communicant::commRecv_DataObject_List() {
-  list<DataObject *> result;
+list<shared_ptr<DataObject>> Communicant::commRecv_DataObject_List() {
+  list<shared_ptr<DataObject>> result;
 
   // receive the size of the list
   long size = commRecv_long();
@@ -341,12 +386,12 @@ DataPriorityObject * Communicant::commRecv_DataObject_Priority() {
 
 // receives a list of data objects
 
-list<DataObject*> Communicant::commRecv_DoList() {
-    list<DataObject*> result;
+list<shared_ptr<DataObject>> Communicant::commRecv_DoList() {
+    list<shared_ptr<DataObject>> result;
 
     long numDiffs = commRecv_long();
     for (long ii = 0; ii < numDiffs; ii++) {
-        DataObject *dobp = commRecv_DataObject();
+        shared_ptr<DataObject>dobp = commRecv_DataObject();
         result.push_back(dobp);
     }
 
@@ -440,7 +485,7 @@ IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
     IBLT::HashTableEntry hte;
 
     hte.count = commRecv_long();
-    hte.keyCheck = (hash_t) commRecv_long();
+    hte.keyCheck = strTo<hash_t>(commRecv_string());
     hte.keySum = commRecv_ZZ();
     hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
 

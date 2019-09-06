@@ -34,15 +34,14 @@ void GenSyncTest::tearDown(){}
 
 void GenSyncTest::testAddRemoveElems() {
 
-    vector<DataObject *> objectsPtr;
+    vector<shared_ptr<DataObject>> objectsPtr;
 
     // create one object that is convertible to a DataObject
     ZZ *last = new ZZ(randZZ());
-	DataObject* newDO;
+	shared_ptr<DataObject> newDO;
     // create elts-1 random DataObjects (the last element will be `last`)
-    for (unsigned long ii = 0; ii < ELTS - 1; ii++) {
-        objectsPtr.push_back(new DataObject(randZZ()));
-    }
+    for (unsigned long ii = 0; ii < ELTS - 1; ii++)
+        objectsPtr.push_back(make_shared<DataObject>(randZZ()));
 
     // create all configurations of GenSyncs (created using both constructors)
     auto combos = standardCombos();
@@ -64,26 +63,23 @@ void GenSyncTest::testAddRemoveElems() {
 
         // create a multiset containing the string representation of objects stored in GenSync
         multiset<string> res;
-        for (auto dop : genSync.dumpElements()) {
+        for (auto dop : genSync.dumpElements())
             res.insert(dop);
-        }
 
         CPPUNIT_ASSERT(multisetDiff(res, objectsStr).empty());
 
-        for(auto elem : objectsPtr) {
+        for(auto elem : objectsPtr)
             genSync.delElem(elem);
-        }
+
         //Remove the data that was added with the template
         genSync.delElem(newDO);
         CPPUNIT_ASSERT(genSync.dumpElements().empty());
     }
 
     //Mem clean-up
-    delete newDO;
     delete last;
-    for(auto & ptr : objectsPtr){
-        delete ptr;
-    }
+	//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
+	objectsPtr.clear();
 }
 
 void GenSyncTest::testAddRemoveSyncMethodAndComm() {
@@ -147,15 +143,11 @@ void GenSyncTest::testCounters() {
     auto before = std::chrono::high_resolution_clock::now();
 	//(oneWay = false, probSync = false)
 	CPPUNIT_ASSERT(syncTest(genSyncOther, genSync, false,false,false,false,false));
-    auto after = std::chrono::high_resolution_clock::now();
-    double res = genSync.getSyncTime(0);
 
     // check that Communicant counters == the respective GenSync counters
     CPPUNIT_ASSERT_EQUAL(cs->getXmitBytes(), genSync.getXmitBytes(0));
     CPPUNIT_ASSERT_EQUAL(cs->getRecvBytes(), genSync.getRecvBytes(0));
 
-    // `res` should be positive and less than the time spent in syncTest
-    CPPUNIT_ASSERT(res <= duration_cast<microseconds>(after - before).count() && res >= 0);
 }
 
 void GenSyncTest::testPort() {
@@ -186,10 +178,9 @@ void GenSyncTest::testTwoWaySync() {
 	vector<GenSync> twoWayClient = twoWayCombos(mBar);
 	vector<GenSync> twoWayServer = twoWayCombos(mBar);
 	// sync every GenSync configuration with itself
-	for (int ii = 0; ii < twoWayClient.size(); ii++) {
+	for (int ii = 0; ii < twoWayClient.size(); ii++)
 		//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
 		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false, false, false, false));
-	}
 }
 
 void GenSyncTest::testOneWaySync() {
@@ -232,12 +223,12 @@ void GenSyncTest::testTwoWayProbSync() {
 
 void GenSyncTest::testOneWayProbSync() {
 	//TODO: Error check port opening to make sure port is not already in use
-	for(int ii = 1 ; ii < NUM_TESTS; ii++) {
+	for(int ii = 1 ; ii < NUM_TESTS + 1; ii++) {
 		GenSync GenSyncServer = GenSync::Builder().
 				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
 				setComm(GenSync::SyncComm::socket).
 				setBits(eltSize).
-				setNumExpectedElements(numExpElem).
+				setExpNumElems(numExpElem).
 				setPort(port + 1 + ii). //Shift port up by one after each use to circumvent port closure issue
 				build();
 
@@ -245,7 +236,7 @@ void GenSyncTest::testOneWayProbSync() {
 				setProtocol(GenSync::SyncProtocol::OneWayIBLTSync).
 				setComm(GenSync::SyncComm::socket).
 				setBits(eltSize).
-				setNumExpectedElements(numExpElem).
+				setExpNumElems(numExpElem).
 				setPort(port + 1 + ii).
 				build();
 

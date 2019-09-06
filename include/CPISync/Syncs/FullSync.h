@@ -37,10 +37,10 @@ public:
   
     
     // parent methods to override
-    bool SyncClient(const shared_ptr<Communicant>& commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf) override;
-    bool SyncServer(const shared_ptr<Communicant>& commSync, list<DataObject *> &selfMinusOther, list<DataObject *> &otherMinusSelf) override;
-    bool addElem(DataObject* newDatum) override;
-    bool delElem(DataObject* newDatum) override;
+    bool SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
+    bool SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf) override;
+    bool addElem(shared_ptr<DataObject> newDatum) override;
+    bool delElem(shared_ptr<DataObject> newDatum) override;
     inline string getName() override { return "Full Sync"; }
 
     /**
@@ -48,7 +48,7 @@ public:
      */
     string printElem();
 private:
-    multiset<DataObject*, cmp<DataObject*>> myData;
+    multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> myData;
 };
 
 #endif /* FULLSYNC_H */

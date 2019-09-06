@@ -26,6 +26,7 @@
 #include <sys/wait.h>
 #include <climits>
 #include <cstring>
+#include <memory>
 #include <CPISync/Aux/ConstantsAndTypes.h>
 #include <CPISync/Aux/Logger.h>
 
@@ -62,6 +63,81 @@ inline vector<byte> StrToVec(const string& data) {
 
     return result;
 }
+
+/**
+ * Helper function to split string with the appointed char
+ * @param str The target string to be splitted
+ * @param sep Appointed char where string should be splitted
+ * @return arr A vector containing the content of string after splitting
+ */
+inline vector<string> split(string str, string sep)
+{
+    char *cstr = const_cast<char *>(str.c_str());
+    char *current;
+    vector<std::string> arr;
+    current = strtok(cstr, sep.c_str());
+    while (current != NULL)
+    {
+        arr.push_back(current);
+        current = strtok(NULL, sep.c_str());
+    }
+    return arr;
+}
+
+/**
+ * Use large number to represent an ascii string
+ * @param str the ascii string to be represented
+ * @return a large number representing the whole string
+ */
+inline ZZ strToZZ(string str)
+{
+    
+    const int c_range = pow(2, 8 * sizeof(char)); // value range for the char in output string
+
+    ZZ number = conv<ZZ>(str[0]);
+    long len = str.length();
+    for (long ii = 1; ii < len; ii++)
+    {
+        number *= c_range;
+        number += conv<ZZ>(str[ii]);
+    }
+
+    return number;
+}
+
+/**
+ * Decode an encoded large numebr from strToZZ function into an  ascii string
+ * @param num the ZZ to be converted
+ * @require input ZZ number must be generated from strToZZ function 
+ * @return an ascii string
+ */
+inline string zzToString(ZZ num)
+{
+    long len;
+    const int c_range = pow(2, 8 * sizeof(char)); // value range for the char in input string
+    if (num == 0)
+        len = 1;
+    else
+    {
+        if (num < 0)
+            num = -num;
+        len = ceil(log(num) / log(c_range));
+    }
+    char str[len];
+
+    for (long ii = len - 1; ii >= 0; ii--)
+    {
+        str[ii] = conv<int>(num % c_range);
+        num /= c_range;
+    }
+
+    string out = "";
+
+    for (auto itr : str)
+        out += itr;
+    return out;
+}
+
 
 /**
  * Converts a vector of bytes into a string.  The opposite of StrToVec.
@@ -128,6 +204,64 @@ string printListOfPtrs(list<T *> theList) {
 }
 
 /**
+ * Helper functions for printing data in type of set of sets
+ **/
+class AuxSetOfSets{
+    public:
+        /**
+         * Function to print set of sets from an iterable input variable
+         * @param theList a list with set of sets structure and can be iterated
+         * @return a formatted string representing the whole set
+         */
+        template <class T>
+        static string printSetofSets(T theList)
+        {
+            string result = "{ ";
+            for (auto itr : theList)
+            {
+                auto curSet = itr->to_Set();
+                result += "[ ";
+                for (auto element : curSet)
+                {
+                    result += toStr(element->to_ZZ()) + " ";
+                }
+                result += "] \n";
+            }
+            result += " }";
+            return result;
+        }
+        /**
+         * Function to print set from an iterable input variable
+         * @param theList a list with set structure and can be iterated
+         * @return a formatted string representing the whole set
+         */
+        template <class T>
+        static string printSet(T thelist)
+        {
+            string result = "[ ";
+            for (auto itr : thelist)
+            {
+                result += toStr<ZZ>(itr->to_ZZ()) + " ";
+            }
+            result += " ]";
+            return result;
+        }
+};
+
+/**
+ * Provides a string representing a human-readable version of a list of shared_ptrs
+ */
+template <class T>
+string printListOfSharedPtrs(list<shared_ptr<T>> theList) {
+	string result = "[";
+	typename list<shared_ptr<T>>::const_iterator iter;
+	for (iter = theList.begin(); iter != theList.end(); iter++)
+		result += toStr(**iter) + " ";
+	result += "]";
+	return result;
+}
+
+/**
  * Writes the elements of an array as ints to a return string
  */
 template <class T>
@@ -169,6 +303,7 @@ inline string multisetPrint(const multiset<string>& container) {
     return result;
 }
 
+
 /**
  * Returns the multi-set intersection of <first> and <second>.
  * Not particularly efficient ... but it works.
@@ -199,6 +334,26 @@ multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
     // convert the result to a multiset
     multiset<T> result(resultVec.begin(), resultVec.end());
     return result;
+}
+
+/**
+ * Compare if two set have elements with same content. Can also use multisetDiff functions
+ *          but that one won't work when input variable is a pointer
+ * @param first first multiset to be compared
+ * @param second second multiset to be compared
+ * @return true iff two sets have same contents
+ */
+template <class T>
+bool cmpMultiset(const multiset<T> first, const multiset<T> second)
+{
+    multiset<ZZ> fir_vec, sec_vec;
+
+    for(auto ii:first)
+        fir_vec.insert(ii->to_ZZ());
+    for(auto jj:second)
+        sec_vec.insert(jj->to_ZZ());
+    
+    return (multisetDiff(fir_vec,sec_vec).size() + multisetDiff(sec_vec,fir_vec).size() == 0);
 }
 
 /**

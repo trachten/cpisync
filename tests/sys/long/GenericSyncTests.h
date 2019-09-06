@@ -10,22 +10,24 @@
 #include <string>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "Aux/Auxiliary.h"
-#include "Syncs/GenSync.h"
+#include <CPISync/Aux/Auxiliary.h>
+#include <CPISync/Syncs/GenSync.h>
 
 class GenSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(GenSyncTest);
+
     CPPUNIT_TEST(testAddRemoveElems);
     CPPUNIT_TEST(testGetName);
     CPPUNIT_TEST(testBuilder);
     CPPUNIT_TEST(testTwoWaySync);
     CPPUNIT_TEST(testTwoWayProbSync);
-    //CPPUNIT_TEST(testOneWaySync); TODO: Fix forkHandle s.t. server uses listenSync in parent, client uses startSync in child
-    //CPPUNIT_TEST(testOneWayProbSync); TODO: " "
+    CPPUNIT_TEST(testOneWaySync);
+    CPPUNIT_TEST(testOneWayProbSync);
     CPPUNIT_TEST(testAddRemoveSyncMethodAndComm);
     CPPUNIT_TEST(testCounters);
     CPPUNIT_TEST(testPort);
-    CPPUNIT_TEST_SUITE_END();
+
+	CPPUNIT_TEST_SUITE_END();
 public:
     GenSyncTest();
 
@@ -33,34 +35,60 @@ public:
     void setUp() override;
     void tearDown() override;
 
-    // Test that GenSyncs constructed using GenSync::Builder create equivalent GenSyncs to those constructed using the standard constructor
+	/**
+	* Test that GenSyncs constructed using the GenSync::Builder helper class create equivalent GenSyncs to those
+	* constructed using the standard constructor
+	*/
     static void testBuilder();
 
-    // Test syncing GenSyncs with two-way SyncMethods
+	/**
+	* Test syncing all GenSyncs with two-way SyncMethods
+	* i.e all sync methods that are able to update both the client and server
+	*/
     static void testTwoWaySync();
 
-    // Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
+	/**
+	* Test syncing GenSyncs with two-way SyncMethods that have a chance of only partly reconciling
+	 * i.e all sync methods that update the client and server but have a probability of only reconciling some of the missing elements
+	*/
     static void testTwoWayProbSync();
 
-    // Test syncing GenSyncs with one-way SyncMethods
+	/**
+	* Test syncing GenSyncs with one-way SyncMethods (Only OneWayCPISync)
+	* i.e one of the parties in the sync does not update its set to match the other
+	*/
     static void testOneWaySync();
 
-    // Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling
+	/**
+	* Test syncing GenSyncs with one-way SyncMethods that have a chance of only partly reconciling (Only OneWayIBLTSync)
+	 * i.e Only one of the parties attempts to get missing elements from the other party (and has a probability of
+	 * getting only some of those differences
+	*/
     static void testOneWayProbSync();
 
-    // Test that GenSync::getName returns some nonempty string
+	/**
+	* Test that GenSync::getName returns some nonempty string
+	*/
     static void testGetName();
 
-    // Test adding and removing data from GenSync
+	/**
+	* Test adding and removing data from GenSync
+	*/
     void testAddRemoveElems();
 
-    // Test adding and removing SyncMethods and Communicants from GenSync
+	/**
+	* Test adding and removing SyncMethods and Communicants from GenSync
+	*/
     static void testAddRemoveSyncMethodAndComm();
 
-    // Test sync time and bytes-exchanged counters
+	/**
+	* Test sync time and bytes-exchanged counters
+	*/
     static void testCounters();
 
-    // Tests getPort
+	/**
+	* Tests getPort
+	*/
     static void testPort();
 
 private:

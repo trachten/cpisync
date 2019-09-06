@@ -7,14 +7,17 @@
 #define CPISYNCLIB_IBLTTEST_H
 
 #include <cppunit/extensions/HelperMacros.h>
-#include "Syncs/IBLT.h"
-#include "Aux/Auxiliary.h"
+#include <CPISync/Syncs/IBLT.h>
+#include <CPISync/Aux/Auxiliary.h>
 #include <iostream>
 #include <algorithm>
 
 class IBLTTest : public CPPUNIT_NS::TestFixture{
     CPPUNIT_TEST_SUITE(IBLTTest);
     CPPUNIT_TEST(testAll);
+    CPPUNIT_TEST(SerializeTest);
+    CPPUNIT_TEST(IBLTNestedInsertRetrieveTest);
+
     CPPUNIT_TEST_SUITE_END();
 public:
     IBLTTest();
@@ -26,6 +29,17 @@ public:
  	* Tests every function in IBLT together, except for size
  	*/
     static void testAll();
+
+    /**
+     * Test serilize and de-serialize
+     * */
+    static void SerializeTest();
+
+    /**
+     * Test serialize and de-serialize in actual use in IBLT add and list functions
+     * */
+    static void IBLTNestedInsertRetrieveTest();
+
 };
 
 

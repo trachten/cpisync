@@ -7,7 +7,7 @@
  * Created on May 24, 2018, 10:13 AM
  */
 
-#include "Communicants/CommDummy.h"
+#include <CPISync/Communicants/CommDummy.h>
 
 CommDummy::CommDummy(queue<char> *intermediate) {
     this->intermediate = intermediate;

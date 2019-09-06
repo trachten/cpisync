@@ -12,11 +12,12 @@
 class IBLTSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(IBLTSyncTest);
 
-        CPPUNIT_TEST(justSyncTest);
-        CPPUNIT_TEST(testAddDelElem);
+        CPPUNIT_TEST(IBLTSyncSetReconcileTest);
+		CPPUNIT_TEST(IBLTSyncMultisetReconcileTest);
+		CPPUNIT_TEST(IBLTSyncLargeSetReconcileTest);
+		CPPUNIT_TEST(testAddDelElem);
         CPPUNIT_TEST(testGetStrings);
 		CPPUNIT_TEST(testIBLTParamMismatch);
-		//CPPUNIT_TEST(largeInputTest);
 
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -27,9 +28,21 @@ public:
     void tearDown() override;
 
 	/**
-	 * Test reconciliation
+	 * Test reconciliation: This test does have a very small probability of failure (If 0 elements are reconciled) as
+	 * IBLT Sync is a probabilistic sync but with a sufficiently large numExpElems and the current seed this isn't an issue,
+	 * even for a large amount of tests
 	 */
-    void justSyncTest();
+    void IBLTSyncSetReconcileTest();
+
+	/**
+	 * Tests reconciliation of multisets using IBLTSync
+	 */
+    void IBLTSyncMultisetReconcileTest();
+
+	/**
+	 * Test reconciliation of large sets using IBLTSync
+	 */
+	void IBLTSyncLargeSetReconcileTest();
 
 	/**
 	 * Test adding and deleting elements
@@ -49,7 +62,6 @@ public:
 	/**
  	* Test that IBLT Functions properly for very large inputs
  	*/
-	//void largeInputTest();
 };
 
 #endif //CPISYNCLIB_IBLTSYNCTEST_H

@@ -9,7 +9,7 @@
 
 #include <climits>
 #include "FullSyncTest.h"
-#include "Syncs/FullSync.h"
+#include <CPISync/Syncs/FullSync.h>
 #include "TestAuxiliary.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(FullSyncTest);
@@ -19,47 +19,80 @@ FullSyncTest::FullSyncTest() = default;
 FullSyncTest::~FullSyncTest() = default;
 
 void FullSyncTest::setUp() {
-    const int SEED = 91;
+    const int SEED = 941;
     srand(SEED);
 }
 
 void FullSyncTest::tearDown() {
 }
 
-void FullSyncTest::justSyncTest() {
-    GenSync GenSyncServer = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::FullSync).
-            setComm(GenSync::SyncComm::socket).
-            build();
+void FullSyncTest::FullSyncSetReconcileTest() {
 
-    GenSync GenSyncClient = GenSync::Builder().
-            setProtocol(GenSync::SyncProtocol::FullSync).
-            setComm(GenSync::SyncComm::socket).
-            build();
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::FullSync).
+			setComm(GenSync::SyncComm::socket).
+			build();
 
-    CPPUNIT_ASSERT(syncTest(GenSyncServer, GenSyncClient));
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::FullSync).
+			setComm(GenSync::SyncComm::socket).
+			build();
+	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, false, false));
 }
+
+ void FullSyncTest::FullSyncMultisetReconcileTest(){
+	 GenSync GenSyncServer = GenSync::Builder().
+			 setProtocol(GenSync::SyncProtocol::FullSync).
+			 setComm(GenSync::SyncComm::socket).
+			 build();
+
+	 GenSync GenSyncClient = GenSync::Builder().
+			 setProtocol(GenSync::SyncProtocol::FullSync).
+			 setComm(GenSync::SyncComm::socket).
+			 build();
+
+	 //(oneWay = false, probSync = false, syncParamTest = false, Multiset = true, largeSync = false)
+	 CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, true, false));
+}
+
+void FullSyncTest::FullSyncLargeSetReconcileTest() {
+
+	GenSync GenSyncServer = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::FullSync).
+			setComm(GenSync::SyncComm::socket).
+			build();
+
+	GenSync GenSyncClient = GenSync::Builder().
+			setProtocol(GenSync::SyncProtocol::FullSync).
+			setComm(GenSync::SyncComm::socket).
+			build();
+
+	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, false, true));
+}
+
 
 void FullSyncTest::testAddDelElem() {
     // number of elems to add
     const int ITEMS = 50;
     FullSync fs;
-    multiset<DataObject *, cmp<DataObject*>> elts;
+    multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> elts;
 
     // check that add works
     for(int ii = 0; ii < ITEMS; ii++) {
-        DataObject* item = new DataObject(randZZ());
+        shared_ptr<DataObject> item = make_shared<DataObject>(randZZ());
         elts.insert(item);
         CPPUNIT_ASSERT(fs.addElem(item));
     }
 
     // check that elements can be recovered correctly through iterators
-    multiset<DataObject *, cmp<DataObject*>> resultingElts;
+    multiset<shared_ptr<DataObject>, cmp<shared_ptr<DataObject>>> resultingElts;
     for(auto iter = fs.beginElements(); iter != fs.endElements(); ++iter) {
         resultingElts.insert(*iter);
     }
 
-    vector<DataObject *> diff;
+    vector<shared_ptr<DataObject>> diff;
     rangeDiff(resultingElts.begin(), resultingElts.end(), elts.begin(), elts.end(), back_inserter(diff));
     CPPUNIT_ASSERT(diff.empty());
 

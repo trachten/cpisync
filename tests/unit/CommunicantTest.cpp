@@ -7,7 +7,7 @@
  */
 
 #include "CommunicantTest.h"
-#include "Communicants/CommDummy.h"
+#include <CPISync/Communicants/CommDummy.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CommunicantTest);
 
@@ -210,22 +210,22 @@ void CommunicantTest::testCommDataObjectList() {
     for(int ii = 0; ii < TIMES; ii++){
         int length = randLenBetween(LOWER_BOUND, UPPER_BOUND);
 
-        list<DataObject*> exp;
+        list<shared_ptr<DataObject>> exp;
         for(int jj = 0; jj < length; jj++) {
-            DataObject* dd = new DataObject(randZZ());
+            shared_ptr<DataObject> dd = make_shared<DataObject>(randZZ());
             exp.push_back(dd);
         }
 
         cSend.commSend(exp);
-        const list<DataObject*> res = cRecv.commRecv_DoList();
+        const list<shared_ptr<DataObject>> res = cRecv.commRecv_DoList();
         // assert same length before iterating to check their equality
         CPPUNIT_ASSERT_EQUAL(exp.size(), res.size());
 
-        list<DataObject*>::const_iterator expI = exp.begin();
+        list<shared_ptr<DataObject>>::const_iterator expI = exp.begin();
         auto resI = res.begin();
 
-        for(DataObject* dop : exp)
-            delete dop;
+		//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
+		exp.clear();
     }
 }
 

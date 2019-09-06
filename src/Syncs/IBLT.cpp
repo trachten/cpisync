@@ -2,7 +2,9 @@
 
 //
 // Created by Eliezer Pearl on 7/9/18.
-// Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
+// Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research, which are based on:
+// * Goodrich, Michael T., and Michael Mitzenmacher. "Invertible bloom lookup tables." 2011 49th Annual Allerton Conference on Communication, Control, and Computing (Allerton). IEEE, 2011.
+// * Eppstein, David, et al. "What's the difference?: efficient set reconciliation without prior context." ACM SIGCOMM Computer Communication Review 41.4 (2011): 218-229.
 //
 
 #include <CPISync/Syncs/IBLT.h>

@@ -26,12 +26,12 @@ The main theoretical bases for the approaches in this work are:
 Relevant applications and extensions can be found at:
    * D. Starobinski, A. Trachtenberg and S. Agarwal,
     "Efficient PDA synchronization"
-    IEEE Transactions on Mobile Computing 2:1, pp. 40-51 (2003)
+    IEEE Transactions on Mobile Computing 2:1, pp. 40-51 (2003).
     <http://ipsit.bu.edu/documents/efficient_pda_web.pdf>
   
    * S. Agarwal, V. Chauhan and A. Trachtenberg,
     "Bandwidth efficient string reconciliation using puzzles"
-    IEEE Transactions on Parallel and Distributed Systems 17:11,pp. 1217-1225 (2006)
+    IEEE Transactions on Parallel and Distributed Systems 17:11,pp. 1217-1225 (2006).
     <http://ipsit.bu.edu/documents/puzzles_journal.pdf>
 
    *  M.G. Karpovsky, L.B. Levitin. and A. Trachtenberg,
@@ -39,6 +39,17 @@ Relevant applications and extensions can be found at:
     IEEE Transactions on Information Theory 49:7, pp. 1788-1793 (2003).
 
    * More at <http://people.bu.edu/trachten>.
+
+Additional algorithms:
+   * Eppstein, David, et al. "What's the difference?: efficient set reconciliation without
+   prior context." ACM SIGCOMM Computer Communication Review 41.4 (2011): 218-229.
+
+   * Goodrich, Michael T., and Michael Mitzenmacher. "Invertible bloom lookup tables."
+   49th Annual Allerton Conference on Communication, Control, and Computing (Allerton), 2011.
+
+   * Mitzenmacher, Michael, and Tom Morgan. "Reconciling graphs and sets of sets."
+   Proceedings of the 37th ACM SIGMOD-SIGACT-SIGAI Symposium on Principles of Database
+   Systems. ACM, 2018.
 
 ## Contributors:
 

@@ -1,6 +1,8 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-// Algorithms found in https://arxiv.org/pdf/1707.05867.pdf
+// This is an implementation of the algorithms found in:
+// Mitzenmacher, Michael, and Tom Morgan. "Reconciling graphs and sets of sets." Proceedings of the 37th ACM SIGMOD-SIGACT-SIGAI Symposium on Principles of Database Systems. ACM, 2018.
+// based on the version in https://arxiv.org/pdf/1707.05867.pdf
 // Created by Zifan Wang on 7/30/2019.
 //
 

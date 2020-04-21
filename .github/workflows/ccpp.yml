@@ -1,0 +1,38 @@
+name: C/C++ CI
+
+on: 
+  push:
+    branches: 
+      - master
+  pull_request:
+    branches: 
+      - master
+  schedule:
+    - cron: "0 5 * * 0-6"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Cmake
+      run: cmake .
+    - name: Install Dependencies
+      run: |
+        sudo apt install cmake libgmp3-dev libcppunit-dev libpthread-stubs0-dev
+        curl -O https://www.shoup.net/ntl/ntl-11.4.3.tar.gz
+        tar -xzf ntl-11.4.3.tar.gz
+        cd ntl-11.4.3/src
+        ./configure 
+        make -j 8
+        sudo make install
+    - name: make
+      run: make -j 8
+
+    - name: Unit Test
+      run: ./UnitTest
+    - name: System Long Test
+      run: ./SystemLongTest

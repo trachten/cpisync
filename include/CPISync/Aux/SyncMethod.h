@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <memory>
+#include <chrono>
 #include <CPISync/Communicants/Communicant.h>
 
 // namespaces

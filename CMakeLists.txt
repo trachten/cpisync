@@ -21,7 +21,7 @@ set(DATA_DIR_INC ${INCLUDE}/Data)
 set(COMM_DIR_INC ${INCLUDE}/Communicants)
 set(SYNC_DIR_INC ${INCLUDE}/Syncs)
 
-#Test directory structure
+# Test directory structure
 set(TEST_DIR tests)
 set(UNIT_TEST_DIR ${TEST_DIR}/unit)
 set(SYSLONG_TEST_DIR ${TEST_DIR}/sys/long)
@@ -53,6 +53,7 @@ set(SOURCE_FILES
         ${SYNC_DIR}/IBLTSync.cpp
         ${SYNC_DIR}/IBLTSetOfSets.cpp
         ${SYNC_DIR}/Cuckoo.cpp
+        ${SYNC_DIR}/CuckooSync.cpp
         ${SYNC_DIR}/FullSync.cpp
 
         ${SRC_DIR}/main.cpp)
@@ -91,6 +92,7 @@ set(HEADERS
         ${SYNC_DIR_INC}/IBLTSetOfSets.h
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
         ${SYNC_DIR_INC}/Cuckoo.h
+        ${SYNC_DIR_INC}/CuckooSync.h
         ${SYNC_DIR_INC}/InterCPISync.h
         ${SYNC_DIR_INC}/PrioCPISync.h
         ${SYNC_DIR_INC}/ProbCPISync.h)
@@ -118,9 +120,6 @@ install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC}
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
 target_link_libraries(TryMe cpisync ntl cppunit pthread gmp)
-# TODO: Novak's playground
-add_executable(Play ${SRC_DIR}/Playground.cpp)
-target_link_libraries(Play cpisync ntl cppunit pthread gmp)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add

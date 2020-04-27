@@ -301,6 +301,7 @@ public:
         IBLTSync,
         OneWayIBLTSync,
         IBLTSetOfSets,
+        CuckooSync,
         END     // one after the end of iterable options
     };
 
@@ -452,6 +453,33 @@ public:
     }
 
     /**
+     * Cuckoo synchronization specific setters.
+     * TODO: Ideally, the builder should receive these and similar
+     * synchronization method parameters from synchronization data structure
+     * (e.g., IBLT and Cuckoo filter themselves)
+     * via corresponding subclass of GenSync.
+     */
+    Builder& setFngprtSize(size_t s) {
+        this->fngprtSize = s;
+        return *this;
+    }
+
+    Builder& setBucketSize(size_t s) {
+        this->bucketSize = s;
+        return *this;
+    }
+
+    Builder& setFilterSize(size_t s) {
+        this->filterSize = s;
+        return *this;
+    }
+
+    Builder& setMaxKicks(size_t s) {
+        this->maxKicks = s;
+        return *this;
+    }
+
+    /**
      * @param theFileName A file name from which data is to be drawn for the initial population of the sync object.
      */
     Builder& setDataFile(string theFileName) {
@@ -497,6 +525,10 @@ private:
     string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
 	bool hashes = Builder::HASHES;
     long numElemChldSet = Builder::UNDEF_NUM; /** exp # of elements in a child set **/
+    size_t fngprtSize = Builder::UNDEF_NUM; /** Cuckoo filter parameters */
+    size_t bucketSize = Builder::UNDEF_NUM;
+    size_t filterSize = Builder::UNDEF_NUM;
+    size_t maxKicks = Builder::UNDEF_NUM;
 
 
     // ... bookkeeping variables

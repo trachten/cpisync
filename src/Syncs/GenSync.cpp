@@ -17,6 +17,7 @@
 #include <CPISync/Syncs/IBLTSync_HalfRound.h>
 #include <CPISync/Syncs/CPISync_HalfRound.h>
 #include <CPISync/Syncs/IBLTSetOfSets.h>
+#include <CPISync/Syncs/CuckooSync.h>
 #include <chrono>
 
 using namespace std::chrono;
@@ -406,6 +407,9 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::IBLTSetOfSets:
             myMeth = make_shared<IBLTSetOfSets>(numExpElem, numElemChldSet, bits);
             _postProcess = IBLTSetOfSets::postProcessing_IBLTSetOfSets;
+            break;
+        case SyncProtocol::CuckooSync:
+            myMeth = make_shared<CuckooSync>(fngprtSize, bucketSize, filterSize, maxKicks);
             break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");

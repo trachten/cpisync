@@ -145,7 +145,9 @@ void CuckooTest::testConfigF3B1() {
 
     CPPUNIT_ASSERT(_failed_insert_count(inserted) <= 2);
 
-    CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
+    CPPUNIT_ASSERT(_lost_items(c, inserted) <= 2);
+    // Explained in testConfigF7
+    // CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
 
 }
 
@@ -164,7 +166,9 @@ void CuckooTest::testConfigF7B15() {
 
     CPPUNIT_ASSERT(_failed_insert_count(inserted) <= 2);
 
-    CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
+    CPPUNIT_ASSERT(_lost_items(c, inserted) <= 2);
+    // Explained in testConfigF7
+    // CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
 }
 
 void CuckooTest::testConfigF7B3() {

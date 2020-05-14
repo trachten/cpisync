@@ -14,7 +14,9 @@ CuckooTest::CuckooTest() {}
 
 CuckooTest::~CuckooTest() {}
 
-void CuckooTest::setUp() {}
+void CuckooTest::setUp() {
+    Cuckoo::seedPRNG(1);
+}
 
 void CuckooTest::tearDown() {}
 

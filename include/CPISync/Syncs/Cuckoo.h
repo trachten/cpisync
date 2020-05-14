@@ -12,16 +12,13 @@
 #ifndef CUCKOO_H
 #define CUCKOO_H
 
-#include <cmath>
 #include <vector>
 #include <random>
 #include <functional>
-#include <mutex>
 #include <NTL/ZZ.h>
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Aux/Auxiliary.h>
-
-#define BYTE 8
+#include <CPISync/Syncs/Compact2DBitArray.h>
 
 using std::vector;
 using std::shared_ptr;
@@ -62,12 +59,13 @@ public:
     /**
      * Constructs a populated cuckoo filter with certain fingerprint, bucket,
      * overall size, filter content and number of inserted elements.
+     * Used to recraeate the cuckoo fitler after transmission.
      * @param fngprntSize The fingerprint size in bits.
      * @param bucketSize The size of bucket in fingerprits.
      * @param size The overall size of the Cuckoo filter in buckets.
      * @param maxKicks The maximum number of kicks.
      * @param itemsCount The items already inserted in the filter.
-     * @param f The filter content
+     * @param f The raw filter content
      */
     Cuckoo(size_t fngprtSize, size_t bucketSize, size_t size,
            size_t maxKicks, vector<unsigned char> f, ZZ itemsCount);
@@ -129,27 +127,6 @@ public:
 
     vector<unsigned char> getRawFilter() const;
 
-    void setFilterSize(size_t s);
-
-    void setBucketSize(size_t s);
-
-    void setFngprtSize(size_t s);
-
-    void setMaxKicks(size_t mKicks);
-    /**
-     * @param bucketIdx The index of a bucket
-     * @param entryIdx The index of an entry in the bucket
-     * @return Fingerprint
-     */
-    unsigned getEntry(size_t bucketIdx, size_t entryIdx) const;
-
-    /**
-     * @param bucketIdx The index of the bucket
-     * @param entryIdx The index of the bucket
-     * @param f The fingerprint to enter
-     */
-    void setEntry(size_t bucketIdx, size_t entryIdx, unsigned f);
-
     /**
      * PRNG from the range [min, max]
      * @param min The lower limit of the range.
@@ -167,29 +144,34 @@ public:
      * @param Whether it has zero fingerprint
      */
     bool isZeroF(const DataObject& d) const;
-private:
-    /**
-     * The memory of the Cuckoo filter.
-     */
-    vector<unsigned char> filter;
 
     /**
-     * Number of buckets in filter.
+     * Seed the underlying cuckoo filter PRNG
+     */
+    static void seedPRNG(int seed);
+private:
+    /**
+     * The memory of the Cuckoo filter
+     */
+    Compact2DBitArray filter;
+
+    /**
+     * Number of buckets in filter
      */
     size_t filterSize;
 
     /**
-     * Number of fingerprints in bucket.
+     * Number of fingerprints in bucket
      */
     size_t bucketSize;
 
     /**
-     * Bits in fingerprint.
+     * Bits in fingerprint
      */
     size_t fngprtSize;
 
     /**
-     * Maximum number of kicks when inserting.
+     * Maximum number of kicks when inserting
      */
     size_t maxKicks;
 
@@ -197,11 +179,6 @@ private:
      * Current number of items in the filter
      */
     ZZ itemsCount;
-
-    /**
-     * Fingerprint size in bytes
-     */
-    unsigned short fngprtSizeB;
 
     /**
      * Function used to calculate fingerprint of an entry. The
@@ -283,16 +260,6 @@ private:
     inline int hasF(unsigned f, size_t bucket) const;
 
     /**
-     * Return the next byte of fingerprint.
-     * If remained bits in f fit a single byte, the remaining bits are aligned
-     * to the most significant bit of the byte and returned.
-     * @param f The fingerprint.
-     * @param cons The fingerprint bits consumed as of now.
-     */
-    inline unsigned char _getNextFByte(const vector<unsigned char>& f,
-                                       size_t cons) const;
-
-    /**
      * Calculate the alternative bucket for the given bucket and the fingerprint.
      * @param currentB The current bucket.
      * @param f The fingerprint.
@@ -319,28 +286,6 @@ private:
     inline PartialHash _pHash(const DataObject& datum) const;
 
     inline void _constructorGuards() const;
-
-    /**
-     * Boundary checks for getEntry and SetEntry.
-     */
-    inline void _assertIdx(size_t bucketIdx, size_t entryIdx) const;
-
-    /**
-     * Auxiliary data used by both getEntry and setEntry to describe
-     * the position of the certain entry in raw filter that is a plain
-     * vector of bytes.
-     */
-    struct GetSetPrelim {
-        size_t entryBits;  // exact bit where the entry starts
-        size_t fstByte;    // first byte the entry touches
-        size_t lstByte;    // last byte the entry touches
-        size_t onsetBits;  // number of bits in fstByte that are before
-                           // the entry
-        size_t offsetBits; // number of bits in lstByte that are still
-                           // the part of the entry
-    };
-
-    inline GetSetPrelim _getSetPrelim(size_t bucketIdx, size_t entryIdx) const;
 
     class CuckooFilterError : public runtime_error {
     public:

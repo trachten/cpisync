@@ -28,68 +28,48 @@ ZZ _default_hash(const ZZ& xx, size_t filterSize) {
     return ZZ(shash(toStr(to_long(xx))) % filterSize);
 }
 
-/**
- * To discern endianness in runtime but only once when a cuckoo
- * constructor is called.
- */
-std::once_flag onceEndiannessFlag;
-static bool littleEndian = true;
-
-void _discern_endianness() {
-    // This assumes size(int) > size(char). I can imagine a tiny
-    // embedded device where this is not the case.
-    unsigned int x = 1;
-    if (!(*(char *) &x == 1))
-        littleEndian = false;
-}
-
 void Cuckoo::_constructorGuards() const {
-    std::call_once(onceEndiannessFlag, _discern_endianness);
-
     if (fngprtSize > 32 || fngprtSize < 1)
         throw CuckooFilterError("Fingerprint has to be between 1 and 32 bits!");
 }
 
 Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
                size_t maxKicks) :
+    filter (Compact2DBitArray(fngprtSize, bucketSize, filterSize)),
     filterSize (filterSize),
     bucketSize (bucketSize),
     fngprtSize (fngprtSize),
     maxKicks (maxKicks),
     itemsCount (0),
-    fngprtSizeB (ceil(fngprtSize / float(BYTE))),
     fingerprint_impl (_default_fingerprint),
     hash_impl (_default_hash)
 {
     _constructorGuards();
-    filter.resize(ceil((fngprtSize * bucketSize * filterSize) / float(BYTE)));
 }
 
 Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
                size_t maxKicks, fingerprint_impl_t fingerprintFunction,
                hash_impl_t hashFunction) :
+    filter (Compact2DBitArray(fngprtSize, bucketSize, filterSize)),
     filterSize (filterSize),
     bucketSize (bucketSize),
     fngprtSize (fngprtSize),
     maxKicks (maxKicks),
     itemsCount (0),
-    fngprtSizeB (ceil(fngprtSize / float(BYTE))),
     fingerprint_impl (fingerprintFunction),
     hash_impl (hashFunction)
 {
     _constructorGuards();
-    filter.resize(ceil((fngprtSize * bucketSize * filterSize) / float(BYTE)));
 }
 
 Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
                size_t maxKicks, vector<unsigned char> f, ZZ itemsCount) :
-    filter (f),
+    filter (Compact2DBitArray(fngprtSize, bucketSize, filterSize, f)),
     filterSize (filterSize),
     bucketSize (bucketSize),
     fngprtSize (fngprtSize),
     maxKicks (maxKicks),
     itemsCount (itemsCount),
-    fngprtSizeB (ceil(fngprtSize / float(BYTE))),
     fingerprint_impl (_default_fingerprint),
     hash_impl (_default_hash)
 {
@@ -127,10 +107,9 @@ Cuckoo::Cuckoo(size_t capacity, float err) {
     filterSize = ceil(capacity / float(bucketSize));
     maxKicks = 300; // provisional
     itemsCount = 0;
-    fngprtSizeB = ceil(fngprtSize / float(BYTE));
+    filter = Compact2DBitArray(fngprtSize, bucketSize, filterSize);
 
     _constructorGuards();
-    filter.resize(ceil((fngprtSize * bucketSize * filterSize) / float(BYTE)));
 }
 
 size_t Cuckoo::getFilterSize() const {
@@ -154,19 +133,7 @@ ZZ Cuckoo::getItemsCount() const {
 }
 
 vector<unsigned char> Cuckoo::getRawFilter() const {
-    return filter;
-}
-
-void Cuckoo::setBucketSize(size_t s) {
-    bucketSize = s;
-}
-
-void Cuckoo::setFngprtSize(size_t s) {
-    fngprtSize = s;
-}
-
-void Cuckoo::setMaxKicks(size_t mKicks) {
-    maxKicks = mKicks;
+    return filter.getRaw();
 }
 
 bool Cuckoo::_insert(unsigned f, int bucket, size_t kicks) {
@@ -177,10 +144,10 @@ bool Cuckoo::_insert(unsigned f, int bucket, size_t kicks) {
         return true;
 
     int victimIdx = _rand(0, bucketSize - 1);
-    int victim = getEntry(bucket, victimIdx);
+    int victim = filter.getEntry(bucket, victimIdx);
     int altBucket = _alternativeBucket(bucket, victim);
     if (_insert(victim, altBucket, kicks + 1)) {
-        setEntry(bucket, victimIdx, f);
+        filter.setEntry(bucket, victimIdx, f);
         return true;
     }
 
@@ -205,13 +172,13 @@ bool Cuckoo::insert(const DataObject& datum) {
 
     // Choose the fingerprint from the bucket to relocate
     int fstVictimIdx = _rand(0, bucketSize - 1);
-    int fstVictim = getEntry(chosenBucket, fstVictimIdx);
+    int fstVictim = filter.getEntry(chosenBucket, fstVictimIdx);
     int altBucket = _alternativeBucket(chosenBucket, fstVictim);
 
     // Recursively relocate the victim fingerprint
     if (_insert(to_int(fstVictim), altBucket, 0)) {
         // Victim is relocated, put f to its place
-        setEntry(chosenBucket, fstVictimIdx, p.f);
+        filter.setEntry(chosenBucket, fstVictimIdx, p.f);
         itemsCount++;
         return true;
     }
@@ -237,13 +204,13 @@ bool Cuckoo::erase(const DataObject& datum) {
 
     int idx = hasF(p.f, p.i1);
     if (idx != -1) {
-        setEntry(p.i1, idx, 0);
+        filter.setEntry(p.i1, idx, 0);
         itemsCount--;
         return true;
     } else {
         idx = hasF(p.f, p.i2);
         if (idx != -1) {
-            setEntry(p.i2, idx, 0);
+            filter.setEntry(p.i2, idx, 0);
             itemsCount--;
             return true;
         }
@@ -259,145 +226,11 @@ long Cuckoo::_rand(size_t min, size_t max) {
 }
 
 bool Cuckoo::isZeroF(const DataObject& d) const {
-    return fingerprint(d.to_ZZ());
+    return !fingerprint(d.to_ZZ());
 }
 
-Cuckoo::GetSetPrelim Cuckoo::_getSetPrelim(size_t bucketIdx,
-                                           size_t entryIdx) const {
-    GetSetPrelim p;
-
-    p.entryBits = fngprtSize * bucketSize * bucketIdx
-        + (fngprtSize * entryIdx);
-    p.fstByte = p.entryBits / BYTE;
-    p.lstByte = (p.entryBits + fngprtSize - 1) / BYTE;
-    p.onsetBits = p.entryBits % BYTE;
-    p.offsetBits = (p.entryBits + fngprtSize) % BYTE;
-
-    return p;
-}
-
-void Cuckoo::_assertIdx(size_t bucketIdx, size_t entryIdx) const {
-    if (bucketIdx >= filterSize)
-        throw CuckooFilterError("No bucketIdx " + to_string(bucketIdx)
-                                + ". filterSize is " + to_string(filterSize)
-                                + " buckets long.");
-    if (entryIdx >= bucketSize)
-        throw CuckooFilterError("No entryIdx " + to_string(entryIdx)
-                                + ". bucketSize is " + to_string(bucketSize)
-                                + " entries long.");
-}
-
-unsigned Cuckoo::getEntry(size_t bucketIdx, size_t entryIdx) const {
-    _assertIdx(bucketIdx, entryIdx);
-    GetSetPrelim p = _getSetPrelim(bucketIdx, entryIdx);
-
-    if (p.lstByte > p.fstByte) { // Entry in multiple bytes
-        unsigned char fstP = filter[p.fstByte] & ((1 << (BYTE - p.onsetBits))
-                                                  - 1);
-        // % BYTE to accommodate for lstP being nicely aligned to the
-        // end of its byte
-        unsigned char lstP = filter[p.lstByte] >> ((BYTE - p.offsetBits) % BYTE);
-
-        unsigned entry = fstP;
-        for (size_t ii=1; ii<(p.lstByte - p.fstByte); ii++) {
-            entry <<= BYTE;
-            entry |= filter[p.fstByte + ii];
-        }
-        // In case of lstByte > fstByte, when offsetBits is 0 then
-        // lstP is nicely alligned to the end of its byte. Then, we
-        // shift fstP for an entire byte.
-        entry <<= (p.offsetBits ? p.offsetBits : BYTE);
-        entry |= lstP;
-
-        return entry;
-    }
-
-    // Entry spreads only single byte
-    return (filter[p.fstByte] >> (BYTE - p.onsetBits - fngprtSize))
-        & ((1 << fngprtSize) - 1);
-}
-
-void Cuckoo::setEntry(size_t bucketIdx, size_t entryIdx, unsigned f) {
-    _assertIdx(bucketIdx, entryIdx);
-    GetSetPrelim p = _getSetPrelim(bucketIdx, entryIdx);
-
-    unsigned char* fngprtC = (unsigned char*)&f;
-    vector<unsigned char> fBytes; // MS byte first
-
-    if (littleEndian)
-        for (int ii=fngprtSizeB; ii >= 0; ii--)
-            fBytes.push_back(fngprtC[ii]);
-    else
-        for (int ii=0; ii<=fngprtSizeB; ii++)
-            fBytes.push_back(fngprtC[ii]);
-
-    size_t diff = p.lstByte - p.fstByte;
-    unsigned char fstP, lstP, toWrite, onsetP;
-    size_t ii, cBits;
-    switch (diff) {
-    case 0: // Entry starts and ends in the same byte
-        // extract the MS bits of the byte that are not the part of
-        // current entry and bring it to LS end.
-        fstP = filter[p.fstByte] >> (BYTE - p.onsetBits);
-        // extract the LS bits of the byte that are not the part of
-        // current entry. Keep them in LS positions.
-        lstP = filter[p.fstByte] & ((1 << (BYTE - p.onsetBits - fngprtSize))
-                                    - 1);
-
-        // bring fstP back to MS bits
-        toWrite = fstP << (BYTE - p.onsetBits);
-        // move bits of fingerprint to the positions that they will
-        // occupy in the current byte and append it to what we are
-        // about to write
-        toWrite |= *fngprtC << (BYTE - p.onsetBits - fngprtSize);
-        // append the last part
-        toWrite |= lstP;
-        filter[p.fstByte] = toWrite;
-        break;
-
-    case 1: // Entry spreads two consequent bytes
-    case 2: // ... or three
-    case 3: // ... or four
-    case 4: // ... or five
-        /* Write fstByte */
-        cBits = 0; // Bits of f consumed as of now
-        toWrite = _getNextFByte(fBytes, cBits);
-        // take BYTE - onsetBits MS bits, put them as LS bits of new byte
-        toWrite >>= p.onsetBits;
-        // construct the onset part from what's already there
-        onsetP = filter[p.fstByte] >> (BYTE - p.onsetBits);
-        // ... put that as MS bits of new byte
-        onsetP <<= (BYTE - p.onsetBits);
-        // join the two parts
-        toWrite |= onsetP;
-        filter[p.fstByte] = toWrite;
-        // we just consumed (wrote to filter) this much bits of the
-        // fingerprint that we are writing
-        cBits += BYTE - p.onsetBits;
-
-        /* Write middle complete bytes */
-        for (ii=1; ii<diff; ii++) {
-            filter[p.fstByte + ii] = _getNextFByte(fBytes, cBits);
-            // we just consumed a complete byte of the fingerprint
-            // that we are writing
-            cBits += BYTE;
-        }
-
-        /* Write lstByte */
-        toWrite = fBytes.back() << (BYTE - (fngprtSize - cBits));
-        // Pull the rest LSBits from the filter (keep them unchanged)
-        if (p.offsetBits)
-            // Otherwise lstByte is nicely aligned with its byte. The
-            // new lstByte is exactly what we built as of now. No old
-            // lstByte part needed to be restored.
-            toWrite |= filter[p.lstByte] & ((1 << (BYTE - p.offsetBits)) - 1);
-
-        filter[p.lstByte] = toWrite;
-        break;
-
-    default:
-        throw CuckooFilterError("Fingerprint cannot spread more than 5 bytes!");
-    }
+void Cuckoo::seedPRNG(int seed) {
+    prng.seed(seed);
 }
 
 ostream& operator<<(ostream& os, const Cuckoo cf) {
@@ -422,8 +255,8 @@ ZZ Cuckoo::hash(const ZZ& e) const {
 int Cuckoo::addToBucket(size_t bucketIdx, unsigned f) {
     for (size_t ii=0; ii<bucketSize; ii++)
         // Put the fingerprint in the first available entry
-        if (getEntry(bucketIdx, ii) == 0) {
-            setEntry(bucketIdx, ii, f);
+        if (filter.getEntry(bucketIdx, ii) == 0) {
+            filter.setEntry(bucketIdx, ii, f);
             return ii;
         }
 
@@ -432,7 +265,7 @@ int Cuckoo::addToBucket(size_t bucketIdx, unsigned f) {
 
 int Cuckoo::hasF(unsigned f, size_t bucket) const {
     for (size_t ii=0; ii < bucketSize; ii++)
-        if (getEntry(bucket, ii) == f)
+        if (filter.getEntry(bucket, ii) == f)
             return ii;
 
     return -1;
@@ -452,29 +285,4 @@ Cuckoo::PartialHash Cuckoo::_pHash(const DataObject& datum) const {
     p.i2 = _alternativeBucket(p.i1, p.f);
 
     return p;
-}
-
-unsigned char Cuckoo::_getNextFByte(const vector<unsigned char>& f,
-                                    size_t cons) const {
-    int r = fngprtSize - cons; // remained bits
-    if (r <= 0)
-        throw CuckooFilterError("Fingerprint has no more bits.");
-
-    size_t left = r % BYTE; // bits in the MSByte of what remained in
-                            // f by now (or 0 when 8 bits remained)
-    if (r < BYTE)
-        return f.front() << (BYTE - r); // align remaining bits to MS bit
-
-    size_t msByteIdx = f.size() - (r / BYTE); // index of MS byte
-    if (left)
-        msByteIdx--;
-    unsigned char ret = f.at(msByteIdx);
-
-    if (!left) // nicely byte-aligned
-        return ret;
-
-    // Not byte-aligned
-    ret <<= BYTE - left;
-    ret |= f.at(msByteIdx + 1) >> left;
-    return ret;
 }

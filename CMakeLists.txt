@@ -52,6 +52,7 @@ set(SOURCE_FILES
         ${SYNC_DIR}/IBLT.cpp
         ${SYNC_DIR}/IBLTSync.cpp
         ${SYNC_DIR}/IBLTSetOfSets.cpp
+        ${SYNC_DIR}/Compact2DBitArray.cpp
         ${SYNC_DIR}/Cuckoo.cpp
         ${SYNC_DIR}/CuckooSync.cpp
         ${SYNC_DIR}/FullSync.cpp
@@ -91,6 +92,7 @@ set(HEADERS
         ${SYNC_DIR_INC}/IBLTSync.h
         ${SYNC_DIR_INC}/IBLTSetOfSets.h
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
+        ${SYNC_DIR_INC}/Compact2DBitArray.h
         ${SYNC_DIR_INC}/Cuckoo.h
         ${SYNC_DIR_INC}/CuckooSync.h
         ${SYNC_DIR_INC}/InterCPISync.h

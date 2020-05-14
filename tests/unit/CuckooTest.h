@@ -26,7 +26,7 @@ class CuckooTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testConfigF3B1);
     CPPUNIT_TEST(testConfigF14B1);
     CPPUNIT_TEST(testConfigF7B15);
-    // CPPUNIT_TEST(testConfigF7B3);
+    CPPUNIT_TEST(testConfigF7B3);
     CPPUNIT_TEST_SUITE_END();
 
 public:

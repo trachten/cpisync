@@ -15,6 +15,7 @@
 #include <vector>
 #include <random>
 #include <functional>
+#include <stack>
 #include <NTL/ZZ.h>
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Aux/Auxiliary.h>
@@ -228,15 +229,6 @@ private:
     static std::mt19937 prng;
 
     /**
-     * Recursive cuckoo inserting.
-     * @param f The fingerprint for which the relocation is attempted
-     * @param bucket The index of the bucket to start with.
-     * @param kicks The number of relocations done so far.
-     * @return Success indicator.
-     */
-    bool _insert(unsigned f, int bucket, size_t kicks);
-
-    /**
      * Check if there is an empty bucket and put fingerprint there.
      * An entry with all 0 bits is considered empty.
      * Fingerprint generating function must ensure (0..2^fngprtSize] range.
@@ -284,6 +276,22 @@ private:
      * This introduces false negatives and Cuckoo Filter should not have any.
      */
     inline PartialHash _pHash(const DataObject& datum) const;
+
+    /**
+     * Auxiliary structure to track relocations in insert procedure.
+     */
+    struct Reloc {
+        size_t b; // bucket index
+        size_t c; // cell index
+        int f;    // fingerprint to put there
+    };
+
+    /**
+     * Commit the changes to the cuckoo filter storage.
+     * To be used only when the relocation chain does not exceed maxKicks.
+     * @param relocStack The relocation chain.
+     */
+    inline void _commit_relocation_chain(stack<Reloc>& relocStack);
 
     inline void _constructorGuards() const;
 

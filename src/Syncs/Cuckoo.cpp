@@ -136,22 +136,12 @@ vector<unsigned char> Cuckoo::getRawFilter() const {
     return filter.getRaw();
 }
 
-bool Cuckoo::_insert(unsigned f, int bucket, size_t kicks) {
-    if (kicks >= maxKicks)
-        return false;
-
-    if (addToBucket(bucket, f) != -1)
-        return true;
-
-    int victimIdx = _rand(0, bucketSize - 1);
-    int victim = filter.getEntry(bucket, victimIdx);
-    int altBucket = _alternativeBucket(bucket, victim);
-    if (_insert(victim, altBucket, kicks + 1)) {
-        filter.setEntry(bucket, victimIdx, f);
-        return true;
+void Cuckoo::_commit_relocation_chain(stack<Reloc>& relocStack) {
+    while (!relocStack.empty()) {
+        Reloc r = relocStack.top();
+        relocStack.pop();
+        filter.setEntry(r.b, r.c, r.f);
     }
-
-    return false;
 }
 
 bool Cuckoo::insert(const DataObject& datum) {
@@ -169,21 +159,33 @@ bool Cuckoo::insert(const DataObject& datum) {
 
     // Choose bucket to kick from
     int chosenBucket = _rand(0, 1) ? p.i2 : p.i1;
+    // The fingerprint to put in that bucket
+    int f = p.f;
 
-    // Choose the fingerprint from the bucket to relocate
-    int fstVictimIdx = _rand(0, bucketSize - 1);
-    int fstVictim = filter.getEntry(chosenBucket, fstVictimIdx);
-    int altBucket = _alternativeBucket(chosenBucket, fstVictim);
+    stack<Reloc> relocStack;
+    for (size_t kick=0; kick<maxKicks; kick++) {
+        // Choose the fingerprint from the bucket to relocate
+        int victimIdx = _rand(0, bucketSize - 1);
+        int victim = filter.getEntry(chosenBucket, victimIdx);
+        int altBucket = _alternativeBucket(chosenBucket, victim);
 
-    // Recursively relocate the victim fingerprint
-    if (_insert(to_int(fstVictim), altBucket, 0)) {
-        // Victim is relocated, put f to its place
-        filter.setEntry(chosenBucket, fstVictimIdx, p.f);
-        itemsCount++;
-        return true;
+        Reloc r;
+        r.b = chosenBucket;
+        r.c = victimIdx;
+        r.f = f;
+        relocStack.push(r);
+
+        if (addToBucket(altBucket, victim) != -1) {
+            _commit_relocation_chain(relocStack);
+            itemsCount++;
+            return true;
+        }
+
+        f = victim;
+        chosenBucket = altBucket;
     }
 
-    // Victim failed to relocate
+    // Relocation chain exceeded maxKicks
     return false;
 }
 

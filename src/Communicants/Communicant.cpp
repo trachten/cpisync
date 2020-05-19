@@ -102,6 +102,40 @@ bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* 
     }
 }
 
+bool Communicant::establishCuckooSend(size_t fngprtSize, size_t bucketSize,
+                                      size_t filterSize, size_t maxKicks) {
+    commSend((long) fngprtSize);
+    commSend((long) bucketSize);
+    commSend((long) filterSize);
+    commSend((long) maxKicks);
+
+    return (commRecv_byte() != SYNC_FAIL_FLAG);
+}
+
+bool Communicant::establishCuckooRecv(size_t fngprtSize, size_t bucketSize,
+                                      size_t filterSize, size_t maxKicks) {
+    size_t otherFngprtSize = commRecv_long();
+    size_t otherBucketSize = commRecv_long();
+    size_t otherFilterSize = commRecv_long();
+    size_t otherMaxKicks = commRecv_long();
+
+    if (otherFngprtSize == fngprtSize
+        && otherBucketSize == bucketSize
+        && otherFilterSize == filterSize
+        && otherMaxKicks == maxKicks) {
+        commSend(SYNC_OK_FLAG);
+        return true;
+    } else {
+        Logger::gLog(Logger::COMM, "Cuckoo params do not match: mine(f="     +
+                     toStr(fngprtSize) + ", b=" + toStr(bucketSize) + ", m=" +
+                     toStr(filterSize) + ", kicks=" + toStr(maxKicks)        +
+                     ") vs other(f=" + toStr(otherFngprtSize) + ", b="       +
+                     toStr(otherBucketSize) + "m= " + toStr(otherFilterSize) +
+                     ", kicks=" + toStr(otherMaxKicks) + ").");
+        commSend(SYNC_FAIL_FLAG);
+        return false;
+    }
+}
 
 void Communicant::commSend(const ustring& toSend, const unsigned int numBytes) {
     Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
@@ -207,7 +241,7 @@ void Communicant::commSend(const ZZ_p& num) {
 void Communicant::commSend(const vec_ZZ_p& vec) {
     Logger::gLog(Logger::COMM, "... attempting to send: vec_ZZ_p " + toStr(vec));
 
-    // pack the vec_ZZ_p into a big ZZ and send it along    
+    // pack the vec_ZZ_p into a big ZZ and send it along
     ZZ result;
     result = 0;
 
@@ -221,7 +255,7 @@ vec_ZZ_p Communicant::commRecv_vec_ZZ_p() {
     ZZ received = commRecv_ZZ();
     vec_ZZ_p result;
 
-     
+
     while (received != 0) {
         ZZ divisor, remainder;
         DivRem(divisor, remainder, received, ZZ_p::modulus()+1);
@@ -245,6 +279,19 @@ void Communicant::commSend(const IBLT& iblt, bool sync) {
     for(const IBLT::HashTableEntry& hte : iblt.hashTable) {
         commSend(hte, iblt.eltSize());
     }
+}
+
+void Communicant::commSend(const Cuckoo& cf) {
+    commSend((long) cf.getFngprtSize());
+    commSend((long) cf.getBucketSize());
+    commSend((long) cf.getFilterSize());
+    commSend((long) cf.getMaxKicks());
+    ZZ itemsC = cf.getItemsCount();
+    commSend(itemsC, NOT_SET); // NOT_SET for requesting number of bytes in
+                               // ZZ to be transmitted too
+
+    for (auto b : cf.getRawFilter())
+        commSend(b);
 }
 
 void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
@@ -490,4 +537,21 @@ IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
     hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
 
     return hte;
+}
+
+Cuckoo Communicant::commRecv_Cuckoo() {
+    size_t fngprtS = commRecv_long();
+    size_t bucketS = commRecv_long();
+    size_t filterSize = commRecv_long();
+    size_t kicks = commRecv_long();
+    ZZ itemsC = commRecv_ZZ(0); // 0 for requesting number of bytes in
+                                // ZZ to be transmitted too
+
+    vector<unsigned char> filter;
+    // TODO: Can this be done more efficiently?
+    // We are receiving bytes, thus 8 is a constant
+    for (size_t ii=0; ii<ceil((fngprtS * bucketS * filterSize) / 8); ii++)
+        filter.push_back(commRecv_byte());
+
+    return Cuckoo(fngprtS, bucketS, filterSize, kicks, filter, itemsC);
 }

@@ -419,7 +419,9 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 			forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 			//Print stats about sync
-			if(/*clientReport.success*/ false) {
+			// TODO: BUG #1 related. This was once obviously the way
+                        // to print client statistics because forkHandle is buggy.
+			if(clientReport.success) {
 				cout << "\nCLIENT RECON STATS:\n";
 				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
 					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
@@ -466,6 +468,8 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 		// reconcile server with client
 		forkHandleReport serverReport;
 		if(oneWay) serverReport = forkHandleServer(GenSyncServer, GenSyncClient);
+		// TODO: BUG #1: Suspicious param order and using pass by
+		// reference only with one.
 		else serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 		//Print stats about sync

@@ -1,10 +1,11 @@
 /* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
 
-/* 
- * File:   CommString.cpp 
+/*
+ * File:   CommString.cpp
  * Created on November 5, 2011, 8:49 PM
  */
 
+#include <chrono>
 #include <CPISync/Aux/Auxiliary.h>
 #include <CPISync/Communicants/CommString.h>
 

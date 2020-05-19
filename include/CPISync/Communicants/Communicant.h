@@ -15,6 +15,7 @@
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Data/DataPriorityObject.h>
 #include <CPISync/Syncs/IBLT.h>
+#include <CPISync/Syncs/Cuckoo.h>
 
 // namespace imports
 using namespace NTL;
@@ -91,6 +92,28 @@ public:
     bool establishIBLTRecv(const size_t size, const size_t eltSize, bool oneWay = false);
 
     /**
+     * Establishes common Cuckoo filter parameter with another
+     * connected Communicant.
+     * @param fngprtSize The size of the fingerprint in bits
+     * @param bucketSize The size of the bucket in fingerprints
+     * @param filterSize The size of the whole filter in buckets
+     * @param maxKicks The maximum number of kicks in the Cuckoo filter
+     */
+    bool establishCuckooSend(size_t fngprtSize, size_t bucketSize,
+                             size_t filterSize, size_t maxKicks);
+
+    /**
+     * Establishes common Cuckoo filter parameter with another
+     * connected Communicant.
+     * @param fngprtSize The size of the fingerprint in bits
+     * @param bucketSize The size of the bucket in fingerprints
+     * @param filterSize The size of the whole filter in buckets
+     * @param maxKicks The maximum number of kicks in the Cuckoo filter
+     */
+    bool establishCuckooRecv(size_t fngprtSize, size_t bucketSize,
+                             size_t filterSize, size_t maxKicks);
+
+    /**
     * Primitive for sending data over an existing connection.  All other sending methods
     * eventually call this.
     * @param str The string to be transmitted.
@@ -125,7 +148,11 @@ public:
      * @param eltSize size for elements stored in IBLT
      * */
     IBLT commRecv_IBLTNHash(size_t size, size_t eltSize);
-    
+
+    /**
+     * Receive a Cuckoo filter.
+     */
+    Cuckoo commRecv_Cuckoo();
     /**
      * Sends a data object over the line
      * @param do The data object to send
@@ -191,7 +218,7 @@ public:
     // Specialized send functions for specific data types
     /**
      * Sends a *positive* ZZ_p over the line
-     * 
+     *
      * @require must have called EstablishModSend/EstablishModRecv before any of these functions will work.
      * @param num The non-negative integer to send
       * @see commSend(const char *str) for more details
@@ -213,6 +240,12 @@ public:
      * @param sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the IBLT's size and eltSize
      */
     void commSend(const IBLT &iblt, bool sync = false);
+
+    /**
+     * Sends Cuckoo filter.
+     * @param The Cuckoo filter to send.
+     */
+    void commSend(const Cuckoo& cf);
 
     /**
      * Receives up to MAX_BUF_SIZE characters from the socket.

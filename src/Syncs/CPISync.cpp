@@ -446,8 +446,10 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_pt
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
         valList.kill();
-      
+
         // 2. Get more characteristic polynomial values if needed
+        // TODO: Why is idle time counted here? That is the reason why
+        // we see huge idle time for CPISyncs in Novak's presentation.
         mySyncStats.timerStart(SyncStats::IDLE_TIME);
         //Waiting for peer to determine if they have failed or not (Assumes time to communicate this byte is insignificant)
         while (!oneWay && (commSync->commRecv_byte() == SYNC_FAIL_FLAG)) {

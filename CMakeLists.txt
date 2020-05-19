@@ -21,7 +21,7 @@ set(DATA_DIR_INC ${INCLUDE}/Data)
 set(COMM_DIR_INC ${INCLUDE}/Communicants)
 set(SYNC_DIR_INC ${INCLUDE}/Syncs)
 
-#Test directory structure
+# Test directory structure
 set(TEST_DIR tests)
 set(UNIT_TEST_DIR ${TEST_DIR}/unit)
 set(SYSLONG_TEST_DIR ${TEST_DIR}/sys/long)
@@ -52,6 +52,9 @@ set(SOURCE_FILES
         ${SYNC_DIR}/IBLT.cpp
         ${SYNC_DIR}/IBLTSync.cpp
         ${SYNC_DIR}/IBLTSetOfSets.cpp
+        ${SYNC_DIR}/Compact2DBitArray.cpp
+        ${SYNC_DIR}/Cuckoo.cpp
+        ${SYNC_DIR}/CuckooSync.cpp
         ${SYNC_DIR}/FullSync.cpp
 
         ${SRC_DIR}/main.cpp)
@@ -89,6 +92,9 @@ set(HEADERS
         ${SYNC_DIR_INC}/IBLTSync.h
         ${SYNC_DIR_INC}/IBLTSetOfSets.h
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
+        ${SYNC_DIR_INC}/Compact2DBitArray.h
+        ${SYNC_DIR_INC}/Cuckoo.h
+        ${SYNC_DIR_INC}/CuckooSync.h
         ${SYNC_DIR_INC}/InterCPISync.h
         ${SYNC_DIR_INC}/PrioCPISync.h
         ${SYNC_DIR_INC}/ProbCPISync.h)

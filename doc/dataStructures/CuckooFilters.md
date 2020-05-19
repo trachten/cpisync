@@ -30,7 +30,7 @@ deletion. The graph below illustrates what I actually saw.
 Keys to insert in the filter are chosen uniformly at random from the
 ranges noted in the legend.
 
-![](images/false_deleted_lookups.png)
+![](../../src/Syncs/images/false_deleted_lookups.png)
 
 Turns out that this might have been expected theoretically. As shown
 in the graph, the far most important role is played by the range of

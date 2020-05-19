@@ -211,7 +211,10 @@ Additional algorithms:
 
 
            
-## [Documentation](WIKI.md)
+## Documentation
+More documentation may be found in the [documents](doc/) folder:
+#  [General usage](doc/README.md)
+#  [Data structures](doc/dataStructures)
 
 Acknowledgments:  NSF
 

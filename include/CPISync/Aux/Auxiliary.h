@@ -70,16 +70,16 @@ inline vector<byte> StrToVec(const string& data) {
  * @param sep Appointed char where string should be splitted
  * @return arr A vector containing the content of string after splitting
  */
-inline vector<string> split(string str, string sep)
+inline vector<string> split(const string& str, const string& sep)
 {
     char *cstr = const_cast<char *>(str.c_str());
     char *current;
     vector<std::string> arr;
     current = strtok(cstr, sep.c_str());
-    while (current != NULL)
+    while (current != nullptr)
     {
-        arr.push_back(current);
-        current = strtok(NULL, sep.c_str());
+        arr.emplace_back(current);
+        current = strtok(nullptr, sep.c_str());
     }
     return arr;
 }

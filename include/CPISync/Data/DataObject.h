@@ -50,10 +50,10 @@ public:
      * @param elems a list containing pointers to data object
      **/
     template <class T>
-    explicit DataObject(const T index, const list<shared_ptr<DataObject>> elems)
+    explicit DataObject(const T index, const list<shared_ptr<DataObject>>& elems)
     {
         string str = base64_encode(toStr<T>(index).c_str(), toStr<T>(index).length()) + " ";
-        for (auto itr : elems)
+        for (const auto& itr : elems)
             str += base64_encode(itr->to_string().c_str(), itr->to_string().length()) + " ";
         str = base64_encode(str.c_str(),str.length());
         myBuffer = pack(str);
@@ -63,7 +63,7 @@ public:
      * Constructs a data object that contains a given set
      * @param mySet The set to place in the DataObject
      **/
-    explicit DataObject(const multiset<shared_ptr<DataObject>> mySet);
+    explicit DataObject(const multiset<shared_ptr<DataObject>>& mySet);
 
     /**
      * Constructs a data object that contains the given object of type T, which must
@@ -152,7 +152,7 @@ public:
     clock_t getTimeStamp();
 protected:
     ZZ myBuffer; /** The buffer for the data object container itself. */
-    clock_t timestamp;
+    clock_t timestamp=clock();;
 
     /**
   * Unpacks a ZZ into a string

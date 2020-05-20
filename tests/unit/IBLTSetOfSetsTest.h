@@ -14,9 +14,9 @@ class IBLTSetOfSetsTest : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE(IBLTSetOfSetsTest);
 
 	CPPUNIT_TEST(TestIBLTGetName);
-	CPPUNIT_TEST(IBLTSetOfSetsSetReconcileTest);
-	CPPUNIT_TEST(IBLTSetOfSetsLargeSync);
-	CPPUNIT_TEST(IBLTSetOfSetsSimilarSetSync);
+	CPPUNIT_TEST(IBLTSetOfSetsSetReconcileTest); // Removed because it takes too long!
+	CPPUNIT_TEST(IBLTSetOfSetsLargeSync);  // Removed because it takes too long!
+	CPPUNIT_TEST(IBLTSetOfSetsSimilarSetSync); // Removed because it takes too long!
 	CPPUNIT_TEST(testAddDelElem);
 
 	CPPUNIT_TEST_SUITE_END();

@@ -7,7 +7,7 @@
  */
 
 #include <CPISync/Syncs/Compact2DBitArray.h>
-
+ #include <utility>
 
 /**
  * To discern endianness in runtime but only once when the constructor
@@ -49,7 +49,7 @@ Compact2DBitArray::Compact2DBitArray(size_t fingerprintSize, size_t bucketSize,
 
 Compact2DBitArray::Compact2DBitArray(size_t fingerprintSize, size_t bucketSize,
                                      size_t NumOfBuckets, vector<unsigned char> f) :
-    store (f),
+    store (std::move(f)),
     fSize (fingerprintSize),
     fSizeB (ceil(fSize / float(BYTE))),
     bSize (bucketSize),
@@ -73,7 +73,7 @@ size_t Compact2DBitArray::getRows() const {
 
 Compact2DBitArray::GetSetPrelim
 Compact2DBitArray::_getSetPrelim(size_t bucketIdx, size_t entryIdx) const {
-    GetSetPrelim p;
+    GetSetPrelim p{};
 
     p.entryBits = fSize * bSize * bucketIdx
         + (fSize * entryIdx);
@@ -130,7 +130,7 @@ void Compact2DBitArray::setEntry(size_t bucketIdx, size_t entryIdx, unsigned f) 
     _assertIdx(bucketIdx, entryIdx);
     GetSetPrelim p = _getSetPrelim(bucketIdx, entryIdx);
 
-    unsigned char* fngprtC = (unsigned char*)&f;
+    auto* fngprtC = (unsigned char*)&f;
     vector<unsigned char> fBytes; // MS byte first
 
     if (littleEndian)

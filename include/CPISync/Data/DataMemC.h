@@ -11,22 +11,22 @@ class DataMemC: public DataObjC, public UnimplementedClassException
 {
 public:
 	// constructor
-	DataMemC();
+	DataMemC()  { throw UnimplementedMethodException(); }
 
-	// constructor
-	DataMemC(string mAddr);
+        // constructor
+	explicit DataMemC(string mAddr)  { throw UnimplementedMethodException(); }
 
-	// destructor
-	~DataMemC();
+            // destructor
+	~DataMemC() override  { throw UnimplementedMethodException(); }
 
-    // read data from memory
-    shared_ptr<DataObject> get(int index);
-
-    // write data into memory
-    void put(shared_ptr<DataObject> mydata, int index);
+                // read data from memory
+    shared_ptr<DataObject> get(int index) override { throw UnimplementedMethodException(); }
 
     // write data into memory
-    void delObj(int index);
+    void put(shared_ptr<DataObject> mydata, int index) { throw UnimplementedMethodException(); }
+
+    // write data into memory
+    void delObj(int index) override  { throw UnimplementedMethodException(); }
 
 private:
     // the name of the file associated with data object

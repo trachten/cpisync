@@ -22,10 +22,10 @@ DataObject::DataObject(const string& str) : DataObject() {
     myBuffer = RepIsInt?strTo<ZZ>(str):pack(str);
 }
 
-DataObject::DataObject(const multiset<shared_ptr<DataObject>> tarSet) : DataObject()
+DataObject::DataObject(const multiset<shared_ptr<DataObject>>& tarSet) : DataObject()
 {
-    string str = "";
-    for (auto ii : tarSet)
+    string str;
+    for (const auto& ii : tarSet)
         str += base64_encode(ii->to_string().c_str(),ii->to_string().length()) + " ";
     str = base64_encode(str.c_str(), str.length());
     myBuffer = pack(str);
@@ -36,7 +36,7 @@ multiset<shared_ptr<DataObject>> DataObject::to_Set() const
     multiset<shared_ptr<DataObject>> result;
     string str = base64_decode(unpack(myBuffer));
     auto splt = split(str, ' ');
-    for (auto itr : splt)
+    for (const auto& itr : splt)
         result.insert(make_shared<DataObject>(base64_decode(itr)));
     return result;
 }

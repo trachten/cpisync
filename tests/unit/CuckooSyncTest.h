@@ -17,9 +17,9 @@ class CuckooSyncTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE_END();
  public:
     CuckooSyncTest();
-    virtual ~CuckooSyncTest();
-    void setUp();
-    void tearDown();
+    ~CuckooSyncTest() override;
+    void setUp() override;
+    void tearDown() override;
 
     void setReconcileTest();
 };

@@ -28,14 +28,14 @@ class Compact2DBitArrayTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 public:
     Compact2DBitArrayTest();
-    virtual ~Compact2DBitArrayTest();
-    void setUp();
-    void tearDown();
+    ~Compact2DBitArrayTest() override;
+    void setUp() override;
+    void tearDown() override;
 
     // test for f bits [MIN_F_SIZE_TESTED..MAX_F_SIZE_TESTED]
     // X columns count [MIN_COLUMNS_TESTED..MAX_COLUMNS_TESTED]
     // X rows count [MIN_ROWS_TESTED..MAX_ROWS_TESTED]
-    void readWriteTest();
+    static void readWriteTest();
 };
 
 #endif // COMPACT2DBITARRAYTEST_H

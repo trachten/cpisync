@@ -50,6 +50,17 @@ using std::runtime_error;
 
 // FUNCTIONS
 
+// Based on Bjarne Stroustrup. The C++ Programming Language (4th edition). 2013.
+//   ISBN: 978-0-321-56384-2. Chapter 11.5: Explicit type conversion. page 299.
+template <class Target, class Source>
+Target narrow_cast(Source v)
+{
+    auto r = static_cast<Target>(v);
+    if (static_cast<Source>(r)!=v)
+        throw std::runtime_error("narrow_cast<>() failed");
+    return r;
+}
+
 /**
  * Converts a string into a vector of bytes
  * @param data The string to be converted
@@ -95,7 +106,7 @@ inline vector<string> split(const string& str, char sep)
 inline ZZ strToZZ(string str)
 {
     
-    const int c_range = pow(2, 8 * sizeof(char)); // value range for the char in output string
+    const int c_range = narrow_cast<int>(pow(2, 8 * sizeof(char))); // value range for the char in output string
 
     ZZ number = conv<ZZ>(str[0]);
     long len = str.length();
@@ -117,7 +128,7 @@ inline ZZ strToZZ(string str)
 inline string zzToString(ZZ num)
 {
     long len;
-    const int c_range = pow(2, 8 * sizeof(char)); // value range for the char in input string
+    const int c_range = narrow_cast<int>(pow(2, 8 * sizeof(char))); // value range for the char in input string
     if (num == 0)
         len = 1;
     else
@@ -134,8 +145,7 @@ inline string zzToString(ZZ num)
         num /= c_range;
     }
 
-    string out = "";
-
+    string out;
     for (auto itr : str)
         out += itr;
     return out;
@@ -164,7 +174,7 @@ inline string VecToStr(vector<byte>&& data) {
  * for a ZZ_p)
  */
 template <class T>
-inline T strTo(const string str) {
+inline T strTo(const string& str) {
     if (str.empty())
         throw invalid_argument(str);
 
@@ -331,7 +341,7 @@ multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second)
  * @return the resulting multiset
  */
 template <class T>
-multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
+multiset<T> multisetDiff(multiset<T> first, multiset<T> second) {
     vector<T> resultVec;
     std::set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
@@ -508,7 +518,7 @@ inline string base64_decode(std::string const& encoded_string) {
 
     string ret;
     for (int ii = 0; ii < in_len; ii += 4) {
-        unsigned long group = static_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
+        auto group = narrow_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
                                                          64 * 64 * (tmp[ii + 2] - min_base64) +
                                                          64 * 64 * 64 * (tmp[ii + 3] - min_base64));
         ret += (char) (group % 256) - signed_shift;
@@ -529,7 +539,7 @@ inline string base64_decode(std::string const& encoded_string) {
  * @param base64_chars
  * @return 
  */
-inline string base64_encode(const string bytes, unsigned int in_len) {
+inline string base64_encode(const string& bytes, unsigned int in_len) {
     string foo = base64_encode(bytes.data(), in_len);
     return foo;
 }
@@ -610,7 +620,7 @@ inline byte enumToByte(T theEnum) {
     static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
         "Underlying enum class is not byte - cannot convert to byte!");
     return static_cast< byte >(theEnum);
-};
+}
 
 /**
  * An awkward helper for iterating enums.

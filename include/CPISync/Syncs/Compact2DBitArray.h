@@ -91,12 +91,12 @@ public:
      */
     ~Compact2DBitArray() = default;
 
-private:
-
     /**
      * Storage of a Compact2DBitArray
      */
     vector<unsigned char> store;
+
+private:
 
     /**
      * Fingerprint size in bits

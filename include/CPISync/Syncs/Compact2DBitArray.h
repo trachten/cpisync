@@ -27,9 +27,11 @@
 
 class Compact2DBitArray {
 public:
-    Compact2DBitArray();
 
-    ~Compact2DBitArray();
+    /**
+     * Default constructor.
+     */
+    Compact2DBitArray() = default;
 
     /**
      * @param fingerprintSize The size of a cell
@@ -84,7 +86,13 @@ public:
      */
     static const size_t MAX_F_BITS = 32;
 
+    /**
+     * Destructor.
+     */
+    ~Compact2DBitArray() = default;
+
 private:
+
     /**
      * Storage of a Compact2DBitArray
      */
@@ -122,7 +130,7 @@ private:
      * @param f The fingerprint.
      * @param cons The fingerprint bits consumed as of now.
      */
-    inline unsigned char _getNextFByte(const vector<unsigned char>& f,
+    inline unsigned char _getNextFByte(const vector<unsigned char> &f,
                                        size_t cons) const;
 
     /**
@@ -140,16 +148,16 @@ private:
         size_t fstByte;    // first byte the entry touches
         size_t lstByte;    // last byte the entry touches
         size_t onsetBits;  // number of bits in fstByte that are before
-                           // the entry
+        // the entry
         size_t offsetBits; // number of bits in lstByte that are still
-                           // the part of the entry
+        // the part of the entry
     };
 
     inline GetSetPrelim _getSetPrelim(size_t bucketIdx, size_t entryIdx) const;
 
     class Compact2DBitArrayError : public runtime_error {
     public:
-        Compact2DBitArrayError(const string& msg) : runtime_error(msg) {}
+        Compact2DBitArrayError(const string &msg) : runtime_error(msg) {}
     };
 };
 

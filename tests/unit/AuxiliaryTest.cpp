@@ -56,7 +56,7 @@ void AuxiliaryTest::testToStr() {
 void AuxiliaryTest::testSplit()
 {
     vector<string> stringA;
-    string stringB = "";
+    string stringB;
     for (int ii = 0; ii < 10; ii++)
     {
         stringA.push_back(toStr<int>(ii));

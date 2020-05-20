@@ -4,6 +4,7 @@
 #define DATA_OBJECT_CONTAINER_H 
 
 #include <CPISync/Data/DataObject.h>
+#include <CPISync/Aux/Exceptions.h>
 
 /**
  * Data Object Container
@@ -11,7 +12,7 @@
  * the set that is to be synchronized.
  */
 
-class DataObjC {
+class DataObjC : public UnimplementedClassException {
 public:
 
 	// Constructors

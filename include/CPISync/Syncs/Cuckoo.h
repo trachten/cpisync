@@ -29,6 +29,13 @@ using namespace NTL;
 
 class Cuckoo {
 public:
+
+    /**
+     * Default constructor
+     */
+    Cuckoo() = default;
+
+
     /**
      * Constructs an empty cuckoo filter with certain fingerprint, bucket and
      * overall size.
@@ -81,10 +88,6 @@ public:
      */
     Cuckoo(size_t capacity, float err);
 
-    /**
-     * Default constructor
-     */
-    Cuckoo();
 
     /**
      * Default destructor
@@ -163,6 +166,7 @@ public:
     static const size_t MAX_FNGPRT_SIZE = Compact2DBitArray::MAX_F_BITS;
 
 private:
+
     /**
      * The memory of the Cuckoo filter
      */
@@ -305,10 +309,13 @@ private:
      */
     inline void _commit_relocation_chain(stack<Reloc>& relocStack);
 
+
+    // NESTED CLASSES
     class CuckooFilterError : public runtime_error {
     public:
         CuckooFilterError(const string& msg) : runtime_error(msg) {}
     };
+
 };
 
 #endif // CUCKOO_H

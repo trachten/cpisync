@@ -8,9 +8,6 @@
 
 #include <CPISync/Syncs/Compact2DBitArray.h>
 
-Compact2DBitArray::Compact2DBitArray() {}
-
-Compact2DBitArray::~Compact2DBitArray() = default;
 
 /**
  * To discern endianness in runtime but only once when the constructor

@@ -157,9 +157,9 @@ void CommSocket::commClose() {
         int result = close(my_fd);
         if (result == -1)
             Logger::error_and_quit("close");
-		else
-			Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
-		my_fd = -1;  // no socket active now
+        else
+            Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
+        my_fd = -1;  // no socket active now
     }
 }
 

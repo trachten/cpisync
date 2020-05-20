@@ -5,8 +5,9 @@
 #define DATA_MEM_CONTAINER_H
 
 #include <CPISync/Data/DataObjC.h>
+#include <CPISync/Aux/Exceptions.h>
 
-class DataMemC: public DataObjC
+class DataMemC: public DataObjC, public UnimplementedClassException
 {
 public:
 	// constructor

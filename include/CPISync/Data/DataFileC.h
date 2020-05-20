@@ -4,10 +4,11 @@
 #ifndef DATA_FILE_CONTAINER_H
 #define DATA_FILE_CONTAINER_H
 
-#include <CPISync/Syncs/DataObjC.h>
 #include <CPISync/Aux/Exceptions.h>
+#include <CPISync/Aux/Auxiliary.h>
+#include "DataObjC.h"
 
-class DataFileC: public DataObjC
+class DataFileC: public DataObjC, public UnimplementedClassException
 {
 public:
 	// constructor
@@ -29,7 +30,7 @@ public:
 	void delObj(int index);
         
 	list<shared_ptr<DataObject>> dump() {
-		throw new UnimplementedMethodException("Not yet implemented!");
+		throw new UnimplementedMethodException();
 	}
 
 private:

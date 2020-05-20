@@ -15,8 +15,6 @@ std::random_device Cuckoo::rd;
 
 std::mt19937 Cuckoo::prng(Cuckoo::rd());
 
-Cuckoo::Cuckoo() {};
-
 Cuckoo::~Cuckoo() = default;
 
 int _default_fingerprint(const ZZ& xx, size_t fngprtSize) {

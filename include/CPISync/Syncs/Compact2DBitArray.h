@@ -74,7 +74,15 @@ public:
      */
     size_t getRows() const;
 
+    /**
+     * Get the raw content of the array
+     */
     vector<unsigned char> getRaw() const;
+
+    /**
+     * Maximum number of bits to represent a single cell in the array
+     */
+    static const size_t MAX_F_BITS = 32;
 
 private:
     /**
@@ -116,6 +124,11 @@ private:
      */
     inline unsigned char _getNextFByte(const vector<unsigned char>& f,
                                        size_t cons) const;
+
+    /**
+     * Check the validity of the parameters
+     */
+    inline void _constructorGuards() const;
 
     /**
      * Auxiliary data used by both getEntry and setEntry to describe

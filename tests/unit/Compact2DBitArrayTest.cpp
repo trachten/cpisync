@@ -59,8 +59,8 @@ inline vector<int> _gen_range(size_t max, size_t count) {
 }
 
 inline void _test_various_columns_rows(size_t fSize) {
-    for (size_t bSize=1; bSize<=64; bSize++) // buckets from 1 to 64
-        for (size_t rows=1; rows<=12; rows++) { // rows from 1 to 12
+    for (size_t bSize=MIN_COLUMNS_TESTED; bSize<=MAX_COLUMNS_TESTED; bSize++)
+        for (size_t rows=MIN_ROWS_TESTED; rows<=MAX_ROWS_TESTED; rows++) {
             auto a = Compact2DBitArray(fSize, bSize, rows);
 
             vector<int> toAdd = _gen_range((1LU << fSize) - 1, bSize * rows);
@@ -72,6 +72,6 @@ inline void _test_various_columns_rows(size_t fSize) {
 }
 
 void Compact2DBitArrayTest::readWriteTest() {
-    for (size_t f=1; f<=32; f++)
+    for (size_t f=MIN_F_SIZE_TESTED; f<=MAX_F_SIZE_TESTED; f++)
         _test_various_columns_rows(f);
 }

@@ -150,6 +150,18 @@ public:
      * Seed the underlying cuckoo filter PRNG
      */
     static void seedPRNG(int seed);
+
+    /**
+     * Maximum length of the cuckoo evictions chain
+     */
+    static const size_t DEFAULT_MAX_KICKS = 500;
+
+    /**
+     * Maximum number of bits in a fingerprint. In this implementation
+     * dictated by the underlying storage data structure.
+     */
+    static const size_t MAX_FNGPRT_SIZE = Compact2DBitArray::MAX_F_BITS;
+
 private:
     /**
      * The memory of the Cuckoo filter
@@ -292,8 +304,6 @@ private:
      * @param relocStack The relocation chain.
      */
     inline void _commit_relocation_chain(stack<Reloc>& relocStack);
-
-    inline void _constructorGuards() const;
 
     class CuckooFilterError : public runtime_error {
     public:

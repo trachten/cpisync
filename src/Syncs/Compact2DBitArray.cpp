@@ -27,6 +27,17 @@ void _discern_endianness() {
         littleEndian = false;
 }
 
+void Compact2DBitArray::_constructorGuards() const {
+    if (!(fSize > 0 && fSize <= MAX_F_BITS))
+        throw Compact2DBitArrayError("Fingerprint has to be between 1 and 32 bits!");
+    if (!(bSize > 0))
+        throw Compact2DBitArrayError("Bucket (column) count "
+                                     "has to be at least 1!");
+    if (!(nBuckets > 0))
+        throw Compact2DBitArrayError("Number of buckets (rows) count "
+                                     "has to be at least 1!");
+}
+
 Compact2DBitArray::Compact2DBitArray(size_t fingerprintSize, size_t bucketSize,
                                      size_t NumOfBuckets) :
     fSize (fingerprintSize),
@@ -34,6 +45,7 @@ Compact2DBitArray::Compact2DBitArray(size_t fingerprintSize, size_t bucketSize,
     bSize (bucketSize),
     nBuckets (NumOfBuckets)
 {
+    _constructorGuards();
     std::call_once(onceEndiannessFlag, _discern_endianness);
     store.resize(ceil((fSize * bSize * nBuckets) / float(BYTE)));
 }
@@ -46,6 +58,7 @@ Compact2DBitArray::Compact2DBitArray(size_t fingerprintSize, size_t bucketSize,
     bSize (bucketSize),
     nBuckets (NumOfBuckets)
 {
+    _constructorGuards();
     std::call_once(onceEndiannessFlag, _discern_endianness);
 }
 

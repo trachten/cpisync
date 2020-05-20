@@ -28,11 +28,6 @@ ZZ _default_hash(const ZZ& xx, size_t filterSize) {
     return ZZ(shash(toStr(to_long(xx))) % filterSize);
 }
 
-void Cuckoo::_constructorGuards() const {
-    if (fngprtSize > 32 || fngprtSize < 1)
-        throw CuckooFilterError("Fingerprint has to be between 1 and 32 bits!");
-}
-
 Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
                size_t maxKicks) :
     filter (Compact2DBitArray(fngprtSize, bucketSize, filterSize)),
@@ -42,10 +37,7 @@ Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
     maxKicks (maxKicks),
     itemsCount (0),
     fingerprint_impl (_default_fingerprint),
-    hash_impl (_default_hash)
-{
-    _constructorGuards();
-}
+    hash_impl (_default_hash) {}
 
 Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
                size_t maxKicks, fingerprint_impl_t fingerprintFunction,
@@ -57,10 +49,7 @@ Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
     maxKicks (maxKicks),
     itemsCount (0),
     fingerprint_impl (fingerprintFunction),
-    hash_impl (hashFunction)
-{
-    _constructorGuards();
-}
+    hash_impl (hashFunction) {}
 
 Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
                size_t maxKicks, vector<unsigned char> f, ZZ itemsCount) :
@@ -71,10 +60,7 @@ Cuckoo::Cuckoo(size_t fngprtSize, size_t bucketSize, size_t filterSize,
     maxKicks (maxKicks),
     itemsCount (itemsCount),
     fingerprint_impl (_default_fingerprint),
-    hash_impl (_default_hash)
-{
-    _constructorGuards();
-}
+    hash_impl (_default_hash) {}
 
 Cuckoo::Cuckoo(size_t capacity, float err) {
     // TODO: if ready to move to C++14 we can let the compiler
@@ -82,7 +68,7 @@ Cuckoo::Cuckoo(size_t capacity, float err) {
     // constructor a constexpr for capacity and error rate being compile
     // time constants (which I think could be useful).
 
-    size_t bestF = 32, bestB = 2;
+    size_t bestF = MAX_FNGPRT_SIZE, bestB = 2;
     for (size_t b=64; b>=4; b--) {
         // we are looking for a small f but a relatively high b. The
         // smaller b, the smaller f. But the smaller b, the higher
@@ -98,18 +84,16 @@ Cuckoo::Cuckoo(size_t capacity, float err) {
         }
     }
 
-    if (bestF == 32)
+    if (bestF == MAX_FNGPRT_SIZE)
         throw CuckooFilterError("False positive rate of " + toStr(err) +
                                 " is unattainable.");
 
     fngprtSize = bestF;
     bucketSize = bestB;
     filterSize = ceil(capacity / float(bucketSize));
-    maxKicks = 300; // provisional
+    maxKicks = DEFAULT_MAX_KICKS;
     itemsCount = 0;
     filter = Compact2DBitArray(fngprtSize, bucketSize, filterSize);
-
-    _constructorGuards();
 }
 
 size_t Cuckoo::getFilterSize() const {

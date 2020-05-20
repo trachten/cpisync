@@ -106,7 +106,7 @@ public:
     pair<T, list<shared_ptr<DataObject>>> to_pair(){
         
         string str = unpack(myBuffer);
-        auto splt = split(base64_decode(str), " ");
+        auto splt = split(base64_decode(str), ' ');
 
         T out = strTo<T>(base64_decode(splt[0]));
         list<shared_ptr<DataObject>> outList;

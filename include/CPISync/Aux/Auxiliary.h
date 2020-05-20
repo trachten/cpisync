@@ -10,6 +10,7 @@
 #ifndef AUX_H
 #define	AUX_H
 
+#include <iostream>
 #include <sstream>
 #include <unistd.h>
 #include <NTL/ZZ.h>
@@ -69,19 +70,20 @@ inline vector<byte> StrToVec(const string& data) {
  * @param str The target string to be splitted
  * @param sep Appointed char where string should be splitted
  * @return arr A vector containing the content of string after splitting
+ *
+ * Similar to code at https://www.geeksforgeeks.org/tokenizing-a-string-cpp/
  */
-inline vector<string> split(string str, string sep)
+inline vector<string> split(const string& str, char sep)
 {
-    char *cstr = const_cast<char *>(str.c_str());
-    char *current;
-    vector<std::string> arr;
-    current = strtok(cstr, sep.c_str());
-    while (current != nullptr)
-    {
-        arr.emplace_back(current);
-        current = strtok(nullptr, sep.c_str());
+    string token;
+    vector<std::string> tokens;
+
+    stringstream myStream(str);
+    while(std::getline(myStream, token, sep)) {
+        tokens.emplace_back(token);
     }
-    return arr;
+
+    return tokens;
 }
 
 /**

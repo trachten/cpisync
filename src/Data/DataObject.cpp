@@ -35,7 +35,7 @@ multiset<shared_ptr<DataObject>> DataObject::to_Set() const
 {
     multiset<shared_ptr<DataObject>> result;
     string str = base64_decode(unpack(myBuffer));
-    auto splt = split(str, " ");
+    auto splt = split(str, ' ');
     for (auto itr : splt)
         result.insert(make_shared<DataObject>(base64_decode(itr)));
     return result;

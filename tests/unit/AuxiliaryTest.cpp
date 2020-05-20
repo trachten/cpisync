@@ -62,9 +62,9 @@ void AuxiliaryTest::testSplit()
         stringA.push_back(toStr<int>(ii));
         stringB += toStr<int>(ii) + " ";
     }
-    CPPUNIT_ASSERT_EQUAL(stringA.size(), split(stringB, " ").size());
+    CPPUNIT_ASSERT_EQUAL(stringA.size(), split(stringB, ' ').size());
     auto it = stringA.begin();
-    vector<string> _stringB = split(stringB, " ");
+    vector<string> _stringB = split(stringB, ' ');
     auto it2 = _stringB.begin();
 
     for (int ii = 0; ii < 10; ii++)

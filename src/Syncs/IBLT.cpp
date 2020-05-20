@@ -218,11 +218,11 @@ string IBLT::toString() const
 
 void IBLT::reBuild(string &inStr)
 {
-    vector<string> entries = split(inStr, "\n");
+    vector<string> entries = split(inStr, '\n');
     int index = 0;
     for (auto entry : entries)
     {
-        vector<string> infos = split(entry, ",");
+        vector<string> infos = split(entry, ',');
         HashTableEntry curEntry;
         curEntry.count = strTo<long>(infos[0]);
         curEntry.keyCheck = strTo<hash_t>(infos[1]);

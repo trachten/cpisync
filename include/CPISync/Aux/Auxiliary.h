@@ -70,7 +70,7 @@ inline vector<byte> StrToVec(const string& data) {
  * @param sep Appointed char where string should be splitted
  * @return arr A vector containing the content of string after splitting
  */
-inline vector<string> split(const string& str, const string& sep)
+inline vector<string> split(string str, string sep)
 {
     char *cstr = const_cast<char *>(str.c_str());
     char *current;

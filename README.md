@@ -72,6 +72,8 @@ Additional algorithms:
   @ Sean Brandenburg
   
   @ Zifan Wang
+  
+  @ Novak Boškov 
 
 
 ## Compilation:

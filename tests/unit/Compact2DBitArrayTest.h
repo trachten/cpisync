@@ -18,9 +18,9 @@
 static const size_t MIN_F_SIZE_TESTED = 1,
     MAX_F_SIZE_TESTED = 32,
     MIN_COLUMNS_TESTED = 1,
-    MAX_COLUMNS_TESTED = 64,
+    MAX_COLUMNS_TESTED = 32, // 64 takes too long
     MIN_ROWS_TESTED = 1,
-    MAX_ROWS_TESTED = 64;
+    MAX_ROWS_TESTED = 32; //64 takes too long
 
 class Compact2DBitArrayTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(Compact2DBitArrayTest);

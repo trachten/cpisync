@@ -5,7 +5,7 @@ Communicant creation and use can be handled by the builder class but if you wish
         * *host* - A host name for the Communicant, interpretable by DNS. This parameter can be ignored if the Communicant is intended to listen for other connections.
         * *port* - A port on the host to use for communications.
     * `CommSocket.commListen()`
-        * Await a conenction on the specified port
+        * Await a connection on the specified port
         * **Blocks until a client connects**
     * `CommSocket.commConnect()`
         * Connect to the designated remote host on the designated port.
@@ -14,12 +14,12 @@ Communicant creation and use can be handled by the builder class but if you wish
     * `CommSocket.commSend(data)`
         * Send a variety of different data types to your peer
         * Must already be connected to a peer through a socket
-        * See [Communicant.h](../include/CPISync/Communicants/Communicant.h) for compatible data types and use instructions
+        * See [Communicant.h](../../include/CPISync/Communicants/Communicant.h) for compatible data types and use instructions
     * `CommSocket.commRecv_mydatatype()`
         * Return the specified type (commRecv_datatype()) receivedfrom your peer
         * Must already be connected to a peer through a socket
         * If you send a data type, you should use the commRecv() function of the same data type
-        * See [Communicant.h](../include/CPISync/Communicants/Communicant.h) for compatible data types and use instructions
+        * See [Communicant.h](../../include/CPISync/Communicants/Communicant.h) for compatible data types and use instructions
 
     * Stats Logging
         * `CommSocket.resetCommCounters()`

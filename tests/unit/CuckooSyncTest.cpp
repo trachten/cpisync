@@ -17,7 +17,9 @@ CuckooSyncTest::CuckooSyncTest() = default;
 
 CuckooSyncTest::~CuckooSyncTest() = default;
 
-void CuckooSyncTest::setUp() {};
+void CuckooSyncTest::setUp() {
+    Cuckoo::seedPRNG(1);
+};
 
 void CuckooSyncTest::tearDown() {};
 

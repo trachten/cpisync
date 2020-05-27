@@ -326,7 +326,7 @@ pair<list<shared_ptr<DataObject>>,list<shared_ptr<DataObject>>> IBLTSetOfSets::_
         // record by its hash
         ZZ JHash;
         long index = 0;
-        long delInd;
+        long delInd = -1; // invalid index at first
         long cmp = LONG_MAX;
         for (auto &itrJ : negativeChld)
         {
@@ -346,7 +346,10 @@ pair<list<shared_ptr<DataObject>>,list<shared_ptr<DataObject>>> IBLTSetOfSets::_
                     auto it = std::find(decoded.begin(),decoded.end(),index);
                     if(it == decoded.end()){
                         // Add elements to shorter set if there're duplicated elements in set
-                        if((curDist != MIN) || mySet[index]->to_Set().size() < mySet[delInd]->to_Set().size()){
+                        if (
+                                (curDist != MIN) ||
+                                (delInd>=0 && mySet[index]->to_Set().size() < mySet[delInd]->to_Set().size())
+                        ) {
                             best_POS = curPos;
                             best_NEG = curNeg;
                             MIN = curDist;
@@ -361,6 +364,8 @@ pair<list<shared_ptr<DataObject>>,list<shared_ptr<DataObject>>> IBLTSetOfSets::_
         }
         // avoid two iblt decoding with same other iblt
         // this case will happen when difference between two parent set is big
+        if(delInd<0) // you can't get here without changing delIndex
+            throw  SyncFailureException("Invalid variable reference");
         decoded.push_back(delInd);
 
         // add missing elements and its chldset index into SMO OMS

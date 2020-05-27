@@ -12,8 +12,6 @@ CommSocket::CommSocket(int port, string host) : Communicant() {
     remoteHost = std::move(host);
     remotePort = port;
 
-    my_fd = -1;  // no socket currently open
-    state = Idle;
     Logger::gLog(Logger::METHOD, string("Setting up host ") + toStr(remoteHost) + " on port " + toStr(remotePort));
 }
 

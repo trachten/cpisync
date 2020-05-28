@@ -30,7 +30,11 @@ GenSync::GenSync() = default;
 /**
  * Construct a specific GenSync object
  */
-GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, void (*postProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync), const list<shared_ptr<DataObject>> &data)
+GenSync::GenSync(
+        const vector<shared_ptr<Communicant>> &cVec,
+        const vector<shared_ptr<SyncMethod>> &mVec,
+        void (*postProcessing)(list<shared_ptr<DataObject>>,list<shared_ptr<DataObject>>,void (GenSync::*add)(shared_ptr<DataObject>),bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync),
+        const list<shared_ptr<DataObject>> &data)
 {
     myCommVec = cVec;
     mySyncVec = mVec;

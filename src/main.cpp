@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
     long mbar = 5;
     long bits = 32;
     long pFactor = 2;
-    long numExpected; // the maximum number of elements expected in the data structure
+    // the maximum number of elements expected in the data structure
     bool dataInFile = false;
     string fileName; // the file to tie to the synchronization
 
@@ -289,7 +289,7 @@ int main(int argc, char *argv[]) {
             cout << "Current string contents: " << ((CommString *) comm)->getString() << endl;
         //clock_gettime(CLOCK_REALTIME, &timerEnd);
         timespec timeTaken = diff(timerStart, timerEnd);
-        double totalTime = (timeTaken.tv_sec) + (double) timeTaken.tv_nsec / 1000000000;
+//        double totalTime = (timeTaken.tv_sec) + (double) timeTaken.tv_nsec / 1000000000;
 //        // Report statistics
 //        cout << endl << "   Data transferred: " << comm->getXferBytesTot() << " bytes" << endl
 //             << "   Data received:    " << comm->getRecvBytesTot() << " bytes" << endl

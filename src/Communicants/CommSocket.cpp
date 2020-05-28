@@ -16,7 +16,7 @@ CommSocket::CommSocket(int port, string host) : Communicant() {
 }
 
 CommSocket::~CommSocket() {
-    commClose();  // make sure that the socket has been closed
+    CommSocket::commClose();  // make sure that the socket has been closed
 }
 
 void CommSocket::commListen() {
@@ -202,7 +202,7 @@ string CommSocket::commRecv(unsigned long numBytes) {
        if (my_fd == -1)
         Logger::error_and_quit("Not connected to a socket!");
 
-    long numRecv = 0;  // number of bytes received in this call
+    long numRecv;  // number of bytes received in this call
     auto tmpBuf = new char[numBytes];  // buffer into which received bytes are placed
 
     // wait until the buffer has been filled

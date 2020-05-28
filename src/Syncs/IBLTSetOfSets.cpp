@@ -327,7 +327,6 @@ pair<list<shared_ptr<DataObject>>,list<shared_ptr<DataObject>>> IBLTSetOfSets::_
         ZZ JHash;
         long index = 0;
         long delInd = -1; // invalid index at first
-        long cmp = LONG_MAX;
         for (auto &itrJ : negativeChld)
         {
             // rebuild Tb in Eb/Ea from string

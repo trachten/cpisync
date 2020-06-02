@@ -10,9 +10,9 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CuckooTest);
 
-CuckooTest::CuckooTest() {}
+CuckooTest::CuckooTest() = default;
 
-CuckooTest::~CuckooTest() {}
+CuckooTest::~CuckooTest() = default;
 
 void CuckooTest::setUp() {
     Cuckoo::seedPRNG(1);
@@ -26,7 +26,7 @@ void CuckooTest::tearDown() {}
  */
 inline size_t _failed_insert_count(const map<DataObject, bool>& m) {
     size_t c = 0;
-    for (auto e : m)
+    for (const auto& e : m)
         if (!e.second)
             c++;
 
@@ -40,7 +40,7 @@ inline size_t _failed_insert_count(const map<DataObject, bool>& m) {
  */
 inline size_t _lost_items(const Cuckoo& cuckoo, const map<DataObject, bool>& m) {
     size_t c = 0;
-    for (auto e : m)
+    for (const auto& e : m)
         if (e.second
             && !cuckoo.isZeroF(e.first)) // we're not going to query 0
                                          // fingerprints
@@ -202,7 +202,7 @@ void CuckooTest::testInsertHuge() {
 
 inline bool _isInserted(const map<DataObject, bool>& inserted,
                         const DataObject& item) {
-    for (auto db : inserted)
+    for (const auto& db : inserted)
         if (db.second && db.first.to_ZZ() == item.to_ZZ())
             return true;
 
@@ -222,7 +222,7 @@ void CuckooTest::testLookup() {
     // Query 1000 items that are not inserted
     size_t lookups = 0, falsePositives = 0;
     while (lookups < 1000) {
-        int e = c._rand(0, rndRange); // generate other random items
+        int e = Cuckoo::_rand(0, rndRange); // generate other random items
                                       // from the same range
         DataObject de = DataObject(to_ZZ(e));
         if (_isInserted(inserted, de))
@@ -288,11 +288,11 @@ void CuckooTest::testErase() {
 
     vector<int> problemsF;
     int legitFP = 0;
-    for (auto fst : delButThere) {
+    for (const auto& fst : delButThere) {
         int fstF = f(fst.to_ZZ(), c.getFngprtSize());
         bool found = false;
 
-        for (auto snd: stillThere) {
+        for (const auto& snd: stillThere) {
             int sndF = f(snd.to_ZZ(), c.getFngprtSize());
             // If a delButThere has a fingerprint-i1/i2-clone in
             // stillThere then it is a legit after-erasure false

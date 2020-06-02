@@ -48,8 +48,6 @@ int main(int argc, char *argv[]) {
     const int PARTS = 3; // partitions per level for partition-syncs
     const int EXP_ELTS = 4; // expected number of elements per set
 
-    const int METHOD = 0; // index of method to sync
-
     GenSync genSync = GenSync::Builder().
 			setProtocol(prot).
 			setComm(GenSync::SyncComm::socket).

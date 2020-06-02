@@ -51,7 +51,7 @@ void GenSyncTest::testAddRemoveElems() {
     for (auto genSync:combos) {
         multiset<string> objectsStr;
 
-        for (auto dop : objectsPtr) {
+        for (const auto& dop : objectsPtr) {
             genSync.addElem(dop);
             // store a multiset of the expected dataset's string representation
             objectsStr.insert(dop->print());
@@ -63,12 +63,12 @@ void GenSyncTest::testAddRemoveElems() {
 
         // create a multiset containing the string representation of objects stored in GenSync
         multiset<string> res;
-        for (auto dop : genSync.dumpElements())
+        for (const auto& dop : genSync.dumpElements())
             res.insert(dop);
 
         CPPUNIT_ASSERT(multisetDiff(res, objectsStr).empty());
 
-        for(auto elem : objectsPtr)
+        for(const auto& elem : objectsPtr)
             genSync.delElem(elem);
 
         //Remove the data that was added with the template

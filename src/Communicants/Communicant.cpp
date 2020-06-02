@@ -75,7 +75,7 @@ bool Communicant::establishModSend(bool oneWay /* = false */) {
         return (commRecv_byte() != SYNC_FAIL_FLAG);
 }
 
-bool Communicant::establishIBLTSend(size_t size, size_t eltSize, bool oneWay /* = false */) {
+bool Communicant::establishIBLTSend(const size_t size, const size_t eltSize, bool oneWay /* = false */) {
     commSend((long) size);
     commSend((long) eltSize);
     if (oneWay)
@@ -84,7 +84,7 @@ bool Communicant::establishIBLTSend(size_t size, size_t eltSize, bool oneWay /* 
         return (commRecv_byte() != SYNC_FAIL_FLAG);
 }
 
-bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* = false */) {
+bool Communicant::establishIBLTRecv(const size_t size, const size_t eltSize, bool oneWay /* = false */) {
     // receive other size and eltSize. both must be read, even if the first parameter is wrong
     long otherSize = commRecv_long();
     long otherEltSize = commRecv_long();
@@ -102,8 +102,8 @@ bool Communicant::establishIBLTRecv(size_t size, size_t eltSize, bool oneWay /* 
     }
 }
 
-bool Communicant::establishCuckooSend(size_t fngprtSize, size_t bucketSize,
-                                      size_t filterSize, size_t maxKicks) {
+bool Communicant::establishCuckooSend(const size_t fngprtSize, const size_t bucketSize,
+                                      const size_t filterSize, const size_t maxKicks) {
     commSend((long) fngprtSize);
     commSend((long) bucketSize);
     commSend((long) filterSize);

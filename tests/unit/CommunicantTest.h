@@ -50,7 +50,7 @@ private:
 	/**
  	* Tests argument-free construction.
  	*/
-    void testConstruct();
+    static void testConstruct();
 
 	/**
  	* Tests bytes-communicated-counter getters and resetCommCounters.
@@ -95,7 +95,7 @@ private:
 	/**
  	* Tests commSend and Recv for a list of DataObject
  	*/
-    void testCommDataObjectList();
+    static void testCommDataObjectList();
 
 	/**
  	* Tests commSend and Recv for double

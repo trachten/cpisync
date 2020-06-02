@@ -139,7 +139,7 @@ bool IBLT::HashTableEntry::empty() const
 }
 
 bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
-    long nErased = 0;
+    long nErased;
     do {
         nErased = 0;
         for(IBLT::HashTableEntry& entry : this->hashTable) {
@@ -190,7 +190,8 @@ IBLT& IBLT::operator-=(const IBLT& other) {
 
 IBLT IBLT::operator-(const IBLT& other) const {
     IBLT result(*this);
-    return result -= other;
+    result-=other;
+    return result;
 }
 
 size_t IBLT::size() const {
@@ -218,11 +219,11 @@ string IBLT::toString() const
 
 void IBLT::reBuild(string &inStr)
 {
-    vector<string> entries = split(inStr, "\n");
+    vector<string> entries = split(inStr, '\n');
     int index = 0;
     for (auto entry : entries)
     {
-        vector<string> infos = split(entry, ",");
+        vector<string> infos = split(entry, ',');
         HashTableEntry curEntry;
         curEntry.count = strTo<long>(infos[0]);
         curEntry.keyCheck = strTo<hash_t>(infos[1]);

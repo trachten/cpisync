@@ -97,7 +97,7 @@ void FullSyncTest::testAddDelElem() {
     CPPUNIT_ASSERT(diff.empty());
 
     // check that delete works
-    for(auto dop : elts) {
+    for(const auto& dop : elts) {
         CPPUNIT_ASSERT(fs.delElem(dop));
     }
 

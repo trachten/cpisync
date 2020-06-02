@@ -373,20 +373,20 @@ inline bool checkReconSetofSets(multiset<string> tar, multiset<string> reconcile
  * @param success_signal signal sent from child process indicating success status
  * @param svrRprt signal from server process indicating success status from forkHandle
  */
-inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &reconciled ,bool setofSets, bool oneWay, bool success_signal, bool svrRprt){
-	
-	if (!setofSets)
-		if (oneWay)
-			return (resServer == reconciled && svrRprt);
-		else
-			return ((success_signal) && (reconciled == resServer) && svrRprt);
-	// Set of sets
-	else
-		if (oneWay)
-			Logger::error_and_quit("Not implemented yet");
-		else
-			return ((success_signal) && checkReconSetofSets(resServer,reconciled) && svrRprt);
+inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &reconciled ,bool setofSets, bool oneWay, bool success_signal, bool svrRprt) {
 
+    if (!setofSets)
+        if (oneWay)
+            return (resServer == reconciled && svrRprt);
+        else
+            return ((success_signal) && (reconciled == resServer) && svrRprt);
+        // Set of sets
+    else if (oneWay)
+        Logger::error_and_quit("Not implemented yet");
+    else
+        return ((success_signal) && checkReconSetofSets(resServer, reconciled) && svrRprt);
+
+    return false; // you should never get here
 }
 
 /**
@@ -1091,6 +1091,8 @@ inline bool longTermSync(GenSync &GenSyncClient,
 			}
 		}
 	}
+
+    return false; // you should never get here
 }
 
 

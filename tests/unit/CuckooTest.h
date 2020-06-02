@@ -31,9 +31,9 @@ class CuckooTest : public CPPUNIT_NS::TestFixture {
 
 public:
     CuckooTest();
-    virtual ~CuckooTest();
-    void setUp();
-    void tearDown();
+    ~CuckooTest() override;
+    void setUp() override;
+    void tearDown() override;
 
     /*
      * Causes kicks of level 1, 2, 3, and possibly failed

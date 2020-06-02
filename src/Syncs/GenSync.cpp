@@ -30,7 +30,11 @@ GenSync::GenSync() = default;
 /**
  * Construct a specific GenSync object
  */
-GenSync::GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, void (*postProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync), const list<shared_ptr<DataObject>> &data)
+GenSync::GenSync(
+        const vector<shared_ptr<Communicant>> &cVec,
+        const vector<shared_ptr<SyncMethod>> &mVec,
+        void (*postProcessing)(list<shared_ptr<DataObject>>,list<shared_ptr<DataObject>>,void (GenSync::*add)(shared_ptr<DataObject>),bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync),
+        const list<shared_ptr<DataObject>> &data)
 {
     myCommVec = cVec;
     mySyncVec = mVec;
@@ -114,7 +118,7 @@ bool GenSync::delElem(shared_ptr<DataObject> delPtr) {
 	Logger::gLog(Logger::METHOD, "Entering GenSync::delElem");
 	if (!myData.empty()) {
 		//Iterate through mySyncVec and call that sync's delElem method
-		for (auto itAgt : mySyncVec) {
+		for (const auto& itAgt : mySyncVec) {
 			if (!itAgt->delElem(delPtr)) {
                 Logger::error("Error deleting item. SyncVec delete failed ");
 				return false;
@@ -146,7 +150,7 @@ bool GenSync::clearData(){
 
 const list<string> GenSync::dumpElements() {
 	list<string> dump;
-	for(auto itr : myData){
+	for(const auto& itr : myData){
 		dump.push_back(itr->print());
 	}
 	return dump;
@@ -293,11 +297,11 @@ bool GenSync::clientSyncBegin(int sync_num) {
 }
 
 const long GenSync::getXmitBytes(int syncIndex) const {
-    return mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::XMIT);
+    return narrow_cast<long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::XMIT));
 }
 
 const long GenSync::getRecvBytes(int syncIndex) const {
-    return mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::RECV);
+    return narrow_cast<long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::RECV));
 }
 
 const double GenSync::getCommTime(int syncIndex) const {
@@ -368,7 +372,7 @@ GenSync GenSync::Builder::build() {
     }
     theComms.push_back(myComm);
 
-    invalid_argument noMbar("Must define <mbar> explicitly for this sync.");
+    const invalid_argument noMbar("Must define <mbar> explicitly for this sync.");
 
     // set default post process function pointer
     _postProcess = SyncMethod::postProcessing_SET;

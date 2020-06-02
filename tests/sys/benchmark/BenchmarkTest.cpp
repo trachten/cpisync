@@ -213,7 +213,7 @@ void BenchmarkTest::IBLTSyncErrBenchMark()
 	const int testRuns = 40;															   // Number of times to sync
 	const int SIMILAR = 32;																   // Number of elements in common between the server and client
 	const int DIFS = 8;																	   // Number of elements unique to the server AND number of elements unique to client (Sym Difs = DIFS *2)
-	const int failExpected = testRuns * (1 - pow(1 - exp(-N_HASH / N_HASHCHECK), N_HASH)); // Amount of failures should be less than P[error] * number of runss,
+	const int failExpected = narrow_cast<int>(testRuns * (1 - pow(1 - exp(-N_HASH / N_HASHCHECK), N_HASH))); // Amount of failures should be less than P[error] * number of runss,
 																						   // see https://arxiv.org/pdf/1101.2245.pdf for how this error being calculated.
 	int failCount = 0;																	   // Keeps track of how many synchronizations are reported as failures for comparison to theoretical value
 

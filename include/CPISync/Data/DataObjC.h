@@ -4,6 +4,7 @@
 #define DATA_OBJECT_CONTAINER_H 
 
 #include <CPISync/Data/DataObject.h>
+#include <CPISync/Aux/Exceptions.h>
 
 /**
  * Data Object Container
@@ -11,11 +12,11 @@
  * the set that is to be synchronized.
  */
 
-class DataObjC {
+class DataObjC : public UnimplementedClassException {
 public:
 
 	// Constructors
-	DataObjC(); 
+	DataObjC()  { throw UnimplementedMethodException(); }
 
 
 	// Input/output
@@ -33,7 +34,7 @@ public:
 	virtual void delObj(int index)=0;
 
 	// get the number of objects;
-	int size();
+	int size()  { throw UnimplementedMethodException(); }
         
     // output a list of pointers to the objects in the container
     virtual list<shared_ptr<DataObject>> dump()=0;

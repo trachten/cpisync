@@ -39,7 +39,7 @@ private:
 	/**
  	* Tests constructing a DataObject with a ZZ and DataObject::toZZ
  	*/
-    void testToZZAndInitZZ();
+    static void testToZZAndInitZZ();
 
     /**
  	* Tests DataObject::to_string and constructing a DataObject from a random string
@@ -54,22 +54,22 @@ private:
 	/**
  	* Tests DataObject::to_char_array
  	*/
-    void testToCharArray();
+    static void testToCharArray();
 
 	/**
  	* Tests DataObject::print
  	*/
-    void testPrint();
+    static void testPrint();
 
 	/**
  	* Tests DataObject::operator<<
  	*/
-    void testStreamInsertion();
+    static void testStreamInsertion();
 
 	/**
  	* Tests DataObject::operator<
  	*/
-    void testLessThan();
+    static void testLessThan();
 };
 
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( DataObjectTest, DataObjectTest );

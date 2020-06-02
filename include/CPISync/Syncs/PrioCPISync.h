@@ -26,7 +26,7 @@ public:
 		useExisting = true;
 	}
 
-  ~PriorityCPISync();
+  ~PriorityCPISync() {}
   string getName() { return "Priority CPISync\n";}
 
 protected:

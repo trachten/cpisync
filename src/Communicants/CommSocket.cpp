@@ -12,13 +12,11 @@ CommSocket::CommSocket(int port, string host) : Communicant() {
     remoteHost = std::move(host);
     remotePort = port;
 
-    my_fd = -1;  // no socket currently open
-    state = Idle;
     Logger::gLog(Logger::METHOD, string("Setting up host ") + toStr(remoteHost) + " on port " + toStr(remotePort));
 }
 
 CommSocket::~CommSocket() {
-    commClose();  // make sure that the socket has been closed
+    CommSocket::commClose();  // make sure that the socket has been closed
 }
 
 void CommSocket::commListen() {
@@ -157,9 +155,9 @@ void CommSocket::commClose() {
         int result = close(my_fd);
         if (result == -1)
             Logger::error_and_quit("close");
-		else
-			Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
-		my_fd = -1;  // no socket active now
+        else
+            Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
+        my_fd = -1;  // no socket active now
     }
 }
 
@@ -204,7 +202,7 @@ string CommSocket::commRecv(unsigned long numBytes) {
        if (my_fd == -1)
         Logger::error_and_quit("Not connected to a socket!");
 
-    long numRecv = 0;  // number of bytes received in this call
+    long numRecv;  // number of bytes received in this call
     auto tmpBuf = new char[numBytes];  // buffer into which received bytes are placed
 
     // wait until the buffer has been filled

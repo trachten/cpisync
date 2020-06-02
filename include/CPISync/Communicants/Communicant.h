@@ -79,7 +79,7 @@ public:
      * @require an active connection via commConnect
      * @return true iff common parameters were verified (i.e. other size and eltSize == our size and eltSize) or oneWay is true
      */
-    bool establishIBLTSend(const size_t size, const size_t eltSize, bool oneWay = false);
+    bool establishIBLTSend(size_t size, size_t eltSize, bool oneWay = false);
 
     /**
     * Establishes common IBLT parameters with another connected Communicant.
@@ -89,7 +89,7 @@ public:
     * @require an active connection via commConnect
     * @return true iff common parameters were verified (i.e. other size and eltSize == our size and eltSize)
     */
-    bool establishIBLTRecv(const size_t size, const size_t eltSize, bool oneWay = false);
+    bool establishIBLTRecv(size_t size, size_t eltSize, bool oneWay = false);
 
     /**
      * Establishes common Cuckoo filter parameter with another

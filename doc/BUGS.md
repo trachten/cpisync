@@ -1,6 +1,9 @@
+TODO:  Move these to issues on github, if they are still relevant
+
+# Testing of syncs
 There is one bug that is preventing the testing of one way syncs.
 
-Summary: forkHandleServer(GenSync&, GenSync) doesn't close communicant connection, even if the SyncMethods explicitly
+Summary: forkHandleServer(GenSync&, GenSync) does not close communicant connection, even if the SyncMethods explicitly
 close connection themselves.
 
 Steps to Reproduce: Call forkHandleServer twice with the same pair of GenSyncs using CommSockets. The first call will

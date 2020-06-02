@@ -26,16 +26,16 @@ void AuxiliaryTest::tearDown() {
 
 void AuxiliaryTest::testStrTo() {
     int expectedInt = 12;
-    int resultInt = strTo<int>("12");
+    int resultInt = charArrayTo<int>("12");
     CPPUNIT_ASSERT_EQUAL(expectedInt, resultInt);
 
     double expectedDouble = 12.57;
-    auto resultDouble = strTo<double>("12.57");
+    auto resultDouble = charArrayTo<double>("12.57");
     CPPUNIT_ASSERT_EQUAL(expectedDouble, resultDouble);
 
     ZZ_p::init(randZZ());
     ZZ_p expectedZZp(12l);
-    ZZ_p resultZZp = strTo<ZZ_p>("12");
+    ZZ_p resultZZp = charArrayTo<ZZ_p>("12");
     CPPUNIT_ASSERT_EQUAL(expectedZZp, resultZZp);
 }
 

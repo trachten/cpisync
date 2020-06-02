@@ -103,8 +103,8 @@ void CommSocket::commConnect() {
         // defines a host computer on the Internet
         struct hostent *he;
         // get the IP from the host computer
-        if ((he = gethostbyname(remoteHost.c_str())) == nullptr)
-            Logger::error_and_quit("Could not resolve hostname " + remoteHost);
+        if ((he = gethostbyname(remoteHost.c_str())) == nullptr || he->h_addr_list==nullptr)
+            Logger::error_and_quit("Could not properly resolve hostname " + remoteHost);
 
         // copy the network address to the sockaddr_in structure which is passed to connect()
         memcpy(&otherAddr.sin_addr, he->h_addr_list[0], static_cast<size_t>(he->h_length));

@@ -20,7 +20,7 @@ void _discern_endianness() {
     // This assumes size(int) > size(char). I can imagine a tiny
     // embedded device where this is not the case.
     unsigned int x = 1;
-    if (!(*(char *) &x == 1))
+    if (*(char *) &x != 1) // was (!(*(char *) &x == 1))
         littleEndian = false;
 }
 

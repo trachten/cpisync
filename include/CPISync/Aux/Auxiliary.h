@@ -185,6 +185,19 @@ inline T strTo(const string& str) {
 }
 
 /**
+ * Converts a C-style string into a type T.  Similar to {@see strTo(const string& str)}.
+ */
+template <class T>
+inline T charArrayTo(const char* cStr) {
+    if (cStr==nullptr)
+        throw invalid_argument(cStr);
+    istringstream tmp(cStr);
+    T result;
+    tmp >> result;
+    return result;
+}
+
+/**
  * Helper function to turn anything with a stream printing capability into a string
  * @param item The thing to be converted
  * @return A string representing the number
@@ -208,7 +221,7 @@ inline string ustrToStr(const ustring& ustr) {
  */
 template <class T>
 string printListOfPtrs(list<T *> theList) {
-    string result = "[";
+    string result("[");
     typename list<T *>::const_iterator iter;
     for (iter = theList.begin(); iter != theList.end(); iter++)
         result += toStr(**iter) + " ";
@@ -229,7 +242,7 @@ class AuxSetOfSets{
         template <class T>
         static string printSetofSets(T theList)
         {
-            string result = "{ ";
+            string result("{ ");
             for (auto itr : theList)
             {
                 auto curSet = itr->to_Set();
@@ -251,7 +264,7 @@ class AuxSetOfSets{
         template <class T>
         static string printSet(T thelist)
         {
-            string result = "[ ";
+            string result("[ ");
             for (auto itr : thelist)
             {
                 result += toStr<ZZ>(itr->to_ZZ()) + " ";
@@ -266,7 +279,7 @@ class AuxSetOfSets{
  */
 template <class T>
 string printListOfSharedPtrs(list<shared_ptr<T>> theList) {
-	string result = "[";
+	string result("[");
 	typename list<shared_ptr<T>>::const_iterator iter;
 	for (iter = theList.begin(); iter != theList.end(); iter++)
 		result += toStr(**iter) + " ";
@@ -652,7 +665,7 @@ inline string temporaryDir() {
     }
 
     // default temp directory if no env var is found
-    return "/tmp";
+    return string("/tmp");
 }
 
 #endif	/* AUX_H */

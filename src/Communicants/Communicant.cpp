@@ -298,7 +298,7 @@ void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
     commSend(hte.count);
     commSend(toStr<size_t>(hte.keyCheck));
     commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
-    commSend(hte.valueSum, (unsigned int) eltSize);
+    commSend(hte.valueSum, (int) eltSize);
 }
 
 void Communicant::commSend(const ZZ& num, int size) {

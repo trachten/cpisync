@@ -23,7 +23,7 @@
 // constants
 const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
-const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // Size^2 of elements stored in sync tests
+const size_t eltSizeSq = (size_t) pow((double) sizeof(randZZ()), 2.0); // Size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // Size of elements stored in sync tests in bytes
 const int mBar = 2 * UCHAR_MAX; // Max differences between client and server in sync tests
 const int largeLimit = pow(2,9); // Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
@@ -473,13 +473,13 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 		else serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 		//Print stats about sync
-		if(/*serverReport.success*/ false) {
+/*		if(*//*serverReport.success*//* false) {
 			cout << "\nSERVER RECON STATS:\n";
 			cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
 				 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
 			cout << GenSyncServer.printStats(0);
 			cout << "\n";
-		}
+		}*/
 
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements())
@@ -942,13 +942,13 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 				//Print stats about sync
-				if (/*clientReport.success*/ false)
+/*				if (*//*clientReport.success*//* false)
 				{
 					cout << "\nCLIENT RECON STATS:\n";
 					cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
 						 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
 					cout << GenSyncClient.printStats(0);
-				}
+				}*/
 				clientReconcileSuccess &= clientReport.success;
 			}
 			else
@@ -1037,14 +1037,14 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 			//Print stats about sync
-			if (/*clientReport.success*/ false)
+/*			if (*//*clientReport.success*//* false)
 			{
 				cout << "\nSERVER RECON STATS:\n";
 				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
 					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
 				cout << GenSyncServer.printStats(0);
 				cout << "\n";
-			}
+			}*/
 
 			multiset<string> resServer;
 			for (auto dop : GenSyncServer.dumpElements())

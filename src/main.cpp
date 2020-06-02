@@ -233,6 +233,8 @@ int main(int argc, char *argv[]) {
         case IBLT_CPISYNC:
             proto=GenSync::SyncProtocol::OneWayIBLTSync;
             break;
+        default:
+            Logger::error_and_quit("Sync protocol not recognized: "+toStr(sync_flag));
     }
     //Logger::gLog(Logger::METHOD, "Sync Method:  " + toStr(proto));
 

@@ -27,10 +27,10 @@ void _discern_endianness() {
 void Compact2DBitArray::_constructorGuards() const {
     if (!(fSize > 0 && fSize <= MAX_F_BITS))
         throw Compact2DBitArrayError("Fingerprint has to be between 1 and 32 bits!");
-    if (!(bSize > 0))
+    if (bSize <= 0)
         throw Compact2DBitArrayError("Bucket (column) count "
                                      "has to be at least 1!");
-    if (!(nBuckets > 0))
+    if (nBuckets <= 0)
         throw Compact2DBitArrayError("Number of buckets (rows) count "
                                      "has to be at least 1!");
 }

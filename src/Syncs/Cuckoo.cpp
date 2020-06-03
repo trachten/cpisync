@@ -174,10 +174,8 @@ bool Cuckoo::insert(const DataObject& datum) {
 bool Cuckoo::lookup(const DataObject& datum) const {
     PartialHash p = _pHash(datum);
 
-    if ((hasF(p.f, p.i1) != -1) || (hasF(p.f, p.i2) != -1))
-        return true;
+    return (hasF(p.f, p.i1) != -1) || (hasF(p.f, p.i2) != -1);
 
-    return false;
 }
 
 bool Cuckoo::erase(const DataObject& datum) {

@@ -34,7 +34,7 @@ void BenchmarkTest::CPISyncErrorBenchmark()
 	vector<GenSync> CPISyncServer = twoWayCombos(2 * DIFS);
 
 	//Itterate through each type of sync (CPISync, ProbCPISync, InterCPISync) exclude FullSync because it does not have a theoretical probability of failure
-	for (int ii = 0; ii < CPISyncClient.size() - 1; ii++)
+	for (unsigned long ii = 0; ii < CPISyncClient.size() - 1; ii++)
 	{
 		//Test that less than (failExpected) tests fail in (testRuns) tests for sets
 		for (int jj = 0; jj < testRuns; jj++)

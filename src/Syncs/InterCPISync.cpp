@@ -238,7 +238,7 @@ bool InterCPISync::_createTreeNode(pTree *&treeNode, pTree *parent, const ZZ &be
 
         for (auto elem = par->beginElements(); elem != par->endElements(); elem++) {
             const ZZ elemZZ = rep(_hash(*elem));
-            if (elemZZ >= begRange && elemZZ < endRange && !curr->addElem(*elem)) //if element is in range and add fails
+            if ((elemZZ >= begRange) && (elemZZ < endRange) && (!curr->addElem(*elem))) //if element is in range and add fails
                 return false;
         }
     }

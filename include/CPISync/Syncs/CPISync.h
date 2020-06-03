@@ -101,7 +101,7 @@ public:
 
   template <typename T>
   bool addElem(T* newDatum) {
-      auto *newDO = make_shared<DataObject>(*newDatum);
+      auto newDO = make_shared<DataObject>(*newDatum);
       bool result = addElem(newDO);
       return result;
   }

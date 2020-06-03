@@ -19,9 +19,9 @@ CuckooSyncTest::~CuckooSyncTest() = default;
 
 void CuckooSyncTest::setUp() {
     Cuckoo::seedPRNG(1);
-};
+}
 
-void CuckooSyncTest::tearDown() {};
+void CuckooSyncTest::tearDown() {}
 
 void CuckooSyncTest::setReconcileTest() {
     const size_t bits = sizeof(randZZ());

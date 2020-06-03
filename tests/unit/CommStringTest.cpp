@@ -60,7 +60,7 @@ void CommStringTest::testComm(){
 
         CPPUNIT_ASSERT_EQUAL((long) toSend.length(), cs.getXmitBytes());
 
-        long byteNumRecv = randLenBetween(LOWER, toSend.length());
+        unsigned long byteNumRecv = randLenBetween(LOWER, toSend.length());
 
         CPPUNIT_ASSERT_EQUAL(toSend.substr(0, byteNumRecv), cs.commRecv(byteNumRecv));
         CPPUNIT_ASSERT_EQUAL(byteNumRecv, cs.getRecvBytes());

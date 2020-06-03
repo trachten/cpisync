@@ -114,10 +114,10 @@ bool Communicant::establishCuckooSend(const size_t fngprtSize, const size_t buck
 
 bool Communicant::establishCuckooRecv(size_t fngprtSize, size_t bucketSize,
                                       size_t filterSize, size_t maxKicks) {
-    size_t otherFngprtSize = commRecv_long();
-    size_t otherBucketSize = commRecv_long();
-    size_t otherFilterSize = commRecv_long();
-    size_t otherMaxKicks = commRecv_long();
+    long otherFngprtSize = commRecv_long();
+    long otherBucketSize = commRecv_long();
+    long otherFilterSize = commRecv_long();
+    long otherMaxKicks = commRecv_long();
 
     if (otherFngprtSize == fngprtSize
         && otherBucketSize == bucketSize
@@ -137,7 +137,7 @@ bool Communicant::establishCuckooRecv(size_t fngprtSize, size_t bucketSize,
     }
 }
 
-void Communicant::commSend(const ustring& toSend, const unsigned int numBytes) {
+void Communicant::commSend(const ustring& toSend, int numBytes) {
     Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
             + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
 

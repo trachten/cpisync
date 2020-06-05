@@ -72,7 +72,7 @@ inline vector<byte> StrToVec(const string& data) {
 
     const char *data_c_str = data.c_str();
     result.reserve((int) data.length()); result.reserve((int) data.length()); for (int ii = 0; ii < (int) data.length(); ii++)
-        result.push_back(data_c_str[ii]);
+        result.push_back(static_cast<byte>(data_c_str[ii]));
 
     return result;
 }
@@ -474,7 +474,7 @@ private:
 };
 
 const int min_base64 = 62; // first character of base-64 text
-const int signed_shift = 128; // shift to get from unsigned to signed
+const unsigned int signed_shift = 128; // shift to get from unsigned to signed
 
 /**
  * Encodes a given ASCII c-style string into a (base64) string using only characters from '>' to '~'
@@ -482,7 +482,7 @@ const int signed_shift = 128; // shift to get from unsigned to signed
  * @param len The length of the bytes array
  * @return An ASCII-armored string.
  */
-inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
+inline string base64_encode(char const* bytes_to_encode, size_t in_len) {
     string ret;
 
     int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
@@ -549,8 +549,8 @@ inline string base64_decode(std::string const& encoded_string) {
  * @param base64_chars
  * @return 
  */
-inline string base64_encode(const string& bytes, unsigned int in_len) {
-    string foo = base64_encode(bytes.data(), in_len);
+inline string base64_encode(const string& bytes) {
+    string foo = base64_encode(bytes.data(), bytes.length());
     return foo;
 }
 

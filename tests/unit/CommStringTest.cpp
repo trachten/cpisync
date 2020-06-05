@@ -29,7 +29,7 @@ void CommStringTest::testGetString() {
 
         // b64 case
         string init = randString(LOWER, UPPER);
-        CommString cs(base64_encode(init, init.length()), true);
+        CommString cs(base64_encode(init), true);
         CPPUNIT_ASSERT_EQUAL(init, cs.getString());
 
         // non-b64 case
@@ -58,12 +58,12 @@ void CommStringTest::testComm(){
         string toSend = randString(LOWER, UPPER);
         cs.commSend(toSend.data(), toSend.length());
 
-        CPPUNIT_ASSERT_EQUAL((long) toSend.length(), cs.getXmitBytes());
+        CPPUNIT_ASSERT_EQUAL((unsigned long) toSend.length(), cs.getXmitBytes());
 
-        unsigned long byteNumRecv = randLenBetween(LOWER, toSend.length());
+        unsigned long byteNumRecv = randLenBetween(LOWER, static_cast<int>(toSend.length()));
 
         CPPUNIT_ASSERT_EQUAL(toSend.substr(0, byteNumRecv), cs.commRecv(byteNumRecv));
-        CPPUNIT_ASSERT_EQUAL(byteNumRecv, cs.getRecvBytes());
+        CPPUNIT_ASSERT_EQUAL((long) byteNumRecv, (long) cs.getRecvBytes());
 
         cs.commClose();
     }

@@ -49,7 +49,7 @@ public:
      */
     Cuckoo(size_t fngprntSize, size_t bucketSize, size_t size, size_t maxKicks);
 
-    typedef std::function<int(const ZZ&, size_t)> fingerprint_impl_t;
+    typedef std::function<size_t(const ZZ&, size_t)> fingerprint_impl_t;
     typedef std::function<ZZ(const ZZ&, size_t)> hash_impl_t;
 
     /**
@@ -152,7 +152,7 @@ public:
     /**
      * Seed the underlying cuckoo filter PRNG
      */
-    static void seedPRNG(int seed);
+    static void seedPRNG(unsigned int seed);
 
     /**
      * Maximum length of the cuckoo evictions chain
@@ -216,7 +216,7 @@ private:
      * @param xx The element for which the fingerprint is calculated
      * @return The fngprtSize least significant bits from xx.
      */
-    inline int fingerprint(const ZZ& e) const;
+    inline size_t fingerprint(const ZZ& e) const;
 
     /**
      * Function used to calculate hash of an entry
@@ -258,29 +258,29 @@ private:
      * @return The entry index where the fngprt is inserted
      * or -1 if the bucket is full.
      */
-    inline int addToBucket(size_t bucketIdx, unsigned f);
+    inline size_t addToBucket(size_t bucketIdx, unsigned f);
 
     /**
      * @param f The fingerprint to search for.
      * @param bucket The bucket in which to search.
      * @return Index of the fingerprint in the bucket.
      */
-    inline int hasF(unsigned f, size_t bucket) const;
+    inline size_t hasF(unsigned f, size_t bucket) const;
 
     /**
      * Calculate the alternative bucket for the given bucket and the fingerprint.
      * @param currentB The current bucket.
      * @param f The fingerprint.
      */
-    inline int _alternativeBucket(int currentB, int f) const;
+    inline size_t _alternativeBucket(size_t currentB, size_t f) const;
 
     /**
      * Partial hashing return values.
      */
     struct PartialHash {
-        int f;  // fingerprint
-        int i1; // first bucket
-        int i2; // second bucket
+        unsigned int f;  // fingerprint
+        unsigned int i1; // first bucket
+        unsigned int i2; // second bucket
     };
 
     /**
@@ -299,7 +299,7 @@ private:
     struct Reloc {
         size_t b; // bucket index
         size_t c; // cell index
-        int f;    // fingerprint to put there
+        unsigned int f;    // fingerprint to put there
     };
 
     /**

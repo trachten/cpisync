@@ -26,7 +26,7 @@ void BenchmarkTest::CPISyncErrorBenchmark()
 	const int testRuns = 10;								// Number of times to sync
 	const int SIMILAR = 32;									//Number of elements in common between the server and client
 	const int DIFS = 8;										// Number of elements unique to the server AND number of elements unique to client (Sym Difs = DIFS *2)
-	const int failExpected = ceil(testRuns * pow(2, -err)); //Amount of failures should be less than P[error] * number of runs
+	const int failExpected = narrow_cast<const int>(ceil(testRuns * pow(2, -err))); //Amount of failures should be less than P[error] * number of runs
 	int failCount = 0;										//Keeps track of how many synchronizations are reported as failures for comparison to theoretical value
 
 	//Vector containing GenSyncs of types CPISync, ProbCPISync, InterCPISync
@@ -221,7 +221,7 @@ void BenchmarkTest::IBLTSyncErrBenchMark()
 	vector<GenSync> IBLTSyncServer = twoWayProbCombos(2 * DIFS + SIMILAR);
 	vector<GenSync> IBLTSyncClient = twoWayProbCombos(2 * DIFS + SIMILAR);
 
-	for (int ii = 0; ii < IBLTSyncClient.size() - 1; ii++)
+	for (unsigned long ii = 0; ii < IBLTSyncClient.size() - 1; ii++)
 	{
 		// Test that less than (failExpected) tests fail in (testRuns) tests for sets
 		for (int jj = 0; jj < testRuns; jj++)

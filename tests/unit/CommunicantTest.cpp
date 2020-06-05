@@ -41,12 +41,12 @@ void CommunicantTest::testBytesAndResetCommCounters() {
     CommDummy cSend(&qq);
     CommDummy cRecv(&qq);
     
-    long expXmitTot = 0;
-    long expRecvTot = 0;
+    unsigned long expXmitTot = 0;
+    unsigned long expRecvTot = 0;
     
     for(int ii = 0; ii < TIMES; ii++) {
         string toSend = randString(LOWER_BOUND, UPPER_BOUND);
-        long strLength = toSend.length();
+        size_t strLength = toSend.length();
         
         CPPUNIT_ASSERT_EQUAL(expXmitTot, cSend.getXmitBytesTot());
         CPPUNIT_ASSERT_EQUAL(expRecvTot, cRecv.getRecvBytesTot());
@@ -54,21 +54,21 @@ void CommunicantTest::testBytesAndResetCommCounters() {
         cSend.resetCommCounters();
         cRecv.resetCommCounters();
         
-        CPPUNIT_ASSERT_EQUAL(0l, cSend.getXmitBytes());
-        CPPUNIT_ASSERT_EQUAL(0l, cRecv.getRecvBytes());
+        CPPUNIT_ASSERT_EQUAL(0ul, cSend.getXmitBytes());
+        CPPUNIT_ASSERT_EQUAL(0ul, cRecv.getRecvBytes());
         
         cSend.commSend(toSend.data(), strLength);
         
         expXmitTot += strLength;
         
-        CPPUNIT_ASSERT_EQUAL(strLength, cSend.getXmitBytes());
+        CPPUNIT_ASSERT_EQUAL((unsigned long) strLength, cSend.getXmitBytes());
         CPPUNIT_ASSERT_EQUAL(expXmitTot, cSend.getXmitBytesTot());
         
         cRecv.commRecv(strLength);
         
         expRecvTot += strLength;
         
-        CPPUNIT_ASSERT_EQUAL(strLength, cRecv.getRecvBytes());
+        CPPUNIT_ASSERT_EQUAL((unsigned long) strLength, cRecv.getRecvBytes());
         CPPUNIT_ASSERT_EQUAL(expRecvTot, cRecv.getRecvBytesTot());
     }
 }
@@ -100,12 +100,12 @@ void CommunicantTest::testCommUstringBytes() {
     
     for(int ii = 0; ii < TIMES; ii++) {
         const ustring exp = (const unsigned char *) (randString(LOWER_BOUND, UPPER_BOUND).data());
-        const int expLen = exp.size();
+        size_t expLen = exp.size();
 
         // check that transmitted bytes are successfully incremented 
-        const long before = cSend.getXmitBytes();
+        const unsigned long before = cSend.getXmitBytes();
         cSend.Communicant::commSend(exp, expLen);
-        const long after = cSend.getXmitBytes();
+        const unsigned long after = cSend.getXmitBytes();
 
         CPPUNIT_ASSERT_EQUAL(0, exp.compare(cRecv.commRecv_ustring(expLen)));
         CPPUNIT_ASSERT_EQUAL(before + expLen, after);
@@ -173,7 +173,7 @@ void CommunicantTest::testCommDataObjectPriority() { // fix this test so that th
 
     for(int ii = 0; ii < TIMES; ii++) {
 
-        DataPriorityObject exp(randLong());
+        DataPriorityObject exp(static_cast<clock_t>(randLong()));
         exp.setPriority(randZZ());
 
         cSend.Communicant::commSend(exp);

@@ -9,7 +9,6 @@
 
 #include <CPISync/Aux/Auxiliary.h>
 #include "AuxiliaryTest.h"
-#include <string>
 #include <NTL/ZZ_p.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(AuxiliaryTest);
@@ -19,6 +18,7 @@ AuxiliaryTest::AuxiliaryTest() = default;
 AuxiliaryTest::~AuxiliaryTest() = default;
 
 void AuxiliaryTest::setUp() {
+    srand(238423);
 }
 
 void AuxiliaryTest::tearDown() {
@@ -79,7 +79,7 @@ void AuxiliaryTest::testBase64_encode() {
     std::string expectedEncode = "_MMwdA==";
   
     std::string testStlStr = "asdf";
-    std::string resultEncode = base64_encode(testStlStr, testStlStr.size());
+    std::string resultEncode = base64_encode(testStlStr);
     CPPUNIT_ASSERT_EQUAL(resultEncode, expectedEncode);
 
     const char * testCStr = testStlStr.c_str();
@@ -91,6 +91,16 @@ void AuxiliaryTest::testBase64_decode() {
     std::string expectedDecode = "asdf";
     std::string resultDecode = base64_decode("_MMwdA==");
     CPPUNIT_ASSERT_EQUAL(resultDecode, expectedDecode);
+}
+
+void AuxiliaryTest::testBase64_encode_decode() {
+    for (int ii=0; ii < NUM_ITERS; ii++) {
+        string test=randString(0,MAX_STR_LEN);
+        string result = base64_encode(test);
+        string orig = base64_decode(result);
+        CPPUNIT_ASSERT(test==orig);
+    }
+
 }
 
 void AuxiliaryTest::testStrToVecToStr() {

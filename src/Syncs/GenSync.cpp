@@ -126,7 +126,7 @@ bool GenSync::delElem(shared_ptr<DataObject> delPtr) {
 		}
 
 		//Remove data from GenSync object meta-data and report success of delete
-		int before = myData.size();
+		unsigned long before = myData.size();
 		myData.remove(delPtr); //Does not have a return value so check size difference
 		return myData.size() < before;
 	}
@@ -193,7 +193,7 @@ void GenSync::delComm(const shared_ptr<Communicant>& oldComm) {
 }
 
 int GenSync::numComm() {
-	return myCommVec.size();
+	return narrow_cast<int>(myCommVec.size());
 }
 
 // insert a syncmethod in the vector at the index position
@@ -296,11 +296,11 @@ bool GenSync::clientSyncBegin(int sync_num) {
 
 }
 
-const long GenSync::getXmitBytes(int syncIndex) const {
+const unsigned long GenSync::getXmitBytes(int syncIndex) const {
     return narrow_cast<long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::XMIT));
 }
 
-const long GenSync::getRecvBytes(int syncIndex) const {
+const unsigned long GenSync::getRecvBytes(int syncIndex) const {
     return narrow_cast<long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::RECV));
 }
 

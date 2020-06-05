@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
     else // we are syncing with a socket
         comm=GenSync::SyncComm::socket;
 
-    int negLogPerr = (int) -log(perr)/log(2); // the negative log of perr ... this is how the constructors expect their error value
+    int negLogPerr = static_cast<int>(-log(perr) / log(2)); // the negative log of perr ... this is how the constructors expect their error value
 
     // 3. Deploy the sync
     GenSync theSync = GenSync::Builder().

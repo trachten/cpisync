@@ -50,18 +50,18 @@
          
      ```
 ---
-# [Data structures](dataStructures/)
-* [Cuckoo filters](dataStructures/CuckooFilters) - a description of the Cuckoo filter and its performance
+# [Data structures](./dataStructures/)
+* [Cuckoo filters](./dataStructures/CuckooFilters) - a description of the Cuckoo filter and its performance
 
 ---
-# [Programming constructs](code/)
+# [Programming constructs](./code/)
 
 * [Syncs](code/) - synchronizing engines that can be utilized.
 * [Communicants](code/Communicants) - mechanisms for communicating between synchronizers.
 * [Data](code/Data) - data types for storing objects to be synchronized
 
 ---
-# [Frequently Asked Questions](FAQ/)
+# [Frequently Asked Questions](./FAQ/)
 * [wchar not found](FAQ/wchar) - compiler error `"wchar.h" not found`
 
 

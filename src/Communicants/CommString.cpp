@@ -34,7 +34,7 @@ void CommString::commClose() {
 	stream->flush();
 }
 
-void CommString::commSend(const char *toSend, const int numBytes) {
+void CommString::commSend(const char *toSend, size_t numBytes) {
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
     // save the next bytes to the string stream
     stream->write(toSend, numBytes);

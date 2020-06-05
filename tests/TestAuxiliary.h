@@ -36,7 +36,7 @@ const unsigned int port = 8001; // Port for CommSocket
 const int err = 8; // Negative log of acceptable error probability for CPISync
 const int numParts = 3; // Partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*4; // Max elements in an IBLT for IBLT syncs
-const int largeNumExpElems = largeLimit * 3; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT and SIMILAR
+const size_t largeNumExpElems = largeLimit * 3; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT and SIMILAR
 
 // helpers
 

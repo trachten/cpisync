@@ -3,7 +3,7 @@
     * Data objects are wrappers for a generic set element to be synchronized
     * `DataObject(data)`
         * Create a data object by passing in a variety of different data types (ZZ,string,multiset,etc.)
-        * See [DataObject.h](../include/CPISync/Data/DataObject.h) for a complete list of constructors
+        * See [DataObject.h](../../include/CPISync/Data/DataObject.h) for a complete list of constructors
     * `DataObject.to_ZZ()`
         * Return the data contained in your DataObject as a ZZ type
     * `DataObject.to_string()`

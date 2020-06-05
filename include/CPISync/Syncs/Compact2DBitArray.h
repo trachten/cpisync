@@ -52,7 +52,7 @@ public:
      * @param entryIdx The index of an entry in the bucket (column)
      * @return Fingerprint
      */
-    unsigned getEntry(size_t bucketIdx, size_t entryIdx) const;
+    size_t getEntry(size_t bucketIdx, size_t entryIdx) const;
 
     /**
      * @param bucketIdx The index of the bucket (row)

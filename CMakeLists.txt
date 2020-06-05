@@ -123,6 +123,11 @@ install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC}
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
 target_link_libraries(TryMe cpisync ntl cppunit pthread gmp)
 
+# TEMPORARY: Add the TryCuckooSync executable
+add_executable(TryCuckooSync ${SRC_DIR}/TryCuckooSync.cpp)
+target_link_libraries(TryCuckooSync cpisync ntl cppunit pthread gmp)
+
+
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add
 # @param name The executable name

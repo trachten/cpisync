@@ -204,7 +204,7 @@ size_t IBLT::eltSize() const {
 
 string IBLT::toString() const
 {
-    string outStr = "";
+    string outStr="";
     for (auto entry : hashTable)
     {
         outStr += toStr<long>(entry.count) + ","

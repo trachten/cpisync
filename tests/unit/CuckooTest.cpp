@@ -214,7 +214,7 @@ void CuckooTest::testLookup() {
     // b=4, our f has to be at least ceil(log_2(1/e) + log_2(2b))
     // Eq 6 in Fan et al. paper.
     Cuckoo c = Cuckoo(9, 4, (1 << 16), 500);
-    int rndRange = 1 << 18;
+    size_t rndRange = 1 << 18;
     auto inserted = _populate(c, 1 << 16, rndRange);
 
     CPPUNIT_ASSERT(_failed_insert_count(inserted) <= inserted.size() * .03);

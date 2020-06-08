@@ -235,13 +235,13 @@ public:
      * @param syncIndex The index of the Sync to query (in the order that they were added)
      * @return The number of bytes transmitted for this sync to complete
      */
-    const long getXmitBytes(int syncIndex) const;
+    const unsigned long getXmitBytes(int syncIndex) const;
 
     /**
      * @param syncIndex The index of the Sync to query (in the order that they were added)
      * @return The number of bytes received for this sync to complete
      */
-    const long getRecvBytes(int syncIndex) const;
+    const unsigned long getRecvBytes(int syncIndex) const;
 
     /**
      * @param syncIndex The index of the Sync to query (in the order that they were added)
@@ -457,7 +457,7 @@ public:
     /**
      * Sets the number of partitions to use in recursive calls for interactive protocols like InteractiveCPISync
      */
-    Builder& setNumPartitions(int theNumParts) {
+    Builder& setNumPartitions(long theNumParts) {
         this->numParts = theNumParts;
         return *this;
     }

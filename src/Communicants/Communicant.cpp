@@ -23,29 +23,29 @@ string Communicant::getName() {
     return "No name available";
 }
 
-long Communicant::getXmitBytes() const {
+unsigned long Communicant::getXmitBytes() const {
     return xferBytes;
 }
 
-long Communicant::getRecvBytes() {
+unsigned long Communicant::getRecvBytes() {
     return recvBytes;
 }
 
-long Communicant::getXmitBytesTot() {
+unsigned long Communicant::getXmitBytesTot() {
     return xferBytesTot;
 }
 
-long Communicant::getRecvBytesTot() {
+unsigned long Communicant::getRecvBytesTot() {
     return recvBytesTot;
 }
 
 
-void Communicant::addXmitBytes(long numBytes) {
+void Communicant::addXmitBytes(unsigned long numBytes) {
     xferBytes += numBytes;
     xferBytesTot += numBytes;
 }
 
-void Communicant::addRecvBytes(long numBytes) {
+void Communicant::addRecvBytes(unsigned long numBytes) {
     recvBytes += numBytes;
     recvBytesTot += numBytes;
 }
@@ -114,10 +114,10 @@ bool Communicant::establishCuckooSend(const size_t fngprtSize, const size_t buck
 
 bool Communicant::establishCuckooRecv(size_t fngprtSize, size_t bucketSize,
                                       size_t filterSize, size_t maxKicks) {
-    size_t otherFngprtSize = commRecv_long();
-    size_t otherBucketSize = commRecv_long();
-    size_t otherFilterSize = commRecv_long();
-    size_t otherMaxKicks = commRecv_long();
+    long otherFngprtSize = commRecv_long();
+    long otherBucketSize = commRecv_long();
+    long otherFilterSize = commRecv_long();
+    long otherMaxKicks = commRecv_long();
 
     if (otherFngprtSize == fngprtSize
         && otherBucketSize == bucketSize
@@ -137,22 +137,20 @@ bool Communicant::establishCuckooRecv(size_t fngprtSize, size_t bucketSize,
     }
 }
 
-void Communicant::commSend(const ustring& toSend, const unsigned int numBytes) {
-    Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
-            + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
-
-    auto sendptr = reinterpret_cast<const char *> ((unsigned char *) toSend.data());
-    commSend(sendptr, numBytes);
-}
-
 void Communicant::commSend(const string& str) {
     Logger::gLog(Logger::COMM, "... attempting to send: string " + str);
     commSend((long) str.length());
     commSend(str.data(), str.length());
 }
 
-void Communicant::commSend(const ustring& ustr) {
+void Communicant::commSend(const ustring& toSend, long numBytes) {
+    Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
+                                       + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
 
+    auto sendptr = reinterpret_cast<const char *> ((unsigned char *) toSend.data());
+    commSend(sendptr, numBytes);
+}
+void Communicant::commSend(const ustring& ustr) {
     Logger::gLog(Logger::COMM, "... attempting to send: ustring " + ustrToStr(ustr));
     commSend((long) ustr.length());
     commSend(ustr, ustr.length());
@@ -245,7 +243,7 @@ void Communicant::commSend(const vec_ZZ_p& vec) {
     ZZ result;
     result = 0;
 
-    for (int ii = vec.length() - 1; ii >= 0; ii--) // append in reverse order to make decoding easier
+    for (long ii = vec.length() - 1; ii >= 0; ii--) // append in reverse order to make decoding easier
         result = (result * (ZZ_p::modulus()+1)) + rep(vec[ii])+1; // added 1 to avoid insignificant 0's in the lead of the vector
     commSend(result);
 }
@@ -298,7 +296,7 @@ void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
     commSend(hte.count);
     commSend(toStr<size_t>(hte.keyCheck));
     commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
-    commSend(hte.valueSum, (unsigned int) eltSize);
+    commSend(hte.valueSum, (int) eltSize);
 }
 
 void Communicant::commSend(const ZZ& num, int size) {
@@ -373,7 +371,7 @@ IBLT Communicant::commRecv_IBLTNHash(size_t size, size_t eltSize)
 }
 
 
-ustring Communicant::commRecv_ustring(unsigned int numBytes) {
+ustring Communicant::commRecv_ustring(size_t numBytes) {
     string received = commRecv(numBytes);
     ustring result((const unsigned char *) (received.data()), numBytes);
     Logger::gLog(Logger::COMM_DETAILS, "... received ustring: " +
@@ -383,7 +381,7 @@ ustring Communicant::commRecv_ustring(unsigned int numBytes) {
 }
 
 string Communicant::commRecv_string() {
-    long sz = commRecv_long();
+    unsigned long sz = narrow_cast<unsigned long>(commRecv_long());
     string str = commRecv(sz);
 
     Logger::gLog(Logger::COMM, "... received: string " + str);
@@ -392,7 +390,7 @@ string Communicant::commRecv_string() {
 }
 
 ustring Communicant::commRecv_ustring() {
-    long sz = commRecv_long();
+    size_t sz = narrow_cast<size_t>(commRecv_long());
     ustring ustr = commRecv_ustring(sz);
 
     Logger::gLog(Logger::COMM, "... received: ustring " + ustrToStr(ustr));
@@ -476,7 +474,7 @@ byte Communicant::commRecv_byte() {
     string received = commRecv(1);
     Logger::gLog(Logger::COMM, string("... received byte num ") + toStr((int) received[0]));
 
-    return received[0];
+    return static_cast<byte>(received[0]);
 }
 
 ZZ_p Communicant::commRecv_ZZ_p() {
@@ -489,11 +487,11 @@ ZZ_p Communicant::commRecv_ZZ_p() {
     return result;
 }
 
-ZZ Communicant::commRecv_ZZ(int size) {
-    int num_size;
+ZZ Communicant::commRecv_ZZ(size_t size) {
+    size_t num_size;
     ustring received;
     if (size == 0)
-        num_size = commRecv_int(); // first receive the number of bytes represented by the ZZ
+        num_size = narrow_cast<size_t>(commRecv_int()); // first receive the number of bytes represented by the ZZ
     else
         num_size = size;
 
@@ -540,10 +538,10 @@ IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
 }
 
 Cuckoo Communicant::commRecv_Cuckoo() {
-    size_t fngprtS = commRecv_long();
-    size_t bucketS = commRecv_long();
-    size_t filterSize = commRecv_long();
-    size_t kicks = commRecv_long();
+    size_t fngprtS = narrow_cast<size_t>(commRecv_long());
+    size_t bucketS = narrow_cast<size_t>(commRecv_long());
+    size_t filterSize = narrow_cast<size_t>(commRecv_long());
+    size_t kicks = narrow_cast<size_t>(commRecv_long());
     ZZ itemsC = commRecv_ZZ(0); // 0 for requesting number of bytes in
                                 // ZZ to be transmitted too
 

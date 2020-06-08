@@ -53,7 +53,7 @@ public:
      * %R: Must have called either commListen or commConnect already.
      * @see Communicant.h for more explanations, please.
      */
-    void commSend(const char *toSend, int numBytes) override;
+    void commSend(const char *toSend, size_t numBytes) override;
 
     /**
      * Receives numBytes characters from the socket.

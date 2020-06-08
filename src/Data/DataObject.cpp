@@ -47,7 +47,7 @@ ZZ DataObject::pack(const string& theStr) {
 } 
 
 string DataObject::unpack(const ZZ& num) {
-    int size = NumBytes(num);
+    unsigned long size = narrow_cast<unsigned long>(NumBytes(num));
     auto *rawResult = new unsigned char[size];
     BytesFromZZ(rawResult, num, size);
     const auto *result = reinterpret_cast<const char *> (rawResult);
@@ -64,8 +64,8 @@ string DataObject::to_string() const {
     return RepIsInt?toStr(myBuffer):unpack(myBuffer);
 }
 
-const char *DataObject::to_char_array(long &len) const {
-    len = NumBytes(myBuffer);
+const char *DataObject::to_char_array(size_t &len) const {
+    len = narrow_cast<size_t>(NumBytes(myBuffer));
     return strndup(to_string().data(), len);
 }
 

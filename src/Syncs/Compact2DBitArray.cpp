@@ -20,17 +20,17 @@ void _discern_endianness() {
     // This assumes size(int) > size(char). I can imagine a tiny
     // embedded device where this is not the case.
     unsigned int x = 1;
-    if (!(*(char *) &x == 1))
+    if (*(char *) &x != 1) // was (!(*(char *) &x == 1))
         littleEndian = false;
 }
 
 void Compact2DBitArray::_constructorGuards() const {
     if (!(fSize > 0 && fSize <= MAX_F_BITS))
         throw Compact2DBitArrayError("Fingerprint has to be between 1 and 32 bits!");
-    if (!(bSize > 0))
+    if (bSize <= 0)
         throw Compact2DBitArrayError("Bucket (column) count "
                                      "has to be at least 1!");
-    if (!(nBuckets > 0))
+    if (nBuckets <= 0)
         throw Compact2DBitArrayError("Number of buckets (rows) count "
                                      "has to be at least 1!");
 }
@@ -38,20 +38,20 @@ void Compact2DBitArray::_constructorGuards() const {
 Compact2DBitArray::Compact2DBitArray(size_t fingerprintSize, size_t bucketSize,
                                      size_t NumOfBuckets) :
     fSize (fingerprintSize),
-    fSizeB (ceil(fSize / float(BYTE))),
+    fSizeB (narrow_cast<unsigned short>(ceil(fSize / float(BYTE)))),
     bSize (bucketSize),
     nBuckets (NumOfBuckets)
 {
     _constructorGuards();
     std::call_once(onceEndiannessFlag, _discern_endianness);
-    store.resize(ceil((fSize * bSize * nBuckets) / float(BYTE)));
+    store.resize(narrow_cast<unsigned long>(ceil((fSize * bSize * nBuckets) / float(BYTE))));
 }
 
 Compact2DBitArray::Compact2DBitArray(size_t fingerprintSize, size_t bucketSize,
                                      size_t NumOfBuckets, vector<unsigned char> f) :
     store (std::move(f)),
     fSize (fingerprintSize),
-    fSizeB (ceil(fSize / float(BYTE))),
+    fSizeB (narrow_cast<unsigned short>(ceil(fSize / float(BYTE)))),
     bSize (bucketSize),
     nBuckets (NumOfBuckets)
 {
@@ -96,13 +96,13 @@ void Compact2DBitArray::_assertIdx(size_t bucketIdx, size_t entryIdx) const {
                                      + " entries long.");
 }
 
-unsigned Compact2DBitArray::getEntry(size_t bucketIdx, size_t entryIdx) const {
+size_t Compact2DBitArray::getEntry(size_t bucketIdx, size_t entryIdx) const {
     _assertIdx(bucketIdx, entryIdx);
     GetSetPrelim p = _getSetPrelim(bucketIdx, entryIdx);
 
     if (p.lstByte > p.fstByte) { // Entry in multiple bytes
-        unsigned char fstP = store[p.fstByte] & ((1 << (BYTE - p.onsetBits))
-                                                 - 1);
+        unsigned char fstP = static_cast<unsigned char>(store[p.fstByte] & ((1 << (BYTE - p.onsetBits))
+                                                                            - 1));
         // % BYTE to accommodate for lstP being nicely aligned to the
         // end of its byte
         unsigned char lstP = store[p.lstByte] >> ((BYTE - p.offsetBits) % BYTE);
@@ -122,8 +122,8 @@ unsigned Compact2DBitArray::getEntry(size_t bucketIdx, size_t entryIdx) const {
     }
 
     // Entry spreads only single byte
-    return (store[p.fstByte] >> (BYTE - p.onsetBits - fSize))
-        & ((1 << fSize) - 1);
+    return static_cast<unsigned int>((store[p.fstByte] >> (BYTE - p.onsetBits - fSize))
+                                     & ((1 << fSize) - 1));
 }
 
 void Compact2DBitArray::setEntry(size_t bucketIdx, size_t entryIdx, unsigned f) {
@@ -150,7 +150,7 @@ void Compact2DBitArray::setEntry(size_t bucketIdx, size_t entryIdx, unsigned f) 
         fstP = store[p.fstByte] >> (BYTE - p.onsetBits);
         // extract the LS bits of the byte that are not the part of
         // current entry. Keep them in LS positions.
-        lstP = store[p.fstByte] & ((1 << (BYTE - p.onsetBits - fSize)) - 1);
+        lstP = static_cast<unsigned char>(store[p.fstByte] & ((1 << (BYTE - p.onsetBits - fSize)) - 1));
 
         // bring fstP back to MS bits
         toWrite = fstP << (BYTE - p.onsetBits);
@@ -214,11 +214,11 @@ vector<unsigned char> Compact2DBitArray::getRaw() const {
 
 unsigned char Compact2DBitArray::_getNextFByte(const vector<unsigned char>& f,
                                                size_t cons) const {
-    int r = fSize - cons; // remained bits
+    size_t r = fSize - cons; // remained bits
     if (r <= 0)
         throw Compact2DBitArrayError("Fingerprint has no more bits.");
 
-    size_t left = r % BYTE; // bits in the MSByte of what remained in
+    size_t left = static_cast<size_t>(r % BYTE); // bits in the MSByte of what remained in
                             // f by now (or 0 when 8 bits remained)
     if (r < BYTE)
         return f.front() << (BYTE - r); // align remaining bits to MS bit

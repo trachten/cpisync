@@ -72,7 +72,7 @@ inline vector<byte> StrToVec(const string& data) {
 
     const char *data_c_str = data.c_str();
     result.reserve((int) data.length()); result.reserve((int) data.length()); for (int ii = 0; ii < (int) data.length(); ii++)
-        result.push_back(data_c_str[ii]);
+        result.push_back(static_cast<byte>(data_c_str[ii]));
 
     return result;
 }
@@ -106,7 +106,7 @@ inline vector<string> split(const string& str, char sep)
 inline ZZ strToZZ(string str)
 {
     
-    const int c_range = narrow_cast<int>(pow(2, 8 * sizeof(char))); // value range for the char in output string
+    const int c_range = narrow_cast<int>(pow(2.0, 8.0 * sizeof(char))); // value range for the char in output string
 
     ZZ number = conv<ZZ>(str[0]);
     long len = str.length();
@@ -128,7 +128,7 @@ inline ZZ strToZZ(string str)
 inline string zzToString(ZZ num)
 {
     long len;
-    const int c_range = narrow_cast<int>(pow(2, 8 * sizeof(char))); // value range for the char in input string
+    const int c_range = narrow_cast<int>(pow(2.0, 8.0 * sizeof(char))); // value range for the char in input string
     if (num == 0)
         len = 1;
     else
@@ -146,8 +146,8 @@ inline string zzToString(ZZ num)
     }
 
     string out;
-    for (auto itr : str)
-        out += itr;
+    for (long ii = 0; ii<len; ii++)
+        out += str[ii];
     return out;
 }
 
@@ -185,6 +185,16 @@ inline T strTo(const string& str) {
 }
 
 /**
+ * Converts a C-style string into a type T.  Similar to {@see strTo(const string& str)}.
+ */
+template <class T>
+inline T charArrayTo(const char* cStr) {
+    if (cStr==nullptr)
+        throw invalid_argument(cStr);
+    return strTo<T>(string(cStr));
+}
+
+/**
  * Helper function to turn anything with a stream printing capability into a string
  * @param item The thing to be converted
  * @return A string representing the number
@@ -208,7 +218,7 @@ inline string ustrToStr(const ustring& ustr) {
  */
 template <class T>
 string printListOfPtrs(list<T *> theList) {
-    string result = "[";
+    string result="[";
     typename list<T *>::const_iterator iter;
     for (iter = theList.begin(); iter != theList.end(); iter++)
         result += toStr(**iter) + " ";
@@ -229,7 +239,7 @@ class AuxSetOfSets{
         template <class T>
         static string printSetofSets(T theList)
         {
-            string result = "{ ";
+            string result="{ ";
             for (auto itr : theList)
             {
                 auto curSet = itr->to_Set();
@@ -251,7 +261,7 @@ class AuxSetOfSets{
         template <class T>
         static string printSet(T thelist)
         {
-            string result = "[ ";
+            string result="[ ";
             for (auto itr : thelist)
             {
                 result += toStr<ZZ>(itr->to_ZZ()) + " ";
@@ -266,7 +276,7 @@ class AuxSetOfSets{
  */
 template <class T>
 string printListOfSharedPtrs(list<shared_ptr<T>> theList) {
-	string result = "[";
+	string result="[";
 	typename list<shared_ptr<T>>::const_iterator iter;
 	for (iter = theList.begin(); iter != theList.end(); iter++)
 		result += toStr(**iter) + " ";
@@ -464,7 +474,7 @@ private:
 };
 
 const int min_base64 = 62; // first character of base-64 text
-const int signed_shift = 128; // shift to get from unsigned to signed
+const unsigned int signed_shift = 128; // shift to get from unsigned to signed
 
 /**
  * Encodes a given ASCII c-style string into a (base64) string using only characters from '>' to '~'
@@ -472,7 +482,7 @@ const int signed_shift = 128; // shift to get from unsigned to signed
  * @param len The length of the bytes array
  * @return An ASCII-armored string.
  */
-inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
+inline string base64_encode(char const* bytes_to_encode, size_t in_len) {
     string ret;
 
     int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
@@ -501,7 +511,7 @@ inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
  */
 
 inline string base64_decode(std::string const& encoded_string) {
-    int in_len = encoded_string.length();
+    size_t in_len = encoded_string.length();
     char tmp[in_len];
     strncpy(tmp, encoded_string.data(), in_len);
 
@@ -539,8 +549,8 @@ inline string base64_decode(std::string const& encoded_string) {
  * @param base64_chars
  * @return 
  */
-inline string base64_encode(const string& bytes, unsigned int in_len) {
-    string foo = base64_encode(bytes.data(), in_len);
+inline string base64_encode(const string& bytes) {
+    string foo = base64_encode(bytes.data(), bytes.length());
     return foo;
 }
 
@@ -652,7 +662,7 @@ inline string temporaryDir() {
     }
 
     // default temp directory if no env var is found
-    return "/tmp";
+    return string("/tmp");
 }
 
 #endif	/* AUX_H */

@@ -45,7 +45,7 @@ private:
  	*/
     void testTimeStamp();
 
-    const int SEED = 617;
+    unsigned int SEED = 617;
 };
 
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( DataPriorityObjectTest, DataPriorityObjectTest );

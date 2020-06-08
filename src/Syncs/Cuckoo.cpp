@@ -71,7 +71,7 @@ Cuckoo::Cuckoo(size_t capacity, float err) {
         // we are looking for a small f but a relatively high b. The
         // smaller b, the smaller f. But the smaller b, the higher
         // failed insertion probability.
-        size_t f = ceil(log2(1/err) + log2(2*b)); // Eq. 6 from the
+        size_t f = narrow_cast<size_t>(ceil(log2(1 / err) + log2(2 * b))); // Eq. 6 from the
                                                   // paper
 
         // if the smaller b does not give us at least two less bits in
@@ -88,7 +88,7 @@ Cuckoo::Cuckoo(size_t capacity, float err) {
 
     fngprtSize = bestF;
     bucketSize = bestB;
-    filterSize = ceil(capacity / float(bucketSize));
+    filterSize = narrow_cast<size_t>(ceil(capacity / float(bucketSize)));
     maxKicks = DEFAULT_MAX_KICKS;
     itemsCount = 0;
     filter = Compact2DBitArray(fngprtSize, bucketSize, filterSize);
@@ -140,16 +140,16 @@ bool Cuckoo::insert(const DataObject& datum) {
     }
 
     // Choose bucket to kick from
-    int chosenBucket = _rand(0, 1) ? p.i2 : p.i1;
+    size_t chosenBucket = _rand(0, 1) ? p.i2 : p.i1;
     // The fingerprint to put in that bucket
-    int f = p.f;
+    auto f = p.f;
 
     stack<Reloc> relocStack;
     for (size_t kick=0; kick<maxKicks; kick++) {
         // Choose the fingerprint from the bucket to relocate
-        int victimIdx = _rand(0, bucketSize - 1);
-        int victim = filter.getEntry(chosenBucket, victimIdx);
-        int altBucket = _alternativeBucket(chosenBucket, victim);
+        size_t victimIdx = narrow_cast<size_t>(_rand(0, bucketSize - 1));
+        size_t victim = filter.getEntry(chosenBucket, victimIdx);
+        size_t altBucket = _alternativeBucket(chosenBucket, victim);
 
         Reloc r;
         r.b = chosenBucket;
@@ -174,10 +174,8 @@ bool Cuckoo::insert(const DataObject& datum) {
 bool Cuckoo::lookup(const DataObject& datum) const {
     PartialHash p = _pHash(datum);
 
-    if ((hasF(p.f, p.i1) != -1) || (hasF(p.f, p.i2) != -1))
-        return true;
+    return (hasF(p.f, p.i1) != -1) || (hasF(p.f, p.i2) != -1);
 
-    return false;
 }
 
 bool Cuckoo::erase(const DataObject& datum) {
@@ -186,7 +184,7 @@ bool Cuckoo::erase(const DataObject& datum) {
 
     PartialHash p = _pHash(datum);
 
-    int idx = hasF(p.f, p.i1);
+    size_t idx = hasF(p.f, p.i1);
     if (idx != -1) {
         filter.setEntry(p.i1, idx, 0);
         itemsCount--;
@@ -204,7 +202,7 @@ bool Cuckoo::erase(const DataObject& datum) {
 }
 
 long Cuckoo::_rand(size_t min, size_t max) {
-    std::uniform_int_distribution<> dist(min, max);
+    std::uniform_int_distribution<size_t> dist(min, max);
 
     return dist(prng);
 }
@@ -213,7 +211,7 @@ bool Cuckoo::isZeroF(const DataObject& d) const {
     return !fingerprint(d.to_ZZ());
 }
 
-void Cuckoo::seedPRNG(int seed) {
+void Cuckoo::seedPRNG(unsigned int seed) {
     prng.seed(seed);
 }
 
@@ -228,7 +226,7 @@ ostream& operator<<(ostream& os, const Cuckoo cf) {
  * Other private member functions
  */
 
-int Cuckoo::fingerprint(const ZZ& e) const {
+size_t Cuckoo::fingerprint(const ZZ& e) const {
     return fingerprint_impl(e, fngprtSize);
 }
 
@@ -236,7 +234,7 @@ ZZ Cuckoo::hash(const ZZ& e) const {
     return hash_impl(e, filterSize);
 }
 
-int Cuckoo::addToBucket(size_t bucketIdx, unsigned f) {
+size_t Cuckoo::addToBucket(size_t bucketIdx, unsigned f) {
     for (size_t ii=0; ii<bucketSize; ii++)
         // Put the fingerprint in the first available entry
         if (filter.getEntry(bucketIdx, ii) == 0) {
@@ -247,7 +245,7 @@ int Cuckoo::addToBucket(size_t bucketIdx, unsigned f) {
     return -1;
 }
 
-int Cuckoo::hasF(unsigned f, size_t bucket) const {
+size_t Cuckoo::hasF(unsigned f, size_t bucket) const {
     for (size_t ii=0; ii < bucketSize; ii++)
         if (filter.getEntry(bucket, ii) == f)
             return ii;
@@ -255,7 +253,7 @@ int Cuckoo::hasF(unsigned f, size_t bucket) const {
     return -1;
 }
 
-int Cuckoo::_alternativeBucket(int currentB, int f) const {
+size_t Cuckoo::_alternativeBucket(size_t currentB, size_t f) const {
     // i1 xor hash(f) can wrap around fitlerSize the same way hash can
     // do it on its own.
     return to_int((currentB ^ hash(to_ZZ(f))) % filterSize);

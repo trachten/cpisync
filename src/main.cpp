@@ -233,6 +233,8 @@ int main(int argc, char *argv[]) {
         case IBLT_CPISYNC:
             proto=GenSync::SyncProtocol::OneWayIBLTSync;
             break;
+        default:
+            Logger::error_and_quit("Sync protocol not recognized: "+toStr(sync_flag));
     }
     //Logger::gLog(Logger::METHOD, "Sync Method:  " + toStr(proto));
 
@@ -244,7 +246,7 @@ int main(int argc, char *argv[]) {
     else // we are syncing with a socket
         comm=GenSync::SyncComm::socket;
 
-    int negLogPerr = (int) -log(perr)/log(2); // the negative log of perr ... this is how the constructors expect their error value
+    int negLogPerr = static_cast<int>(-log(perr) / log(2)); // the negative log of perr ... this is how the constructors expect their error value
 
     // 3. Deploy the sync
     GenSync theSync = GenSync::Builder().

@@ -79,7 +79,7 @@ public:
      * @require an active connection via commConnect
      * @return true iff common parameters were verified (i.e. other size and eltSize == our size and eltSize) or oneWay is true
      */
-    bool establishIBLTSend(const size_t size, const size_t eltSize, bool oneWay = false);
+    bool establishIBLTSend(size_t size, size_t eltSize, bool oneWay = false);
 
     /**
     * Establishes common IBLT parameters with another connected Communicant.
@@ -89,7 +89,7 @@ public:
     * @require an active connection via commConnect
     * @return true iff common parameters were verified (i.e. other size and eltSize == our size and eltSize)
     */
-    bool establishIBLTRecv(const size_t size, const size_t eltSize, bool oneWay = false);
+    bool establishIBLTRecv(size_t size, size_t eltSize, bool oneWay = false);
 
     /**
      * Establishes common Cuckoo filter parameter with another
@@ -121,17 +121,16 @@ public:
     * @require listen or connect must have been called to establish a connection.
     * @modify updates xferBytes buffer with the amount of data actually transmitted.
     */
-    virtual void commSend(const char *toSend, int numBytes) = 0;
+    virtual void commSend(const char *toSend, size_t numBytes) = 0;
 
     /**
      * Send data over an existing connection.
      * @param str The string to be transmitted.
-     * @param numBytes The number of characters in the string.
      * @require listen or connect must have been called to establish a connection.
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(const ustring& str, unsigned int numBytes);
+    void commSend(const ustring &str, long numBytes);
 
 
     /**
@@ -153,6 +152,7 @@ public:
      * Receive a Cuckoo filter.
      */
     Cuckoo commRecv_Cuckoo();
+
     /**
      * Sends a data object over the line
      * @param do The data object to send
@@ -173,13 +173,13 @@ public:
      * Sends a string over the line.
      * @param str The string to send.
      */
-    void commSend(const string& str);
+    void commSend(const string &str);
 
     /**
  * Sends a ustring over the line.
  * @param str The ustring to send.
  */
-    void commSend(const ustring& ustr);
+    void commSend(const ustring &ustr);
 
     /**
      * Sends a double over the line.  The recipient must have the same representation of floats.
@@ -245,7 +245,7 @@ public:
      * Sends Cuckoo filter.
      * @param The Cuckoo filter to send.
      */
-    void commSend(const Cuckoo& cf);
+    void commSend(const Cuckoo &cf);
 
     /**
      * Receives up to MAX_BUF_SIZE characters from the socket.
@@ -262,7 +262,7 @@ public:
      * @return The data received from the connection
      * @modify: adds to recvBytes the number of bytes received.
      */
-    ustring commRecv_ustring(unsigned int numBytes);
+    ustring commRecv_ustring(size_t numBytes);
 
     /**
      * Receive a string object over an existing connection.  Note,
@@ -284,7 +284,7 @@ public:
      * Receives and creates DataObject, returning a pointer to it.
      * @return A pointer to the received DataObject.
      */
-    shared_ptr<DataObject>commRecv_DataObject();
+    shared_ptr<DataObject> commRecv_DataObject();
 
     list<shared_ptr<DataObject>> commRecv_DataObject_List();
 
@@ -297,10 +297,11 @@ public:
     list<shared_ptr<DataObject>> commRecv_DoList();
 
     /**
-     *  Specialized receive functions for specific data types.
+     *  Receives a ZZ of given size (in bytes).
+     *  If size==0 (default) , the ZZ's size is first received and decoded, followed by the ZZ.
+     *  @return the ZZ received through the Communicant
      */
-    ZZ commRecv_ZZ(
-            int size = 0); /** If size==0 (default) , the ZZ's size is first received and decoded, followed by the ZZ. */
+    ZZ commRecv_ZZ(size_t size = 0);
     /**
      * Specialized receive functions for specific data types.
      * @require must have called EstablishMod before any of these functions will work.
@@ -340,22 +341,22 @@ public:
     /**
      * @return The number of bytes transmitted with this Communicant (using this object) since the last communication counter reset (with {@link #resetCommCounters}).
      */
-    long getXmitBytes() const;
+    unsigned long getXmitBytes() const;
 
     /**
      * @return The number of bytes received with this Communicant (using this object) since the last reset (with {@link #resetCommCounters}).
      */
-    long getRecvBytes();
+    unsigned long getRecvBytes();
 
     /**
      * @return The total number of bytes transmitted with this Communicant (using this object) since its creation.
      */
-    long getXmitBytesTot();
+    unsigned long getXmitBytesTot();
 
     /**
      * @return The total number of bytes received with this Communicant (using this object) since its creation.
      */
-    long getRecvBytesTot();
+    unsigned long getRecvBytesTot();
 
 
     /**
@@ -382,26 +383,26 @@ protected:
      * Adds <numBytes> bytes to the transmitted byte logs
      * @param numBytes the number of bytes to add to the logs
      */
-    void addXmitBytes(long numBytes);
+    void addXmitBytes(unsigned long numBytes);
 
     /**
      * Adds <numBytes> bytes to the received byte logs
      * @param numBytes the number of bytes to add to the logs
      */
-    void addRecvBytes(long numBytes);
+    void addRecvBytes(unsigned long numBytes);
 
 
-        // FIELDS
-    long xferBytes; /** The number of bytes that have been transferred since the last reset. */
-    long xferBytesTot; /** The total number of bytes transferred since the creation of this communicant. */
+    // FIELDS
+    unsigned long xferBytes; /** The number of bytes that have been transferred since the last reset. */
+    unsigned long xferBytesTot; /** The total number of bytes transferred since the creation of this communicant. */
 
-    long recvBytes; /** The number of bytes that have been received since the last reset. */
-    long recvBytesTot; /** The total number of bytes that have been received since the creation of this communicant. */
+    unsigned long recvBytes; /** The number of bytes that have been received since the last reset. */
+    unsigned long recvBytesTot; /** The total number of bytes that have been received since the creation of this communicant. */
 
-    int MOD_SIZE;    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/
+    long MOD_SIZE;    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/
 
     // CONSTANTS
-    const static int NOT_SET = -1; /** An integer value that has not yet been set. */
+    const static int unsigned NOT_SET = -1; /** An integer value that has not yet been set. */
     const static int unsigned XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
     const static int unsigned XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
     const static int unsigned XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */

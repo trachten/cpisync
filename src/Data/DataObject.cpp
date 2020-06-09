@@ -22,10 +22,10 @@ DataObject::DataObject(const string& str) : DataObject() {
     myBuffer = RepIsInt?strTo<ZZ>(str):pack(str);
 }
 
-DataObject::DataObject(const multiset<shared_ptr<DataObject>> tarSet) : DataObject()
+DataObject::DataObject(const multiset<shared_ptr<DataObject>>& tarSet) : DataObject()
 {
-    string str = "";
-    for (auto ii : tarSet)
+    string str;
+    for (const auto& ii : tarSet)
         str += base64_encode(ii->to_string().c_str(),ii->to_string().length()) + " ";
     str = base64_encode(str.c_str(), str.length());
     myBuffer = pack(str);
@@ -35,8 +35,8 @@ multiset<shared_ptr<DataObject>> DataObject::to_Set() const
 {
     multiset<shared_ptr<DataObject>> result;
     string str = base64_decode(unpack(myBuffer));
-    auto splt = split(str, " ");
-    for (auto itr : splt)
+    auto splt = split(str, ' ');
+    for (const auto& itr : splt)
         result.insert(make_shared<DataObject>(base64_decode(itr)));
     return result;
 }
@@ -47,7 +47,7 @@ ZZ DataObject::pack(const string& theStr) {
 } 
 
 string DataObject::unpack(const ZZ& num) {
-    int size = NumBytes(num);
+    unsigned long size = narrow_cast<unsigned long>(NumBytes(num));
     auto *rawResult = new unsigned char[size];
     BytesFromZZ(rawResult, num, size);
     const auto *result = reinterpret_cast<const char *> (rawResult);
@@ -64,8 +64,8 @@ string DataObject::to_string() const {
     return RepIsInt?toStr(myBuffer):unpack(myBuffer);
 }
 
-const char *DataObject::to_char_array(long &len) const {
-    len = NumBytes(myBuffer);
+const char *DataObject::to_char_array(size_t &len) const {
+    len = narrow_cast<size_t>(NumBytes(myBuffer));
     return strndup(to_string().data(), len);
 }
 

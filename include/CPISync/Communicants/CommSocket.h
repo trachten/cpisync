@@ -53,7 +53,7 @@ public:
      * %R: Must have called either commListen or commConnect already.
      * @see Communicant.h for more explanations, please.
      */
-    void commSend(const char *toSend, int numBytes) override;
+    void commSend(const char *toSend, size_t numBytes) override;
 
     /**
      * Receives numBytes characters from the socket.
@@ -70,14 +70,14 @@ public:
 
 private:
     string remoteHost; /** The name of the host represented by this Communicant. */
-    int remotePort; /** The port on which communicants are being enacted with this Communicant. */
+    int remotePort=DEFAULT_PORT; /** The port on which communicants are being enacted with this Communicant. */
 
     enum CommState { /** Possible states for a communication object. */
         Idle, Listening, Connecting
     };
 
-    CommState state; /** The state of the Communicant. */
-    int my_fd; /** The file descriptor of the socket being used. */
+    CommState state = Idle; /** The state of the Communicant. */
+    int my_fd = -1;  /** The file descriptor of the socket being used.  By default, -1 - no socket. */
 
     // METHODS
     // default constructor - should not be used as the socket is meaningless without at least a specified port
@@ -86,5 +86,6 @@ private:
     // CONSTANTS
     const static int MAX_CONNECTS = 100; /** Maximum number of connection attempts before giving up. */
     const static int DFT_SOCKET_WAIT_MS = 100; /** Default amount of milliseconds to wait before retrying a socket connection. */
+    const static int DEFAULT_PORT = 8079; /** The default port for communications, if none is specified. */
 };
 #endif

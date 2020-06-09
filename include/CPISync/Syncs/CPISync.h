@@ -101,7 +101,7 @@ public:
 
   template <typename T>
   bool addElem(T* newDatum) {
-      auto *newDO = make_shared<DataObject>(*newDatum);
+      auto newDO = make_shared<DataObject>(*newDatum);
       bool result = addElem(newDO);
       return result;
   }
@@ -241,7 +241,7 @@ protected:
    * @require commSync must already be connected
    * @throws SyncFailureException if the parameters don't match between the synchronizing parties.
    */
-  void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override;
+  void RecvSyncParam(const shared_ptr<Communicant>& commSync, bool oneWay = false) override ;
 
 private:
   /**
@@ -253,12 +253,12 @@ private:
    * @note If there is a collision between two elements under this hash, it is possible that the synchronization
    * will fail.  This probability is not included in the probability of error computation.
    */
-  ZZ_p _hash(const shared_ptr<DataObject>datum) const;
+  ZZ_p _hash(const shared_ptr<DataObject>&datum) const;
 
   /**
    * Inverts the hash above when the noHash boolean is set
    */
-  shared_ptr<DataObject> _invHash(ZZ_p num) const;
+  shared_ptr<DataObject> _invHash(const ZZ_p& num) const;
 
   /**
    * A secondary hash used for disambiguating set elements with the same hash.
@@ -275,7 +275,7 @@ private:
    * Converts num to a number between 1 and DATA_MAX
    * @return 
    */
-  ZZ_p _makeData(ZZ_p num) const;
+  ZZ_p _makeData(const ZZ_p& num) const;
 
   /**
    * Sends one set element, properly unhashed, to the other side

@@ -18,6 +18,7 @@ class AuxiliaryTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testToStr);
     CPPUNIT_TEST(testBase64_encode);
     CPPUNIT_TEST(testBase64_decode);
+    CPPUNIT_TEST(testBase64_encode_decode);
     CPPUNIT_TEST(testStrToVecToStr);
     CPPUNIT_TEST(testMultisetIntersect);
     CPPUNIT_TEST(testMultisetDiff);
@@ -29,12 +30,17 @@ class AuxiliaryTest : public CPPUNIT_NS::TestFixture {
 
 public:
     AuxiliaryTest();
-
     ~AuxiliaryTest() override;
+
     void setUp() override;
     void tearDown() override;
 
 private:
+
+    // CONSTANTS
+    static const int NUM_ITERS=100; // the number of iterations to run of some tests
+    static const int MAX_STR_LEN=100; // the maximum length of a string to test
+
 	/**
 	 * Tests casting a string to int, double and ZZ
 	 */
@@ -59,6 +65,11 @@ private:
 	 * Tests decoding strings from base64 back to their original values
 	 */
 	static void testBase64_decode();
+
+	/**
+	 * Tests encoding and then decoding through base64
+	 */
+	static void testBase64_encode_decode();
 
 	/**
 	 * Tests that str to vec and vec to string work properly (by reversing each other)

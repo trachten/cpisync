@@ -30,13 +30,13 @@ void IBLTTest::testAll() {
         items.push_back({randZZ(), randZZ()});
 
     IBLT iblt(SIZE, ITEM_SIZE);
-    for(int ii=0; ii < SIZE/2; ii++)
+    for(unsigned int ii=0; ii < SIZE/2; ii++)
         iblt.insert(items.at(ii).first, items.at(ii).second);
 
-    for(int ii=SIZE/2; ii < SIZE; ii++)
+    for(unsigned int ii=SIZE/2; ii < SIZE; ii++)
         iblt.erase(items.at(ii).first, items.at(ii).second);
 
-    for(int ii=0; ii < SIZE; ii++) {
+    for(unsigned int ii=0; ii < SIZE; ii++) {
         IBLT ibltCopy(iblt); // make a copy each time because getting is destructive
         auto pair = items.at(ii);
         ZZ value;
@@ -81,7 +81,7 @@ void IBLTTest::IBLTNestedInsertRetrieveTest()
     //Add data to interior IBLT
     for (int ii = 0; ii < expEntries; ii++)
     {
-        int before = setZZ.size();
+        unsigned long before = setZZ.size();
         ZZ data = randZZ();
         setZZ.insert(data);
         while (before == setZZ.size())

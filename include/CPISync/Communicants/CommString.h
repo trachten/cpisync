@@ -46,7 +46,7 @@ public:
     void commConnect() override;
     void commListen() override;
     void commClose() override;
-    void commSend(const char *toSend, int numBytes) override;
+    void commSend(const char *toSend, size_t numBytes) override;
     string commRecv(unsigned long numBytes) override;
 
 protected:

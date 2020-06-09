@@ -53,12 +53,31 @@ public:
      * @param mVec      The vector of synchronization methods that this GenSync
      *                      should be prepared to use.  The order of these methods
      *                      is significant.
+     * @param postProcessing  Cleanup functions to call after processing has been completed.  The default
+     *                      is to incorporate all items from the remote agent into my own data.
+     *                      The parameters of postProcessing are:
+     *                      0.  otherMinusSelf - what the remote host has that I do not
+     *                      1.  myData - all my data
+     *                      2.  add - a pointer to the add method of my GenSync object
+     *                      3.  del - a pointer to the dell method of my GenSync object
+     *                      4.  pGenSync - a pointer to this GenSync object
      * @param data       The initial data with which to populate the data structure.  The data is added element by element
      *                      so that synchronization method metadata can be properly maintained.  Initilizes to the empty list
      *                      if not specified.
      * 
      */
-    GenSync(const vector<shared_ptr<Communicant>> &cVec, const vector<shared_ptr<SyncMethod>> &mVec, void (*postProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync) = SyncMethod::postProcessing_SET, const list<shared_ptr<DataObject>> &data = list<shared_ptr<DataObject>>());
+    GenSync(
+            const vector<shared_ptr<Communicant>> &cVec,
+            const vector<shared_ptr<SyncMethod>> &mVec,
+            void (*postProcessing)(
+                    list<shared_ptr<DataObject>>,
+                    list<shared_ptr<DataObject>>,
+                    void (GenSync::*add)(shared_ptr<DataObject>),
+                    bool (GenSync::*del)(shared_ptr<DataObject>),
+                    GenSync *pGenSync)
+            = SyncMethod::postProcessing_SET,
+            const list<shared_ptr<DataObject>> &data = list<shared_ptr<DataObject>>()
+    );
 
     /**
      * Specific GenSync constructor
@@ -216,13 +235,13 @@ public:
      * @param syncIndex The index of the Sync to query (in the order that they were added)
      * @return The number of bytes transmitted for this sync to complete
      */
-    const long getXmitBytes(int syncIndex) const;
+    const unsigned long getXmitBytes(int syncIndex) const;
 
     /**
      * @param syncIndex The index of the Sync to query (in the order that they were added)
      * @return The number of bytes received for this sync to complete
      */
-    const long getRecvBytes(int syncIndex) const;
+    const unsigned long getRecvBytes(int syncIndex) const;
 
     /**
      * @param syncIndex The index of the Sync to query (in the order that they were added)
@@ -323,7 +342,7 @@ private:
     GenSync();
 
     /** A pointer to the postprocessing function **/
-    void (*_PostProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync);
+    void (*_PostProcessing)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync){};
 
 
     // FIELDS
@@ -438,7 +457,7 @@ public:
     /**
      * Sets the number of partitions to use in recursive calls for interactive protocols like InteractiveCPISync
      */
-    Builder& setNumPartitions(int theNumParts) {
+    Builder& setNumPartitions(long theNumParts) {
         this->numParts = theNumParts;
         return *this;
     }

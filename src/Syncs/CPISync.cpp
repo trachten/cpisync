@@ -704,18 +704,18 @@ void CPISync::receiveAllElem(const shared_ptr<Communicant>& commSync, list<share
     Logger::gLog(Logger::COMM_DETAILS, "Received all node elements.");
 }
 
-shared_ptr<DataObject> CPISync::_invHash(ZZ_p num) const {
+shared_ptr<DataObject> CPISync::_invHash(const ZZ_p& num) const {
     Logger::gLog(Logger::METHOD,"Entering CPISync::invHash");
     const ZZ &numZZ = rep(num);
     shared_ptr<DataObject> result = make_shared<DataObject>(numZZ);
     return result;
 }
 
-ZZ_p CPISync::_makeData(ZZ_p num) const {
+ZZ_p CPISync::_makeData(const ZZ_p& num) const {
     return to_ZZ_p(rep(num) % DATA_MAX);
 }
 
-ZZ_p CPISync::_hash(const shared_ptr<DataObject>datum) const {
+ZZ_p CPISync::_hash(const shared_ptr<DataObject>&datum) const {
     ZZ num = datum->to_ZZ(); // convert the datum to a ZZ
 
     if (!hashQ && (num >= DATA_MAX))

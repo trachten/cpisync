@@ -27,7 +27,7 @@ void CommDummy::commConnect() {
 void CommDummy::commClose() {
 }
 
-void CommDummy::commSend(const char* toSend, const int numBytes) {
+void CommDummy::commSend(const char* toSend, size_t numBytes) {
     // If numBytes is zero, then toSend's length must be calculated.
     const int calcLen = 0;
     const size_t bytes = numBytes == calcLen ? strlen(toSend) : numBytes;

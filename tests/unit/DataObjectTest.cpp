@@ -65,12 +65,12 @@ void DataObjectTest::testToCharArray(){
     DataObject::RepIsInt = false;
     for(int ii = 0; ii < TIMES; ii++) {
         const string ss = randString(LOWER, UPPER);
-        long  expLen = ss.length();
+        size_t  expLen = ss.length();
         const char *expected = ss.data();
 
         DataObject dd(ss);
 
-        long resLen;
+        size_t resLen;
         const char *result = dd.to_char_array(resLen);
 
         CPPUNIT_ASSERT_EQUAL(expLen, resLen);

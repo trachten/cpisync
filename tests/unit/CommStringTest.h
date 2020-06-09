@@ -31,17 +31,17 @@ private:
 	/**
  	* Tests that CommString::getString() correctly returns the string passed at construction
  	*/
-    void testGetString();
+    static void testGetString();
 
 	/**
  	* Tests that CommString::getName() correctly returns "CommString"
  	*/
-    void testGetName();
+    static void testGetName();
 
 	/**
  	* Tests a full round of communication
  	*/
-    void testComm();
+    static void testComm();
 
 };
 

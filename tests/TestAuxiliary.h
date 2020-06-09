@@ -23,7 +23,7 @@
 // constants
 const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
-const size_t eltSizeSq = (size_t) pow(sizeof(randZZ()), 2); // Size^2 of elements stored in sync tests
+const size_t eltSizeSq = (size_t) pow((double) sizeof(randZZ()), 2.0); // Size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // Size of elements stored in sync tests in bytes
 const int mBar = 2 * UCHAR_MAX; // Max differences between client and server in sync tests
 const int largeLimit = pow(2,9); // Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
@@ -36,7 +36,7 @@ const unsigned int port = 8001; // Port for CommSocket
 const int err = 8; // Negative log of acceptable error probability for CPISync
 const int numParts = 3; // Partitions per level for divide-and-conquer syncs
 const int numExpElem = UCHAR_MAX*4; // Max elements in an IBLT for IBLT syncs
-const int largeNumExpElems = largeLimit * 3; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT and SIMILAR
+const size_t largeNumExpElems = largeLimit * 3; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT and SIMILAR
 
 // helpers
 
@@ -373,20 +373,20 @@ inline bool checkReconSetofSets(multiset<string> tar, multiset<string> reconcile
  * @param success_signal signal sent from child process indicating success status
  * @param svrRprt signal from server process indicating success status from forkHandle
  */
-inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &reconciled ,bool setofSets, bool oneWay, bool success_signal, bool svrRprt){
-	
-	if (!setofSets)
-		if (oneWay)
-			return (resServer == reconciled && svrRprt);
-		else
-			return ((success_signal) && (reconciled == resServer) && svrRprt);
-	// Set of sets
-	else
-		if (oneWay)
-			Logger::error_and_quit("Not implemented yet");
-		else
-			return ((success_signal) && checkReconSetofSets(resServer,reconciled) && svrRprt);
+inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &reconciled ,bool setofSets, bool oneWay, bool success_signal, bool svrRprt) {
 
+    if (!setofSets)
+        if (oneWay)
+            return (resServer == reconciled && svrRprt);
+        else
+            return ((success_signal) && (reconciled == resServer) && svrRprt);
+        // Set of sets
+    else if (oneWay)
+        Logger::error_and_quit("Not implemented yet");
+    else
+        return ((success_signal) && checkReconSetofSets(resServer, reconciled) && svrRprt);
+
+    return false; // you should never get here
 }
 
 /**
@@ -473,13 +473,13 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 		else serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 		//Print stats about sync
-		if(/*serverReport.success*/ false) {
+/*		if(*//*serverReport.success*//* false) {
 			cout << "\nSERVER RECON STATS:\n";
 			cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
 				 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
 			cout << GenSyncServer.printStats(0);
 			cout << "\n";
-		}
+		}*/
 
 		multiset<string> resServer;
 		for (auto dop : GenSyncServer.dumpElements())
@@ -942,13 +942,13 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				forkHandleReport clientReport = forkHandle(GenSyncClient, GenSyncServer);
 
 				//Print stats about sync
-				if (/*clientReport.success*/ false)
+/*				if (*//*clientReport.success*//* false)
 				{
 					cout << "\nCLIENT RECON STATS:\n";
 					cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
 						 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symetric differences" << endl;
 					cout << GenSyncClient.printStats(0);
-				}
+				}*/
 				clientReconcileSuccess &= clientReport.success;
 			}
 			else
@@ -1037,14 +1037,14 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				serverReport = forkHandle(GenSyncServer, GenSyncClient);
 
 			//Print stats about sync
-			if (/*clientReport.success*/ false)
+/*			if (*//*clientReport.success*//* false)
 			{
 				cout << "\nSERVER RECON STATS:\n";
 				cout << "(Reconciled) Set of size " << SIMILAR + CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " with "
 					 << CLIENT_MINUS_SERVER + SERVER_MINUS_CLIENT << " symmetric differences" << endl;
 				cout << GenSyncServer.printStats(0);
 				cout << "\n";
-			}
+			}*/
 
 			multiset<string> resServer;
 			for (auto dop : GenSyncServer.dumpElements())
@@ -1091,6 +1091,8 @@ inline bool longTermSync(GenSync &GenSyncClient,
 			}
 		}
 	}
+
+    return false; // you should never get here
 }
 
 

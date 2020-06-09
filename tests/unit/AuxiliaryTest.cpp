@@ -9,7 +9,6 @@
 
 #include <CPISync/Aux/Auxiliary.h>
 #include "AuxiliaryTest.h"
-#include <string>
 #include <NTL/ZZ_p.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(AuxiliaryTest);
@@ -19,6 +18,7 @@ AuxiliaryTest::AuxiliaryTest() = default;
 AuxiliaryTest::~AuxiliaryTest() = default;
 
 void AuxiliaryTest::setUp() {
+    srand(238423);
 }
 
 void AuxiliaryTest::tearDown() {
@@ -26,16 +26,16 @@ void AuxiliaryTest::tearDown() {
 
 void AuxiliaryTest::testStrTo() {
     int expectedInt = 12;
-    int resultInt = strTo<int>("12");
+    int resultInt = charArrayTo<int>("12");
     CPPUNIT_ASSERT_EQUAL(expectedInt, resultInt);
 
     double expectedDouble = 12.57;
-    auto resultDouble = strTo<double>("12.57");
+    auto resultDouble = charArrayTo<double>("12.57");
     CPPUNIT_ASSERT_EQUAL(expectedDouble, resultDouble);
 
     ZZ_p::init(randZZ());
     ZZ_p expectedZZp(12l);
-    ZZ_p resultZZp = strTo<ZZ_p>("12");
+    ZZ_p resultZZp = charArrayTo<ZZ_p>("12");
     CPPUNIT_ASSERT_EQUAL(expectedZZp, resultZZp);
 }
 
@@ -56,15 +56,15 @@ void AuxiliaryTest::testToStr() {
 void AuxiliaryTest::testSplit()
 {
     vector<string> stringA;
-    string stringB = "";
+    string stringB;
     for (int ii = 0; ii < 10; ii++)
     {
         stringA.push_back(toStr<int>(ii));
         stringB += toStr<int>(ii) + " ";
     }
-    CPPUNIT_ASSERT_EQUAL(stringA.size(), split(stringB, " ").size());
+    CPPUNIT_ASSERT_EQUAL(stringA.size(), split(stringB, ' ').size());
     auto it = stringA.begin();
-    vector<string> _stringB = split(stringB, " ");
+    vector<string> _stringB = split(stringB, ' ');
     auto it2 = _stringB.begin();
 
     for (int ii = 0; ii < 10; ii++)
@@ -79,7 +79,7 @@ void AuxiliaryTest::testBase64_encode() {
     std::string expectedEncode = "_MMwdA==";
   
     std::string testStlStr = "asdf";
-    std::string resultEncode = base64_encode(testStlStr, testStlStr.size());
+    std::string resultEncode = base64_encode(testStlStr);
     CPPUNIT_ASSERT_EQUAL(resultEncode, expectedEncode);
 
     const char * testCStr = testStlStr.c_str();
@@ -91,6 +91,16 @@ void AuxiliaryTest::testBase64_decode() {
     std::string expectedDecode = "asdf";
     std::string resultDecode = base64_decode("_MMwdA==");
     CPPUNIT_ASSERT_EQUAL(resultDecode, expectedDecode);
+}
+
+void AuxiliaryTest::testBase64_encode_decode() {
+    for (int ii=0; ii < NUM_ITERS; ii++) {
+        string test=randString(0,MAX_STR_LEN);
+        string result = base64_encode(test);
+        string orig = base64_decode(result);
+        CPPUNIT_ASSERT(test==orig);
+    }
+
 }
 
 void AuxiliaryTest::testStrToVecToStr() {

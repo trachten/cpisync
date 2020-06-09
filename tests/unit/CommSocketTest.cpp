@@ -50,7 +50,7 @@ void CommSocketTest::SocketSendAndReceiveTest() {
 		//If socketSendReceiveTest() has finished successfully then kill child and break out of the loop
 		if(result == 0) {
 			CPPUNIT_FAIL("Sockets did not establish a connection in time");
-			kill(timer_pid, 0);
+			// kill(timer_pid, 0);
 		}
 		else if(result == -1)
 			Logger::error_and_quit("Fork error in CommSocketTest::SocketSendAndReceive");

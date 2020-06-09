@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
     long mbar = 5;
     long bits = 32;
     long pFactor = 2;
-    long numExpected; // the maximum number of elements expected in the data structure
+    // the maximum number of elements expected in the data structure
     bool dataInFile = false;
     string fileName; // the file to tie to the synchronization
 
@@ -233,6 +233,8 @@ int main(int argc, char *argv[]) {
         case IBLT_CPISYNC:
             proto=GenSync::SyncProtocol::OneWayIBLTSync;
             break;
+        default:
+            Logger::error_and_quit("Sync protocol not recognized: "+toStr(sync_flag));
     }
     //Logger::gLog(Logger::METHOD, "Sync Method:  " + toStr(proto));
 
@@ -244,7 +246,7 @@ int main(int argc, char *argv[]) {
     else // we are syncing with a socket
         comm=GenSync::SyncComm::socket;
 
-    int negLogPerr = (int) -log(perr)/log(2); // the negative log of perr ... this is how the constructors expect their error value
+    int negLogPerr = static_cast<int>(-log(perr) / log(2)); // the negative log of perr ... this is how the constructors expect their error value
 
     // 3. Deploy the sync
     GenSync theSync = GenSync::Builder().
@@ -289,7 +291,7 @@ int main(int argc, char *argv[]) {
             cout << "Current string contents: " << ((CommString *) comm)->getString() << endl;
         //clock_gettime(CLOCK_REALTIME, &timerEnd);
         timespec timeTaken = diff(timerStart, timerEnd);
-        double totalTime = (timeTaken.tv_sec) + (double) timeTaken.tv_nsec / 1000000000;
+//        double totalTime = (timeTaken.tv_sec) + (double) timeTaken.tv_nsec / 1000000000;
 //        // Report statistics
 //        cout << endl << "   Data transferred: " << comm->getXferBytesTot() << " bytes" << endl
 //             << "   Data received:    " << comm->getRecvBytesTot() << " bytes" << endl

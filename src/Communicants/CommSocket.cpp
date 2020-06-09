@@ -12,13 +12,11 @@ CommSocket::CommSocket(int port, string host) : Communicant() {
     remoteHost = std::move(host);
     remotePort = port;
 
-    my_fd = -1;  // no socket currently open
-    state = Idle;
     Logger::gLog(Logger::METHOD, string("Setting up host ") + toStr(remoteHost) + " on port " + toStr(remotePort));
 }
 
 CommSocket::~CommSocket() {
-    commClose();  // make sure that the socket has been closed
+    CommSocket::commClose();  // make sure that the socket has been closed
 }
 
 void CommSocket::commListen() {
@@ -105,8 +103,8 @@ void CommSocket::commConnect() {
         // defines a host computer on the Internet
         struct hostent *he;
         // get the IP from the host computer
-        if ((he = gethostbyname(remoteHost.c_str())) == nullptr)
-            Logger::error_and_quit("Could not resolve hostname " + remoteHost);
+        if ((he = gethostbyname(remoteHost.c_str())) == nullptr || he->h_addr_list==nullptr)
+            Logger::error_and_quit("Could not properly resolve hostname " + remoteHost);
 
         // copy the network address to the sockaddr_in structure which is passed to connect()
         memcpy(&otherAddr.sin_addr, he->h_addr_list[0], static_cast<size_t>(he->h_length));
@@ -157,21 +155,21 @@ void CommSocket::commClose() {
         int result = close(my_fd);
         if (result == -1)
             Logger::error_and_quit("close");
-		else
-			Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
-		my_fd = -1;  // no socket active now
+        else
+            Logger::gLog(Logger::COMM_DETAILS, "<SOCKET CLOSED>");
+        my_fd = -1;  // no socket active now
     }
 }
 
-void CommSocket::commSend(const char* toSend, const int len) {
+void CommSocket::commSend(const char* toSend, size_t len) {
     Logger::gLog(Logger::COMM_DETAILS, "<RAW SEND> " + toStr(len) + string(" bytes sending (base64): ")
             + base64_encode(toSend, len));
 
     if (my_fd == -1)
         Logger::error_and_quit("Not connected to a socket!");
 
-    long numBytes = (len == 0 ? strlen(toSend) + 1 : len);  // the size of the string to be sent, including "\0"
-    long numSent;
+    unsigned long numBytes = (len == 0 ? strlen(toSend) + 1 : len);  // the size of the string to be sent, including "\0"
+    ssize_t numSent;
 
     bool doAgain;
     do {
@@ -204,7 +202,7 @@ string CommSocket::commRecv(unsigned long numBytes) {
        if (my_fd == -1)
         Logger::error_and_quit("Not connected to a socket!");
 
-    long numRecv = 0;  // number of bytes received in this call
+    ssize_t numRecv;  // number of bytes received in this call
     auto tmpBuf = new char[numBytes];  // buffer into which received bytes are placed
 
     // wait until the buffer has been filled
@@ -213,13 +211,13 @@ string CommSocket::commRecv(unsigned long numBytes) {
     if (numRecv != numBytes)
         Logger::error_and_quit("Received less or more than the prescribed number of characters in commRecv.");
 
-    addRecvBytes(numRecv);  // update the received byte counter
+    addRecvBytes(static_cast<unsigned long>(numRecv));  // update the received byte counter
 
     // clean up
-    string result(tmpBuf, numRecv);
+    Logger::gLog(Logger::COMM_DETAILS, "<RAW RECV> " + toStr(numRecv) + string(" bytes received (base64): ")
+            + base64_encode(tmpBuf, static_cast<size_t>(numRecv)));
+    string result(tmpBuf, static_cast<unsigned long>(numRecv));
     delete[] tmpBuf;
-        Logger::gLog(Logger::COMM_DETAILS, "<RAW RECV> " + toStr(numRecv) + string(" bytes received (base64): ")
-            + base64_encode(result, numRecv));
 
     return result;
 }

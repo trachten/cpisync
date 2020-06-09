@@ -14,9 +14,9 @@ Compact2DBitArrayTest::Compact2DBitArrayTest() = default;
 
 Compact2DBitArrayTest::~Compact2DBitArrayTest() = default;
 
-void Compact2DBitArrayTest::setUp() {};
+void Compact2DBitArrayTest::setUp() {}
 
-void Compact2DBitArrayTest::tearDown() {};
+void Compact2DBitArrayTest::tearDown() {}
 
 inline void _setEntries(Compact2DBitArray& arr, vector<int>& content) {
     size_t zz = 0;

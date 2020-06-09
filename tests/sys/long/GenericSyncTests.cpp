@@ -51,7 +51,7 @@ void GenSyncTest::testAddRemoveElems() {
     for (auto genSync:combos) {
         multiset<string> objectsStr;
 
-        for (auto dop : objectsPtr) {
+        for (const auto& dop : objectsPtr) {
             genSync.addElem(dop);
             // store a multiset of the expected dataset's string representation
             objectsStr.insert(dop->print());
@@ -63,12 +63,12 @@ void GenSyncTest::testAddRemoveElems() {
 
         // create a multiset containing the string representation of objects stored in GenSync
         multiset<string> res;
-        for (auto dop : genSync.dumpElements())
+        for (const auto& dop : genSync.dumpElements())
             res.insert(dop);
 
         CPPUNIT_ASSERT(multisetDiff(res, objectsStr).empty());
 
-        for(auto elem : objectsPtr)
+        for(const auto& elem : objectsPtr)
             genSync.delElem(elem);
 
         //Remove the data that was added with the template
@@ -167,7 +167,7 @@ void GenSyncTest::testBuilder() {
     CPPUNIT_ASSERT_EQUAL(builderConstructor.size(), standardConstructor.size());
 
     // test that each GenSync has the same internal params as an identical GenSync created by the other constructor
-    for(int ii = 0; ii < builderConstructor.size(); ii++) {
+    for(unsigned long ii = 0; ii < builderConstructor.size(); ii++) {
         // basic equality tests - could also synctest identical builders with standards, but right now certain configs require one- or two-way syncs
         CPPUNIT_ASSERT_EQUAL((*builderConstructor.at(ii).getSyncAgt(0))->getName(), (*standardConstructor.at(ii).getSyncAgt(0))->getName());
         CPPUNIT_ASSERT_EQUAL(builderConstructor.at(ii).numComm(), standardConstructor.at(ii).numComm());
@@ -178,7 +178,7 @@ void GenSyncTest::testTwoWaySync() {
 	vector<GenSync> twoWayClient = twoWayCombos(mBar);
 	vector<GenSync> twoWayServer = twoWayCombos(mBar);
 	// sync every GenSync configuration with itself
-	for (int ii = 0; ii < twoWayClient.size(); ii++)
+	for (unsigned int ii = 0; ii < twoWayClient.size(); ii++)
 		//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
 		CPPUNIT_ASSERT(syncTest(twoWayClient.at(ii), twoWayServer.at(ii), false, false, false, false, false));
 }
@@ -215,7 +215,7 @@ void GenSyncTest::testTwoWayProbSync() {
 	vector<GenSync> twoWayProbServer = twoWayProbCombos(numExpElem);
 
 	// sync every GenSync configuration with itself
-	for (int ii = 0; ii < twoWayProbClient.size(); ii++) {
+	for (unsigned int ii = 0; ii < twoWayProbClient.size(); ii++) {
 		//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
 		CPPUNIT_ASSERT(syncTest(twoWayProbClient.at(ii), twoWayProbServer.at(ii), false, true, false, false, false));
 	}

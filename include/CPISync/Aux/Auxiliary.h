@@ -10,6 +10,7 @@
 #ifndef AUX_H
 #define	AUX_H
 
+#include <iostream>
 #include <sstream>
 #include <unistd.h>
 #include <NTL/ZZ.h>
@@ -46,7 +47,19 @@ using std::multiset;
 using std::invalid_argument;
 using std::runtime_error;
 
+
 // FUNCTIONS
+
+// Based on Bjarne Stroustrup. The C++ Programming Language (4th edition). 2013.
+//   ISBN: 978-0-321-56384-2. Chapter 11.5: Explicit type conversion. page 299.
+template <class Target, class Source>
+Target narrow_cast(Source v)
+{
+    auto r = static_cast<Target>(v);
+    if (static_cast<Source>(r)!=v)
+        throw std::runtime_error("narrow_cast<>() failed");
+    return r;
+}
 
 /**
  * Converts a string into a vector of bytes
@@ -59,7 +72,7 @@ inline vector<byte> StrToVec(const string& data) {
 
     const char *data_c_str = data.c_str();
     result.reserve((int) data.length()); result.reserve((int) data.length()); for (int ii = 0; ii < (int) data.length(); ii++)
-        result.push_back(data_c_str[ii]);
+        result.push_back(static_cast<byte>(data_c_str[ii]));
 
     return result;
 }
@@ -69,19 +82,20 @@ inline vector<byte> StrToVec(const string& data) {
  * @param str The target string to be splitted
  * @param sep Appointed char where string should be splitted
  * @return arr A vector containing the content of string after splitting
+ *
+ * Similar to code at https://www.geeksforgeeks.org/tokenizing-a-string-cpp/
  */
-inline vector<string> split(string str, string sep)
+inline vector<string> split(const string& str, char sep)
 {
-    char *cstr = const_cast<char *>(str.c_str());
-    char *current;
-    vector<std::string> arr;
-    current = strtok(cstr, sep.c_str());
-    while (current != NULL)
-    {
-        arr.push_back(current);
-        current = strtok(NULL, sep.c_str());
+    string token;
+    vector<std::string> tokens;
+
+    stringstream myStream(str);
+    while(std::getline(myStream, token, sep)) {
+        tokens.emplace_back(token);
     }
-    return arr;
+
+    return tokens;
 }
 
 /**
@@ -92,7 +106,7 @@ inline vector<string> split(string str, string sep)
 inline ZZ strToZZ(string str)
 {
     
-    const int c_range = pow(2, 8 * sizeof(char)); // value range for the char in output string
+    const int c_range = narrow_cast<int>(pow(2.0, 8.0 * sizeof(char))); // value range for the char in output string
 
     ZZ number = conv<ZZ>(str[0]);
     long len = str.length();
@@ -114,7 +128,7 @@ inline ZZ strToZZ(string str)
 inline string zzToString(ZZ num)
 {
     long len;
-    const int c_range = pow(2, 8 * sizeof(char)); // value range for the char in input string
+    const int c_range = narrow_cast<int>(pow(2.0, 8.0 * sizeof(char))); // value range for the char in input string
     if (num == 0)
         len = 1;
     else
@@ -131,10 +145,9 @@ inline string zzToString(ZZ num)
         num /= c_range;
     }
 
-    string out = "";
-
-    for (auto itr : str)
-        out += itr;
+    string out;
+    for (long ii = 0; ii<len; ii++)
+        out += str[ii];
     return out;
 }
 
@@ -161,7 +174,7 @@ inline string VecToStr(vector<byte>&& data) {
  * for a ZZ_p)
  */
 template <class T>
-inline T strTo(const string str) {
+inline T strTo(const string& str) {
     if (str.empty())
         throw invalid_argument(str);
 
@@ -169,6 +182,16 @@ inline T strTo(const string str) {
     T result;
     tmp >> result;
     return result;
+}
+
+/**
+ * Converts a C-style string into a type T.  Similar to {@see strTo(const string& str)}.
+ */
+template <class T>
+inline T charArrayTo(const char* cStr) {
+    if (cStr==nullptr)
+        throw invalid_argument(cStr);
+    return strTo<T>(string(cStr));
 }
 
 /**
@@ -195,7 +218,7 @@ inline string ustrToStr(const ustring& ustr) {
  */
 template <class T>
 string printListOfPtrs(list<T *> theList) {
-    string result = "[";
+    string result="[";
     typename list<T *>::const_iterator iter;
     for (iter = theList.begin(); iter != theList.end(); iter++)
         result += toStr(**iter) + " ";
@@ -216,7 +239,7 @@ class AuxSetOfSets{
         template <class T>
         static string printSetofSets(T theList)
         {
-            string result = "{ ";
+            string result="{ ";
             for (auto itr : theList)
             {
                 auto curSet = itr->to_Set();
@@ -238,7 +261,7 @@ class AuxSetOfSets{
         template <class T>
         static string printSet(T thelist)
         {
-            string result = "[ ";
+            string result="[ ";
             for (auto itr : thelist)
             {
                 result += toStr<ZZ>(itr->to_ZZ()) + " ";
@@ -253,7 +276,7 @@ class AuxSetOfSets{
  */
 template <class T>
 string printListOfSharedPtrs(list<shared_ptr<T>> theList) {
-	string result = "[";
+	string result="[";
 	typename list<shared_ptr<T>>::const_iterator iter;
 	for (iter = theList.begin(); iter != theList.end(); iter++)
 		result += toStr(**iter) + " ";
@@ -328,7 +351,7 @@ multiset<T> multisetIntersect(const multiset<T> first, const multiset<T> second)
  * @return the resulting multiset
  */
 template <class T>
-multiset<T> multisetDiff(const multiset<T> first, const multiset<T> second) {
+multiset<T> multisetDiff(multiset<T> first, multiset<T> second) {
     vector<T> resultVec;
     std::set_difference(first.begin(), first.end(), second.begin(), second.end(), back_inserter(resultVec));
     // convert the result to a multiset
@@ -363,7 +386,7 @@ bool cmpMultiset(const multiset<T> first, const multiset<T> second)
 template <typename T>
 class cmp {
 public:
-    bool operator()(T a, T b) {
+    bool operator()(const T a, const T b) {
         return (*a) < (*b);
     }
 };
@@ -451,7 +474,7 @@ private:
 };
 
 const int min_base64 = 62; // first character of base-64 text
-const int signed_shift = 128; // shift to get from unsigned to signed
+const unsigned int signed_shift = 128; // shift to get from unsigned to signed
 
 /**
  * Encodes a given ASCII c-style string into a (base64) string using only characters from '>' to '~'
@@ -459,7 +482,7 @@ const int signed_shift = 128; // shift to get from unsigned to signed
  * @param len The length of the bytes array
  * @return An ASCII-armored string.
  */
-inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
+inline string base64_encode(char const* bytes_to_encode, size_t in_len) {
     string ret;
 
     int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
@@ -488,7 +511,7 @@ inline string base64_encode(char const* bytes_to_encode, unsigned int in_len) {
  */
 
 inline string base64_decode(std::string const& encoded_string) {
-    int in_len = encoded_string.length();
+    size_t in_len = encoded_string.length();
     char tmp[in_len];
     strncpy(tmp, encoded_string.data(), in_len);
 
@@ -505,7 +528,7 @@ inline string base64_decode(std::string const& encoded_string) {
 
     string ret;
     for (int ii = 0; ii < in_len; ii += 4) {
-        unsigned long group = static_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
+        auto group = narrow_cast<unsigned long>((tmp[ii] - min_base64) + 64 * (tmp[ii + 1] - min_base64) +
                                                          64 * 64 * (tmp[ii + 2] - min_base64) +
                                                          64 * 64 * 64 * (tmp[ii + 3] - min_base64));
         ret += (char) (group % 256) - signed_shift;
@@ -526,8 +549,8 @@ inline string base64_decode(std::string const& encoded_string) {
  * @param base64_chars
  * @return 
  */
-inline string base64_encode(const string bytes, unsigned int in_len) {
-    string foo = base64_encode(bytes.data(), in_len);
+inline string base64_encode(const string& bytes) {
+    string foo = base64_encode(bytes.data(), bytes.length());
     return foo;
 }
 
@@ -607,7 +630,7 @@ inline byte enumToByte(T theEnum) {
     static_assert(std::is_same<byte, typename std::underlying_type<T>::type>::value,
         "Underlying enum class is not byte - cannot convert to byte!");
     return static_cast< byte >(theEnum);
-};
+}
 
 /**
  * An awkward helper for iterating enums.
@@ -639,7 +662,7 @@ inline string temporaryDir() {
     }
 
     // default temp directory if no env var is found
-    return "/tmp";
+    return string("/tmp");
 }
 
 #endif	/* AUX_H */

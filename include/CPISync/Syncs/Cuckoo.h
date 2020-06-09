@@ -258,14 +258,14 @@ private:
      * @return The entry index where the fngprt is inserted
      * or -1 if the bucket is full.
      */
-    inline size_t addToBucket(size_t bucketIdx, unsigned f);
+    inline long long addToBucket(size_t bucketIdx, unsigned f);
 
     /**
      * @param f The fingerprint to search for.
      * @param bucket The bucket in which to search.
-     * @return Index of the fingerprint in the bucket.
+     * @return Index of the fingerprint in the bucket or -1 if it is not there.
      */
-    inline size_t hasF(unsigned f, size_t bucket) const;
+    inline int hasF(unsigned f, size_t bucket) const;
 
     /**
      * Calculate the alternative bucket for the given bucket and the fingerprint.
@@ -287,28 +287,29 @@ private:
      * Calculate the partial hash of the item.
      * @param datum The item to calculate partial hash for.
      * TODO: for fngprtSize=7 (f=119), fitlerSize=5, bucketSize=4
-     * can finish in 0, 1, and can be kicked to 4 (from 0), instead of 1.
+     * can end up in 0, 1, and can be kicked to 4 (from 0), instead of 1.
      * _alternativeBucket(1, 119) == 0, _alternativeBucket(0, 119) == 4.
      * This introduces false negatives and Cuckoo Filter should not have any.
      */
     inline PartialHash _pHash(const DataObject& datum) const;
 
     /**
-     * Auxiliary structure to track relocations in insert procedure.
+     * Auxiliary structure to track the previous state of the filter
+     * during the insertion.
      */
-    struct Reloc {
-        size_t b; // bucket index
-        size_t c; // cell index
+    struct Slot {
+        size_t b;          // bucket index
+        size_t c;          // cell index
         unsigned int f;    // fingerprint to put there
     };
 
     /**
-     * Commit the changes to the cuckoo filter storage.
-     * To be used only when the relocation chain does not exceed maxKicks.
-     * @param relocStack The relocation chain.
+     * Restores filter to its state before the insertion when the
+     * insertion chain exceeds the predefined hard limit.
+     * @param originalSlots The values of the visited slots before they are
+     * modified.
      */
-    inline void _commit_relocation_chain(stack<Reloc>& relocStack);
-
+    inline void _restore_filter(stack<Slot>& originalSlots);
 
     // NESTED CLASSES
     class CuckooFilterError : public runtime_error {

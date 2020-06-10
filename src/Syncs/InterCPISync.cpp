@@ -30,7 +30,7 @@ InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,boo
 
 	Logger::gLog(Logger::METHOD,"Entering InterCPISync::InterCPISync");
 	// setup ZZ_p field size
-	redundant_k = to_long(CeilToZZ(to_RR(probEps) / bitNum)); //
+	redundant_k = to_int(CeilToZZ(to_RR(probEps) / bitNum)); //
 
 	if (redundant_k <= 0) redundant_k = 1; //k at least 1
 

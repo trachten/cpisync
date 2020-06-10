@@ -143,7 +143,7 @@ void Communicant::commSend(const string& str) {
     commSend(str.data(), str.length());
 }
 
-void Communicant::commSend(const ustring& toSend, long numBytes) {
+void Communicant::commSend(const ustring& toSend, size_t numBytes) {
     Logger::gLog(Logger::COMM_DETAILS, "... attempting to send: ustring: "
                                        + base64_encode(reinterpret_cast<const char *>(toSend.data()), numBytes));
 

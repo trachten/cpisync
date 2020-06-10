@@ -125,12 +125,12 @@ public:
 
     /**
      * Send data over an existing connection.
-     * @param str The string to be transmitted.
+     * @param toSend The string to be transmitted.
      * @require listen or connect must have been called to establish a connection.
      * @require str numBytes > 0
      * @modify updates xferBytes buffer with the amount of data actually transmitted.
      */
-    void commSend(const ustring &str, long numBytes);
+    void commSend(const ustring &toSend, size_t numBytes);
 
 
     /**

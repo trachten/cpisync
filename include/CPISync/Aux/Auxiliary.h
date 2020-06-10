@@ -450,7 +450,7 @@ public:
      * @param datum The actual datum to add - will be deallocated by the destructor
      * @param pary The number of children per node.
      */
-    paryTree(T *theDatum, int pary) : arity(pary) {
+    paryTree(T *theDatum, long pary) : arity(pary) {
         datum = theDatum;
         child = new paryTree<T> *[arity];
         for (int ii = 0; ii < arity; ii++) child[ii] = NULL;
@@ -482,7 +482,7 @@ const unsigned int signed_shift = 128; // shift to get from unsigned to signed
  * @param len The length of the bytes array
  * @return An ASCII-armored string.
  */
-inline string base64_encode(char const* bytes_to_encode, size_t in_len) {
+inline string base64_encode(char const* bytes_to_encode, long in_len) {
     string ret;
 
     int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3

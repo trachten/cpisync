@@ -256,7 +256,7 @@ private:
      * @param bucketIdx The bucket index to be added to
      * @param f The fingerprint to be added
      * @return The entry index where the fngprt is inserted
-     * or -1 if the bucket is full.
+     * @throws overflow_error if bucket is full.
      */
     inline size_t addToBucket(size_t bucketIdx, unsigned f);
 
@@ -264,8 +264,9 @@ private:
      * @param f The fingerprint to search for.
      * @param bucket The bucket in which to search.
      * @return Index of the fingerprint in the bucket.
+      * @throws range_error if the fingerprint is not found
      */
-    inline size_t hasF(unsigned f, size_t bucket) const;
+    inline size_t findFingerprint(unsigned f, size_t bucket) const;
 
     /**
      * Calculate the alternative bucket for the given bucket and the fingerprint.
@@ -278,9 +279,9 @@ private:
      * Partial hashing return values.
      */
     struct PartialHash {
-        unsigned int f;  // fingerprint
-        unsigned int i1; // first bucket
-        unsigned int i2; // second bucket
+        size_t f;  // fingerprint
+        size_t i1; // first bucket
+        size_t i2; // second bucket
     };
 
     /**
@@ -315,7 +316,6 @@ private:
     public:
         CuckooFilterError(const string& msg) : runtime_error(msg) {}
     };
-
 };
 
 #endif // CUCKOO_H

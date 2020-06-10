@@ -888,7 +888,6 @@ inline bool longTermSync(GenSync &GenSyncClient,
 
 
 	// Generate processes for reconciliation
-	bool success = true;
 	bool success_signal;
 	int chld_state;
 	int my_opt = 0;

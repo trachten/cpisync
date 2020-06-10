@@ -129,15 +129,17 @@ void Cuckoo::_commit_relocation_chain(stack<Reloc>& relocStack) {
 bool Cuckoo::insert(const DataObject& datum) {
     PartialHash p = _pHash(datum);
 
-    if (addToBucket(p.i1, p.f) != -1) {
+    try {
+        addToBucket(p.i1, p.f);
         itemsCount++;
         return true;
-    }
+    } catch (overflow_error ignored) {}
 
-    if (addToBucket(p.i2, p.f) != -1) {
+    try {
+        addToBucket(p.i2, p.f);
         itemsCount++;
         return true;
-    }
+    } catch (overflow_error ignored) {}
 
     // Choose bucket to kick from
     size_t chosenBucket = _rand(0, 1) ? p.i2 : p.i1;
@@ -157,11 +159,12 @@ bool Cuckoo::insert(const DataObject& datum) {
         r.f = f;
         relocStack.push(r);
 
-        if (addToBucket(altBucket, victim) != -1) {
+        try {
+            addToBucket(altBucket, victim);
             _commit_relocation_chain(relocStack);
             itemsCount++;
             return true;
-        }
+        } catch (overflow_error ignored) {}
 
         f = victim;
         chosenBucket = altBucket;
@@ -174,7 +177,17 @@ bool Cuckoo::insert(const DataObject& datum) {
 bool Cuckoo::lookup(const DataObject& datum) const {
     PartialHash p = _pHash(datum);
 
-    return (hasF(p.f, p.i1) != -1) || (hasF(p.f, p.i2) != -1);
+    try {
+        findFingerprint(p.f, p.i1);
+        return true;
+    } catch (range_error ignored) {}
+
+    try {
+        findFingerprint(p.f, p.i2);
+        return true;
+    } catch (range_error ignored) {}
+
+    return false;
 
 }
 
@@ -184,19 +197,19 @@ bool Cuckoo::erase(const DataObject& datum) {
 
     PartialHash p = _pHash(datum);
 
-    size_t idx = hasF(p.f, p.i1);
-    if (idx != -1) {
+    try {
+        size_t idx = findFingerprint(p.f, p.i1);
         filter.setEntry(p.i1, idx, 0);
         itemsCount--;
         return true;
-    } else {
-        idx = hasF(p.f, p.i2);
-        if (idx != -1) {
-            filter.setEntry(p.i2, idx, 0);
-            itemsCount--;
-            return true;
-        }
-    }
+    } catch (range_error ignored) {}
+
+    try {
+        size_t idx = findFingerprint(p.f, p.i2);
+        filter.setEntry(p.i2, idx, 0);
+        itemsCount--;
+        return true;
+    } catch (range_error ignored) {}
 
     return false;
 }
@@ -242,28 +255,28 @@ size_t Cuckoo::addToBucket(size_t bucketIdx, unsigned f) {
             return ii;
         }
 
-    return -1;
+    throw overflow_error("Bucket "+toStr(bucketIdx)+" is full.");
 }
 
-size_t Cuckoo::hasF(unsigned f, size_t bucket) const {
+size_t Cuckoo::findFingerprint(unsigned f, size_t bucket) const {
     for (size_t ii=0; ii < bucketSize; ii++)
         if (filter.getEntry(bucket, ii) == f)
             return ii;
 
-    return -1;
+    throw range_error("Could not find fingerprint "+toStr(f)+" in bucket "+toStr(bucket));
 }
 
 size_t Cuckoo::_alternativeBucket(size_t currentB, size_t f) const {
     // i1 xor hash(f) can wrap around fitlerSize the same way hash can
     // do it on its own.
-    return to_int((currentB ^ hash(to_ZZ(f))) % filterSize);
+    return narrow_cast<size_t>(to_int((currentB ^ hash(to_ZZ(f))) % filterSize));
 }
 
 Cuckoo::PartialHash Cuckoo::_pHash(const DataObject& datum) const {
     PartialHash p;
 
     p.f = fingerprint(datum.to_ZZ());
-    p.i1 = to_int(hash(datum.to_ZZ()));
+    p.i1 = narrow_cast<unsigned int>(to_int(hash(datum.to_ZZ())));
     p.i2 = _alternativeBucket(p.i1, p.f);
 
     return p;

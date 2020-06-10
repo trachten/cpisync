@@ -297,11 +297,11 @@ bool GenSync::clientSyncBegin(int sync_num) {
 }
 
 const unsigned long GenSync::getXmitBytes(int syncIndex) const {
-    return narrow_cast<long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::XMIT));
+    return narrow_cast<unsigned long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::XMIT));
 }
 
 const unsigned long GenSync::getRecvBytes(int syncIndex) const {
-    return narrow_cast<long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::RECV));
+    return narrow_cast<unsigned long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::RECV));
 }
 
 const double GenSync::getCommTime(int syncIndex) const {

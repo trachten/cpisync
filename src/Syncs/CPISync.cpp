@@ -70,10 +70,10 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
     currDiff = maxDiff;
 
     if (redundant == 0) // i.e. use the probability of error to calculate redundancy
-        redundant_k = to_long(CeilToZZ(to_RR(epsilon) / bitNum));
+        redundant_k = to_int(CeilToZZ(to_RR(epsilon) / bitNum));
     else { // compute the probability of error
         redundant_k = redundant;
-        probEps = redundant * bitNum;
+        probEps = static_cast<int>(redundant * bitNum);
     }
 
     if (redundant_k <= 0) //k at least 1

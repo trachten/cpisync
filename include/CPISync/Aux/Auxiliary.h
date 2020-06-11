@@ -473,6 +473,7 @@ private:
     T *datum;
 };
 
+/// BASE64 ENCODE/DECODE
 const int min_base64 = 62; // first character of base-64 text
 const unsigned int signed_shift = 128; // shift to get from unsigned to signed
 
@@ -564,6 +565,7 @@ inline ZZ min(const ZZ& aa, const ZZ& bb) {
         return bb;
 }
 
+// ... NTL functions
 /**
  * @return A random integer in [lower, upper]
  * @require srand() must've been called
@@ -622,6 +624,7 @@ inline ZZ randZZ() {
     return ZZ(randLong());
 }
 
+// ... ENUM operations
 /**
  * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
  */
@@ -643,6 +646,7 @@ inline T &operator++(T& curr) {
     return curr;
 }
 
+// ... FILES
 /**
  * Get the temp directory of the system (POSIX).
  * In C++17, this can be replaced with std::filesystem::temp_directory_path.
@@ -665,5 +669,46 @@ inline string temporaryDir() {
     return string("/tmp");
 }
 
+// CLASSES
+/**
+ * Represents a nullable value.  Either it contains nothing, or it contains an object of type T
+ * @tparam T The type of the nullable object
+ */
+template <class T>
+class Nullable {
+public:
+    /**
+     * nulled unless initializated.
+     */
+     Nullable() { nulled = true; }
+    Nullable(T param) { nulled=false; val=param;}
+
+    /**
+     * @return The value represented by this class.
+     * @throws bad_exception if the object is nulled
+     */
+    T& operator*() {
+        if (nulled)
+            throw bad_exception();
+        return val;
+    }
+
+    /**
+     * Assignment from the base class
+     */
+    Nullable<T>& operator=(const T &other) {
+        nulled=false;
+        val=other;
+        return *this;
+    }
+
+    bool isNullQ() { return nulled; }
+private:
+    bool nulled=true;
+    T val;
+};
+
+template <class T>
+Nullable<T> NOT_SET() { return Nullable<T>(); }
 #endif	/* AUX_H */
 

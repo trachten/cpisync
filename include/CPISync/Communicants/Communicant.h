@@ -146,7 +146,7 @@ public:
      * @param size the expected # entry for IBLT
      * @param eltSize size for elements stored in IBLT
      * */
-    IBLT commRecv_IBLTNHash(size_t size, size_t eltSize);
+    IBLT commRecv_IBLTNHash(Nullable<size_t> size, Nullable<size_t> eltSize);
 
     /**
      * Receive a Cuckoo filter.
@@ -213,7 +213,7 @@ public:
      * computed and sent first.
      * @see commSend(const char *str) for more details
      */
-    void commSend(const ZZ &num, int size = NOT_SET);
+    void commSend(const ZZ &num, Nullable<size_t> size = NOT_SET<size_t>());
 
     // Specialized send functions for specific data types
     /**
@@ -320,11 +320,11 @@ public:
 
     /**
      * Receives an IBLT.
-     * @param size The size of the IBLT to be received.
-     * @param eltSize The size of values of the IBLTs to be received.
+     * @param size The size of the IBLT to be received.  Must be >0 or NOT_SET.
+     * @param eltSize The size of values of the IBLTs to be received.  Must be >0 or NOT_SET.
      * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLT, false) was used to send the IBLT
      */
-    IBLT commRecv_IBLT(size_t size = NOT_SET, size_t eltSize = NOT_SET);
+    IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
 
     // Informational
 
@@ -399,10 +399,9 @@ protected:
     unsigned long recvBytes; /** The number of bytes that have been received since the last reset. */
     unsigned long recvBytesTot; /** The total number of bytes that have been received since the creation of this communicant. */
 
-    long MOD_SIZE;    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/
+    Nullable<size_t> MOD_SIZE = NOT_SET<size_t>();    /** The number of (8-bit) characters needed to represent the ZZ_p modulus.*/
 
     // CONSTANTS
-    const static int unsigned NOT_SET = -1; /** An integer value that has not yet been set. */
     const static int unsigned XMIT_INT = sizeof(int); /** Number of characters with which to transmit an integer. */
     const static int unsigned XMIT_LONG = sizeof(long); /** Number of characters with which to transmit a long integer. */
     const static int unsigned XMIT_DOUBLE = sizeof(float); /** Number of characters with which to transmit a double. */

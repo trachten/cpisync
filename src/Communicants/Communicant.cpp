@@ -231,8 +231,8 @@ void Communicant::commSend(const ZZ_p& num) {
     // send like a ZZ, but with a known size
     unsigned char toSend[*MOD_SIZE];
 
-    BytesFromZZ(toSend, rep(num), *MOD_SIZE);
-    commSend(ustring(toSend, *MOD_SIZE), *MOD_SIZE);
+    BytesFromZZ(toSend, rep(num), MOD_SIZE);
+    commSend(ustring(toSend, MOD_SIZE), MOD_SIZE);
 }
 
 void Communicant::commSend(const vec_ZZ_p& vec) {
@@ -486,7 +486,7 @@ ZZ_p Communicant::commRecv_ZZ_p() {
     return result;
 }
 
-ZZ Communicant::commRecv_ZZ(size_t size) {
+ZZ Communicant::commRecv_ZZ(const int size) {
     size_t num_size;
     ustring received;
     if (size == 0)

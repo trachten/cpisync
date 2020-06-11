@@ -7,7 +7,6 @@
  * Created on June 27, 2018, 9:49 AM
  */
 
-#include <climits>
 #include "FullSyncTest.h"
 #include <CPISync/Syncs/FullSync.h>
 #include "TestAuxiliary.h"

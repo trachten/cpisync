@@ -135,13 +135,13 @@ inline string zzToString(ZZ num)
     {
         if (num < 0)
             num = -num;
-        len = ceil(log(num) / log(c_range));
+        len = static_cast<long>(ceil(log(num) / log(c_range)));
     }
     char str[len];
 
     for (long ii = len - 1; ii >= 0; ii--)
     {
-        str[ii] = conv<int>(num % c_range);
+        str[ii] = static_cast<char>(conv<int>(num % c_range));
         num /= c_range;
     }
 
@@ -486,7 +486,7 @@ const unsigned int signed_shift = 128; // shift to get from unsigned to signed
 inline string base64_encode(char const* bytes_to_encode, long in_len) {
     string ret;
 
-    int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
+    int round3 = static_cast<int>(3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3))); // the number of whole groups of 3
     // every 3 ASCII characters get converted into four base64 characters
     for (int ii = 0; ii < round3; ii += 3) {
         unsigned int group = signed_shift + bytes_to_encode[ii] +
@@ -671,7 +671,8 @@ inline string temporaryDir() {
 
 // CLASSES
 /**
- * Represents a nullable value.  Either it contains nothing, or it contains an object of type T
+ * Represents a nullable value, that is set to null by default.
+ * Either the object is nulled, or it contains an object of type T.
  * @tparam T The type of the nullable object
  */
 template <class T>
@@ -680,27 +681,24 @@ public:
     /**
      * nulled unless initializated.
      */
-     Nullable() { nulled = true; }
+    Nullable() { nulled = true; }
     Nullable(T param) { nulled=false; val=param;}
 
-    /**
-     * @return The value represented by this class.
+   /**
+    * Explicit dereference of the value wrapped by this object.
+     * @return The value represented by this object.
      * @throws bad_exception if the object is nulled
      */
-    T& operator*() {
-        if (nulled)
-            throw bad_exception();
-        return val;
-    }
+   const T& operator*() const {
+       if (nulled)
+           throw bad_exception();
+       return val;
+   }
 
     /**
-     * Assignment from the base class
+     * Implicit conversion from this object to type T
      */
-    Nullable<T>& operator=(const T &other) {
-        nulled=false;
-        val=other;
-        return *this;
-    }
+    operator T() const { return operator*(); }
 
     bool isNullQ() { return nulled; }
 private:

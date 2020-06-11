@@ -6,7 +6,6 @@
 #include <fstream>
 #include <sstream>
 #include <map>
-#include <iterator>
 #include <NTL/RR.h>
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZ_pX.h>
@@ -23,7 +22,7 @@
 using namespace NTL;
 
 // helper procedures
-void CPISync::initData(int num) {
+void CPISync::initData(long num) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::initData");
     // set the lengths
     sampleLoc.SetLength(num);

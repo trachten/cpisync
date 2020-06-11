@@ -301,7 +301,7 @@ public:
      *  If size==0 (default) , the ZZ's size is first received and decoded, followed by the ZZ.
      *  @return the ZZ received through the Communicant
      */
-    ZZ commRecv_ZZ(size_t size = 0);
+    ZZ commRecv_ZZ(const int size = 0);
     /**
      * Specialized receive functions for specific data types.
      * @require must have called EstablishMod before any of these functions will work.

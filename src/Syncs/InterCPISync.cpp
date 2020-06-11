@@ -12,7 +12,6 @@
 #include <CPISync/Aux/Exceptions.h>
 #include <CPISync/Syncs/CPISync.h>
 #include <CPISync/Syncs/InterCPISync.h>
-#include <NTL/RR.h>
 
 InterCPISync::InterCPISync(long m_bar, long bits, int epsilon, int partition,bool Hashes /* = false*/)
 : maxDiff(m_bar), bitNum(bits), pFactor(partition), hashes(Hashes),
@@ -518,7 +517,7 @@ void InterCPISync::createChildren(pTree * parentNode, pTree * tempTree, const ZZ
 
 	ZZ step = (endRange - begRange)/pFactor;//Get the step size of the node to establish bin sizes
 	if(step ==0) step = 1;                  //Set minimum step size to 1 to avoid divide errors
-	int pos;
+	long pos;
 	CPISync * nodes[pFactor];
 	if(endRange != begRange){
 		for(int ii=0;ii<pFactor;ii++)

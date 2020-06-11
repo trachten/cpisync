@@ -222,7 +222,7 @@ void CuckooTest::testLookup() {
     // Query 1000 items that are not inserted
     size_t lookups = 0, falsePositives = 0;
     while (lookups < 1000) {
-        int e = Cuckoo::_rand(0, rndRange); // generate other random items
+        long e = Cuckoo::_rand(0, rndRange); // generate other random items
                                       // from the same range
         DataObject de = DataObject(to_ZZ(e));
         if (_isInserted(inserted, de))
@@ -330,6 +330,6 @@ void CuckooTest::testErase() {
     // Ideally there should not be any. However, there are some
     // problemsF that stem from the implementation and some legitFP
     // that stem from theory.
-    int afterErasePos = lookupDeletedSucceeds - problemsF.size() - legitFP;
+    int afterErasePos = static_cast<int>(lookupDeletedSucceeds - problemsF.size() - legitFP);
     CPPUNIT_ASSERT_EQUAL(0, afterErasePos);
 }

@@ -258,7 +258,7 @@ private:
      * @return The entry index where the fngprt is inserted
      * @throws overflow_error if bucket is full.
      */
-    inline size_t addToBucket(size_t bucketIdx, unsigned f);
+    inline size_t addToBucket(size_t bucketIdx, size_t f);
 
     /**
      * @param f The fingerprint to search for.

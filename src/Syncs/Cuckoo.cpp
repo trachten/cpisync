@@ -247,7 +247,7 @@ ZZ Cuckoo::hash(const ZZ& e) const {
     return hash_impl(e, filterSize);
 }
 
-size_t Cuckoo::addToBucket(size_t bucketIdx, unsigned f) {
+size_t Cuckoo::addToBucket(size_t bucketIdx, size_t f) {
     for (size_t ii=0; ii<bucketSize; ii++)
         // Put the fingerprint in the first available entry
         if (filter.getEntry(bucketIdx, ii) == 0) {

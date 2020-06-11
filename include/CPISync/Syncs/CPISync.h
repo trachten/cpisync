@@ -166,7 +166,7 @@ protected:
    * @param num The number of sample points to initialize.
    * @modifies Initializes the sampleLoc and CPI_meta arrays with <num> initial values.
    */
-  void initData(int num);
+  void initData(long num);
 
   /**
    * Interpolates a rational function with a given set of evaluations at the sample locations.

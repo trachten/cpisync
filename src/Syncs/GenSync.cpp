@@ -2,8 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <memory>
-#include <string>
 
 #include <CPISync/Syncs/GenSync.h>
 #include <CPISync/Aux/Exceptions.h>
@@ -18,7 +16,6 @@
 #include <CPISync/Syncs/CPISync_HalfRound.h>
 #include <CPISync/Syncs/IBLTSetOfSets.h>
 #include <CPISync/Syncs/CuckooSync.h>
-#include <chrono>
 
 using namespace std::chrono;
 
@@ -380,22 +377,22 @@ GenSync GenSync::Builder::build() {
     switch (proto)
     {
         case SyncProtocol::CPISync:
-            if (mbar == Builder::UNDEF_NUM)
+            if (mbar.isNullQ())
                 throw noMbar;
             myMeth = make_shared<CPISync>(mbar, bits, errorProb, 0, hashes);
             break;
         case SyncProtocol::ProbCPISync:
-            if (mbar == Builder::UNDEF_NUM)
+            if (mbar.isNullQ())
                 throw noMbar;
             myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb, hashes);
             break;
         case SyncProtocol::InteractiveCPISync:
-            if (mbar == Builder::UNDEF_NUM)
+            if (mbar.isNullQ())
                 throw noMbar;
             myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts, hashes);
             break;
         case SyncProtocol::OneWayCPISync:
-            if (mbar == Builder::UNDEF_NUM)
+            if (mbar.isNullQ())
                 throw noMbar;
             myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
             break;
@@ -420,7 +417,7 @@ GenSync GenSync::Builder::build() {
     }
     theMeths.push_back(myMeth);
 
-    if (fileName.empty()) // is data to be drawn from a file?
+    if (fileName.isNullQ()) // is data to be drawn from a file?
         return GenSync(theComms, theMeths, _postProcess);
     else
         return GenSync(theComms, theMeths, fileName);
@@ -431,4 +428,4 @@ GenSync GenSync::Builder::build() {
 const string GenSync::Builder::DFT_HOST = "localhost";
 const string GenSync::Builder::DFT_IO;
 const int GenSync::Builder::DFT_ERROR = 8;
-const string GenSync::Builder::UNDEF_STR = string(); // an empty string
+const auto GenSync::Builder::DFT_MBAR = NOT_SET<long>();

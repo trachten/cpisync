@@ -187,7 +187,7 @@ void CommunicantTest::testCommDataObjectPriority() { // fix this test so that th
     DataObject::RepIsInt = false;
 
     for(int ii = 0; ii < TIMES; ii++) {
-        DataPriorityObject exp(randLong());
+        DataPriorityObject exp(static_cast<clock_t>(randLong()));
         exp.setPriority(randZZ());
 
         cSend.Communicant::commSend(exp);

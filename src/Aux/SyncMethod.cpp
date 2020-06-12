@@ -3,7 +3,6 @@
 #include <CPISync/Communicants/Communicant.h>
 #include <CPISync/Aux/SyncMethod.h>
 #include <CPISync/Aux/Exceptions.h>
-#include <CPISync/Aux/Logger.h>
 
 SyncMethod::SyncMethod() {
     SyncID = SYNC_TYPE::GenericSync; // synchronization type

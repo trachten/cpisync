@@ -135,13 +135,13 @@ inline string zzToString(ZZ num)
     {
         if (num < 0)
             num = -num;
-        len = ceil(log(num) / log(c_range));
+        len = static_cast<long>(ceil(log(num) / log(c_range)));
     }
     char str[len];
 
     for (long ii = len - 1; ii >= 0; ii--)
     {
-        str[ii] = conv<int>(num % c_range);
+        str[ii] = static_cast<char>(conv<int>(num % c_range));
         num /= c_range;
     }
 
@@ -450,7 +450,7 @@ public:
      * @param datum The actual datum to add - will be deallocated by the destructor
      * @param pary The number of children per node.
      */
-    paryTree(T *theDatum, int pary) : arity(pary) {
+    paryTree(T *theDatum, long pary) : arity(pary) {
         datum = theDatum;
         child = new paryTree<T> *[arity];
         for (int ii = 0; ii < arity; ii++) child[ii] = NULL;
@@ -473,6 +473,7 @@ private:
     T *datum;
 };
 
+/// BASE64 ENCODE/DECODE
 const int min_base64 = 62; // first character of base-64 text
 const unsigned int signed_shift = 128; // shift to get from unsigned to signed
 
@@ -482,10 +483,10 @@ const unsigned int signed_shift = 128; // shift to get from unsigned to signed
  * @param len The length of the bytes array
  * @return An ASCII-armored string.
  */
-inline string base64_encode(char const* bytes_to_encode, size_t in_len) {
+inline string base64_encode(char const* bytes_to_encode, long in_len) {
     string ret;
 
-    int round3 = 3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3)); // the number of whole groups of 3
+    int round3 = static_cast<int>(3 * (in_len % 3 == 0 ? in_len / 3 : 1 + (in_len / 3))); // the number of whole groups of 3
     // every 3 ASCII characters get converted into four base64 characters
     for (int ii = 0; ii < round3; ii += 3) {
         unsigned int group = signed_shift + bytes_to_encode[ii] +
@@ -564,6 +565,7 @@ inline ZZ min(const ZZ& aa, const ZZ& bb) {
         return bb;
 }
 
+// ... NTL functions
 /**
  * @return A random integer in [lower, upper]
  * @require srand() must've been called
@@ -622,6 +624,7 @@ inline ZZ randZZ() {
     return ZZ(randLong());
 }
 
+// ... ENUM operations
 /**
  * Converts an enum to a byte, signalling an compile-time error if the enum's underlying class is not byte.
  */
@@ -643,6 +646,7 @@ inline T &operator++(T& curr) {
     return curr;
 }
 
+// ... FILES
 /**
  * Get the temp directory of the system (POSIX).
  * In C++17, this can be replaced with std::filesystem::temp_directory_path.
@@ -665,5 +669,44 @@ inline string temporaryDir() {
     return string("/tmp");
 }
 
+// CLASSES
+/**
+ * Represents a nullable value, that is set to null by default.
+ * Either the object is nulled, or it contains an object of type T.
+ * @tparam T The type of the nullable object
+ */
+template <class T>
+class Nullable {
+public:
+    /**
+     * nulled unless initializated.
+     */
+    Nullable() { nulled = true; }
+    Nullable(T param) { nulled=false; val=param;}
+
+   /**
+    * Explicit dereference of the value wrapped by this object.
+     * @return The value represented by this object.
+     * @throws bad_exception if the object is nulled
+     */
+   const T& operator*() const {
+       if (nulled)
+           throw bad_exception();
+       return val;
+   }
+
+    /**
+     * Implicit conversion from this object to type T
+     */
+    operator T() const { return operator*(); }
+
+    bool isNullQ() { return nulled; }
+private:
+    bool nulled=true;
+    T val;
+};
+
+template <class T>
+Nullable<T> NOT_SET() { return Nullable<T>(); }
 #endif	/* AUX_H */
 

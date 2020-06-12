@@ -57,7 +57,7 @@ public:
      */
     inline static void gLog(int level, const string &text) {
     if (level <= logLevel) {
-        clog << (::getpid()%2==1?">":"") << string(level+1,' ') << "(level=" << level << ")  " << text << endl;
+        clog << (::getpid()%2==1?">":"") << string(static_cast<unsigned long>(level + 1), ' ') << "(level=" << level << ")  " << text << endl;
     }
 }
 

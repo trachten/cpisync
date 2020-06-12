@@ -9,7 +9,6 @@
 #include <CPISync/Syncs/IBLT.h>
 #include <CPISync/Aux/Exceptions.h>
 #include <CPISync/Syncs/IBLTSetOfSets.h>
-#include <CPISync/Syncs/GenSync.h>
 
 /** 
  * Construct T, the outer IBLT for transmission

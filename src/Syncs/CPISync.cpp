@@ -6,7 +6,6 @@
 #include <fstream>
 #include <sstream>
 #include <map>
-#include <iterator>
 #include <NTL/RR.h>
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZ_pX.h>
@@ -23,7 +22,7 @@
 using namespace NTL;
 
 // helper procedures
-void CPISync::initData(int num) {
+void CPISync::initData(long num) {
     Logger::gLog(Logger::METHOD,"Entering CPISync::initData");
     // set the lengths
     sampleLoc.SetLength(num);
@@ -70,10 +69,10 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::CPISync");
     currDiff = maxDiff;
 
     if (redundant == 0) // i.e. use the probability of error to calculate redundancy
-        redundant_k = to_long(CeilToZZ(to_RR(epsilon) / bitNum));
+        redundant_k = to_int(CeilToZZ(to_RR(epsilon) / bitNum));
     else { // compute the probability of error
         redundant_k = redundant;
-        probEps = redundant * bitNum;
+        probEps = static_cast<int>(redundant * bitNum);
     }
 
     if (redundant_k <= 0) //k at least 1

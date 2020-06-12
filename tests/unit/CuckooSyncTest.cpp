@@ -8,8 +8,6 @@
 
 #include "CuckooSyncTest.h"
 #include <CPISync/Syncs/GenSync.h>
-#include <CPISync/Syncs/CuckooSync.h>
-#include "TestAuxiliary.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CuckooSyncTest);
 

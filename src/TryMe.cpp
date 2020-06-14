@@ -5,9 +5,7 @@
 
 
 #include <iostream>
-#include <string>
 #include <CPISync/Syncs/GenSync.h>
-#include <CPISync/Data/DataObject.h>
 
 using std::cout;
 using std::endl;

@@ -37,6 +37,7 @@ const byte SYNC_FAIL_FLAG = 0; /** The sync failed. */
 const byte SYNC_OK_FLAG = 1; /** The sync succeeded. */
 const byte SYNC_SOME_INFO = 2; /** I have some information to sync. */
 const byte SYNC_NO_INFO = 3; /** I have no information to sync. */
+
 // ... ... synchronization type
 enum class SYNC_TYPE : byte {
   GenericSync,
@@ -57,5 +58,6 @@ enum class SYNC_TYPE : byte {
 static const int SYNC_SUCCESS = 0; /** Exit status when synchronization succeeds. */
 static const int SYNC_FAILURE = -1; /** Exit status when synchronization fails. */
 static const int GENERAL_ERROR = -2; /** Exit status for a general error. */
+
 #endif /* TYPES_H */
 

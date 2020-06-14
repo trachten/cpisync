@@ -5,28 +5,15 @@
  */
 
 #include <ctime>
-#include <cstdio>
 #include <cstdlib>
-#include <fcntl.h>
 #include <iostream>
 #include <vector>
-#include <cstring>
 #include <getopt.h>
-#include <ctime>
 
 #include <CPISync/Aux/Auxiliary.h>
 #include <CPISync/Aux/SyncMethod.h>
-#include <CPISync/Communicants/Communicant.h>
-#include <CPISync/Communicants/CommSocket.h>
-#include <CPISync/Aux/SyncMethod.h>
-#include <CPISync/Data/DataObject.h>
 #include <CPISync/Syncs/GenSync.h>
 #include <CPISync/Syncs/CPISync.h>
-#include <CPISync/Syncs/CPISync_HalfRound.h>
-#include <CPISync/Syncs/CPISync_OneLessRound.h>
-#include <CPISync/Syncs/ProbCPISync.h>
-#include <CPISync/Syncs/InterCPISync.h>
-#include <CPISync/Aux/Logger.h>
 #include <CPISync/Communicants/CommString.h>
 
 using namespace std;

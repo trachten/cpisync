@@ -6,13 +6,9 @@
 
 #include <CPISync/Communicants/CommSocket.h>
 #include <CPISync/Syncs/CPISync.h>
-#include <CPISync/Syncs/ProbCPISync.h>
 #include <CPISync/Syncs/InterCPISync.h>
 #include <CPISync/Communicants/CommString.h>
-#include <cstdlib>
 #include "GenericSyncTests.h"
-#include <CPISync/Syncs/GenSync.h>
-#include <CPISync/Aux/Auxiliary.h>
 #include "TestAuxiliary.h"
 
 using namespace std::chrono;

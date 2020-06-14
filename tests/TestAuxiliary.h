@@ -26,7 +26,7 @@ const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 const size_t eltSizeSq = (size_t) pow((double) sizeof(randZZ()), 2.0); // Size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // Size of elements stored in sync tests in bytes
 const int mBar = 2 * UCHAR_MAX; // Max differences between client and server in sync tests
-const int largeLimit = pow(2,9); // Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
+const size_t largeLimit = static_cast<const int>(pow(2, 9)); // Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
 const int mBarLarge = largeLimit * 2; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
 const string iostr; // Initial string used to construct CommString
@@ -463,7 +463,7 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 		// wait for child process to complete
 		waitpid(pID, &chld_state, my_opt);
 		//chld_state will be nonzero if clientReconcileSuccess is nonzero
-		success_signal = chld_state;
+		success_signal = WIFEXITED(chld_state);
 
 		// reconcile server with client
 		forkHandleReport serverReport;
@@ -558,7 +558,7 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 	//Adds elements to objectsPtr and intentionally duplicates some of the elements to create a multiset
 	else
 	{
-		int addElemCount = SERVER_MINUS_CLIENT;
+		long addElemCount = SERVER_MINUS_CLIENT;
 		//Adds elements to objects pointer for SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER and SIMILAR (hence 3 loops)
 		//Must be split to prevent half of a pair being added to SERVER_MINUS_CLIENT and the other half to CLIENT_MINUS_SERVER
 		for (int jj = 0; jj < 3; jj++)
@@ -765,9 +765,12 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 
 	//If one way, run 1 time, if not run NUM_TESTS times
 	for(int ii = 0 ; ii < (oneWay ?  1 : NUM_TESTS); ii++) {
-		const unsigned int SIMILAR = largeSync ? (rand() % largeLimit) + 1: (rand() % UCHAR_MAX) + 1; // amt of elems common to both GenSyncs (!= 0)
-		const unsigned int CLIENT_MINUS_SERVER = largeSync ? (rand() % largeLimit) + 1: (rand() % UCHAR_MAX) + 1; // amt of elems unique to client (!= 0)
-		const unsigned int SERVER_MINUS_CLIENT = largeSync ? (rand() % largeLimit) + 1: (rand() % UCHAR_MAX) + 1; // amt of elems unique to server (!= 0)
+		const unsigned int SIMILAR = static_cast<const unsigned int>
+		        (largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1); // amt of elems common to both GenSyncs (!= 0)
+		const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int>
+		        (largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1); // amt of elems unique to client (!= 0)
+		const unsigned int SERVER_MINUS_CLIENT = static_cast<const unsigned int>
+		        (largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1); // amt of elems unique to server (!= 0)
 
 		multiset<string> reconciled;
 		
@@ -888,7 +891,6 @@ inline bool longTermSync(GenSync &GenSyncClient,
 
 
 	// Generate processes for reconciliation
-	bool success = true;
 	bool success_signal;
 	int chld_state;
 	int my_opt = 0;
@@ -1122,7 +1124,7 @@ inline bool socketSendReceiveTest(){
 		serverSocket.commListen();
 
 		//If any of the tests fail return false
-		for(int ii = 0; ii < TIMES; ii++) {
+		for(unsigned int ii = 0; ii < TIMES; ii++) {
 			if (!(serverSocket.commRecv(sampleData.at(ii).length()) == sampleData.at(ii))) {
 				serverSocket.commClose();
 				Logger::error_and_quit("Received message does not match sent message");
@@ -1141,7 +1143,7 @@ inline bool socketSendReceiveTest(){
 		clientSocket.commConnect();
 
 		//Send each string from sampleData through the socket
-		for(int ii = 0; ii < TIMES; ii++)
+		for(unsigned int ii = 0; ii < TIMES; ii++)
 			clientSocket.commSend(sampleData.at(ii).c_str(),sampleData.at(ii).length());
 
 		clientSocket.commClose();

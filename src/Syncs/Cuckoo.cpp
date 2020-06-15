@@ -71,8 +71,7 @@ Cuckoo::Cuckoo(size_t capacity, float err) {
         // we are looking for a small f but a relatively high b. The
         // smaller b, the smaller f. But the smaller b, the higher
         // failed insertion probability.
-        size_t f = narrow_cast<size_t>(ceil(log2(1 / err) + log2(2 * b))); // Eq. 6 from the
-                                                  // paper
+        size_t f = narrow_cast<size_t>(ceil(log2(1 / err) + log2(2 * b))); // Eq. 6 from the paper
 
         // if the smaller b does not give us at least two less bits in
         // f keep the best b at the current value
@@ -118,11 +117,11 @@ vector<unsigned char> Cuckoo::getRawFilter() const {
     return filter.getRaw();
 }
 
-void Cuckoo::_commit_relocation_chain(stack<Reloc>& relocStack) {
-    while (!relocStack.empty()) {
-        Reloc r = relocStack.top();
-        relocStack.pop();
-        filter.setEntry(r.b, r.c, r.f);
+void Cuckoo::_restore_filter(stack<Slot>& originalSlots) {
+    while (!originalSlots.empty()) {
+        Slot s = originalSlots.top();
+        originalSlots.pop();
+        filter.setEntry(s.b, s.c, s.f);
     }
 }
 
@@ -146,31 +145,35 @@ bool Cuckoo::insert(const DataObject& datum) {
     // The fingerprint to put in that bucket
     auto f = p.f;
 
-    stack<Reloc> relocStack;
+    stack<Slot> originalSlots;
     for (size_t kick=0; kick<maxKicks; kick++) {
         // Choose the fingerprint from the bucket to relocate
         size_t victimIdx = narrow_cast<size_t>(_rand(0, bucketSize - 1));
         size_t victim = filter.getEntry(chosenBucket, victimIdx);
         size_t altBucket = _alternativeBucket(chosenBucket, victim);
 
-        Reloc r;
-        r.b = chosenBucket;
-        r.c = victimIdx;
-        r.f = f;
-        relocStack.push(r);
+        // Overwrite victim with the fingerprint being inserted. Later
+        // on, if insert fails, we will restore the filter.
+        filter.setEntry(chosenBucket, victimIdx, f);
 
         try {
             addToBucket(altBucket, victim);
-            _commit_relocation_chain(relocStack);
             itemsCount++;
             return true;
         } catch (overflow_error ignored) {}
+
+        Slot s;
+        s.b = chosenBucket;
+        s.c = victimIdx;
+        s.f = victim;
+        originalSlots.push(s);
 
         f = victim;
         chosenBucket = altBucket;
     }
 
     // Relocation chain exceeded maxKicks
+    _restore_filter(originalSlots);
     return false;
 }
 
@@ -278,6 +281,9 @@ Cuckoo::PartialHash Cuckoo::_pHash(const DataObject& datum) const {
     p.f = fingerprint(datum.to_ZZ());
     p.i1 = narrow_cast<unsigned int>(to_int(hash(datum.to_ZZ())));
     p.i2 = _alternativeBucket(p.i1, p.f);
+
+    if (p.i1 != _alternativeBucket(p.i2, p.f))
+        throw CuckooFilterError("This hash algorithm is not suitable for cuckoo hashing.");
 
     return p;
 }

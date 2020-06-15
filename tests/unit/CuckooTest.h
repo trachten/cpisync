@@ -83,6 +83,7 @@ public:
      */
     static void testConfigF3();
     static void testConfigF7();
+    static void testConfigF8();
     static void testConfigF13();
     static void testConfigF30();
     static void testConfigF3B1();

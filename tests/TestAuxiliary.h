@@ -390,6 +390,54 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 }
 
 /**
+ * Runs client and server reconciliation in a separate process, returning a boolean for the success or failure of the sync
+ * @param GenSyncClient The GenSync object that plays the role of client in the sync.
+ * @param GenSyncServer The GenSync object that plays the role of server in the sync.
+ * @param oneWay true iff the sync will be one way (only server is reconciled)
+ * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
+ * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
+ * of the sets (For parameter mismatch testing)
+ * @param SIMILAR Amount of elements common to both genSyncs
+ * @param CLIENT_MINUS_SERVER amt of elements unique to client
+ * @param SERVER_MINUS_CLIENT amt of elements unique to server
+ * @param reconciled The expected reconciled dataset
+ * @return True if the recon appears to be successful and false otherwise
+ * @return
+ */
+inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,bool oneWay, bool probSync,bool syncParamTest,
+                               const unsigned int SIMILAR,const unsigned int CLIENT_MINUS_SERVER,
+                               const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled,
+                               bool setofSets){
+
+    bool success_signal;
+    int child_state;
+    int my_opt = 0;
+    forkHandleReport clientReport, serverReport;
+    bool isSyncSuccess = false;
+    pid_t pID = fork();
+
+    // child process will create server and client processes and run sync
+    if (pID == 0) {
+        Logger::gLog(Logger::COMM,"created a child process to trigger test socket process, pid: " + toStr(getpid()));
+        isSyncSuccess = testClientServerSync(GenSyncClient, GenSyncServer, clientReport, serverReport);
+        exit(isSyncSuccess);
+    } else if (pID < 0) {
+        Logger::error_and_quit("Fork error in sync test");
+    }
+    // parent process waits for sync to complete,
+    // checks for result status
+    // TODO: Question: should it compare server and client?
+    else {
+        waitpid(pID, &child_state, my_opt);
+        Logger::gLog(Logger::COMM,
+                     "end a child process to trigger test socket process, pid: " + toStr(getpid()) + ", status: " +
+                     toStr(bool(child_state)));
+        return bool(child_state);
+    }
+
+}
+
+/**
  * Runs client (child process) and server (parent process) returning a boolean for the success or failure of the sync
  * @param GenSyncClient The GenSync object that plays the role of client in the sync.
  * @param GenSyncServer The GenSync object that plays the role of server in the sync.
@@ -774,8 +822,10 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 		// add elements to server, client and reconciled
 		auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
 		//Returns a boolean value for the success of the synchronization
-		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
-									  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
+//		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
+//									  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
+        success &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
+                                      CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 		success &= GenSyncServer.clearData();
 		success &= GenSyncClient.clearData();

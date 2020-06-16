@@ -133,4 +133,59 @@ inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
 
 	return result;
 }
+
+/**
+ * Runs client (child process) and server (parent process), returning reconciliation status
+ * both server and client are modified to reflect reconciliation
+ * @return true iff both clientSync and serverSync return true, else retuen false
+ * @param client The GenSync object that plays the role of client in the sync.
+ * @param server The GenSync object that plays the role of server in the sync.
+ * @param clientReport the forkHandleReport object that stores client reconciliation stats
+ * @param serverReport the forkHandleReport object that stores server reconciliation stats
+ * @return
+ */
+inline bool testClientServerSync(GenSync& client, GenSync &server, forkHandleReport& clientReport, forkHandleReport& serverReport ) {
+    int err = 1;
+    int child_state;
+    int my_opt = 0;
+    bool result = false;
+    std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+    try {
+        pid_t pID = fork();
+        int method_num = 0;
+        if (pID == 0) {
+            Logger::gLog(Logger::COMM,"created a child process, server, pid: " + toStr(getpid()));
+            signal(SIGCHLD, SIG_IGN);
+            bool serverSuccess = server.serverSyncBegin(method_num);
+            serverReport.success = serverSuccess;
+            serverReport.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
+            serverReport.CPUtime = server.getCommTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            serverReport.bytes = server.getXmitBytes(method_num) + server.getRecvBytes(method_num);
+            Logger::gLog(Logger::COMM,"exit a child process, server, status: " + toStr(serverSuccess) +  ", pid: " + toStr(getpid()));
+            exit(serverSuccess);
+        } else if (pID < 0) {
+            //handle_error("error to fork a child process");
+            cout << "throw out err = " << err << endl;
+            throw err;
+        } else {
+            Logger::gLog(Logger::COMM,"act as a client process, client, pid: " + toStr(getpid()));
+            clientReport.success = client.clientSyncBegin(method_num);
+            clientReport.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
+            clientReport.CPUtime = client.getCommTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+            clientReport.bytes = client.getXmitBytes(method_num);
+            waitpid(pID, &child_state, my_opt);
+            // child_state == 0 means server sync failed.
+            result = clientReport.success && bool(child_state);
+            Logger::gLog(Logger::COMM,"finish act as a client process, client, status: " + toStr(clientReport.success) + ", pid: " + toStr(getpid()));
+        }
+
+    } catch (int& err) {
+        sleep(1); // why?
+        cout << "handle_error caught" << endl;
+        clientReport.success=false;
+    }
+
+    return result;
+}
+
 #endif

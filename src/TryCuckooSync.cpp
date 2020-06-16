@@ -15,7 +15,7 @@ using std::string;
 
 int main(int argc, char *argv[]) {
 
-    int total = 20;
+    int total = 1;
     if (argc == 2) {
         total = atoi(argv[1]);
     }
@@ -50,9 +50,12 @@ int main(int argc, char *argv[]) {
 
     ZZ_p::init(randZZ());
 
+//    Logger::gLog(Logger::TEST,"CuckooSyncTest, pid: " + toStr(getpid()));
+
     double successCount = 0, failCount = 0;
     for (int i = 0; i < total; i++) {
         bool isSuccess = syncTest(client, server, false, false, false, false, false);
+//        bool isSuccess = forkHandleServer(server, client).success;
         if (isSuccess) {
             successCount += 1;
             cout << "sync succeeded." << endl;

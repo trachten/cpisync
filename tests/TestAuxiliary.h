@@ -389,6 +389,13 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
     return false; // you should never get here
 }
 
+inline bool checkClientSuccess(bool oneWay, bool probSync, bool syncParamTest, const unsigned int SIMILAR,
+                        const unsigned int CLIENT_MINUS_SERVER, const unsigned int SERVER_MINUS_CLIENT,
+                        multiset<string> reconciled, bool setofSets) {
+
+    return true;
+}
+
 /**
  * Runs client and server reconciliation in a separate process, returning a boolean for the success or failure of the sync
  * @param GenSyncClient The GenSync object that plays the role of client in the sync.
@@ -412,30 +419,63 @@ inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,boo
     bool success_signal;
     int child_state;
     int my_opt = 0;
+    int method_num = 0;
     forkHandleReport clientReport, serverReport;
-    bool isSyncSuccess = false;
+    std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
     pid_t pID = fork();
 
-    // child process will create server and client processes and run sync
+    // child process will act as server and run sync
     if (pID == 0) {
-        Logger::gLog(Logger::COMM,"created a child process to trigger test socket process, pid: " + toStr(getpid()));
-        isSyncSuccess = testClientServerSync(GenSyncClient, GenSyncServer, clientReport, serverReport);
-        exit(isSyncSuccess);
+        Logger::gLog(Logger::COMM,"created a child process, server, pid: " + toStr(getpid()));
+
+        serverReport.success = GenSyncServer.serverSyncBegin(method_num);
+        serverReport.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
+        serverReport.CPUtime = GenSyncServer.getCommTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+        serverReport.bytes = GenSyncServer.getXmitBytes(method_num) + GenSyncServer.getRecvBytes(method_num);
+        Logger::gLog(Logger::COMM,"exit a child process, server, status: " + toStr(serverReport.success) +  ", pid: " + toStr(getpid()));
+
+        multiset<string> resultantServer;
+        for (auto elem : GenSyncServer.dumpElements()) {
+            resultantServer.insert(elem);
+        }
+        bool serverSuccess = serverReport.success;
+//                && checkServerSuccess(resultantServer, reconciled, setofSets, oneWay, true, serverReport.success);
+        Logger::gLog(Logger::COMM,
+                     "server, status: " + toStr(serverReport.success) + ", check success: " + toStr(serverSuccess) +
+                     ", pid: " + toStr(getpid()));
+
+        exit(serverSuccess);
     } else if (pID < 0) {
         Logger::error_and_quit("Fork error in sync test");
     }
-    // parent process waits for sync to complete,
-    // checks for result status
-    // TODO: Question: should it compare server and client?
+    // parent process acts as client,
+    // receives server result status when forked child(server) exits
+    // TODO: Question: should it compare changed server and client objects? How?
     else {
+        Logger::gLog(Logger::COMM,"client process, pid: " + toStr(getpid()));
+        clientReport.success = GenSyncClient.clientSyncBegin(method_num);
+        clientReport.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
+        clientReport.CPUtime = GenSyncClient.getCommTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+        clientReport.bytes = GenSyncClient.getXmitBytes(method_num);
         waitpid(pID, &child_state, my_opt);
-        Logger::gLog(Logger::COMM,
-                     "end a child process to trigger test socket process, pid: " + toStr(getpid()) + ", status: " +
-                     toStr(bool(child_state)));
-        return bool(child_state);
+
+        bool isClientSuccess = clientReport.success &&
+                checkClientSuccess(oneWay, probSync, syncParamTest, SIMILAR, CLIENT_MINUS_SERVER,
+                                   SERVER_MINUS_CLIENT, reconciled, setofSets);
+        Logger::gLog(Logger::COMM,"waiting for test fork to finish, pid: " + toStr(getpid()));
+        waitpid(pID, &child_state, my_opt);
+
+        bool isSyncSuccess = isClientSuccess && bool(child_state);
+
+//        Logger::gLog(Logger::COMM,
+//                     "exit test function, pid: " + toStr(getpid()) + ", status: " + toStr(isSyncSuccess));
+        return isSyncSuccess;
     }
 
+    // unreachable state
+    return false;
 }
+
 
 /**
  * Runs client (child process) and server (parent process) returning a boolean for the success or failure of the sync
@@ -803,7 +843,7 @@ inline void addElemsSetofSets(GenSync &GenSyncServer,
  * @param largeSync true if you would like to test syncing a large number of elements
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
-inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, bool probSync, bool syncParamTest,
+inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay, bool probSync, bool syncParamTest,
 						bool Multiset,bool largeSync){
 
 	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
@@ -833,6 +873,7 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 		//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
 		objectsPtr.clear();
 		reconciled.clear();
+		// TODO: delete all comm here?
 	}
 	return success; // returns success status of tests
 }

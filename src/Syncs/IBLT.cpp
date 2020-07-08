@@ -33,6 +33,26 @@ hash_t IBLT::_hashK(const ZZ &item, long kk) {
     return _hash(shash(toStr(item)), kk-1);
 }
 
+hash_t subModHash(hash_t x, hash_t y ) {
+    long res = (long(x%LARGE_PRIME) - long(y%LARGE_PRIME)) % LARGE_PRIME;
+    // must return positive modulus
+    // C++ by default does not give positive modulus
+    if (res < 0 ){
+        res += LARGE_PRIME;
+    }
+    return res;
+}
+
+hash_t addModHash(hash_t x, hash_t y ) {
+    long res = (long(x%LARGE_PRIME) + long(y%LARGE_PRIME)) % LARGE_PRIME;
+    // must return positive modulus
+    // C++ by default does not give positive modulus
+    if (res < 0 ){
+        res += LARGE_PRIME;
+    }
+    return res;
+}
+
 hash_t IBLT::_setHash(multiset<shared_ptr<DataObject>> &tarSet)
 {
     hash_t outHash = 0;
@@ -45,6 +65,9 @@ hash_t IBLT::_setHash(multiset<shared_ptr<DataObject>> &tarSet)
 
 void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
+//    long k = 0, v = 0;
+//    NTL::conv(k, key);
+//    NTL::conv(v, value);
 
     if(sizeof(value) != valueSize) {
         Logger::error_and_quit("The value being inserted is different than the IBLT value size! value size: "
@@ -54,17 +77,32 @@ void IBLT::_insert(long plusOrMinus, ZZ key, ZZ value) {
     for(int ii=0; ii < N_HASH; ii++){
         hash_t hk = _hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
+        long pos = startEntry + (hk%bucketsPerHash);
         IBLT::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
-
+        hash_t modHashCheck = _hashK(key, N_HASHCHECK) % LARGE_PRIME;
+        hash_t hashCheck = _hashK(key, N_HASHCHECK);
+        cout << "Insert: key: " << key << ", pos: " << pos << ", hash: " << hashCheck << endl;
+//        cout << "before inserting : keySum: " << entry.keySum << ", count: " << entry.count << ", keyCheck: " << entry.keyCheck << endl;
+        cout << "modHashCheck:  " << modHashCheck << endl;
         entry.count += plusOrMinus;
-        entry.keySum ^= key;
-        entry.keyCheck ^= _hashK(key, N_HASHCHECK);
+        entry.keySum += plusOrMinus*key;
+//        entry.keyCheck = (entry.keyCheck + plusOrMinus*_hashK(key, N_HASHCHECK) ) % LARGE_PRIME;
+        if (plusOrMinus == 1) {
+            entry.keyCheck = addModHash(entry.keyCheck, modHashCheck);
+        } else if (plusOrMinus == -1) {
+            entry.keyCheck = subModHash(entry.keyCheck, modHashCheck);
+        }
+//        entry.keySum ^= key;
+//        entry.keyCheck ^= _hashK(key, N_HASHCHECK);
         if (entry.empty()) {
             entry.valueSum.kill();
         }
         else {
-            entry.valueSum ^= value;
+//            entry.valueSum ^= value;
+            entry.valueSum += plusOrMinus * value;
         }
+
+//        cout << "Inserted effective : keySum: " << entry.keySum << ", count: " << entry.count << ", keyCheck: " << entry.keyCheck << endl;
     }
 }
 
@@ -88,20 +126,14 @@ bool IBLT::get(ZZ key, ZZ& result){
         if (entry.empty()) {
             // Definitely not in table. Leave
             // result empty, return true.
-
             return true;
         }
         else if (entry.isPure()) {
-            if (entry.keySum == key) {
-                // Found!
-                result = entry.valueSum;
-                return true;
-            }
-            else {
-                // Definitely not in table
-                result.kill();
-                return true;
-            }
+            result = entry.valueSum / entry.count;
+            return true;
+        } else if(entry.isMultiPure()) {
+            result = entry.valueSum / entry.count;
+            return true;
         }
     }
 
@@ -111,24 +143,95 @@ bool IBLT::get(ZZ key, ZZ& result){
         nErased = 0;
         for (IBLT::HashTableEntry &entry : this->hashTable) {
             if (entry.isPure()) {
-                if (entry.keySum == key) {
-                    string s = toStr(entry.valueSum);
+                if (entry.count == 1 && entry.keySum == key) {
+//                    string s = toStr(entry.valueSum);
                     result = entry.valueSum;
                     return true;
+                } else if (entry.count == -1 && entry.keySum == -key) {
+//                    string s = toStr(-entry.valueSum);
+                    result = -entry.valueSum;
+                    return true;
                 }
+                if (entry.count == 1) {
+                    this->_insert(-entry.count, entry.keySum, entry.valueSum);
+                }
+                else {
+                    this->_insert(-entry.count, -entry.keySum, -entry.valueSum);
+                }
+                cout << this->debugPrint() << endl;
                 nErased++;
-                this->_insert(-entry.count, entry.keySum, entry.valueSum);
+            } else if (entry.isMultiPure()) {
+                if ( entry.keySum/entry.count == key) {
+                    result = entry.valueSum/entry.count;
+                    return true;
+                }
+                this->_insert(-entry.count / abs(entry.count), entry.keySum / entry.count, entry.valueSum / entry.count);
+                cout << this->debugPrint() << endl;
+                ++nErased;
             }
         }
     } while (nErased > 0);
+
+//    // only non-pure entries remain
+//    // check if multiple insertion of same key value pair
+//    for (IBLT::HashTableEntry &entry : this->hashTable) {
+//        if (entry.isMultiPure()) {
+//            ZZ factor = entry.keySum / key;
+//            result = entry.valueSum / factor;
+//            return true;
+//        }
+//    }
+
     return false;
 }
 
 bool IBLT::HashTableEntry::isPure() const
 {
     if (count == 1 || count == -1) {
-        hash_t check = _hashK(keySum, N_HASHCHECK);
-        return (keyCheck == check);
+
+        if(keySum == 0) {
+            return false;
+        }
+
+        long plusOrMinus;
+        NTL::conv(plusOrMinus, keySum / abs(keySum));
+        hash_t check = _hashK(keySum*plusOrMinus, N_HASHCHECK);
+        hash_t modHash;
+//        hash_t modHash = (plusOrMinus*check) % LARGE_PRIME;
+        if (plusOrMinus == 1) {
+            modHash = addModHash(0, check);
+        } else {
+            modHash = subModHash(0, check);
+        }
+//        cout << "Check is pure: keySum: " << keySum << ", hash: " << check << ", modHash: " << modHash << endl;
+        return (keyCheck == modHash);
+    }
+    return false;
+}
+
+bool IBLT::HashTableEntry::isMultiPure() const
+{
+    if (count != 0) {
+//        long kSum, kCheck;
+//        NTL::conv(kSum, keySum);
+//        NTL::conv(kCheck, keyCheck);
+        long absCount = abs(count);
+        long plusOrMinus;
+        NTL::conv(plusOrMinus, keySum / abs(keySum));
+        hash_t singleCountHash = _hashK(keySum / count, N_HASHCHECK) % LARGE_PRIME;
+        long check = 0;
+        int ii = 0;
+        while (ii < absCount) {
+            if(plusOrMinus == 1) {
+                check = addModHash(check, singleCountHash) ;
+            } else {
+                check = subModHash(check, singleCountHash) ;
+            }
+            ii++;
+        }
+//        long sKCheck;
+//        NTL::conv(sKCheck, check);
+        return check == keyCheck;
     }
     return false;
 }
@@ -140,17 +243,41 @@ bool IBLT::HashTableEntry::empty() const
 
 bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
     long nErased;
+    cout << "\nListing \n ";
     do {
+        cout << "\nPeeling \n ";
         nErased = 0;
         for(IBLT::HashTableEntry& entry : this->hashTable) {
+            long kSum = 0, vSum = 0, kCheck, count;
+            NTL::conv(kSum, entry.keySum);
+            NTL::conv(vSum, entry.valueSum);
+            kCheck = entry.keyCheck;
+            count = entry.count;
+
             if (entry.isPure()) {
                 if (entry.count == 1) {
                     positive.emplace_back(std::make_pair(entry.keySum, entry.valueSum));
+                    this->_insert(-entry.count, entry.keySum, entry.valueSum);
                 }
                 else {
-                    negative.emplace_back(std::make_pair(entry.keySum, entry.valueSum));
+                    negative.emplace_back(std::make_pair(-entry.keySum, -entry.valueSum));
+                    this->_insert(-entry.count, -entry.keySum, -entry.valueSum);
                 }
-                this->_insert(-entry.count, entry.keySum, entry.valueSum);
+                cout << this->debugPrint() << endl;
+//                this->_insert(-entry.count, entry.keySum, entry.valueSum);
+                ++nErased;
+            }
+            else if (entry.isMultiPure()) {
+                if (entry.count > 1) {
+                    positive.emplace_back(std::make_pair(entry.keySum / entry.count, entry.valueSum / entry.count));
+                } else if (entry.count < -1) {
+                    negative.emplace_back(std::make_pair(entry.keySum / entry.count, entry.valueSum / entry.count));
+                } else {
+                    Logger::error_and_quit("Unreachable state. Entry with count zero in IBLT.");
+                    return false;
+                }
+                cout << this->debugPrint() << endl;
+                this->_insert(-entry.count / abs(entry.count), entry.keySum / entry.count, entry.valueSum / entry.count);
                 ++nErased;
             }
         }
@@ -176,13 +303,16 @@ IBLT& IBLT::operator-=(const IBLT& other) {
         IBLT::HashTableEntry& e1 = this->hashTable.at(ii);
         const IBLT::HashTableEntry& e2 = other.hashTable.at(ii);
         e1.count -= e2.count;
-        e1.keySum ^= e2.keySum;
-        e1.keyCheck ^= e2.keyCheck;
+        e1.keySum -= e2.keySum;
+        e1.keyCheck = (e1.keyCheck - e2.keyCheck) % LARGE_PRIME;
+//        e1.keySum ^= e2.keySum;
+//        e1.keyCheck ^= e2.keyCheck;
         if (e1.empty()) {
             e1.valueSum.kill();
         }
         else {
-            e1.valueSum ^= e2.valueSum;
+            e1.valueSum -= e2.valueSum;
+//            e1.valueSum ^= e2.valueSum;
         }
     }
     return *this;
@@ -212,6 +342,24 @@ string IBLT::toString() const
                 + toStr<ZZ>(entry.keySum) + "," 
                 + toStr<ZZ>(entry.valueSum) 
                 + "\n";
+    }
+    outStr.pop_back();
+    return outStr;
+}
+
+string IBLT::debugPrint() const {
+    string outStr = "";
+    int pos = 0;
+    for (auto entry : hashTable) {
+//        if (entry.count != 0 && entry.keyCheck != 0) {
+            outStr += "pos: " + toStr(pos) + ", "
+                      + "count: " + toStr<long>(entry.count) + ", "
+                      + "keyCheck: " + toStr<hash_t>(entry.keyCheck) + ", "
+                      + "keySum: " + toStr<ZZ>(entry.keySum) + ", "
+                      + "valueSum: " + toStr<ZZ>(entry.valueSum)
+                      + "\n";
+//        }
+        pos++;
     }
     outStr.pop_back();
     return outStr;

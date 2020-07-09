@@ -133,5 +133,4 @@ inline forkHandleReport forkHandleServer(GenSync& server, GenSync client) {
 
 	return result;
 }
-
 #endif

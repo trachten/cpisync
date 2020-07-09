@@ -432,7 +432,6 @@ checkClientSucceeded(multiset<string> &resultantClient, multiset<string> &initia
     if (!oneWay) { // reconciliation conditions are same for client and server in two way sync
         bool isSuccess = checkServerSucceeded(resultantClient, reconciled, setofSets, oneWay, clientReport);
         return isSuccess;
-//        }
     } else { // in case of one way sync, check that the client is unmodified
         if (setofSets) {
             return checkReconSetofSets(initialClient, resultantClient);

@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     const int SEED = 93;
     srand(SEED);
     const int BITS = sizeof(randZZ());
-    const int NUM_EXP_ELEMS = UCHAR_MAX * 4;
+    const int NUM_EXP_ELEMS = 4 * UCHAR_MAX;
     const int PORT0 = 8001;
 //    const int PORT1 = 8002;
     const int PORT2 = 8003;
@@ -45,26 +45,6 @@ int main(int argc, char *argv[]) {
             setPort(PORT0).
             build();
 
-
-//    const long NUM_EXP_ELEMS_CHILD_SET = (rand()% 10 + 1); //This is the number of sets
-//    // IBLTSetOfSets
-//    GenSync IBLTSetOfSetsSyncServer = GenSync::Builder().
-//            setProtocol(GenSync::SyncProtocol::IBLTSetOfSets).
-//            setComm(GenSync::SyncComm::socket).
-//            setBits(BITS).
-//            setExpNumElems(NUM_EXP_ELEMS).
-//            setExpNumElemChild(NUM_EXP_ELEMS_CHILD_SET).
-//            setPort(PORT1).
-//            build();
-//
-//    GenSync IBLTSetOfSetsSyncClient = GenSync::Builder().
-//            setProtocol(GenSync::SyncProtocol::IBLTSetOfSets).
-//            setComm(GenSync::SyncComm::socket).
-//            setBits(BITS).
-//            setExpNumElems(NUM_EXP_ELEMS).
-//            setExpNumElemChild(NUM_EXP_ELEMS_CHILD_SET).
-//            setPort(PORT1).
-//            build();
 
 
     const int mBar = 2 * UCHAR_MAX;
@@ -93,7 +73,7 @@ int main(int argc, char *argv[]) {
     // read elements of client and server from file
     // add elements to client and server
 
-    ifstream clientDataFile("client0.txt");
+    ifstream clientDataFile("client1.txt");
     string temp;
     while (getline(clientDataFile, temp, '\n')) {
         IBLTSyncClient.addElem(make_shared<DataObject>(temp));
@@ -101,7 +81,7 @@ int main(int argc, char *argv[]) {
         CPISyncClient.addElem(make_shared<DataObject>(temp));
     }
 
-    ifstream serverDataFile("server0.txt");
+    ifstream serverDataFile("server1.txt");
     while (getline(serverDataFile, temp, '\n')) {
         IBLTSyncServer.addElem(make_shared<DataObject>(temp));
 //        IBLTSetOfSetsSyncServer.addElem(make_shared<DataObject>(temp));
@@ -139,19 +119,24 @@ int main(int argc, char *argv[]) {
         cout << "Resultant client size: " << IBLTSyncClient.dumpElements().size() << endl;
         cout << IBLTSyncClient.printStats(0) << "\n\n";
 
-//        cout << "IBLTSetOfSetsSync listening on port " << PORT1 << "..." << endl;
-//        isIBLTSetSuccess = IBLTSetOfSetsSyncClient.clientSyncBegin(0);
-//        cout<< "IBLTSetOfSetsSync Client stats: \n";
-//        if (isIBLTSetSuccess) cout << "IBLTSetOfSetsSync succeeded." << endl; else cout << "IBLTSetOfSetsSync failed." << endl;
-//        cout << "Resultant client size: " << IBLTSetOfSetsSyncClient.dumpElements().size() << endl;
-//        cout << IBLTSetOfSetsSyncClient.printStats(0) << "\n\n";
+        cout << "Final IBLT client elements: \n";
+        for (const auto& it: IBLTSyncClient.dumpElements()) {
+            cout << base64_decode(it) << ", ";
+        }
+        cout << endl;
 
-        cout << "CPISync listening on port " << PORT2 << "..." << endl;
-        isCPISuccess = CPISyncClient.clientSyncBegin(0);
-        cout << "CPISync Client stats: \n";
-        if (isCPISuccess) cout << "CPIsync succeeded." << endl; else cout << "CPIsync failed." << endl;
-        cout << "Resultant client size: " << CPISyncClient.dumpElements().size() << endl;
-        cout << CPISyncClient.printStats(0) << "\n\n";
+//        cout << "CPISync listening on port " << PORT2 << "..." << endl;
+//        isCPISuccess = CPISyncClient.clientSyncBegin(0);
+//        cout << "CPISync Client stats: \n";
+//        if (isCPISuccess) cout << "CPIsync succeeded." << endl; else cout << "CPIsync failed." << endl;
+//        cout << "Resultant client size: " << CPISyncClient.dumpElements().size() << endl;
+//        cout << CPISyncClient.printStats(0) << "\n\n";
+//
+//        cout << "Final CPI client elements: \n";
+//        for (const auto& it: CPISyncClient.dumpElements()) {
+//            cout << it << ", ";
+//        }
+//        cout << endl;
 
     } else {
         cout << "IBLTSync connecting on port " << PORT0 << "..." << endl;
@@ -161,19 +146,25 @@ int main(int argc, char *argv[]) {
         cout << "Resultant server size: " << IBLTSyncServer.dumpElements().size() << endl;
         cout << IBLTSyncServer.printStats(0) << "\n\n";
 
-//        cout << "IBLTSetOfSetsSync connecting on port " << PORT1 << "..." << endl;
-//        isIBLTSetSuccess = IBLTSetOfSetsSyncServer.serverSyncBegin(0);
-//        cout<< "IBLTSetOfSetsSync Server stats: \n";
-//        if (isIBLTSetSuccess) cout << "IBLTSetOfSetsSync succeeded." << endl; else cout << "IBLTSetOfSetsSync failed." << endl;
-//        cout << "Resultant server size: " << IBLTSetOfSetsSyncServer.dumpElements().size() << endl;
-//        cout << IBLTSetOfSetsSyncServer.printStats(0) << "\n\n";
+        cout << "Final IBLT server elements: \n";
+        for (const auto& it: IBLTSyncServer.dumpElements()) {
+            cout << base64_decode(it) << ", ";
+        }
+        cout << endl;
 
-        cout << "CPISync connecting on port " << PORT2 << "..." << endl;
-        isCPISuccess = CPISyncServer.serverSyncBegin(0);
-        cout << "CPISync Server stats: \n";
-        if (isCPISuccess) cout << "CPIsync succeeded." << endl; else cout << "CPIsync failed." << endl;
-        cout << "Resultant server size: " << CPISyncServer.dumpElements().size() << endl;
-        cout << CPISyncServer.printStats(0) << "\n\n";
+
+//        cout << "CPISync connecting on port " << PORT2 << "..." << endl;
+//        isCPISuccess = CPISyncServer.serverSyncBegin(0);
+//        cout << "CPISync Server stats: \n";
+//        if (isCPISuccess) cout << "CPIsync succeeded." << endl; else cout << "CPIsync failed." << endl;
+//        cout << "Resultant server size: " << CPISyncServer.dumpElements().size() << endl;
+//        cout << CPISyncServer.printStats(0) << "\n\n";
+//
+//        cout << "Final CPI server elements: \n";
+//        for (const auto& it: CPISyncServer.dumpElements()) {
+//            cout << it << ", ";
+//        }
+//        cout << endl;
     }
 
     return 0;

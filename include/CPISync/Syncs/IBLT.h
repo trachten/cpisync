@@ -29,6 +29,9 @@ const long N_HASH = 4;
 // The number hash used to create the hash-check for each entry
 const long N_HASHCHECK = 11;
 
+// Large prime for modulus
+const long int LARGE_PRIME = 982451653;
+
 // Shorthand for the hash type
 typedef unsigned long int hash_t;
 
@@ -116,6 +119,8 @@ public:
     */
     string toString() const;
 
+    string debugPrint() const;
+
     /**
      * fill the hashTable with a string generated from IBLT.toString() function
      * @param inStr a readable ascii string generted from IBLT.toString() function
@@ -186,6 +191,12 @@ private:
 
         // Returns whether the entry contains just one insertion or deletion
         bool isPure() const;
+
+        /**
+         *
+         * @return
+         */
+        bool isMultiPure() const;
 
         // Returns whether the entry is empty
         bool empty() const;

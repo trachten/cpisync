@@ -132,7 +132,7 @@ public:
     bool clearData();
 
     /**
-     * @return a list of string representations of the elements stored in the data structure
+     * @return a list of base_64 encoded string representations of the elements stored in the data structure
      */
      const list<string> dumpElements();
 

@@ -29,7 +29,7 @@ void IBLTTest::testAll() {
     for(int ii = 0; ii < SIZE; ii++)
         items.push_back({randZZ(), randZZ()});
 
-    IBLT iblt(SIZE, ITEM_SIZE);
+    IBLT iblt(SIZE * 2, ITEM_SIZE);
     for(unsigned int ii=0; ii < SIZE/2; ii++)
         iblt.insert(items.at(ii).first, items.at(ii).second);
 
@@ -106,4 +106,42 @@ void IBLTTest::IBLTNestedInsertRetrieveTest()
 
     //Make sure that the inside IBLT is the same as the decoded inside IBLT
     CPPUNIT_ASSERT_EQUAL(InsideIBLT.toString(), zzToString(pos[0].first));
+}
+
+void IBLTTest::testIBLTMultisetInsert() {
+    vector<pair<ZZ, ZZ>> items;
+    const int SIZE = 50;
+    const size_t ITEM_SIZE = sizeof(randZZ());
+
+    // add randomly repeated entries
+    for(int ii = 0; ii < SIZE; ) {
+        int jj = 0, repeat = rand()%5 + 1;
+        while(jj < repeat && ii < SIZE ) {
+            ZZ temp = randZZ();
+            items.push_back({temp, temp});
+            ii++; jj++;
+        }
+    }
+
+    IBLT iblt(SIZE*20, ITEM_SIZE);
+    for(unsigned int ii=0; ii < SIZE/2; ii++) {
+        iblt.insert(items.at(ii).first, items.at(ii).second);
+    }
+
+    for(unsigned int ii=SIZE/2; ii < SIZE; ii++) {
+        iblt.erase(items.at(ii).first, items.at(ii).second);
+    }
+
+    for(unsigned int ii=0; ii < SIZE; ii++) {
+        IBLT ibltCopy(iblt); // make a copy each time because getting is destructive
+        auto pair = items.at(ii);
+        ZZ value;
+        bool isGet = ibltCopy.get(pair.first, value);
+        CPPUNIT_ASSERT(isGet);
+        CPPUNIT_ASSERT_EQUAL(pair.second, value);
+    }
+
+    vector<pair<ZZ, ZZ>> plus={}, minus={};
+    CPPUNIT_ASSERT(iblt.listEntries(plus, minus));
+    CPPUNIT_ASSERT_EQUAL(items.size(), plus.size() + minus.size());
 }

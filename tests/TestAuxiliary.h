@@ -521,8 +521,6 @@ inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,boo
         Logger::gLog(Logger::COMM, "waiting for test fork to finish, pid: " + toStr(getpid()));
         bool isSyncSuccess = isClientSuccess && bool(child_state);
 
-//        Logger::gLog(Logger::COMM,
-//                     "exit test function, pid: " + toStr(getpid()) + ", status: " + toStr(isSyncSuccess));
         return isSyncSuccess;
     }
     // unreachable state

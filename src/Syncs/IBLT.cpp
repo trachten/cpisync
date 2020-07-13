@@ -34,6 +34,7 @@ hash_t IBLT::_hashK(const ZZ &item, long kk) {
     return _hash(shash(toStr(item)), kk-1);
 }
 
+// perform modular subtraction
 hash_t subModHash(hash_t x, hash_t y ) {
     long res = (long(x%LARGE_PRIME) - long(y%LARGE_PRIME)) % LARGE_PRIME;
     // must return positive modulus
@@ -44,6 +45,7 @@ hash_t subModHash(hash_t x, hash_t y ) {
     return res;
 }
 
+// perform modular addition
 hash_t addModHash(hash_t x, hash_t y ) {
     long res = (long(x%LARGE_PRIME) + long(y%LARGE_PRIME)) % LARGE_PRIME;
     // must return positive modulus
@@ -417,34 +419,6 @@ IBLT& IBLT::operator-=(const IBLT& other) {
     return *this;
 }
 
-//IBLT& IBLT::operator-=(const IBLT& other) {
-//    if(valueSize != other.valueSize)
-//        Logger::error_and_quit("The value sizes between IBLTs don't match! Ours: "
-//        + toStr(valueSize) + ". Theirs: " + toStr(other.valueSize));
-//    if(hashTable.size() != other.hashTable.size())
-//        Logger::error_and_quit("The IBLT hash table sizes are different! Ours: "
-//        + toStr(hashTable.size()) + ". Theirs: " + toStr(other.valueSize));
-//
-//    for (unsigned long ii = 0; ii < hashTable.size(); ii++) {
-//        IBLT::HashTableEntry& e1 = this->hashTable.at(ii);
-//        const IBLT::HashTableEntry& e2 = other.hashTable.at(ii);
-//        e1.count -= e2.count;
-//        e1.keySum -= e2.keySum;
-////        e1.keyCheck = (e1.keyCheck - e2.keyCheck) % LARGE_PRIME;
-//        e1.keyCheck = subModHash(e1.keyCheck, e2.keyCheck);
-////        e1.keySum ^= e2.keySum;
-////        e1.keyCheck ^= e2.keyCheck;
-//        if (e1.empty()) {
-//            e1.valueSum.kill();
-//        }
-//        else {
-//            e1.valueSum -= e2.valueSum;
-////            e1.valueSum ^= e2.valueSum;
-//        }
-//    }
-//    return *this;
-//}
-
 IBLT IBLT::operator-(const IBLT& other) const {
     IBLT result(*this);
     result-=other;
@@ -469,24 +443,6 @@ string IBLT::toString() const
                 + toStr<ZZ>(entry.keySum) + "," 
                 + toStr<ZZ>(entry.valueSum) 
                 + "\n";
-    }
-    outStr.pop_back();
-    return outStr;
-}
-
-string IBLT::debugPrint() const {
-    string outStr = "";
-    int pos = 0;
-    for (auto entry : hashTable) {
-//        if (entry.count != 0 && entry.keyCheck != 0) {
-            outStr += "pos: " + toStr(pos) + ", "
-                      + "count: " + toStr<long>(entry.count) + ", "
-                      + "keyCheck: " + toStr<hash_t>(entry.keyCheck) + ", "
-                      + "keySum: " + toStr<ZZ>(entry.keySum) + ", "
-                      + "valueSum: " + toStr<ZZ>(entry.valueSum)
-                      + "\n";
-//        }
-        pos++;
     }
     outStr.pop_back();
     return outStr;

@@ -24,7 +24,6 @@ set(SYNC_DIR_INC ${INCLUDE}/Syncs)
 # Test directory structure
 set(TEST_DIR tests)
 set(UNIT_TEST_DIR ${TEST_DIR}/unit)
-set(IBLT_TEST_DIR ${TEST_DIR}/unit/IBLT)
 set(SYSLONG_TEST_DIR ${TEST_DIR}/sys/long)
 set(BENCHMARK_TEST_DIR ${TEST_DIR}/sys/benchmark)
 
@@ -125,14 +124,6 @@ install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC}
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
 target_link_libraries(TryMe cpisync ntl cppunit pthread gmp)
 
-# TEMPORARY: Add the TryMultisetIBLTSync executable
-add_executable(TryMultisetIBLTSync ${SRC_DIR}/TryMultisetIBLTSync.cpp)
-target_link_libraries(TryMultisetIBLTSync cpisync ntl cppunit pthread gmp)
-
-# TEMPORARY: Add the TestIBLT executable
-add_executable(TestIBLT ${SRC_DIR}/TestIBLT.cpp)
-target_link_libraries(TestIBLT cpisync ntl cppunit pthread gmp)
-
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add
 # @param name The executable name
@@ -149,7 +140,6 @@ endmacro()
 
 # Add test groups (note: executable will throw errors if there are no tests in the respective folder)
 add_group_test(${UNIT_TEST_DIR} UnitTest)
-add_group_test(${IBLT_TEST_DIR} IBLTUnitTests)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)
 add_group_test(${SYSLONG_TEST_DIR} SystemLongTest)
 #add_group_test(${SYSSHORT_TEST_DIR} SystemShortTests)

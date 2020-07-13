@@ -93,6 +93,7 @@ set(HEADERS
         ${SYNC_DIR_INC}/IBLTSync.h
         ${SYNC_DIR_INC}/IBLTSetOfSets.h
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
+        ${SYNC_DIR_INC}/IBLTSync_Multiset.h
         ${SYNC_DIR_INC}/Compact2DBitArray.h
         ${SYNC_DIR_INC}/Cuckoo.h
         ${SYNC_DIR_INC}/CuckooSync.h

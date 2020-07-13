@@ -10,6 +10,7 @@
 IBLTSync::IBLTSync(size_t expected, size_t eltSize) : myIBLT(expected, eltSize) {
     expNumElems = expected;
     oneWay = false;
+    isMultiset = false;
 }
 
 IBLTSync::~IBLTSync() = default;

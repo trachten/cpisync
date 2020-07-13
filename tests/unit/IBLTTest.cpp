@@ -123,7 +123,7 @@ void IBLTTest::testIBLTMultisetInsert() {
         }
     }
 
-    IBLT iblt(SIZE*20, ITEM_SIZE);
+    IBLT iblt(SIZE, ITEM_SIZE, true);
     for(unsigned int ii=0; ii < SIZE/2; ii++) {
         iblt.insert(items.at(ii).first, items.at(ii).second);
     }

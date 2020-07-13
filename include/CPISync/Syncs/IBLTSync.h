@@ -38,6 +38,8 @@ public:
 protected:
     // one way flag
     bool oneWay;
+    // is input data multiset flag
+    bool isMultiset;
 private:
     // IBLT instance variable for storing data
     IBLT myIBLT;

@@ -52,8 +52,9 @@ public:
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
      * @param _valueSize The size of the values being added, in bits
+     * @param isMultiset Is the IBLT going to store multiset values, default is false
      */
-    IBLT(size_t expectedNumEntries, size_t _valueSize);
+    IBLT(size_t expectedNumEntries, size_t _valueSize, bool isMultiset = false);
     
     // default destructor
     ~IBLT();
@@ -86,7 +87,7 @@ public:
      * @return true iff the presence of the key could be determined
      */
     bool get(ZZ key, ZZ& result);
-    
+
     /**
      * Produces a list of all the key-value pairs in the IBLT.
      * With a low, constant probability, only partial lists will be produced
@@ -99,6 +100,7 @@ public:
     bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
     /**
      * Insert a set of elements into IBLT
+     * Does not support multisets
      * @param tarSet target set to be added to IBLT
      * @param elemSize size of element in the set
      * @param expnChldSet expected number of elements in the target set
@@ -107,6 +109,7 @@ public:
 
     /**
      * Delete a set of elements from IBLT
+     * Does not support multisets
      * @param tarSet the target set to be deleted
      * @param elemSize size of element in the chld set
      * @param expnChldSet expected number of elements in the target set
@@ -153,13 +156,28 @@ private:
     // default constructor - no internal parameters are initialized
     IBLT();
 
-    // Helper function for insert and erase
-    void _insert(long plusOrMinus, ZZ key, ZZ value);
+    // Helper function for insert and erase with XOR implementation
+    void _insertXOR(long plusOrMinus, ZZ key, ZZ value);
+
+    // Helper function for insert and erase with modular sums implementation
+    void _insertModular(long plusOrMinus, ZZ key, ZZ value);
 
     // Returns the kk-th unique hash of the zz that produced initial.
     static hash_t _hashK(const ZZ &item, long kk);
     static hash_t _hash(const hash_t& initial, long kk);
     static hash_t _setHash(multiset<shared_ptr<DataObject>> &tarSet);
+
+    // helper function for get with XOR sum implementation
+    bool _getXOR(ZZ key, ZZ& result);
+
+    // helper function for get with modular sum implementation
+    bool _getModular(ZZ key, ZZ& result);
+
+    // helper function for`listEntries` with XOR sum implementation
+    bool _listEntriesXOR(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
+
+    // helper function for`listEntries` with modular sum implementation
+    bool _listEntriesModular(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
 
     /* Insert an IBLT together with a value into a bigger IBLT
     * @param chldIBLT the IBLT to be inserted
@@ -190,12 +208,15 @@ private:
         ZZ valueSum;
 
         // Returns whether the entry contains just one insertion or deletion
-        bool isPure() const;
+        // for XOR sum IBLT
+        bool isPureXOR() const;
 
-        /**
-         *
-         * @return
-         */
+        // Returns whether the entry contains just one insertion or deletion
+        // for modular sum based IBLT
+        bool isPureModular() const;
+
+        // Returns whether the entry contains multiple insertions or deletions of only one key-value pair
+        // for multiset (modular sum) based IBLT
         bool isMultiPure() const;
 
         // Returns whether the entry is empty
@@ -207,6 +228,9 @@ private:
 
     // the value size, in bits
     size_t valueSize;
+
+    // is input data multiset flag
+    bool isMultiset;
 };
 
 #endif //CPISYNCLIB_IBLT_H

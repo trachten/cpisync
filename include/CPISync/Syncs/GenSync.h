@@ -321,6 +321,7 @@ public:
         IBLTSync,
         OneWayIBLTSync,
         IBLTSetOfSets,
+        IBLTSync_Multiset,
         CuckooSync,
         END     // one after the end of iterable options
     };

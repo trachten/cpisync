@@ -259,12 +259,7 @@ bool IBLT::HashTableEntry::isPureXOR() const
 
 bool IBLT::HashTableEntry::isPureModular() const
 {
-    if (count == 1 || count == -1) {
-
-        if(keySum == 0) {
-            return false;
-        }
-
+    if ((count == 1 || count == -1) && keySum!=0) {
         long plusOrMinus;
         NTL::conv(plusOrMinus, keySum / abs(keySum));
         hash_t check = _hashK(keySum*plusOrMinus, N_HASHCHECK);
@@ -280,7 +275,7 @@ bool IBLT::HashTableEntry::isPureModular() const
 }
 
 bool IBLT::HashTableEntry::isMultiPure() const {
-    if (count != 0) {
+    if (count != 0 && keySum!=0) {
         long absCount = abs(count);
         long plusOrMinus;
         NTL::conv(plusOrMinus, keySum / abs(keySum));

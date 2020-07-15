@@ -230,7 +230,7 @@ private:
     size_t valueSize;
 
     // is input data multiset flag
-    bool isMultiset;
+    bool isMultiset = false;
 };
 
 #endif //CPISYNCLIB_IBLT_H

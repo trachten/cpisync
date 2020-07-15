@@ -39,7 +39,7 @@ protected:
     // one way flag
     bool oneWay;
     // is input data multiset flag
-    bool isMultiset;
+    bool isMultiset = false;
 private:
     // IBLT instance variable for storing data
     IBLT myIBLT;

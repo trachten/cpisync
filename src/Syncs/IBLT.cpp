@@ -9,10 +9,13 @@
 
 #include <CPISync/Syncs/IBLT.h>
 
-IBLT::IBLT() = default;
+IBLT::IBLT()
+        : hashTable(), valueSize(0) {
+    setMultiset(false);
+}
 IBLT::~IBLT() = default;
 
-IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize, bool isMultiset)
+IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize, bool _isMultiset)
 : valueSize(_valueSize)
 {
     // 1.5x expectedNumEntries gives very low probability of decoding failure
@@ -20,7 +23,8 @@ IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize, bool isMultiset)
     // ... make nEntries exactly divisible by N_HASH
     while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;
     hashTable.resize(nEntries);
-    this->isMultiset = isMultiset;
+    setMultiset(_isMultiset);
+
 }
 
 hash_t IBLT::_hash(const hash_t& initial, long kk) {
@@ -121,30 +125,16 @@ void IBLT::_insertModular(long plusOrMinus, ZZ key, ZZ value) {
     }
 }
 
-void IBLT::insert(ZZ key, ZZ value)
-{
-    if (isMultiset) {
-        _insertModular(1, key, value);
-    } else {
-        _insertXOR(1, key, value);
-    }
+void IBLT::insert(ZZ key, ZZ value) {
+    (this->*_insert)(1, key, value);
 }
 
-void IBLT::erase(ZZ key, ZZ value)
-{
-    if (isMultiset) {
-        _insertModular(-1, key, value);
-    } else {
-        _insertXOR(-1, key, value);
-    }
+void IBLT::erase(ZZ key, ZZ value) {
+    (this->*_insert)(-1, key, value);
 }
 
 bool IBLT::get(ZZ key, ZZ& result) {
-    if (isMultiset) {
-        return _getModular(key, result);
-    } else {
-        return _getXOR(key, result);
-    }
+    return (this->*_get)(key, result);
 }
 
 bool IBLT::_getXOR(ZZ key, ZZ& result){
@@ -301,11 +291,7 @@ bool IBLT::HashTableEntry::empty() const
 }
 
 bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
-    if(isMultiset) {
-        return _listEntriesModular(positive, negative);
-    } else {
-        return _listEntriesXOR(positive, negative);
-    }
+    return (this->*_listEntries)(positive, negative);
 }
 
 bool IBLT::_listEntriesXOR(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
@@ -427,6 +413,21 @@ size_t IBLT::size() const {
 size_t IBLT::eltSize() const {
     return valueSize;
 }
+
+void IBLT::setMultiset(bool _isMultiset){
+    isMultiset = _isMultiset;
+    if(_isMultiset) {
+        _insert = &IBLT::_insertModular;
+        _get = &IBLT::_getModular;
+        _listEntries = &IBLT::_listEntriesModular;
+
+    } else {
+        _insert = &IBLT::_insertXOR;
+        _get = &IBLT::_getXOR;
+        _listEntries = &IBLT::_listEntriesXOR;
+    }
+}
+
 
 string IBLT::toString() const
 {

@@ -150,11 +150,20 @@ public:
 
     vector<hash_t> hashes; /* vector for all hashes of sets */
 
+    /**
+     * set the value of multiset and associated function pointers for get, insert and listEntries
+     * @param _isMultiset is IBLT used for multisets
+     */
+    void setMultiset(bool _isMultiset);
+
 private:
     // local data
 
     // default constructor - no internal parameters are initialized
     IBLT();
+
+    // function pointer to the helper insert function
+    void (IBLT::*_insert)(long plusOrMinus, ZZ key, ZZ value);
 
     // Helper function for insert and erase with XOR implementation
     void _insertXOR(long plusOrMinus, ZZ key, ZZ value);
@@ -167,11 +176,17 @@ private:
     static hash_t _hash(const hash_t& initial, long kk);
     static hash_t _setHash(multiset<shared_ptr<DataObject>> &tarSet);
 
+    // function pointer to the helper get function
+    bool (IBLT::*_get)(ZZ key, ZZ& value);
+
     // helper function for get with XOR sum implementation
     bool _getXOR(ZZ key, ZZ& result);
 
     // helper function for get with modular sum implementation
     bool _getModular(ZZ key, ZZ& result);
+
+    // function pointer to the helper insert function
+    bool (IBLT::*_listEntries)(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
 
     // helper function for`listEntries` with XOR sum implementation
     bool _listEntriesXOR(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);

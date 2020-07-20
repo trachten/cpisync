@@ -15,6 +15,7 @@
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Data/DataPriorityObject.h>
 #include <CPISync/Syncs/IBLT.h>
+#include <CPISync/Syncs/IBLTMultiset.h>
 #include <CPISync/Syncs/Cuckoo.h>
 
 // namespace imports
@@ -242,6 +243,13 @@ public:
     void commSend(const IBLT &iblt, bool sync = false);
 
     /**
+     * Sends an IBLTMultiset.
+     * @param iblt The IBLTMultiset to send.
+     * @param sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the IBLT's size and eltSize
+     */
+    void commSend(const IBLTMultiset &iblt, bool sync = false);
+
+    /**
      * Sends Cuckoo filter.
      * @param The Cuckoo filter to send.
      */
@@ -324,7 +332,9 @@ public:
      * @param eltSize The size of values of the IBLTs to be received.  Must be >0 or NOT_SET.
      * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLT, false) was used to send the IBLT
      */
-    IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>(), bool isMultisetSync=false);
+    IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
+
+    IBLTMultiset commRecv_IBLTMultiset(Nullable<size_t> size, Nullable<size_t> eltSize);
 
     // Informational
 
@@ -375,9 +385,20 @@ protected:
     void commSend(const IBLT::HashTableEntry &hte, size_t eltSize);
 
     /**
+     * Sends an IBLTMultiset::HashTableEntry
+     * @param hte The HashTableEntry to send
+     */
+    void commSend(const IBLTMultiset::HashTableEntry& hte, size_t eltSize);
+
+    /**
      * Receives an IBLT::HashTableEntry
      */
     IBLT::HashTableEntry commRecv_HashTableEntry(size_t eltSize);
+
+    /**
+     * Receives an IBLTMultiset::HashTableEntry
+     */
+    IBLTMultiset::HashTableEntry commRecv_HashTableEntry_Multiset(size_t eltSize);
 
     /**
      * Adds <numBytes> bytes to the transmitted byte logs

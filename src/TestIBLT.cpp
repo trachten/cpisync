@@ -112,26 +112,38 @@ int main() {
 
     iblt -= iblt2;
 
-    vector<pair<ZZ, ZZ>> pos, neg;
-    bool isSuccess = iblt.listEntries(pos, neg);
-    if (!isSuccess) {
-        cout << "could not list all entries\n";
-    } else {
-        cout << "can list entries\n";
-    }
-    cout << "IBLT entries: \n" << "positive\n";
-    int k, v;
-    for (const auto &elem: pos) {
-        NTL::conv(k, elem.first); NTL::conv(v, elem.second);
-        cout << (char) k << ", " << (char) v << endl;
-    }
-    cout << "\nnegative\n";
-    for (const auto &elem: neg) {
-        NTL::conv(k, elem.first); NTL::conv(v, elem.second);
-        cout << (char) k << ", " << (char) v << endl;
+    vector<string> keys{"z", "a", "b", "c", "d", "e", "x", "y"};
+
+    for (auto key: keys) {
+        ZZ value;
+        IBLTMultiset copyIBLT(iblt);
+        bool isGet = copyIBLT.get(strToZZ(key), value);
+        int valInt;
+        NTL::conv(valInt, value);
+        if(isGet && valInt!=0) cout << "Found key: " << key << ", value: " << (char) valInt << endl;
+        else cout << "Not Found key: " << key << endl;
     }
 
-    cout << "listing complete\n";
+//    vector<pair<ZZ, ZZ>> pos, neg;
+//    bool isSuccess = iblt.listEntries(pos, neg);
+//    if (!isSuccess) {
+//        cout << "could not list all entries\n";
+//    } else {
+//        cout << "can list entries\n";
+//    }
+//    cout << "IBLT entries: \n" << "positive\n";
+//    int k, v;
+//    for (const auto &elem: pos) {
+//        NTL::conv(k, elem.first); NTL::conv(v, elem.second);
+//        cout << (char) k << ", " << (char) v << endl;
+//    }
+//    cout << "\nnegative\n";
+//    for (const auto &elem: neg) {
+//        NTL::conv(k, elem.first); NTL::conv(v, elem.second);
+//        cout << (char) k << ", " << (char) v << endl;
+//    }
+//
+//    cout << "listing complete\n";
 
     return 0;
 }

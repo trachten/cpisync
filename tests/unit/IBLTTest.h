@@ -8,6 +8,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <CPISync/Syncs/IBLT.h>
+#include <CPISync/Syncs/IBLTMultiset.h>
 #include <CPISync/Aux/Auxiliary.h>
 #include <iostream>
 #include <algorithm>

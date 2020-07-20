@@ -7,11 +7,10 @@
 #include <CPISync/Aux/Exceptions.h>
 #include <CPISync/Syncs/IBLTSync.h>
 
-IBLTSync::IBLTSync(size_t expected, size_t eltSize, bool _isMultisetSync) : myIBLT(expected, eltSize, _isMultisetSync) {
+IBLTSync::IBLTSync(size_t expected, size_t eltSize, bool _isMultisetSync) : myIBLT(expected, eltSize) {
     expNumElems = expected;
     oneWay = false;
     isMultisetSync = _isMultisetSync;
-    cout << "IBLT Sync init with multiset: " << isMultisetSync << endl;
 }
 
 IBLTSync::~IBLTSync() = default;
@@ -138,7 +137,7 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_p
         }
 
         // verified that our size and eltSize == theirs
-        IBLT theirs = commSync->commRecv_IBLT(myIBLT.size(), myIBLT.eltSize(), isMultisetSync);
+        IBLT theirs = commSync->commRecv_IBLT(myIBLT.size(), myIBLT.eltSize());
 
         // print their IBLT
 

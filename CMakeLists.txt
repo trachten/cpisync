@@ -52,6 +52,7 @@ set(SOURCE_FILES
         ${SYNC_DIR}/IBLT.cpp
         ${SYNC_DIR}/IBLTMultiset.cpp
         ${SYNC_DIR}/IBLTSync.cpp
+        ${SYNC_DIR}/IBLTSync_Multiset.cpp
         ${SYNC_DIR}/IBLTSetOfSets.cpp
         ${SYNC_DIR}/Compact2DBitArray.cpp
         ${SYNC_DIR}/Cuckoo.cpp

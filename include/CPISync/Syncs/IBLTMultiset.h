@@ -7,8 +7,14 @@
 
 #include "IBLT.h"
 
+const long int LARGE_PRIME = 982451653;
+
 class IBLTMultiset: public IBLT {
 public:
+
+    // Communicant needs to access the internal representation of an IBLT to send and receive it
+    friend class Communicant;
+
     /**
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
@@ -16,6 +22,8 @@ public:
      * @param isMultiset Is the IBLT going to store multiset values, default is false
      */
     IBLTMultiset(size_t expectedNumEntries, size_t _valueSize);
+
+    IBLTMultiset();
 
     /**
      * Inserts a key-value pair to the IBLT.
@@ -93,6 +101,37 @@ private:
      * @return
      */
     void _insertModular(long plusOrMinus, ZZ key, ZZ value);
+
+    class HashTableEntry
+    {
+    public:
+        // Net insertions and deletions that mapped to this cell
+        long count;
+
+        // The bitwise xor-sum of all keys mapped to this cell
+        ZZ keySum;
+
+        // The bitwise xor-sum of all keySum checksums at each allocation
+        hash_t keyCheck;
+
+        // The bitwise xor-sum of all values mapped to this cell
+        ZZ valueSum;
+
+        // Returns whether the entry contains just one insertion or deletion
+        bool isPure() const;
+
+        // Returns whether the entry contains just insertions or deletions of only one key-value pair
+        bool isMultiPure() const ;
+
+        // Returns whether the entry is empty
+        bool empty() const;
+    };
+
+    // vector of all entries
+    vector<HashTableEntry> hashTable;
+
+    // the value size, in bits
+    size_t valueSize;
 
 };
 

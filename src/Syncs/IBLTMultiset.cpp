@@ -5,9 +5,17 @@
 #include <CPISync/Syncs/IBLTMultiset.h>
 
 
+IBLTMultiset::IBLTMultiset()
+: valueSize(0){
+}
+
 IBLTMultiset::IBLTMultiset(size_t expectedNumEntries, size_t _valueSize)
-        : IBLT(expectedNumEntries, _valueSize) {
-    // just calls the parent constructor
+        : valueSize(_valueSize) {
+    // 2x expectedNumEntries gives TODO:______ probability of decoding failure
+    size_t nEntries = expectedNumEntries * 2 ;
+    // ... make nEntries exactly divisible by N_HASH
+    while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;
+    hashTable.resize(nEntries);
 }
 
 // perform modular subtraction
@@ -44,8 +52,10 @@ void IBLTMultiset::_insertModular(long plusOrMinus, ZZ key, ZZ value) {
     for(int ii=0; ii < N_HASH; ii++){
         hash_t hk = _hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
-        IBLT::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
+        long pos = startEntry + (hk%bucketsPerHash);
+        IBLTMultiset::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
         hash_t modHashCheck = _hashK(key, N_HASHCHECK) % LARGE_PRIME;
+//        cout << "put: " << key << ", pos: " << pos << ", modHash: " << modHashCheck << endl;
 
         entry.count += plusOrMinus;
         entry.keySum += plusOrMinus*key;
@@ -77,14 +87,14 @@ bool IBLTMultiset::get(ZZ key, ZZ& result){
     for (long ii = 0; ii < N_HASH; ii++) {
         long startEntry = ii*bucketsPerHash;
         unsigned long hk = _hashK(key, ii);
-        const IBLT::HashTableEntry& entry = hashTable[startEntry + (hk%bucketsPerHash)];
+        const IBLTMultiset::HashTableEntry& entry = hashTable[startEntry + (hk%bucketsPerHash)];
 
         if (entry.empty()) {
             // Definitely not in table. Leave
             // result empty, return true.
             return true;
         }
-        else if (entry.isPureModular()) {
+        else if (entry.isPure()) {
             result = entry.valueSum / entry.count;
             return true;
         } else if(entry.isMultiPure()) {
@@ -97,8 +107,8 @@ bool IBLTMultiset::get(ZZ key, ZZ& result){
     long nErased;
     do {
         nErased = 0;
-        for (IBLT::HashTableEntry &entry : this->hashTable) {
-            if (entry.isPureModular()) {
+        for (IBLTMultiset::HashTableEntry &entry : this->hashTable) {
+            if (entry.isPure()) {
                 if (entry.count == 1 && entry.keySum == key) {
                     result = entry.valueSum;
                     return true;
@@ -127,57 +137,57 @@ bool IBLTMultiset::get(ZZ key, ZZ& result){
     return false;
 }
 
-//bool IBLTMultiset::HashTableEntry::isPureModular() const
-//{
-//    if ((count == 1 || count == -1) && keySum!=0) {
-//        long plusOrMinus;
-//        NTL::conv(plusOrMinus, keySum / abs(keySum));
-//        hash_t check = _hashK(keySum*plusOrMinus, N_HASHCHECK);
-//        hash_t modHash;
-//        if (plusOrMinus == 1) {
-//            modHash = _addModHash(0, check);
-//        } else {
-//            modHash = _subModHash(0, check);
-//        }
-//        return (keyCheck == modHash);
-//    }
-//    return false;
-//}
-//
-//bool IBLTMultiset::HashTableEntry::isMultiPure() const {
-//    if (count != 0 && keySum!=0) {
-//        long absCount = abs(count);
-//        long plusOrMinus;
-//        NTL::conv(plusOrMinus, keySum / abs(keySum));
-//        hash_t singleCountHash = _hashK(keySum / count, N_HASHCHECK) % LARGE_PRIME;
-//        long check = 0;
-//        int ii = 0;
-//        while (ii < absCount) {
-//            if(plusOrMinus == 1) {
-//                check = _addModHash(check, singleCountHash) ;
-//            } else {
-//                check = _subModHash(check, singleCountHash) ;
-//            }
-//            ii++;
-//        }
-//        return check == keyCheck;
-//    }
-//    return false;
-//}
+bool IBLTMultiset::HashTableEntry::isPure() const
+{
+    if ((count == 1 || count == -1) && keySum!=0) {
+        long plusOrMinus;
+        NTL::conv(plusOrMinus, keySum / abs(keySum));
+        hash_t check = _hashK(keySum*plusOrMinus, N_HASHCHECK);
+        hash_t modHash;
+        if (plusOrMinus == 1) {
+            modHash = _addModHash(0, check);
+        } else {
+            modHash = _subModHash(0, check);
+        }
+        return (keyCheck == modHash);
+    }
+    return false;
+}
+
+bool IBLTMultiset::HashTableEntry::isMultiPure() const {
+    if (count != 0 && keySum!=0) {
+        long absCount = abs(count);
+        long plusOrMinus;
+        NTL::conv(plusOrMinus, keySum / abs(keySum));
+        hash_t singleCountHash = _hashK(keySum / count, N_HASHCHECK) % LARGE_PRIME;
+        long check = 0;
+        int ii = 0;
+        while (ii < absCount) {
+            if(plusOrMinus == 1) {
+                check = _addModHash(check, singleCountHash) ;
+            } else {
+                check = _subModHash(check, singleCountHash) ;
+            }
+            ii++;
+        }
+        return check == keyCheck;
+    }
+    return false;
+}
 
 bool IBLTMultiset::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
     Logger::gLog(Logger::TEST, "IBLT list modular start");
     long nErased;
     do {
         nErased = 0;
-        for(IBLT::HashTableEntry& entry : this->hashTable) {
+        for(IBLTMultiset::HashTableEntry& entry : this->hashTable) {
 //            long kSum = 0, vSum = 0, kCheck, count;
 //            NTL::conv(kSum, entry.keySum);
 //            NTL::conv(vSum, entry.valueSum);
 //            kCheck = entry.keyCheck;
 //            count = entry.count;
 
-            if (entry.isPureModular()) {
+            if (entry.isPure()) {
                 if (entry.count == 1) {
                     positive.emplace_back(std::make_pair(entry.keySum, entry.valueSum));
 //                    Logger::gLog(Logger::TEST,
@@ -212,7 +222,7 @@ bool IBLTMultiset::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, Z
 
     // If any buckets for one of the hash functions is not empty,
     // then we didn't peel them all:
-    for (IBLT::HashTableEntry& entry : this->hashTable) {
+    for (IBLTMultiset::HashTableEntry& entry : this->hashTable) {
         if (!entry.empty()) {
             cout << "so bucket not empty\n";
             return false;
@@ -276,3 +286,7 @@ string IBLTMultiset::toString() const
     return outStr;
 }
 
+bool IBLTMultiset::HashTableEntry::empty() const
+{
+    return (count == 0 && IsZero(keySum) && keyCheck == 0);
+}

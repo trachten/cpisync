@@ -14,10 +14,10 @@ class IBLTSetOfSetsTest : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE(IBLTSetOfSetsTest);
 
 	CPPUNIT_TEST(TestIBLTGetName);
-	CPPUNIT_TEST(IBLTSetOfSetsSetReconcileTest);
-	CPPUNIT_TEST(IBLTSetOfSetsLargeSync);
-	CPPUNIT_TEST(IBLTSetOfSetsSimilarSetSync);
-	CPPUNIT_TEST(testAddDelElem);
+//	CPPUNIT_TEST(IBLTSetOfSetsSetReconcileTest);
+//	CPPUNIT_TEST(IBLTSetOfSetsLargeSync);
+//	CPPUNIT_TEST(IBLTSetOfSetsSimilarSetSync);
+//	CPPUNIT_TEST(testAddDelElem);
 
 	CPPUNIT_TEST_SUITE_END();
 

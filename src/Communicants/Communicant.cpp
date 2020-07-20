@@ -503,7 +503,7 @@ ZZ Communicant::commRecv_ZZ(const int size) {
     return result;
 }
 
-IBLT Communicant::commRecv_IBLT(Nullable<size_t> size, Nullable<size_t> eltSize) {
+IBLT Communicant::commRecv_IBLT(Nullable<size_t> size, Nullable<size_t> eltSize, bool isMultisetSync) {
     size_t numSize;
     size_t numEltSize;
 
@@ -515,7 +515,7 @@ IBLT Communicant::commRecv_IBLT(Nullable<size_t> size, Nullable<size_t> eltSize)
         numEltSize = *eltSize;
     }
 
-    IBLT theirs;
+    IBLT theirs(isMultisetSync);
     theirs.valueSize = numEltSize;
 
     for(int ii = 0; ii < numSize; ii++) {

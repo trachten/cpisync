@@ -7,10 +7,11 @@
 #include <CPISync/Aux/Exceptions.h>
 #include <CPISync/Syncs/IBLTSync.h>
 
-IBLTSync::IBLTSync(size_t expected, size_t eltSize) : myIBLT(expected, eltSize) {
+IBLTSync::IBLTSync(size_t expected, size_t eltSize, bool _isMultisetSync) : myIBLT(expected, eltSize, _isMultisetSync) {
     expNumElems = expected;
     oneWay = false;
-    isMultiset = false;
+    isMultisetSync = _isMultisetSync;
+    cout << "IBLT Sync init with multiset: " << isMultisetSync << endl;
 }
 
 IBLTSync::~IBLTSync() = default;
@@ -18,8 +19,26 @@ IBLTSync::~IBLTSync() = default;
 bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf){
     try {
 
-        Logger::gLog(Logger::METHOD, "Entering IBLTSync::SyncClient");
-
+        Logger::gLog(Logger::TEST, "Entering IBLTSync::SyncClient");
+//        Logger::gLog(Logger::TEST, "client listing entries");
+//        vector<pair<ZZ, ZZ>> pos, neg;
+//        IBLT myIBLTCopy(myIBLT);
+//        bool isSuccess = myIBLTCopy.listEntries(pos, neg);
+//        if (!isSuccess) {
+//            cout << "client could not list all entries\n";
+//        } else {
+//            cout << "client can list entries\n";
+//        }
+//        cout << "IBLT entries: \n" << "positive\n";
+//        for (const auto &elem: pos) {
+//            cout << "client: " << elem.first << ", " << elem.second << endl;
+//        }
+//        cout << "\nnegative\n";
+//        for (const auto &elem: neg) {
+//            cout << "client: " << elem.first << ", " << elem.second << endl;
+//        }
+//        cout << "listing complete\n";
+//
         bool success = true;
 
         // call parent method for bookkeeping
@@ -56,10 +75,12 @@ bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_p
             mySyncStats.timerEnd(SyncStats::COMP_TIME);
 
             stringstream msg;
-            msg << "IBLTSync succeeded." << endl;
-            msg << "self - other = " << printListOfSharedPtrs(selfMinusOther) << endl;
-            msg << "other - self = " << printListOfSharedPtrs(otherMinusSelf) << endl;
-            Logger::gLog(Logger::METHOD, msg.str());
+            msg << "[client]IBLTSync succeeded." << endl;
+//            msg << "self - other = " << printListOfSharedPtrs(selfMinusOther) << endl;
+//            msg << "other - self = " << printListOfSharedPtrs(otherMinusSelf) << endl;
+            msg << "self - other = " << selfMinusOther.size() << endl;
+            msg << "other - self = " << otherMinusSelf.size() << endl;
+            Logger::gLog(Logger::TEST, msg.str());
         }
 
 		//Record Stats
@@ -75,7 +96,26 @@ bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_p
 
 bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf){
     try {
-        Logger::gLog(Logger::METHOD, "Entering IBLTSync::SyncServer");
+        Logger::gLog(Logger::TEST, "Entering IBLTSync::SyncServer");
+//        Logger::gLog(Logger::TEST, "server listing entries");
+//
+//        vector<pair<ZZ, ZZ>> pos, neg;
+//        IBLT myIBLTCopy(myIBLT);
+//        bool isSuccess = myIBLTCopy.listEntries(pos, neg);
+//        if (!isSuccess) {
+//            cout << "server could not list all entries\n";
+//        } else {
+//            cout << "server can list entries\n";
+//        }
+//        cout << "IBLT entries: \n" << "positive\n";
+//        for (const auto &elem: pos) {
+//            cout << "server: " << elem.first << ", " << elem.second << endl;
+//        }
+//        cout << "\nnegative\n";
+//        for (const auto &elem: neg) {
+//            cout << "server: " << elem.first << ", " << elem.second << endl;
+//        }
+//        cout << "listing complete\n";
 
         bool success = true;
 
@@ -90,7 +130,7 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_p
         mySyncStats.timerStart(SyncStats::COMM_TIME);
         // ensure that the IBLT size and eltSize equal those of the server otherwise fail and don't continue
         if(!commSync->establishIBLTRecv(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
-            Logger::gLog(Logger::METHOD_DETAILS, "IBLT parameters do not match up between client and server!");
+            Logger::gLog(Logger::TEST, "IBLT parameters do not match up between client and server!");
             mySyncStats.timerEnd(SyncStats::COMM_TIME);
             mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
             mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
@@ -98,18 +138,56 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_p
         }
 
         // verified that our size and eltSize == theirs
-        IBLT theirs = commSync->commRecv_IBLT(myIBLT.size(), myIBLT.eltSize());
+        IBLT theirs = commSync->commRecv_IBLT(myIBLT.size(), myIBLT.eltSize(), isMultisetSync);
+
+        // print their IBLT
+
+        cout << "Printing their IBLT\n";
+        cout << "their IBLT size: " << theirs.size() << endl;
+        cout << "My IBLT size: " << myIBLT.size() << endl;
+//        IBLT theirCopy(theirs);
+//        vector<pair<ZZ, ZZ>> pos, neg;
+//        bool isSuccess = theirCopy.listEntries(pos, neg);
+//        if (!isSuccess) {
+//            cout << "could not list all entries\n";
+//        } else {
+//            cout << "can list entries\n";
+//        }
+//        cout << "IBLT entries: \n" << "positive\n";
+//        int k, v;
+//        for (const auto &elem: pos) {
+//            NTL::conv(k, elem.first);
+//            NTL::conv(v, elem.second);
+//            cout << (char) k << ", " << (char) v << endl;
+//        }
+//        cout << "\nnegative\n";
+//        for (const auto &elem: neg) {
+//            NTL::conv(k, elem.first);
+//            NTL::conv(v, elem.second);
+//            cout << (char) k << ", " << (char) v << endl;
+//        }
+//
+//        cout << "listing complete\n";
+
+        // stop print
+
+
+
+
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
+        Logger::gLog(Logger::TEST, "server received their IBLT");
 
         mySyncStats.timerStart(SyncStats::COMP_TIME);
         // more efficient than - and modifies theirs, which we don't care about
         vector<pair<ZZ, ZZ>> positive, negative;
         if(!(theirs -= myIBLT).listEntries(positive, negative)) {
-            Logger::gLog(Logger::METHOD_DETAILS,
+            Logger::gLog(Logger::TEST,
                          "Unable to completely reconcile, returning a partial list of differences");
             success = false;
         }
+
+        Logger::gLog(Logger::TEST, "server listing complete");
 
         // store values because they're what we care about
         for(const auto& pair : positive) {
@@ -129,11 +207,24 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_p
             mySyncStats.timerEnd(SyncStats::COMM_TIME);
         }
 
+        ofstream outFile("outServerStats.txt");
+        outFile << "selfMinusOther\n";
+        for (auto it: selfMinusOther) {
+            outFile << it->print() << endl;
+        }
+        outFile << "\notherMinusSelf\n";
+        for (auto it: otherMinusSelf) {
+            outFile << it->print() << endl;
+        }
+
+
         stringstream msg;
-        msg << "IBLTSync " << (success ? "succeeded" : "may not have completely succeeded") << endl;
-        msg << "self - other = " << printListOfSharedPtrs(selfMinusOther) << endl;
-        msg << "other - self = " << printListOfSharedPtrs(otherMinusSelf) << endl;
-        Logger::gLog(Logger::METHOD, msg.str());
+        msg << "[server]IBLTSync " << (success ? "succeeded" : "may not have completely succeeded") << endl;
+//        msg << "self - other = " << printListOfSharedPtrs(selfMinusOther) << endl;
+//        msg << "other - self = " << printListOfSharedPtrs(otherMinusSelf) << endl;
+        msg << "self - other = " << selfMinusOther.size() << endl;
+        msg << "other - self = " << otherMinusSelf.size() << endl;
+        Logger::gLog(Logger::TEST, msg.str());
 
 		//Record Stats
         mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());

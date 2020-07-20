@@ -50,6 +50,7 @@ set(SOURCE_FILES
         ${SYNC_DIR}/probCPISync.cpp
         ${SYNC_DIR}/HashSync.cpp
         ${SYNC_DIR}/IBLT.cpp
+        ${SYNC_DIR}/IBLTMultiset.cpp
         ${SYNC_DIR}/IBLTSync.cpp
         ${SYNC_DIR}/IBLTSetOfSets.cpp
         ${SYNC_DIR}/Compact2DBitArray.cpp
@@ -89,6 +90,7 @@ set(HEADERS
         ${SYNC_DIR_INC}/GenSync.h
         ${SYNC_DIR_INC}/HashSync.h
         ${SYNC_DIR_INC}/IBLT.h
+        ${SYNC_DIR_INC}/IBLTMultiset.h
         ${SYNC_DIR_INC}/IBLTSync.h
         ${SYNC_DIR_INC}/IBLTSetOfSets.h
         ${SYNC_DIR_INC}/IBLTSync_HalfRound.h
@@ -123,6 +125,10 @@ install(DIRECTORY ${AUX_DIR_INC} ${DATA_DIR_INC} ${COMM_DIR_INC} ${SYNC_DIR_INC}
 # Add the TryMe executable
 add_executable(TryMe ${SRC_DIR}/TryMe.cpp)
 target_link_libraries(TryMe cpisync ntl cppunit pthread gmp)
+
+# TEMP: Add the TryMe executable
+add_executable(TestIBLT ${SRC_DIR}/TestIBLT.cpp)
+target_link_libraries(TestIBLT cpisync ntl cppunit pthread gmp)
 
 # Define a macro for adding executables testing multiple files
 # @param dir The relative path to the folder containing test files to add

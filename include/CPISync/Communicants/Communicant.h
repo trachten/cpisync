@@ -324,7 +324,7 @@ public:
      * @param eltSize The size of values of the IBLTs to be received.  Must be >0 or NOT_SET.
      * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLT, false) was used to send the IBLT
      */
-    IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
+    IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>(), bool isMultisetSync=false);
 
     // Informational
 

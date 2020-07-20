@@ -18,6 +18,7 @@ class IBLTTest : public CPPUNIT_NS::TestFixture{
     CPPUNIT_TEST(SerializeTest);
     CPPUNIT_TEST(IBLTNestedInsertRetrieveTest);
     CPPUNIT_TEST(testIBLTMultisetInsert);
+    CPPUNIT_TEST(testIBLTMultisetSubtract);
 
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -45,6 +46,11 @@ public:
      * Test multiset insert into IBLT
      */
     static void testIBLTMultisetInsert();
+
+    /**
+     * Test multiset IBLT subtract
+     */
+    static void testIBLTMultisetSubtract();
 
 
 };

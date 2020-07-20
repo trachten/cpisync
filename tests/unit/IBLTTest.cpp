@@ -110,12 +110,12 @@ void IBLTTest::IBLTNestedInsertRetrieveTest()
 
 void IBLTTest::testIBLTMultisetInsert() {
     vector<pair<ZZ, ZZ>> items;
-    const int SIZE = 50;
+    const int SIZE = 500;
     const size_t ITEM_SIZE = sizeof(randZZ());
 
     // add randomly repeated entries
     for(int ii = 0; ii < SIZE; ) {
-        int jj = 0, repeat = rand()%5 + 1;
+        int jj = 0, repeat = rand()%10 + 1;
         while(jj < repeat && ii < SIZE ) {
             ZZ temp = randZZ();
             items.push_back({temp, temp});
@@ -144,4 +144,87 @@ void IBLTTest::testIBLTMultisetInsert() {
     vector<pair<ZZ, ZZ>> plus={}, minus={};
     CPPUNIT_ASSERT(iblt.listEntries(plus, minus));
     CPPUNIT_ASSERT_EQUAL(items.size(), plus.size() + minus.size());
+}
+
+void IBLTTest::testIBLTMultisetSubtract() {
+    vector<pair<ZZ, ZZ>> items;
+    multiset<ZZ> allItems;
+    const int SIZE = 100;
+    const size_t ITEM_SIZE = sizeof(randZZ());
+
+    IBLT iblt(SIZE/2, ITEM_SIZE, true);
+
+    // add randomly repeated entries
+    for(int ii = 0; ii < SIZE/2; ) {
+        int jj = 0, repeat = rand()%10 + 1;
+        while(jj < repeat && ii < SIZE/2 ) {
+            ZZ temp = randZZ();
+            items.push_back({temp, temp});
+            cout << "Inserting: " << temp << endl;
+            iblt.insert(items.at(ii).first, items.at(ii).second);
+            allItems.insert(temp);
+            ii++; jj++;
+        }
+    }
+
+    IBLT iblt2(SIZE/2, ITEM_SIZE, true);
+
+    // add randomly repeated entries
+    for(int ii = SIZE/2; ii < SIZE; ) {
+        int jj = 0, repeat = rand()%10 + 1;
+        while(jj < repeat && ii < SIZE ) {
+            ZZ temp = randZZ();
+            items.push_back({temp, temp});
+            cout << "Inserting: " << temp << endl;
+            iblt2.insert(items.at(ii).first, items.at(ii).second);
+            allItems.insert(temp);
+            ii++; jj++;
+        }
+    }
+
+
+    IBLT iblt2Copy(iblt2);
+    iblt2Copy -= iblt;
+    iblt -= iblt2;
+
+    for(unsigned int ii=0; ii < SIZE; ii++) {
+        IBLT ibltCopy(iblt); // make a copy each time because getting is destructive
+        auto pair = items.at(ii);
+        ZZ value;
+        bool isGet = ibltCopy.get(pair.first, value);
+        CPPUNIT_ASSERT(isGet);
+        CPPUNIT_ASSERT_EQUAL(pair.second, value);
+    }
+
+    cout << "check subtract complete\n";
+
+    vector<pair<ZZ, ZZ>> plus={}, minus={};
+    CPPUNIT_ASSERT(iblt.listEntries(plus, minus));
+    multiset<ZZ> pos, neg, recon;
+    for (auto elem: plus) {
+        pos.insert(elem.first);
+    }
+    for (auto elem: minus) {
+        neg.insert(elem.first);
+    }
+    recon = multisetUnion(pos, neg);
+
+    CPPUNIT_ASSERT_EQUAL(items.size(), plus.size() + minus.size());
+    cout << "size check complete\n";
+    CPPUNIT_ASSERT(recon == allItems);
+    cout << "items set equals\n";
+
+    pos.clear(); neg.clear();
+    plus.clear(); minus.clear();
+    CPPUNIT_ASSERT(iblt2Copy.listEntries(plus, minus));
+    cout << "reverse list successful \n";
+    for (auto elem: plus) pos.insert(elem.first);
+    for (auto elem: minus) neg.insert(elem.first);
+    recon.clear();
+    recon = multisetUnion(pos, neg);
+
+    CPPUNIT_ASSERT_EQUAL(items.size(), plus.size() + minus.size());
+    cout << "reverse size check complete\n";
+    CPPUNIT_ASSERT(recon == allItems);
+    cout << "reverse items set equals\n";
 }

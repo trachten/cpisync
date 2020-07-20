@@ -11,8 +11,8 @@
 class IBLTSync_Multiset : public IBLTSync {
 public:
     // Duplicate the IBLTSync constructor, but set multiset to true
-    IBLTSync_Multiset(size_t expected, size_t eltSize) : IBLTSync(expected, eltSize) {
-        isMultiset = true;
+    IBLTSync_Multiset(size_t expected, size_t eltSize) : IBLTSync(expected, eltSize, true) {
+        isMultisetSync = true;
         SyncID = SYNC_TYPE::IBLTSync_Multiset;
     }
 

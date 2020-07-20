@@ -13,17 +13,26 @@ IBLT::IBLT()
         : hashTable(), valueSize(0) {
     setMultiset(false);
 }
+
+IBLT::IBLT(bool _isMultiset)
+        : hashTable(), valueSize(0) {
+    setMultiset(_isMultiset);
+}
+
+
 IBLT::~IBLT() = default;
 
 IBLT::IBLT(size_t expectedNumEntries, size_t _valueSize, bool _isMultiset)
 : valueSize(_valueSize)
 {
     // 1.5x expectedNumEntries gives very low probability of decoding failure
-    size_t nEntries = expectedNumEntries + expectedNumEntries/2;
+//    size_t nEntries = expectedNumEntries + expectedNumEntries/2;
+    size_t nEntries = expectedNumEntries * 10;
     // ... make nEntries exactly divisible by N_HASH
     while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;
     hashTable.resize(nEntries);
     setMultiset(_isMultiset);
+    cout << "IBLT init with multiset: " << _isMultiset << endl;
 
 }
 
@@ -71,6 +80,7 @@ hash_t IBLT::_setHash(multiset<shared_ptr<DataObject>> &tarSet)
 }
 
 void IBLT::_insertXOR(long plusOrMinus, ZZ key, ZZ value) {
+//    cout << "insert XOR called with key: " << key << endl;
     long bucketsPerHash = hashTable.size() / N_HASH;
 
     if(sizeof(value) != valueSize) {
@@ -96,6 +106,7 @@ void IBLT::_insertXOR(long plusOrMinus, ZZ key, ZZ value) {
 }
 
 void IBLT::_insertModular(long plusOrMinus, ZZ key, ZZ value) {
+//    cout << "insert modular called with key: " << key << endl;
     long bucketsPerHash = hashTable.size() / N_HASH;
 
     if(sizeof(value) != valueSize) {
@@ -295,6 +306,7 @@ bool IBLT::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &neg
 }
 
 bool IBLT::_listEntriesXOR(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
+    cout << "list entries XOR";
     long nErased;
     do {
         nErased = 0;
@@ -321,23 +333,28 @@ bool IBLT::_listEntriesXOR(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> 
 }
 
 bool IBLT::_listEntriesModular(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
+    Logger::gLog(Logger::TEST, "IBLT list modular start");
     long nErased;
     do {
         nErased = 0;
         for(IBLT::HashTableEntry& entry : this->hashTable) {
-            long kSum = 0, vSum = 0, kCheck, count;
-            NTL::conv(kSum, entry.keySum);
-            NTL::conv(vSum, entry.valueSum);
-            kCheck = entry.keyCheck;
-            count = entry.count;
+//            long kSum = 0, vSum = 0, kCheck, count;
+//            NTL::conv(kSum, entry.keySum);
+//            NTL::conv(vSum, entry.valueSum);
+//            kCheck = entry.keyCheck;
+//            count = entry.count;
 
             if (entry.isPureModular()) {
                 if (entry.count == 1) {
                     positive.emplace_back(std::make_pair(entry.keySum, entry.valueSum));
+//                    Logger::gLog(Logger::TEST,
+//                                 "list modular erase: key: " + toStr(entry.keySum) + "value: " + toStr(entry.valueSum));
                     this->_insertModular(-entry.count, entry.keySum, entry.valueSum);
                 }
                 else {
                     negative.emplace_back(std::make_pair(-entry.keySum, -entry.valueSum));
+//                    Logger::gLog(Logger::TEST,
+//                                 "2list modular erase: key: " + toStr(entry.keySum) + "value: " + toStr(entry.valueSum));
                     this->_insertModular(-entry.count, -entry.keySum, -entry.valueSum);
                 }
                 ++nErased;
@@ -351,16 +368,22 @@ bool IBLT::_listEntriesModular(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, Z
                     Logger::error_and_quit("Unreachable state. Entry with count zero in IBLT.");
                     return false;
                 }
+//                Logger::gLog(Logger::TEST,
+//                             "3list modular erase: key: " + toStr(entry.keySum) + "value: " + toStr(entry.valueSum));
                 this->_insertModular(-entry.count / abs(entry.count), entry.keySum / entry.count, entry.valueSum / entry.count);
                 ++nErased;
             }
         }
+//        Logger::gLog(Logger::TEST, "list modular erased something");
     } while (nErased > 0);
 
     // If any buckets for one of the hash functions is not empty,
     // then we didn't peel them all:
     for (IBLT::HashTableEntry& entry : this->hashTable) {
-        if (!entry.empty()) return false;
+        if (!entry.empty()) {
+            cout << "so bucket not empty\n";
+            return false;
+        }
     }
     return true;
 }
@@ -397,6 +420,7 @@ IBLT& IBLT::operator-=(const IBLT& other) {
             }
         }
     }
+    Logger::gLog(Logger::TEST, "IBLT subtract complete");
     return *this;
 }
 

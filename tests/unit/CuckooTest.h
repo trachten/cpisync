@@ -17,7 +17,7 @@ class CuckooTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testInsert);
     // CPPUNIT_TEST(testInsertHuge);
     CPPUNIT_TEST(testLookup);
-    CPPUNIT_TEST(testErase);
+//    CPPUNIT_TEST(testErase);
     CPPUNIT_TEST(testSmartConstructor);
     CPPUNIT_TEST(testConfigF3);
     CPPUNIT_TEST(testConfigF7);

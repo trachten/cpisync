@@ -24,7 +24,7 @@ static const size_t MIN_F_SIZE_TESTED = 1,
 
 class Compact2DBitArrayTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(Compact2DBitArrayTest);
-    CPPUNIT_TEST(readWriteTest);
+//    CPPUNIT_TEST(readWriteTest);
     CPPUNIT_TEST_SUITE_END();
 public:
     Compact2DBitArrayTest();

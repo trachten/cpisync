@@ -156,11 +156,14 @@ public:
      */
     void setMultiset(bool _isMultiset);
 
-private:
+protected:
     // local data
 
-    // default constructor - no internal parameters are initialized
+    // default constructor - internal parameters are initialized to defaults
     IBLT();
+
+    // constructor - internal parameters are initialized to defaults
+    explicit IBLT(bool _isMultiset);
 
     // function pointer to the helper insert function
     void (IBLT::*_insert)(long plusOrMinus, ZZ key, ZZ value);

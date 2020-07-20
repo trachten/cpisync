@@ -25,7 +25,7 @@ public:
      * @param expected The expected number of elements being stored
      * @param eltSize The size of elements being stored
      */
-    IBLTSync(size_t expected, size_t eltSize);
+    IBLTSync(size_t expected, size_t eltSize, bool _isMultisetSync = false);
     ~IBLTSync() override;
 
     // Implemented parent class methods
@@ -39,7 +39,7 @@ protected:
     // one way flag
     bool oneWay;
     // is input data multiset flag
-    bool isMultiset = false;
+    bool isMultisetSync = false;
 private:
     // IBLT instance variable for storing data
     IBLT myIBLT;

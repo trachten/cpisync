@@ -1,5 +1,5 @@
 //
-// Created by shubham on 7/20/20.
+// Created by Shubham Arora on 7/20/20.
 //
 
 #include <CPISync/Syncs/IBLTMultiset.h>
@@ -41,7 +41,6 @@ hash_t _addModHash(hash_t x, hash_t y ) {
 }
 
 void IBLTMultiset::_insertModular(long plusOrMinus, ZZ key, ZZ value) {
-//    cout << "insert modular called with key: " << key << endl;
     long bucketsPerHash = hashTable.size() / N_HASH;
 
     if(sizeof(value) != valueSize) {
@@ -55,7 +54,6 @@ void IBLTMultiset::_insertModular(long plusOrMinus, ZZ key, ZZ value) {
         long pos = startEntry + (hk%bucketsPerHash);
         IBLTMultiset::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
         hash_t modHashCheck = _hashK(key, N_HASHCHECK) % LARGE_PRIME;
-//        cout << "put: " << key << ", pos: " << pos << ", modHash: " << modHashCheck << endl;
 
         entry.count += plusOrMinus;
         entry.keySum += plusOrMinus*key;
@@ -176,28 +174,18 @@ bool IBLTMultiset::HashTableEntry::isMultiPure() const {
 }
 
 bool IBLTMultiset::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, ZZ>> &negative){
-    Logger::gLog(Logger::TEST, "IBLT list modular start");
     long nErased;
     do {
         nErased = 0;
         for(IBLTMultiset::HashTableEntry& entry : this->hashTable) {
-//            long kSum = 0, vSum = 0, kCheck, count;
-//            NTL::conv(kSum, entry.keySum);
-//            NTL::conv(vSum, entry.valueSum);
-//            kCheck = entry.keyCheck;
-//            count = entry.count;
 
             if (entry.isPure()) {
                 if (entry.count == 1) {
                     positive.emplace_back(std::make_pair(entry.keySum, entry.valueSum));
-//                    Logger::gLog(Logger::TEST,
-//                                 "list modular erase: key: " + toStr(entry.keySum) + "value: " + toStr(entry.valueSum));
                     this->_insertModular(-entry.count, entry.keySum, entry.valueSum);
                 }
                 else {
                     negative.emplace_back(std::make_pair(-entry.keySum, -entry.valueSum));
-//                    Logger::gLog(Logger::TEST,
-//                                 "2list modular erase: key: " + toStr(entry.keySum) + "value: " + toStr(entry.valueSum));
                     this->_insertModular(-entry.count, -entry.keySum, -entry.valueSum);
                 }
                 ++nErased;
@@ -211,20 +199,16 @@ bool IBLTMultiset::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, Z
                     Logger::error_and_quit("Unreachable state. Entry with count zero in IBLT.");
                     return false;
                 }
-//                Logger::gLog(Logger::TEST,
-//                             "3list modular erase: key: " + toStr(entry.keySum) + "value: " + toStr(entry.valueSum));
                 this->_insertModular(-entry.count / abs(entry.count), entry.keySum / entry.count, entry.valueSum / entry.count);
                 ++nErased;
             }
         }
-//        Logger::gLog(Logger::TEST, "list modular erased something");
     } while (nErased > 0);
 
     // If any buckets for one of the hash functions is not empty,
     // then we didn't peel them all:
     for (IBLTMultiset::HashTableEntry& entry : this->hashTable) {
         if (!entry.empty()) {
-            cout << "so bucket not empty\n";
             return false;
         }
     }
@@ -253,7 +237,6 @@ IBLTMultiset &IBLTMultiset::operator-=(const IBLTMultiset &other) {
         }
 
     }
-    Logger::gLog(Logger::TEST, "IBLT subtract complete");
     return *this;
 }
 

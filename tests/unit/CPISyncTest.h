@@ -15,16 +15,16 @@ class CPISyncTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_SUITE(CPISyncTest);
 
 	CPPUNIT_TEST(testCPIAddDelElem);
-//	CPPUNIT_TEST(CPISyncSetReconcileTest);
-//	CPPUNIT_TEST(CPISyncMultisetReconcileTest);
-//	CPPUNIT_TEST(CPISyncLargeSetReconcileTest);
-//	CPPUNIT_TEST(ProbCPISyncSetReconcileTest);
-//	CPPUNIT_TEST(ProbCPISyncMultisetReconcileTest);
-//	CPPUNIT_TEST(ProbCPISyncLargeSetReconcileTest);
-//	CPPUNIT_TEST(testInterCPIAddDelElem);
-//	CPPUNIT_TEST(InterCPISyncSetReconcileTest);
-//	CPPUNIT_TEST(InterCPISyncMultisetReconcileTest);
-//	CPPUNIT_TEST(InterCPISyncLargeSetReconcileTest);
+	CPPUNIT_TEST(CPISyncSetReconcileTest);
+	CPPUNIT_TEST(CPISyncMultisetReconcileTest);
+	CPPUNIT_TEST(CPISyncLargeSetReconcileTest);
+	CPPUNIT_TEST(ProbCPISyncSetReconcileTest);
+	CPPUNIT_TEST(ProbCPISyncMultisetReconcileTest);
+	CPPUNIT_TEST(ProbCPISyncLargeSetReconcileTest);
+	CPPUNIT_TEST(testInterCPIAddDelElem);
+	CPPUNIT_TEST(InterCPISyncSetReconcileTest);
+	CPPUNIT_TEST(InterCPISyncMultisetReconcileTest);
+	CPPUNIT_TEST(InterCPISyncLargeSetReconcileTest);
 
 	CPPUNIT_TEST_SUITE_END();
 

@@ -70,7 +70,7 @@ bool IBLTSync_Multiset::SyncClient(const shared_ptr<Communicant>& commSync, list
 
 bool IBLTSync_Multiset::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_ptr<DataObject>> &selfMinusOther, list<shared_ptr<DataObject>> &otherMinusSelf){
     try {
-        Logger::gLog(Logger::TEST, "Entering IBLTSync::SyncServer");
+        Logger::gLog(Logger::METHOD, "Entering IBLTSync::SyncServer");
 
         bool success = true;
 
@@ -85,7 +85,7 @@ bool IBLTSync_Multiset::SyncServer(const shared_ptr<Communicant>& commSync, list
         mySyncStats.timerStart(SyncStats::COMM_TIME);
         // ensure that the IBLT size and eltSize equal those of the server otherwise fail and don't continue
         if(!commSync->establishIBLTRecv(myIBLT.size(), myIBLT.eltSize(), oneWay)) {
-            Logger::gLog(Logger::TEST, "IBLT parameters do not match up between client and server!");
+            Logger::gLog(Logger::METHOD_DETAILS, "IBLT parameters do not match up between client and server!");
             mySyncStats.timerEnd(SyncStats::COMM_TIME);
             mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
             mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
@@ -97,14 +97,11 @@ bool IBLTSync_Multiset::SyncServer(const shared_ptr<Communicant>& commSync, list
 
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
-        Logger::gLog(Logger::TEST, "server received their IBLT");
-
         mySyncStats.timerStart(SyncStats::COMP_TIME);
         // more efficient than - and modifies theirs, which we don't care about
         vector<pair<ZZ, ZZ>> positive, negative;
-//        IBLTMultiset myIBLTCopy(myIBLT);
         if(!(theirs -= myIBLT).listEntries(positive, negative)) {
-            Logger::gLog(Logger::TEST,
+            Logger::gLog(Logger::METHOD_DETAILS,
                          "Unable to completely reconcile, returning a partial list of differences");
             success = false;
         }
@@ -126,17 +123,6 @@ bool IBLTSync_Multiset::SyncServer(const shared_ptr<Communicant>& commSync, list
             commSync->commSend(otherMinusSelf);
             mySyncStats.timerEnd(SyncStats::COMM_TIME);
         }
-
-//        ofstream outFile("outServerStats.txt");
-//        outFile << "selfMinusOther\n";
-//        for (auto it: selfMinusOther) {
-//            outFile << it->print() << endl;
-//        }
-//        outFile << "\notherMinusSelf\n";
-//        for (auto it: otherMinusSelf) {
-//            outFile << it->print() << endl;
-//        }
-
 
         stringstream msg;
         msg << "[server]IBLTSync_Multiset " << (success ? "succeeded" : "may not have completely succeeded") << endl;

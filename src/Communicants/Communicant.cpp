@@ -77,7 +77,6 @@ bool Communicant::establishModSend(bool oneWay /* = false */) {
 bool Communicant::establishIBLTSend(const size_t size, const size_t eltSize, bool oneWay /* = false */) {
     commSend((long) size);
     commSend((long) eltSize);
-    cout << "client send: size: " <<size << ", eltSize: " << eltSize << endl;
     if (oneWay)
         return true;  // i.e. don't wait for a response
     else

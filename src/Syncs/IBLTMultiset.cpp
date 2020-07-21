@@ -23,9 +23,9 @@ hash_t _subModHash(hash_t x, hash_t y ) {
     long res = (long(x%LARGE_PRIME) - long(y%LARGE_PRIME)) % LARGE_PRIME;
     // must return positive modulus
     // C++ by default does not give positive modulus
-    if (res < 0 ){
+    if (res < 0)
         res += LARGE_PRIME;
-    }
+
     return res;
 }
 
@@ -34,19 +34,18 @@ hash_t _addModHash(hash_t x, hash_t y ) {
     long res = (long(x%LARGE_PRIME) + long(y%LARGE_PRIME)) % LARGE_PRIME;
     // must return positive modulus
     // C++ by default does not give positive modulus
-    if (res < 0 ){
+    if (res < 0)
         res += LARGE_PRIME;
-    }
+
     return res;
 }
 
 void IBLTMultiset::_insertModular(long plusOrMinus, ZZ key, ZZ value) {
     long bucketsPerHash = hashTable.size() / N_HASH;
 
-    if(sizeof(value) != valueSize) {
+    if(sizeof(value) != valueSize)
         Logger::error_and_quit("The value being inserted is different than the IBLT value size! value size: "
                                + toStr(sizeof(value)) + ". IBLT value size: " + toStr(valueSize));
-    }
 
     for(int ii=0; ii < N_HASH; ii++){
         hash_t hk = _hashK(key, ii);
@@ -62,6 +61,7 @@ void IBLTMultiset::_insertModular(long plusOrMinus, ZZ key, ZZ value) {
         } else if (plusOrMinus == -1) {
             entry.keyCheck = _subModHash(entry.keyCheck, modHashCheck);
         }
+
         if (entry.empty()) {
             entry.valueSum.kill();
         }
@@ -114,18 +114,19 @@ bool IBLTMultiset::get(ZZ key, ZZ& result){
                     result = -entry.valueSum;
                     return true;
                 }
-                if (entry.count == 1) {
+
+                if (entry.count == 1)
                     this->_insertModular(-entry.count, entry.keySum, entry.valueSum);
-                }
-                else {
+                else
                     this->_insertModular(-entry.count, -entry.keySum, -entry.valueSum);
-                }
+
                 nErased++;
             } else if (entry.isMultiPure()) {
                 if ( entry.keySum/entry.count == key) {
                     result = entry.valueSum/entry.count;
                     return true;
                 }
+
                 this->_insertModular(-entry.count / abs(entry.count), entry.keySum / entry.count, entry.valueSum / entry.count);
                 ++nErased;
             }
@@ -138,15 +139,15 @@ bool IBLTMultiset::get(ZZ key, ZZ& result){
 bool IBLTMultiset::HashTableEntry::isPure() const
 {
     if ((count == 1 || count == -1) && keySum!=0) {
-        long plusOrMinus;
-        NTL::conv(plusOrMinus, keySum / abs(keySum));
+        long plusOrMinus = conv<long>(keySum / abs(keySum));
         hash_t check = _hashK(keySum*plusOrMinus, N_HASHCHECK);
         hash_t modHash;
-        if (plusOrMinus == 1) {
+
+        if (plusOrMinus == 1)
             modHash = _addModHash(0, check);
-        } else {
+        else
             modHash = _subModHash(0, check);
-        }
+
         return (keyCheck == modHash);
     }
     return false;
@@ -155,17 +156,16 @@ bool IBLTMultiset::HashTableEntry::isPure() const
 bool IBLTMultiset::HashTableEntry::isMultiPure() const {
     if (count != 0 && keySum!=0) {
         long absCount = abs(count);
-        long plusOrMinus;
-        NTL::conv(plusOrMinus, keySum / abs(keySum));
+        long plusOrMinus = conv<long>(keySum / abs(keySum));
         hash_t singleCountHash = _hashK(keySum / count, N_HASHCHECK) % LARGE_PRIME;
         long check = 0;
         int ii = 0;
         while (ii < absCount) {
-            if(plusOrMinus == 1) {
-                check = _addModHash(check, singleCountHash) ;
-            } else {
-                check = _subModHash(check, singleCountHash) ;
-            }
+            if(plusOrMinus == 1)
+                check = _addModHash(check, singleCountHash);
+            else
+                check = _subModHash(check, singleCountHash);
+
             ii++;
         }
         return check == keyCheck;
@@ -188,6 +188,7 @@ bool IBLTMultiset::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, Z
                     negative.emplace_back(std::make_pair(-entry.keySum, -entry.valueSum));
                     this->_insertModular(-entry.count, -entry.keySum, -entry.valueSum);
                 }
+
                 ++nErased;
             }
             else if (entry.isMultiPure()) {
@@ -200,6 +201,7 @@ bool IBLTMultiset::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, Z
                     return false;
                 }
                 this->_insertModular(-entry.count / abs(entry.count), entry.keySum / entry.count, entry.valueSum / entry.count);
+
                 ++nErased;
             }
         }
@@ -208,9 +210,8 @@ bool IBLTMultiset::listEntries(vector<pair<ZZ, ZZ>> &positive, vector<pair<ZZ, Z
     // If any buckets for one of the hash functions is not empty,
     // then we didn't peel them all:
     for (IBLTMultiset::HashTableEntry& entry : this->hashTable) {
-        if (!entry.empty()) {
+        if (!entry.empty())
             return false;
-        }
     }
     return true;
 }
@@ -230,11 +231,11 @@ IBLTMultiset &IBLTMultiset::operator-=(const IBLTMultiset &other) {
         e1.count -= e2.count;
         e1.keySum -= e2.keySum;
         e1.keyCheck = _subModHash(e1.keyCheck, e2.keyCheck);
-        if (e1.empty()) {
+
+        if (e1.empty())
             e1.valueSum.kill();
-        } else {
+        else
             e1.valueSum -= e2.valueSum;
-        }
 
     }
     return *this;

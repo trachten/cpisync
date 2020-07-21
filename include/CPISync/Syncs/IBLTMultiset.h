@@ -95,11 +95,10 @@ public:
 
 private:
     /**
-     *
-     * @param plusOrMinus
-     * @param key
-     * @param value
-     * @return
+     * Performs the actual insertion or deletion
+     * @param plusOrMinus The indicator of whether it is insert (1) or delete (-1)
+     * @param key The key to insert or delete
+     * @param value The value to insert or delete
      */
     void _insertModular(long plusOrMinus, ZZ key, ZZ value);
 

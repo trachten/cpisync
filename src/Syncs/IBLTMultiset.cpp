@@ -11,7 +11,7 @@ IBLTMultiset::IBLTMultiset()
 
 IBLTMultiset::IBLTMultiset(size_t expectedNumEntries, size_t _valueSize)
         : valueSize(_valueSize) {
-    // 2x expectedNumEntries gives TODO:______ probability of decoding failure
+    // atleast 2x expectedNumEntries
     size_t nEntries = expectedNumEntries * 2 ;
     // ... make nEntries exactly divisible by N_HASH
     while (N_HASH * (nEntries/N_HASH) != nEntries) ++nEntries;

@@ -34,8 +34,6 @@ int main(int argc, char *argv[]) {
         prot = GenSync::SyncProtocol::IBLTSync;
     } else if (type == "OneWayIBLTSync") {
         prot = GenSync::SyncProtocol::OneWayIBLTSync;
-    } else if (type == "IBLTSyncMultiset") {
-        prot = GenSync::SyncProtocol::IBLTSync_Multiset;
     } else {
         cout << "invalid sync type!" << endl;
         exit(1);
@@ -46,17 +44,17 @@ int main(int argc, char *argv[]) {
     const int M_BAR = 1; // max differences between server and client
     const int BITS = CHAR_BIT; // bits per entry
     const int PARTS = 3; // partitions per level for partition-syncs
-    const int EXP_ELTS = UCHAR_MAX*4; // expected number of elements per set
+    const int EXP_ELTS = 4; // expected number of elements per set
 
     GenSync genSync = GenSync::Builder().
-            setProtocol(prot).
-            setComm(GenSync::SyncComm::socket).
-            setPort(PORT).
-            setErr(ERR).
-            setMbar(M_BAR).
-            setBits((prot == GenSync::SyncProtocol::IBLTSync || prot == GenSync::SyncProtocol::OneWayIBLTSync || prot == GenSync::SyncProtocol::IBLTSync_Multiset ? BITS : BITS * CHAR_BIT)).
-            setNumPartitions(PARTS).
-            setExpNumElems(EXP_ELTS).
+			setProtocol(prot).
+			setComm(GenSync::SyncComm::socket).
+			setPort(PORT).
+			setErr(ERR).
+			setMbar(M_BAR).
+			setBits((prot == GenSync::SyncProtocol::IBLTSync || prot == GenSync::SyncProtocol::OneWayIBLTSync ? BITS : BITS * CHAR_BIT)).
+			setNumPartitions(PARTS).
+			setExpNumElems(EXP_ELTS).
             build();
 
     genSync.addElem(make_shared<DataObject>('a'));
@@ -64,56 +62,17 @@ int main(int argc, char *argv[]) {
     genSync.addElem(make_shared<DataObject>('c'));
 
     if(strcmp(argv[1], "client")==0) {
-        genSync.addElem(make_shared<DataObject>('x'));
-        genSync.addElem(make_shared<DataObject>('y'));
-        genSync.addElem(make_shared<DataObject>('c'));
-        genSync.addElem(make_shared<DataObject>('c'));
-
+        genSync.addElem(make_shared<DataObject>('d'));
 
         cout << "listening on port " << PORT << "..." << endl;
-
-        cout << "client elements initial\n";
-        for (auto elem: genSync.dumpElements()) {
-            cout << base64_decode(elem) << endl;
-        }
-        cout << "client elements initial end\n";
-
-
-        bool isClientSucceded = genSync.clientSyncBegin(0);
-        if(isClientSucceded) cout << "client sync succeeded." << endl;
-        else cout << "client sync failed." << endl;
-
-        cout << "client elements final\n";
-        for (auto elem: genSync.dumpElements()) {
-            cout << base64_decode(elem) << endl;
-        }
-        cout << "client elements final end\n";
-
+		genSync.clientSyncBegin(0);
+        cout << "sync succeeded." << endl;
 
     } else {
         genSync.addElem(make_shared<DataObject>('e'));
-        genSync.addElem(make_shared<DataObject>('d'));
-        genSync.addElem(make_shared<DataObject>('b'));
-        genSync.addElem(make_shared<DataObject>('b'));
-        genSync.addElem(make_shared<DataObject>('b'));
 
         cout << "connecting on port " << PORT << "..." << endl;
-
-        cout << "server elements initial\n";
-        for (auto elem: genSync.dumpElements()) {
-            cout << base64_decode(elem) << endl;
-        }
-        cout << "server elements initial end\n";
-
-
-        bool isServerSucceded = genSync.serverSyncBegin(0);
-        if(isServerSucceded) cout << "server sync succeeded." << endl;
-        else cout << "server sync failed." << endl;
-
-        cout << "server elements final\n";
-        for (auto elem: genSync.dumpElements()) {
-            cout << base64_decode(elem) << endl;
-        }
-        cout << "server elements final end\n";
+		genSync.serverSyncBegin(0);
+        cout << "sync succeeded." << endl;
     }
 }

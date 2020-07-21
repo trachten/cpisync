@@ -334,6 +334,12 @@ public:
      */
     IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
 
+    /**
+     * Receives an IBLTMultiset.
+     * @param size The size of the IBLT to be received.  Must be >0 or NOT_SET.
+     * @param eltSize The size of values of the IBLTs to be received.  Must be >0 or NOT_SET.
+     * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLTMultiset, false) was used to send the IBLT
+     */
     IBLTMultiset commRecv_IBLTMultiset(Nullable<size_t> size, Nullable<size_t> eltSize);
 
     // Informational

@@ -1,5 +1,5 @@
 //
-// Created by shubham on 7/20/20.
+// Created by Shubham Arora on 7/20/20.
 //
 
 #ifndef CPISYNC_IBLTMULTISET_H
@@ -7,6 +7,7 @@
 
 #include "IBLT.h"
 
+// this prime is used for modulus operations
 const long int LARGE_PRIME = 982451653;
 
 class IBLTMultiset: public IBLT {

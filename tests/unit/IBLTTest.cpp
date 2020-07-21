@@ -146,13 +146,6 @@ void IBLTTest::testIBLTMultisetInsert() {
     CPPUNIT_ASSERT_EQUAL(items.size(), plus.size() + minus.size());
 }
 
-char toChar(ZZ inp) {
-    int inpVal;
-    NTL::conv(inpVal, inp);
-    char res = (char)inpVal ;
-    return res;
-}
-
 void IBLTTest::testIBLTMultisetSubtract() {
     vector<pair<ZZ, ZZ>> items;
     multiset<ZZ> allItems;
@@ -167,7 +160,6 @@ void IBLTTest::testIBLTMultisetSubtract() {
         while(jj < repeat && ii < SIZE/2 ) {
             ZZ temp = randZZ();
             items.push_back({temp, temp});
-//            cout << "Inserting: " << temp << endl;
             iblt.insert(items.at(ii).first, items.at(ii).second);
             allItems.insert(temp);
             ii++; jj++;
@@ -182,7 +174,6 @@ void IBLTTest::testIBLTMultisetSubtract() {
         while(jj < repeat && ii < SIZE ) {
             ZZ temp = randZZ();
             items.push_back({temp, temp});
-//            cout << "Inserting: " << temp << endl;
             iblt2.insert(items.at(ii).first, items.at(ii).second);
             allItems.insert(temp);
             ii++; jj++;
@@ -198,12 +189,7 @@ void IBLTTest::testIBLTMultisetSubtract() {
         IBLTMultiset ibltCopy(iblt); // make a copy each time because getting is destructive
         auto pair = items.at(ii);
         ZZ value;
-        bool isGet = ibltCopy.get(pair.first, value);
-        long k, v, s;
-        NTL::conv(k, pair.first);
-        NTL::conv(v, value);
-        NTL::conv(s, pair.second);
-        CPPUNIT_ASSERT(isGet);
+        CPPUNIT_ASSERT(ibltCopy.get(pair.first, value));
         CPPUNIT_ASSERT_EQUAL(pair.second, value);
     }
 

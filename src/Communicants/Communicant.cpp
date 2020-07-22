@@ -278,6 +278,18 @@ void Communicant::commSend(const IBLT& iblt, bool sync) {
     }
 }
 
+void Communicant::commSend(const IBLTMultiset &iblt, bool sync) {
+    if (!sync) {
+        commSend((long) iblt.size());
+        commSend((long) iblt.eltSize());
+    }
+
+    // Access the hashTable representation of iblt to serialize it
+    for(const IBLTMultiset::HashTableEntry& hte : iblt.hashTable) {
+        commSend(hte, iblt.eltSize());
+    }
+}
+
 void Communicant::commSend(const Cuckoo& cf) {
     commSend((long) cf.getFngprtSize());
     commSend((long) cf.getBucketSize());
@@ -292,6 +304,13 @@ void Communicant::commSend(const Cuckoo& cf) {
 }
 
 void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
+    commSend(hte.count);
+    commSend(toStr<size_t>(hte.keyCheck));
+    commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
+    commSend(hte.valueSum, (int) eltSize);
+}
+
+void Communicant::commSend(const IBLTMultiset::HashTableEntry& hte, size_t eltSize) {
     commSend(hte.count);
     commSend(toStr<size_t>(hte.keyCheck));
     commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
@@ -525,8 +544,41 @@ IBLT Communicant::commRecv_IBLT(Nullable<size_t> size, Nullable<size_t> eltSize)
     return theirs;
 }
 
+IBLTMultiset Communicant::commRecv_IBLTMultiset(Nullable<size_t> size, Nullable<size_t> eltSize) {
+    size_t numSize;
+    size_t numEltSize;
+
+    if(size.isNullQ() || eltSize.isNullQ()) {
+        numSize = (size_t) commRecv_long();
+        numEltSize = (size_t) commRecv_long();
+    } else {
+        numSize = *size;
+        numEltSize = *eltSize;
+    }
+
+    IBLTMultiset theirs;
+    theirs.valueSize = numEltSize;
+
+    for(int ii = 0; ii < numSize; ii++) {
+        theirs.hashTable.push_back(commRecv_HashTableEntry_Multiset(numEltSize));
+    }
+
+    return theirs;
+}
+
 IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
     IBLT::HashTableEntry hte;
+
+    hte.count = commRecv_long();
+    hte.keyCheck = strTo<hash_t>(commRecv_string());
+    hte.keySum = commRecv_ZZ();
+    hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
+
+    return hte;
+}
+
+IBLTMultiset::HashTableEntry Communicant::commRecv_HashTableEntry_Multiset(size_t eltSize) {
+    IBLTMultiset::HashTableEntry hte;
 
     hte.count = commRecv_long();
     hte.keyCheck = strTo<hash_t>(commRecv_string());

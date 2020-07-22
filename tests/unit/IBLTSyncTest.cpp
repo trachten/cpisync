@@ -46,14 +46,14 @@ void IBLTSyncTest::IBLTSyncMultisetReconcileTest() {
 	const int BITS = sizeof(randZZ());
 
 	GenSync GenSyncServer = GenSync::Builder().
-			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setProtocol(GenSync::SyncProtocol::IBLTSync_Multiset).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
 			setExpNumElems(numExpElem).
 			build();
 
 	GenSync GenSyncClient = GenSync::Builder().
-			setProtocol(GenSync::SyncProtocol::IBLTSync).
+			setProtocol(GenSync::SyncProtocol::IBLTSync_Multiset).
 			setComm(GenSync::SyncComm::socket).
 			setBits(BITS).
 			setExpNumElems(numExpElem).

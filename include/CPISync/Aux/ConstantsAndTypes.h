@@ -51,7 +51,8 @@ enum class SYNC_TYPE : byte {
   HashSync,
   FullSync,
   IBLTSync,
-  IBLTSync_HalfRound
+  IBLTSync_HalfRound,
+  IBLTSync_Multiset
 };
 
 // ... Error constants

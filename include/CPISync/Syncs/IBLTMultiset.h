@@ -1,47 +1,18 @@
-/* This code is part of the CPISync project developed at Boston University.  Please see the README for use and references. */
-
 //
-// Created by Eliezer Pearl on 7/9/18.
-// Based on iblt.cpp and iblt.h in https://github.com/mwcote/IBLT-Research.
+// Created by Shubham Arora on 7/20/20.
 //
 
-#ifndef CPISYNCLIB_IBLT_H
-#define CPISYNCLIB_IBLT_H
+#ifndef CPISYNC_IBLTMULTISET_H
+#define CPISYNC_IBLTMULTISET_H
 
-#include <vector>
-#include <utility>
-#include <string>
-#include <NTL/ZZ.h>
-#include <sstream>
-#include <CPISync/Aux/Auxiliary.h>
-#include <CPISync/Data/DataObject.h>
+#include "IBLT.h"
 
-using std::vector;
-using std::hash;
-using std::string;
-using std::stringstream;
-using std::pair;
-using namespace NTL;
+// this prime is used for modulus operations
+const long int LARGE_PRIME = 982451653;
 
-// The number of hashes used per insert
-const long N_HASH = 4;
-
-// The number hash used to create the hash-check for each entry
-const long N_HASHCHECK = 11;
-
-// Shorthand for the hash type
-typedef unsigned long int hash_t;
-
-/*
- * IBLT (Invertible Bloom Lookup Table) is a data-structure designed to add
- * probabilistic invertibility to the standard Bloom Filter data-structure.
- *
- * A complete description of the IBLT data-structure can be found in: 
- * Goodrich, Michael T., and Michael Mitzenmacher. "Invertible bloom lookup tables." 
- * arXiv preprint arXiv:1101.2245 (2011).
- */
-class IBLT {
+class IBLTMultiset: public IBLT {
 public:
+
     // Communicant needs to access the internal representation of an IBLT to send and receive it
     friend class Communicant;
 
@@ -49,12 +20,12 @@ public:
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
      * @param _valueSize The size of the values being added, in bits
+     * @param isMultiset Is the IBLT going to store multiset values, default is false
      */
-    IBLT(size_t expectedNumEntries, size_t _valueSize);
-    
-    // default destructor
-    ~IBLT();
-    
+    IBLTMultiset(size_t expectedNumEntries, size_t _valueSize);
+
+    IBLTMultiset();
+
     /**
      * Inserts a key-value pair to the IBLT.
      * This operation always succeeds.
@@ -63,7 +34,7 @@ public:
      * @require The key must be distinct in the IBLT
      */
     void insert(ZZ key, ZZ value);
-    
+
     /**
      * Erases a key-value pair from the IBLT.
      * This operation always succeeds.
@@ -71,7 +42,7 @@ public:
      * @param value The value to be removed
      */
     void erase(ZZ key, ZZ value);
-    
+
     /**
      * Produces the value s.t. (key, value) is in the IBLT.
      * This operation doesn't always succeed.
@@ -83,7 +54,7 @@ public:
      * @return true iff the presence of the key could be determined
      */
     bool get(ZZ key, ZZ& result);
-    
+
     /**
      * Produces a list of all the key-value pairs in the IBLT.
      * With a low, constant probability, only partial lists will be produced
@@ -94,21 +65,6 @@ public:
      * @return true iff the operation has successfully recovered the entire list
      */
     bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
-    /**
-     * Insert a set of elements into IBLT
-     * @param tarSet target set to be added to IBLT
-     * @param elemSize size of element in the set
-     * @param expnChldSet expected number of elements in the target set
-    */
-    void insert(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
-
-    /**
-     * Delete a set of elements from IBLT
-     * @param tarSet the target set to be deleted
-     * @param elemSize size of element in the chld set
-     * @param expnChldSet expected number of elements in the target set
-    */
-    void erase(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
 
     /**
      * Convert IBLT to a readable string
@@ -117,18 +73,13 @@ public:
     string toString() const;
 
     /**
-     * fill the hashTable with a string generated from IBLT.toString() function
-     * @param inStr a readable ascii string generted from IBLT.toString() function
-    */
-    void reBuild(string &inStr);
-    /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
      * @param other The IBLT that will be subtracted from this IBLT
      * @require IBLT must have the same number of entries and the values must be of the same size
      */
-    IBLT operator-(const IBLT& other) const;
-    IBLT& operator-=(const IBLT& other);
+    IBLTMultiset operator-(const IBLTMultiset& other) const;
+    IBLTMultiset& operator-=(const IBLTMultiset& other);
 
     /**
      * @return the number of cells in the IBLT. Not necessarily equal to the expected number of entries
@@ -142,33 +93,15 @@ public:
 
     vector<hash_t> hashes; /* vector for all hashes of sets */
 
-protected:
-    // local data
+private:
+    /**
+     * Performs the actual insertion or deletion
+     * @param plusOrMinus The indicator of whether it is insert (1) or delete (-1)
+     * @param key The key to insert or delete
+     * @param value The value to insert or delete
+     */
+    void _insertModular(long plusOrMinus, ZZ key, ZZ value);
 
-    // default constructor - no internal parameters are initialized
-    IBLT();
-
-    // Helper function for insert and erase
-    void _insert(long plusOrMinus, ZZ key, ZZ value);
-
-    // Returns the kk-th unique hash of the zz that produced initial.
-    static hash_t _hashK(const ZZ &item, long kk);
-    static hash_t _hash(const hash_t& initial, long kk);
-    static hash_t _setHash(multiset<shared_ptr<DataObject>> &tarSet);
-
-    /* Insert an IBLT together with a value into a bigger IBLT
-    * @param chldIBLT the IBLT to be inserted
-    * @param chldHash a value represent in the hash_t type
-    * */
-    void insert(IBLT &chldIBLT, hash_t &chldHash);
-
-    /* Erase an IBLT together with a value into a bigger IBLT
-    * @param chldIBLT the IBLT to be erased
-    * @param chldHash a value represent in the hash_t type
-    * */
-    void erase(IBLT &chldIBLT, hash_t &chldHash);
-
-    // Represents each entry in the iblt
     class HashTableEntry
     {
     public:
@@ -187,6 +120,9 @@ protected:
         // Returns whether the entry contains just one insertion or deletion
         bool isPure() const;
 
+        // Returns whether the entry contains just insertions or deletions of only one key-value pair
+        bool isMultiPure() const ;
+
         // Returns whether the entry is empty
         bool empty() const;
     };
@@ -196,6 +132,7 @@ protected:
 
     // the value size, in bits
     size_t valueSize;
+
 };
 
-#endif //CPISYNCLIB_IBLT_H
+#endif //CPISYNC_IBLTMULTISET_H

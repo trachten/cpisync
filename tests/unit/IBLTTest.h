@@ -8,6 +8,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <CPISync/Syncs/IBLT.h>
+#include <CPISync/Syncs/IBLTMultiset.h>
 #include <CPISync/Aux/Auxiliary.h>
 #include <iostream>
 #include <algorithm>
@@ -17,6 +18,8 @@ class IBLTTest : public CPPUNIT_NS::TestFixture{
     CPPUNIT_TEST(testAll);
     CPPUNIT_TEST(SerializeTest);
     CPPUNIT_TEST(IBLTNestedInsertRetrieveTest);
+    CPPUNIT_TEST(testIBLTMultisetInsert);
+    CPPUNIT_TEST(testIBLTMultisetSubtract);
 
     CPPUNIT_TEST_SUITE_END();
 public:
@@ -39,6 +42,17 @@ public:
      * Test serialize and de-serialize in actual use in IBLT add and list functions
      * */
     static void IBLTNestedInsertRetrieveTest();
+
+    /**
+     * Test multiset insert into IBLT
+     */
+    static void testIBLTMultisetInsert();
+
+    /**
+     * Test multiset IBLT subtract
+     */
+    static void testIBLTMultisetSubtract();
+
 
 };
 

@@ -13,6 +13,7 @@
 #include <CPISync/Syncs/FullSync.h>
 #include <CPISync/Syncs/IBLTSync.h>
 #include <CPISync/Syncs/IBLTSync_HalfRound.h>
+#include <CPISync/Syncs/IBLTSync_Multiset.h>
 #include <CPISync/Syncs/CPISync_HalfRound.h>
 #include <CPISync/Syncs/IBLTSetOfSets.h>
 #include <CPISync/Syncs/CuckooSync.h>
@@ -411,6 +412,9 @@ GenSync GenSync::Builder::build() {
             break;
         case SyncProtocol::CuckooSync:
             myMeth = make_shared<CuckooSync>(fngprtSize, bucketSize, filterSize, maxKicks);
+            break;
+        case SyncProtocol::IBLTSync_Multiset:
+            myMeth = make_shared<IBLTSync_Multiset>(numExpElem, bits);
             break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");

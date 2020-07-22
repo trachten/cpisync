@@ -181,6 +181,8 @@ Additional algorithms:
             * Each peer encodes their set into an [Invertible Bloom Lookup Table](https://arxiv.org/pdf/1101.2245.pdf) with a size determined by NumExpElements and the client sends their IBLT to their per. The differences are determined by "subtracting" the IBLT's from each other and attempting to peel the resulting IBLT. The server peer then returns the elements that the client peer needs to update their set
        * OneWayIBLTSync
             * The client sends their IBLT to their server peer and the server determines what elements they need to add to their set. The client does not receive a return message and does not update their set
+       * CuckooSync
+            * Each peer encodes their set into a [cuckoo filter](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf). Peers exchange their cuckoo filters. Each host infers the elements that are not in its peer by looking them up in the peer's cuckoo filter. Any elements that are not found in the peer's cuckoo filter are sent to it.
    * **Included Sync Protocols (Set of Sets):**
        * IBLT Set of Sets
             * Sync using the protocol described [here](https://arxiv.org/pdf/1707.05867.pdf). This sync serializes an IBLT containing a child set into a bitstring where it is then treated as an element of a larger IBLT. Each host recovers the IBLT containing the serialized IBLTs and deserializes each one. A matching procedure is then used to determine which child sets should sync with each other and which elements they need. If this sync is two way this info is then sent back to the peer node. The number of differences in each child IBLT may not be larger than the total number of sets being synced
@@ -204,15 +206,15 @@ Additional algorithms:
     * *All CPISync variants*
 * **setNumPartitions:** The number of partitions that InterCPISync should recurse into if it fails
     * *InteractiveCPISync*
-* **setNumExpElements:** The maximum number of differences that you expect to be placed into your IBLT. If you are doing IBLTSetOfSets this is the number of child sets you expect
+* **setExpNumElems:** The maximum number of differences that you expect to be placed into your IBLT. If you are doing IBLTSetOfSets this is the number of child sets you expect
     * *IBLTSync, OneWayIBLTSync & IBLTSetOfSets*
 * **setExpNumElemChild:** Set the upper bound for number of elements in each child set
-    * *IBLTSetOfSets* 
+    * *IBLTSetOfSets*
 * **setDataFile:** Set the data file containing the data you would like to populate your GenSync with
     * *Any sync you'd like to do this with*
 
 
-           
+
 ## Documentation
 More documentation may be found in the [documents](doc/) folder:
 #  [General usage](doc/README.md)

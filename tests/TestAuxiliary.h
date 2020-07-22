@@ -390,6 +390,145 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
 }
 
 /**
+ * Checks if server reconciliation was successful after sync
+ * similar to `checkServerSuccess` which is used in setOfSet sync
+ * @param resultantServer - multiset of server data AFTER reconciliation
+ * @param reconciled - multiset of expected data after reconciliation, (clientData UNION serverData)
+ * @param setofSets - true iff data type is setofsets
+ * @param oneWay - true iff the sync will be one way (only server is reconciled)
+ * @param serverReport - server report of sync
+ * @return true iff server reconciliation check is successful, false otherwise
+ */
+inline bool
+checkServerSucceeded(multiset<string> &resultantServer, multiset<string> &reconciled, bool setofSets, bool oneWay,
+                     forkHandleReport &serverReport) {
+
+    if (!setofSets) {
+        bool isSuccess = (resultantServer == reconciled && serverReport.success);
+        return isSuccess;
+    } else if (oneWay) { // Set of sets one way
+        Logger::error_and_quit("Not implemented yet");
+    } else { // set-of-sets two way
+        return (checkReconSetofSets(resultantServer, reconciled) && serverReport.success);
+    }
+
+    return false; // you should never get here
+}
+
+/**
+ * Checks if client reconciliation was successful after sync
+ * @param resultantClient - multiset of client data AFTER reconciliation
+ * @param initialClient - multiset of client data BEFORE reconciliation
+ * @param reconciled - multiset of expected data after reconciliation, (clientData UNION serverData)
+ * @param setofSets - true iff data type is setofsets
+ * @param oneWay - true iff the sync will be one way (only server is reconciled)
+ * @param clientReport - client report of sync
+ * @return true iff client reconciliation check is successful, false otherwise
+ */
+inline bool
+checkClientSucceeded(multiset<string> &resultantClient, multiset<string> &initialClient, multiset<string> &reconciled,
+                     bool setofSets, bool oneWay, forkHandleReport &clientReport) {
+
+    if (!oneWay) { // reconciliation conditions are same for client and server in two way sync
+        bool isSuccess = checkServerSucceeded(resultantClient, reconciled, setofSets, oneWay, clientReport);
+        return isSuccess;
+    } else { // in case of one way sync, check that the client is unmodified
+        if (setofSets) {
+            return checkReconSetofSets(initialClient, resultantClient);
+        } else {
+            return initialClient == resultantClient;
+        }
+    }
+
+    return false; // you should never get here
+}
+
+/**
+ * Runs client and server reconciliation in a separate process, returning a boolean for the success or failure of the sync
+ * @param GenSyncClient The GenSync object that is client in the sync.
+ * @param GenSyncServer The GenSync object that is server in the sync.
+ * @param oneWay true iff the sync will be one way (only server is reconciled)
+ * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
+ * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
+ * of the sets (For parameter mismatch testing)
+ * @param SIMILAR amount of elements common to both genSyncs
+ * @param CLIENT_MINUS_SERVER amount of elements unique to client
+ * @param SERVER_MINUS_CLIENT amount of elements unique to server
+ * @param reconciled The expected reconciled dataset
+ * @return True if the recon appears to be successful and false otherwise
+ * @return true if reconciliation succeeded, false otherwise
+ */
+inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,bool oneWay, bool probSync,bool syncParamTest,
+                               const unsigned int SIMILAR,const unsigned int CLIENT_MINUS_SERVER,
+                               const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled,
+                               bool setofSets){
+
+    int child_state;
+    int my_opt = 0;
+    int method_num = 0;
+    forkHandleReport clientReport, serverReport;
+    high_resolution_clock::time_point start = high_resolution_clock::now();
+    pid_t pID = fork();
+
+
+    if (pID == 0) { // child process will act as server and run sync
+        Logger::gLog(Logger::COMM,"created a child process, server, pid: " + toStr(getpid()));
+
+        serverReport.success = GenSyncServer.serverSyncBegin(method_num);
+        serverReport.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
+        serverReport.CPUtime = GenSyncServer.getCommTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+        serverReport.bytes = GenSyncServer.getXmitBytes(method_num) + GenSyncServer.getRecvBytes(method_num);
+        Logger::gLog(Logger::COMM,"exit a child process, server, status: " + toStr(serverReport.success) +  ", pid: " + toStr(getpid()));
+
+        multiset<string> resultantServer;
+        for (const auto &elem : GenSyncServer.dumpElements()) {
+            resultantServer.insert(elem);
+        }
+        bool serverSuccess = checkServerSucceeded(resultantServer, reconciled, setofSets, oneWay, serverReport);
+        Logger::gLog(Logger::COMM,
+                     "server, status: " + toStr(serverReport.success) + ", check success: " + toStr(serverSuccess) +
+                     ", pid: " + toStr(getpid()));
+
+        exit(serverSuccess);
+    } else if (pID < 0) {
+        Logger::error_and_quit("Fork error in sync test");
+    }
+    // parent process acts as client,
+    // receives server result status when forked child(server) exits
+    else {
+        Logger::gLog(Logger::COMM,"client process, pid: " + toStr(getpid()));
+
+        multiset<string> initialClient;
+        if(oneWay) {
+            for (const auto& elem : GenSyncClient.dumpElements()) {
+                initialClient.insert(elem);
+            }
+        }
+
+        clientReport.success = GenSyncClient.clientSyncBegin(method_num);
+        clientReport.totalTime = duration_cast<microseconds>(high_resolution_clock::now() - start).count() * 1e-6;
+        clientReport.CPUtime = GenSyncClient.getCommTime(method_num); /// assuming method_num'th communicator corresponds to method_num'th syncagent
+        clientReport.bytes = GenSyncClient.getXmitBytes(method_num);
+        waitpid(pID, &child_state, my_opt);
+
+        multiset<string> resultantClient;
+        for (const auto& elem : GenSyncClient.dumpElements()) {
+            resultantClient.insert(elem);
+        }
+
+        bool isClientSuccess = checkClientSucceeded(resultantClient, initialClient, reconciled, setofSets, oneWay,
+                                                    clientReport);
+        Logger::gLog(Logger::COMM, "waiting for test fork to finish, pid: " + toStr(getpid()));
+        bool isSyncSuccess = isClientSuccess && bool(child_state);
+
+        return isSyncSuccess;
+    }
+    // unreachable state
+    return false;
+}
+
+
+/**
  * Runs client (child process) and server (parent process) returning a boolean for the success or failure of the sync
  * @param GenSyncClient The GenSync object that plays the role of client in the sync.
  * @param GenSyncServer The GenSync object that plays the role of server in the sync.
@@ -755,7 +894,7 @@ inline void addElemsSetofSets(GenSync &GenSyncServer,
  * @param largeSync true if you would like to test syncing a large number of elements
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
-inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, bool probSync, bool syncParamTest,
+inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay, bool probSync, bool syncParamTest,
 						bool Multiset,bool largeSync){
 
 	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
@@ -777,8 +916,8 @@ inline bool syncTest(GenSync GenSyncClient, GenSync GenSyncServer, bool oneWay, 
 		// add elements to server, client and reconciled
 		auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
 		//Returns a boolean value for the success of the synchronization
-		success &= syncTestForkHandle(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
-									  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
+        success &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
+                                      CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 		success &= GenSyncServer.clearData();
 		success &= GenSyncClient.clearData();

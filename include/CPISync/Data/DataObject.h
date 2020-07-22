@@ -136,11 +136,11 @@ public:
 
     // comparisons
     bool operator < (const DataObject& second) const{
-        return this->myBuffer < second.to_ZZ();
+        return (this->myBuffer < second.to_ZZ());
     }
 
     bool operator== (const DataObject& second) const {
-        return this->myBuffer == second.to_ZZ();
+        return (this->myBuffer == second.to_ZZ());
     }
        
     // static variables

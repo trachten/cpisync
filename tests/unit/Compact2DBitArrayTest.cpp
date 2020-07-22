@@ -18,15 +18,15 @@ void Compact2DBitArrayTest::setUp() {}
 
 void Compact2DBitArrayTest::tearDown() {}
 
-inline void _setEntries(Compact2DBitArray& arr, vector<int>& content) {
+inline void _setEntries(Compact2DBitArray& arr, vector<size_t>& content) {
     size_t zz = 0;
     for (size_t ii=0; ii<arr.getRows(); ii++)
         for (size_t jj=0; jj<arr.getColumns(); jj++)
             arr.setEntry(ii, jj, content.at(zz++));
 }
 
-inline vector<int> _getEntries(Compact2DBitArray& arr) {
-    vector<int> ret;
+inline vector<size_t> _getEntries(Compact2DBitArray& arr) {
+    vector<size_t> ret;
     for (size_t ii=0; ii<arr.getRows(); ii++)
         for (size_t jj=0; jj<arr.getColumns(); jj++)
             ret.push_back(arr.getEntry(ii, jj));
@@ -34,7 +34,7 @@ inline vector<int> _getEntries(Compact2DBitArray& arr) {
     return ret;
 }
 
-inline void _assert_vectors_equal(vector<int>& a, vector<int>& b) {
+inline void _assert_vectors_equal(vector<size_t>& a, vector<size_t>& b) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Different lengths of compared vectors",
                                  a.size(), b.size());
 
@@ -46,8 +46,8 @@ inline void _assert_vectors_equal(vector<int>& a, vector<int>& b) {
 /**
  * Generate count numbers in range from 0 to max using logistic map
  */
-inline vector<int> _gen_range(size_t max, size_t count) {
-    vector<int> ret;
+inline vector<size_t> _gen_range(size_t max, size_t count) {
+    vector<size_t> ret;
     float x_i= .3; // logistic map initial x
     for (size_t ii=0; ii<count; ii++) {
         x_i = 3.8 * x_i * (1 - x_i); // logistic map
@@ -63,7 +63,7 @@ inline void _test_various_columns_rows(size_t fSize) {
         for (size_t rows=MIN_ROWS_TESTED; rows<=MAX_ROWS_TESTED; rows++) {
             auto a = Compact2DBitArray(fSize, bSize, rows);
 
-            vector<int> toAdd = _gen_range((1LU << fSize) - 1, bSize * rows);
+            vector<size_t> toAdd = _gen_range((1LU << fSize) - 1, bSize * rows);
             _setEntries(a, toAdd);
             auto added = _getEntries(a);
 

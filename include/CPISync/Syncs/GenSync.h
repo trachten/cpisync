@@ -13,6 +13,7 @@
 
 #include <CPISync/Communicants/Communicant.h>
 #include <CPISync/Data/DataObject.h>
+#include <CPISync/Aux/Auxiliary.h>
 #include <CPISync/Aux/SyncMethod.h>
 
 // namespace info
@@ -131,7 +132,7 @@ public:
     bool clearData();
 
     /**
-     * @return a list of string representations of the elements stored in the data structure
+     * @return a list of base_64 encoded string representations of the elements stored in the data structure
      */
      const list<string> dumpElements();
 
@@ -320,6 +321,7 @@ public:
         IBLTSync,
         OneWayIBLTSync,
         IBLTSetOfSets,
+        IBLTSync_Multiset,
         CuckooSync,
         END     // one after the end of iterable options
     };
@@ -537,17 +539,17 @@ private:
     int errorProb; /** negative log of the upper bound on the probability of error tolerance of the sync */
     const bool base64; /** whether or not ioStr represents a base64 string */
     string ioStr; /** the string with which to communicate input/output for string-based sync. */
-    long mbar=Builder::UNDEF_NUM; /** an upper estimate on the number of differences between synchronizing data multisets. */
-    long bits=Builder::UNDEF_NUM; /** the number of bits per element of data */
-    int numParts=Builder::UNDEF_NUM; /** the number of partitions into which to divide recursively for interactive methods. */
-    size_t numExpElem=Builder::UNDEF_NUM; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
-    string fileName=Builder::UNDEF_STR;   /** the name of a file from which to draw data for the initialization of the sync object. */
+    Nullable<long> mbar; /** an upper estimate on the number of differences between synchronizing data multisets. */
+    Nullable<long> bits; /** the number of bits per element of data */
+    Nullable<int> numParts; /** the number of partitions into which to divide recursively for interactive methods. */
+    Nullable<size_t> numExpElem; /** the number of elements expected to be stored in the data structure (e.g., for IBLT) */
+    Nullable<string> fileName;   /** the name of a file from which to draw data for the initialization of the sync object. */
 	bool hashes = Builder::HASHES;
-    long numElemChldSet = Builder::UNDEF_NUM; /** exp # of elements in a child set **/
-    size_t fngprtSize = Builder::UNDEF_NUM; /** Cuckoo filter parameters */
-    size_t bucketSize = Builder::UNDEF_NUM;
-    size_t filterSize = Builder::UNDEF_NUM;
-    size_t maxKicks = Builder::UNDEF_NUM;
+    Nullable<long> numElemChldSet; /** exp # of elements in a child set **/
+    Nullable<size_t> fngprtSize; /** Cuckoo filter parameters */
+    Nullable<size_t> bucketSize;
+    Nullable<size_t> filterSize;
+    Nullable<size_t> maxKicks;
 
 
     // ... bookkeeping variables
@@ -557,12 +559,10 @@ private:
     void (*_postProcess)(list<shared_ptr<DataObject>>, list<shared_ptr<DataObject>>, void (GenSync::*add)(shared_ptr<DataObject>), bool (GenSync::*del)(shared_ptr<DataObject>), GenSync *pGenSync);
     // DEFAULT constants
     static const bool HASHES = false;
-    static const long UNDEF_NUM = -1;
-    static const string UNDEF_STR;
     static const SyncProtocol DFT_PROTO = SyncProtocol::UNDEFINED;
     static const int DFT_PRT = 8001;
     static const bool DFT_BASE64 = true;
-    static const long DFT_MBAR = UNDEF_NUM; // this parameter *must* be specified for sync to work
+    static const Nullable<long> DFT_MBAR; // this parameter *must* be specified for sync to work
     static const long DFT_BITS = 32;
     static const int DFT_PARTS = 2;
     static const size_t DFT_EXPELEMS = 50;

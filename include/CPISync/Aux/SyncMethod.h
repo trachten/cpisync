@@ -129,10 +129,24 @@ public:
     class SyncStats{
     public:
 
-        enum StatID { XMIT, RECV, COMM_TIME, IDLE_TIME, COMP_TIME, ALL }; //Stat specifiers
+        /**
+         * Stat specifiers
+         *    * must start with NONE==0
+         *    * must end with ALL
+         */
+        enum StatID { NONE=0, XMIT, RECV, COMM_TIME, IDLE_TIME, COMP_TIME, ALL };
+
+        /**
+         * Converts a StatID enum to an integer using a static cast
+         * @param ID The ID as specified by StatID
+         * @return an integer representing the chosen ID
+         */
+        int operator+(StatID ID) {
+            return static_cast<int>(ID);
+        }
 
         SyncStats(){
-        	for(int ii = 0; ii < 5; ii++)
+        	for(int ii = (+NONE)+1; ii < +ALL; ii++)
         		dataArray[ii] = 0;
         }
 
@@ -142,15 +156,13 @@ public:
          * Resets specified counter to 0
          */
         inline void reset(StatID statID){
-        	int myIndex = enumToIndex(statID);
-
         	//Valid index that isn't all
-        	if(myIndex < 5)
-        		dataArray[myIndex] = 0;
+        	if(statID != ALL)
+        		dataArray[+statID] = 0;
 
         	//All
-        	else if(myIndex == 5)
-				for(int ii = 0; ii < 5; ii++)
+        	else // statID==ALL
+				for(int ii = (+NONE)+1; ii < +ALL; ii++)
 					dataArray[ii] = 0;
 
         }
@@ -161,7 +173,7 @@ public:
          * Does not support ALL
          */
         inline double getStat(StatID statID){
-			return dataArray[enumToIndex(statID)];
+			return dataArray[+statID];
         }
 
         /**
@@ -170,40 +182,22 @@ public:
          * @param incr how much to increment the given stat by
          */
         inline void increment(StatID statID, double incr){
-			int myIndex = enumToIndex(statID);
-
-			//Byte xmit and recv
-			if(myIndex < 3 && myIndex >= 0)
-				dataArray[myIndex] += floor(incr);
-
-			//Timers
-			else if(myIndex < 5)
-				dataArray[myIndex] += incr;
-
-			//All
-			else if(myIndex == 5) {
-				dataArray[0] += floor(incr);
-				dataArray[1] += floor(incr);
-				dataArray[2] += incr;
-				dataArray[3] += incr;
-				dataArray[4] += incr;
-			}
-
-        }
+            for (int ii=(+NONE)+1; ii<(+ALL); ii++)
+                if (ii==(+statID) || statID==ALL)
+                    dataArray[ii] += (ii==(+XMIT) || ii==(+RECV)?floor(incr):incr);
+    }
 
         /**
          * starts a timer for the specified StatID. Only works for time type StatIDs
          * @param timerID The id of the timer you would like to start
          */
         inline void timerStart(StatID timerID){
-			int myIndex = enumToIndex(timerID);
+			if(timerID != ALL)
+				startTimeArray[timerID] = std::chrono::high_resolution_clock::now();
 
-			if(myIndex < 5)
-				startTimeArray[myIndex - 2] = std::chrono::high_resolution_clock::now();
-
-			else if (myIndex == 5)
-				for(int ii = 2; ii < 5; ii++)
-					startTimeArray[myIndex] = std::chrono::high_resolution_clock::now();
+			else if (timerID == ALL)
+				for(int ii = (+NONE)+1; ii != +ALL; ii++)
+					startTimeArray[ii] = std::chrono::high_resolution_clock::now();
         }
 
         /**
@@ -212,65 +206,41 @@ public:
          * @requires timerStart must have been called for the same StatID before use
          */
         inline void timerEnd(StatID timerID){
-			int myIndex = enumToIndex(timerID);
 
 			//Comm, idle or comp time
-			if(myIndex < 5)
-				dataArray[myIndex] += (std::chrono::duration_cast<std::chrono::microseconds> (std::chrono::high_resolution_clock::now() - startTimeArray[myIndex-2]).count() * 1e-6);
+			if(timerID != ALL)
+				dataArray[+timerID] += (std::chrono::duration_cast<std::chrono::microseconds> (std::chrono::high_resolution_clock::now() - startTimeArray[timerID]).count() * 1e-6);
 
 			//Update all the time stats
-			else
-				for(int ii = 2; ii < 5;ii++)
-					dataArray[ii] += (std::chrono::duration_cast<std::chrono::microseconds> (std::chrono::high_resolution_clock::now() - startTimeArray[ii-2]).count() * 1e-6);
-        }
-
-        /**
-         * converts an enum to its index in the dataArray
-         * @param myEnum the enum to convert
-         * @return the index in the array
-         */
-        inline int enumToIndex(StatID myEnum){
-			switch(myEnum) {
-				case SyncMethod::SyncStats::XMIT:
-					return 0;
-				case SyncMethod::SyncStats::RECV:
-					return 1;
-				case SyncMethod::SyncStats::COMM_TIME:
-					return 2;
-				case SyncMethod::SyncStats::IDLE_TIME:
-					return 3;
-				case SyncMethod::SyncStats::COMP_TIME:
-					return 4;
-				case SyncMethod::SyncStats::ALL:
-					return 5;
-				default:
-					Logger::error("Invalid enum type specified");
-			}
+			else // timerID==ALL
+				for(int ii = (+NONE)+1; ii != +ALL; ii++)
+					dataArray[ii] += (std::chrono::duration_cast<std::chrono::microseconds> (std::chrono::high_resolution_clock::now() - startTimeArray[ii]).count() * 1e-6);
         }
 
         /**
          * @return The total time required for this sync to complete
          */
-        double totalTime(){ return dataArray[2] + dataArray[3] + dataArray[4]; };
+        double totalTime(){ return dataArray[COMM_TIME] + dataArray[IDLE_TIME] + dataArray[COMP_TIME]; };
 
     private:
 
     	/**
-         * 0 = xmitBytes; The total amount of bytes that this sync has transmitted
-         * 1 = recvBytes; The total amount of bytes that this sync has received
-         * 2 = commTime; The total amount of time that this time has spent sending and receiving through sockets
-         * 3 = idleTime; The total time spent waiting for your peer (listening, waiting for computation etc)
-         * 4 = compTime; The total amount time taken to finish the computation for this sync
+    	 * Corresponds to possible values of StatID
+         * XMIT = xmitBytes; The total amount of bytes that this sync has transmitted
+         * RECV = recvBytes; The total amount of bytes that this sync has received
+         * COMM_TIME = commTime; The total amount of time that this time has spent sending and receiving through sockets
+         * IDLE_TIME = idleTime; The total time spent waiting for your peer (listening, waiting for computation etc)
+         * COMP_TIME = compTime; The total amount time taken to finish the computation for this sync
          */
-        double dataArray[5];
+        double dataArray[(+ALL)+1];
 
         /**
          * An array of the start times for each timer
-         * 0 = commStart
-         * 1 = idleStart
-         * 2 = compStart
+         * COMM_TIME: commStart
+         * IDLE_TIME: idleStart
+         * COMP_TIME: compStart
          */
-		std::chrono::high_resolution_clock::time_point startTimeArray[3];
+		std::chrono::high_resolution_clock::time_point startTimeArray[(+ALL)+1];
     };
 
     /**

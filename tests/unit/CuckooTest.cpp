@@ -96,8 +96,8 @@ void CuckooTest::testConfigF3() {
 }
 
 void CuckooTest::testConfigF7() {
-    Cuckoo c = Cuckoo(7, 4, 5, 20);
-    auto inserted = _populate(c, 19, 1 << 12);
+    Cuckoo c = Cuckoo(9, 8, 32, 20);
+    auto inserted = _populate(c, 230, 1 << 12);
 
     // Because of item range >> f => for (almost) all f: f != item
     // don't expect any* failed inserts
@@ -108,6 +108,15 @@ void CuckooTest::testConfigF7() {
     // theory dictates no false negatives, under some
     // implementatitonal circumstances they do occur. The reason for
     // false negatives is explained in the docstring of Cuckoo::_pHash.
+    CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
+}
+
+void CuckooTest::testConfigF8() {
+    Cuckoo c = Cuckoo(8, 4, 12, 10);
+    auto inserted = _populate(c, 22, 64 * (1 << 8));
+
+    CPPUNIT_ASSERT_EQUAL(0LU, _failed_insert_count(inserted));
+
     CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
 }
 
@@ -147,9 +156,7 @@ void CuckooTest::testConfigF3B1() {
 
     CPPUNIT_ASSERT(_failed_insert_count(inserted) <= 2);
 
-    CPPUNIT_ASSERT(_lost_items(c, inserted) <= 2);
-    // Explained in testConfigF7
-    // CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
+    CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
 
 }
 
@@ -163,14 +170,12 @@ void CuckooTest::testConfigF14B1() {
 }
 
 void CuckooTest::testConfigF7B15() {
-    Cuckoo c = Cuckoo(7, 15, 10, 5);
-    auto inserted = _populate(c, 140, 1 << 16); // alpha 144/150 ~= 93%
+    Cuckoo c = Cuckoo(7, 15, 32, 5);
+    auto inserted = _populate(c, 446, 1 << 16); // alpha 144/150 ~= 93%
 
     CPPUNIT_ASSERT(_failed_insert_count(inserted) <= 2);
 
-    CPPUNIT_ASSERT(_lost_items(c, inserted) <= 2);
-    // Explained in testConfigF7
-    // CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
+    CPPUNIT_ASSERT_EQUAL(0LU, _lost_items(c, inserted));
 }
 
 void CuckooTest::testConfigF7B3() {
@@ -222,7 +227,7 @@ void CuckooTest::testLookup() {
     // Query 1000 items that are not inserted
     size_t lookups = 0, falsePositives = 0;
     while (lookups < 1000) {
-        int e = Cuckoo::_rand(0, rndRange); // generate other random items
+        long e = Cuckoo::_rand(0, rndRange); // generate other random items
                                       // from the same range
         DataObject de = DataObject(to_ZZ(e));
         if (_isInserted(inserted, de))
@@ -330,6 +335,6 @@ void CuckooTest::testErase() {
     // Ideally there should not be any. However, there are some
     // problemsF that stem from the implementation and some legitFP
     // that stem from theory.
-    int afterErasePos = lookupDeletedSucceeds - problemsF.size() - legitFP;
+    int afterErasePos = static_cast<int>(lookupDeletedSucceeds - problemsF.size() - legitFP);
     CPPUNIT_ASSERT_EQUAL(0, afterErasePos);
 }

@@ -2,8 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <memory>
-#include <string>
 
 #include <CPISync/Syncs/GenSync.h>
 #include <CPISync/Aux/Exceptions.h>
@@ -15,10 +13,10 @@
 #include <CPISync/Syncs/FullSync.h>
 #include <CPISync/Syncs/IBLTSync.h>
 #include <CPISync/Syncs/IBLTSync_HalfRound.h>
+#include <CPISync/Syncs/IBLTSync_Multiset.h>
 #include <CPISync/Syncs/CPISync_HalfRound.h>
 #include <CPISync/Syncs/IBLTSetOfSets.h>
 #include <CPISync/Syncs/CuckooSync.h>
-#include <chrono>
 
 using namespace std::chrono;
 
@@ -297,11 +295,11 @@ bool GenSync::clientSyncBegin(int sync_num) {
 }
 
 const unsigned long GenSync::getXmitBytes(int syncIndex) const {
-    return narrow_cast<long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::XMIT));
+    return narrow_cast<unsigned long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::XMIT));
 }
 
 const unsigned long GenSync::getRecvBytes(int syncIndex) const {
-    return narrow_cast<long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::RECV));
+    return narrow_cast<unsigned long>(mySyncVec[syncIndex]->mySyncStats.getStat(SyncMethod::SyncStats::RECV));
 }
 
 const double GenSync::getCommTime(int syncIndex) const {
@@ -380,22 +378,22 @@ GenSync GenSync::Builder::build() {
     switch (proto)
     {
         case SyncProtocol::CPISync:
-            if (mbar == Builder::UNDEF_NUM)
+            if (mbar.isNullQ())
                 throw noMbar;
             myMeth = make_shared<CPISync>(mbar, bits, errorProb, 0, hashes);
             break;
         case SyncProtocol::ProbCPISync:
-            if (mbar == Builder::UNDEF_NUM)
+            if (mbar.isNullQ())
                 throw noMbar;
             myMeth = make_shared<ProbCPISync>(mbar, bits, errorProb, hashes);
             break;
         case SyncProtocol::InteractiveCPISync:
-            if (mbar == Builder::UNDEF_NUM)
+            if (mbar.isNullQ())
                 throw noMbar;
             myMeth = make_shared<InterCPISync>(mbar, bits, errorProb, numParts, hashes);
             break;
         case SyncProtocol::OneWayCPISync:
-            if (mbar == Builder::UNDEF_NUM)
+            if (mbar.isNullQ())
                 throw noMbar;
             myMeth = make_shared<CPISync_HalfRound>(mbar, bits, errorProb);
             break;
@@ -415,12 +413,15 @@ GenSync GenSync::Builder::build() {
         case SyncProtocol::CuckooSync:
             myMeth = make_shared<CuckooSync>(fngprtSize, bucketSize, filterSize, maxKicks);
             break;
+        case SyncProtocol::IBLTSync_Multiset:
+            myMeth = make_shared<IBLTSync_Multiset>(numExpElem, bits);
+            break;
         default:
             throw invalid_argument("I don't know how to synchronize with this protocol.");
     }
     theMeths.push_back(myMeth);
 
-    if (fileName.empty()) // is data to be drawn from a file?
+    if (fileName.isNullQ()) // is data to be drawn from a file?
         return GenSync(theComms, theMeths, _postProcess);
     else
         return GenSync(theComms, theMeths, fileName);
@@ -431,4 +432,4 @@ GenSync GenSync::Builder::build() {
 const string GenSync::Builder::DFT_HOST = "localhost";
 const string GenSync::Builder::DFT_IO;
 const int GenSync::Builder::DFT_ERROR = 8;
-const string GenSync::Builder::UNDEF_STR = string(); // an empty string
+const Nullable<long> GenSync::Builder::DFT_MBAR = NOT_SET<long>();

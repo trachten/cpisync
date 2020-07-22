@@ -7,7 +7,6 @@
  */
 
 #include <CPISync/Syncs/Compact2DBitArray.h>
- #include <utility>
 
 /**
  * To discern endianness in runtime but only once when the constructor

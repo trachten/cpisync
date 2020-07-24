@@ -79,7 +79,7 @@ bool CuckooSync::SyncClient(const shared_ptr<Communicant>& commSync,
 
         mySyncStats.timerStart(SyncStats::COMP_TIME);
         otherMinusSelf.insert(otherMinusSelf.end(), rcvd.begin(), rcvd.end());
-        mySyncStats.timerEnd(SyncStats::COMM_TIME);
+        mySyncStats.timerEnd(SyncStats::COMP_TIME);
 
         stringstream msg;
         msg << "CuckooSync succeeded [client]." << endl;
@@ -147,6 +147,10 @@ bool CuckooSync::SyncServer(const shared_ptr<Communicant>& commSync,
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
         mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
         mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
+
+        mySyncStats.timerStart(SyncStats::COMP_TIME);
+        otherMinusSelf.insert(otherMinusSelf.end(), rcvd.begin(), rcvd.end());
+        mySyncStats.timerEnd(SyncStats::COMP_TIME);
 
         stringstream msg;
         msg << "CuckooSync succeeded [server]." << endl;

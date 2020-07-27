@@ -421,10 +421,15 @@ GenSync GenSync::Builder::build() {
     }
     theMeths.push_back(myMeth);
 
-    if (fileName.isNullQ()) // is data to be drawn from a file?
-        return GenSync(theComms, theMeths, _postProcess);
-    else
-        return GenSync(theComms, theMeths, fileName);
+    if (fileName.isNullQ()) { // is data to be drawn from a file?
+        GenSync obj = GenSync(theComms, theMeths, _postProcess);
+        obj.setProtocol(proto);
+        return obj;
+    } else {
+        GenSync obj = GenSync(theComms, theMeths, fileName);
+        obj.setProtocol(proto);
+        return obj;
+    }
 }
 
 // static consts

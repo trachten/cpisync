@@ -16,6 +16,7 @@
 #include <CPISync/Aux/ForkHandle.h>
 #include <type_traits>
 #include <chrono>
+#include "DatasetGenerator.h"
 
 #ifndef CPISYNCLIB_GENERIC_SYNC_TESTS_H
 #define CPISYNCLIB_GENERIC_SYNC_TESTS_H
@@ -400,7 +401,7 @@ inline bool checkServerSuccess(multiset<string> &resServer, multiset<string> &re
  * @return true iff server reconciliation check is successful, false otherwise
  */
 inline bool
-checkServerSucceeded(multiset<string> &resultantServer, multiset<string> &reconciled, bool setofSets, bool oneWay,
+checkServerSucceeded(multiset<string> &resultantServer, const multiset<string> &reconciled, bool setofSets, bool oneWay,
                      forkHandleReport &serverReport) {
 
     if (!setofSets) {
@@ -426,7 +427,7 @@ checkServerSucceeded(multiset<string> &resultantServer, multiset<string> &reconc
  * @return true iff client reconciliation check is successful, false otherwise
  */
 inline bool
-checkClientSucceeded(multiset<string> &resultantClient, multiset<string> &initialClient, multiset<string> &reconciled,
+checkClientSucceeded(multiset<string> &resultantClient, multiset<string> &initialClient, const multiset<string> &reconciled,
                      bool setofSets, bool oneWay, forkHandleReport &clientReport) {
 
     if (!oneWay) { // reconciliation conditions are same for client and server in two way sync
@@ -460,7 +461,7 @@ checkClientSucceeded(multiset<string> &resultantClient, multiset<string> &initia
  */
 inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,bool oneWay, bool probSync,bool syncParamTest,
                                const unsigned int SIMILAR,const unsigned int CLIENT_MINUS_SERVER,
-                               const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled,
+                               const unsigned int SERVER_MINUS_CLIENT, const multiset<string> &reconciled,
                                bool setofSets){
 
     int child_state;
@@ -520,6 +521,9 @@ inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,boo
                                                     clientReport);
         Logger::gLog(Logger::COMM, "waiting for test fork to finish, pid: " + toStr(getpid()));
         bool isSyncSuccess = isClientSuccess && bool(child_state);
+//        Logger::gLog(Logger::TEST,
+//                     "client, status: " + toStr(clientReport.success) + ", check success: " + toStr(isClientSuccess) +
+//                     ", syncSuccess: " + toStr(isSyncSuccess) );
 
         return isSyncSuccess;
     }
@@ -686,7 +690,7 @@ inline vector<shared_ptr<DataObject>> addElements(bool Multiset, const long SIMI
 			{
 				if (dataSet.size() == pow(2, eltSize * 8))
 				{
-					string errorMsg = "Attempting to add more elements to a set than can bre represented by " + toStr(eltSize) + " bytes";
+					string errorMsg = "Attempting to add more elements to a set than can be represented by " + toStr(eltSize) + " bytes";
 					Logger::error_and_quit(errorMsg);
 				}
 				data = rep(random_ZZ_p());
@@ -912,18 +916,50 @@ inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay
 		        (largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1); // amt of elems unique to server (!= 0)
 
 		multiset<string> reconciled;
-		
-		// add elements to server, client and reconciled
-		auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
-		//Returns a boolean value for the success of the synchronization
-        success &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
-                                      CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
+        vector<DatasetGenerator::Dataset> dataList = DatasetGenerator::generate(GenSyncClient.getProtocol());
+        int testNo = 0;
+        for (const auto& testData : dataList) {
+            bool thisTestSuccess = true;
+            DatasetGenerator::addElements(GenSyncClient, GenSyncServer, testData);
+            reconciled = testData.reconciled;
+
+            int clientInitSize = GenSyncClient.dumpElements().size();
+            int serverInitSize = GenSyncServer.dumpElements().size();
+
+            //Returns a boolean value for the success of the synchronization
+            thisTestSuccess &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
+                                     CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, testData.reconciled,false);
+
+            // TODO: what effect does this have?
+            // how to best delete data?
+            // Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
+            thisTestSuccess &= GenSyncServer.clearData();
+            thisTestSuccess &= GenSyncClient.clearData();
+//            reconciled.clear();
+
+//            if (thisTestSuccess) {
+////                cout << "sync successful: " << testData.desc << endl;
+//            } else{
+//                cout << "Finished test no: " << testNo << endl;
+//                cout << "sync failed: " << testData.desc << endl;
+//                cout << "Client size : " << clientInitSize << endl;
+//                cout << "Server size : " << serverInitSize << endl;
+//            }
+            testNo++;
+            success &= thisTestSuccess;
+        }
+
+        // add elements to server, client and reconciled
+//        auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
+//        //Returns a boolean value for the success of the synchronization
+//        success &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
+//                                     CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 		success &= GenSyncServer.clearData();
 		success &= GenSyncClient.clearData();
 
 		//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
-		objectsPtr.clear();
+//		objectsPtr.clear();
 		reconciled.clear();
 	}
 	return success; // returns success status of tests

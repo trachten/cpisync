@@ -460,9 +460,7 @@ checkClientSucceeded(multiset<string> &resultantClient, multiset<string> &initia
  * @return true if reconciliation succeeded, false otherwise
  */
 inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,bool oneWay, bool probSync,bool syncParamTest,
-                               const unsigned int SIMILAR,const unsigned int CLIENT_MINUS_SERVER,
-                               const unsigned int SERVER_MINUS_CLIENT, const multiset<string> &reconciled,
-                               bool setofSets){
+                               const multiset<string> &reconciled, bool setofSets){
 
     int child_state;
     int my_opt = 0;
@@ -899,7 +897,7 @@ inline void addElemsSetofSets(GenSync &GenSyncServer,
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
 inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay, bool probSync, bool syncParamTest,
-						bool Multiset,bool largeSync){
+						bool Multiset, bool largeSync){
 
 	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
 	//Don't seed oneWay tests because they loop on the outside of syncTest and you want different values for each run
@@ -908,59 +906,27 @@ inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay
 
 	//If one way, run 1 time, if not run NUM_TESTS times
 	for(int ii = 0 ; ii < (oneWay ?  1 : NUM_TESTS); ii++) {
-		const unsigned int SIMILAR = static_cast<const unsigned int>
-		        (largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1); // amt of elems common to both GenSyncs (!= 0)
-		const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int>
-		        (largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1); // amt of elems unique to client (!= 0)
-		const unsigned int SERVER_MINUS_CLIENT = static_cast<const unsigned int>
-		        (largeSync ? (rand() % largeLimit) + 1 : (rand() % UCHAR_MAX) + 1); // amt of elems unique to server (!= 0)
-
-		multiset<string> reconciled;
-        vector<DatasetGenerator::Dataset> dataList = DatasetGenerator::generate(GenSyncClient.getProtocol());
-        int testNo = 0;
+        vector<DatasetGenerator::Dataset> dataList = DatasetGenerator::generate(Multiset, largeSync);
         for (const auto& testData : dataList) {
             bool thisTestSuccess = true;
+            // add elements to server, client
             DatasetGenerator::addElements(GenSyncClient, GenSyncServer, testData);
-            reconciled = testData.reconciled;
-
-            int clientInitSize = GenSyncClient.dumpElements().size();
-            int serverInitSize = GenSyncServer.dumpElements().size();
 
             //Returns a boolean value for the success of the synchronization
-            thisTestSuccess &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
-                                     CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, testData.reconciled,false);
+            thisTestSuccess &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest,
+                                                 testData.reconciled, false);
 
-            // TODO: what effect does this have?
-            // how to best delete data?
             // Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
             thisTestSuccess &= GenSyncServer.clearData();
             thisTestSuccess &= GenSyncClient.clearData();
-//            reconciled.clear();
 
-//            if (thisTestSuccess) {
-////                cout << "sync successful: " << testData.desc << endl;
-//            } else{
-//                cout << "Finished test no: " << testNo << endl;
-//                cout << "sync failed: " << testData.desc << endl;
-//                cout << "Client size : " << clientInitSize << endl;
-//                cout << "Server size : " << serverInitSize << endl;
-//            }
-            testNo++;
             success &= thisTestSuccess;
         }
 
-        // add elements to server, client and reconciled
-//        auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
-//        //Returns a boolean value for the success of the synchronization
-//        success &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
-//                                     CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 		success &= GenSyncServer.clearData();
 		success &= GenSyncClient.clearData();
 
-		//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
-//		objectsPtr.clear();
-		reconciled.clear();
 	}
 	return success; // returns success status of tests
 }

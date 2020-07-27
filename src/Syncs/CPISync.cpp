@@ -467,6 +467,7 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_pt
                 mySyncStats.increment(SyncStats::COMP_TIME,-idle_comm); // Subtract idle and comm time from the total sync time to get CPU Time
                 mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
                 mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
+                Logger::gLog(Logger::METHOD, "client, sync fail, curDiff == maxDiff");
                 return false;
             } else {
                 // Send more samples and try again

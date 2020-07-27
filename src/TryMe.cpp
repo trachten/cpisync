@@ -61,18 +61,20 @@ int main(int argc, char *argv[]) {
     genSync.addElem(make_shared<DataObject>('b'));
     genSync.addElem(make_shared<DataObject>('c'));
 
+    bool isSuccess = true;
     if(strcmp(argv[1], "client")==0) {
         genSync.addElem(make_shared<DataObject>('d'));
 
         cout << "listening on port " << PORT << "..." << endl;
-		genSync.clientSyncBegin(0);
-        cout << "sync succeeded." << endl;
-
+		isSuccess = genSync.clientSyncBegin(0);
     } else {
         genSync.addElem(make_shared<DataObject>('e'));
 
         cout << "connecting on port " << PORT << "..." << endl;
-		genSync.serverSyncBegin(0);
-        cout << "sync succeeded." << endl;
+		isSuccess = genSync.serverSyncBegin(0);
     }
+
+    if (isSuccess) cout << "sync succeeded." << endl;
+    else cout << "sync failed" << endl;
+
 }

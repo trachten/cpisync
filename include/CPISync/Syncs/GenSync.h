@@ -63,7 +63,7 @@ public:
      *                      3.  del - a pointer to the dell method of my GenSync object
      *                      4.  pGenSync - a pointer to this GenSync object
      * @param data       The initial data with which to populate the data structure.  The data is added element by element
-     *                      so that synchronization method metadata can be properly maintained.  Initializes to the empty list
+     *                      so that synchronization method metadata can be properly maintained.  Initilizes to the empty list
      *                      if not specified.
      * 
      */
@@ -334,10 +334,6 @@ public:
         END     // one after the end of iterable options
     };
 
-    SyncProtocol getProtocol() {
-        return myProtocol;
-    }
-
 
 
 private:
@@ -363,12 +359,6 @@ private:
 
     /** The file to which to output any additions to the data structure. */
     shared_ptr<ofstream> outFile;
-
-    SyncProtocol myProtocol;
-
-    void setProtocol(SyncProtocol proto) {
-        myProtocol = proto;
-    }
 };
 
 
@@ -407,10 +397,6 @@ public:
     Builder& setProtocol(SyncProtocol theProto) {
         this->proto = theProto;
         return *this;
-    }
-
-    SyncProtocol getProtocol() {
-        return this->proto;
     }
 
     /**

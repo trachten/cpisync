@@ -13,7 +13,8 @@ using std::string;
 
 int main(int argc, char *argv[]) {
     if(strcmp(argv[1], "client")!=0 && strcmp(argv[1], "server")!=0) {
-        cout << "usage: 'TryMe client <sync type>' for client mode, 'TryMe server <sync type>' for server mode." << endl;
+        cout << "usage: 'TryMe client <sync type>' for client mode, "
+                "'TryMe server <sync type>' for server mode." << endl;
         cout << "run the client in one terminal instance and the server in another." << endl;
         exit(0);
     }
@@ -34,7 +35,9 @@ int main(int argc, char *argv[]) {
         prot = GenSync::SyncProtocol::IBLTSync;
     } else if (type == "OneWayIBLTSync") {
         prot = GenSync::SyncProtocol::OneWayIBLTSync;
-    } else {
+    } else if (type == "CuckooSync") {
+        prot = GenSync::SyncProtocol::CuckooSync;
+    }  else {
         cout << "invalid sync type!" << endl;
         exit(1);
     }
@@ -46,33 +49,60 @@ int main(int argc, char *argv[]) {
     const int PARTS = 3; // partitions per level for partition-syncs
     const int EXP_ELTS = 4; // expected number of elements per set
 
+    const size_t fngprtSize = 12;
+    const size_t bucketSize = 4;
+    const size_t filterSize = UCHAR_MAX + 1; // UCHAR_MAX is taken from syncTest
+    const size_t maxKicks = 500;
+
     GenSync genSync = GenSync::Builder().
-			setProtocol(prot).
-			setComm(GenSync::SyncComm::socket).
-			setPort(PORT).
+            setProtocol(prot).
+            setComm(GenSync::SyncComm::socket).
+            setPort(PORT).
 			setErr(ERR).
 			setMbar(M_BAR).
-			setBits((prot == GenSync::SyncProtocol::IBLTSync || prot == GenSync::SyncProtocol::OneWayIBLTSync ? BITS : BITS * CHAR_BIT)).
-			setNumPartitions(PARTS).
-			setExpNumElems(EXP_ELTS).
+            setBits((prot == GenSync::SyncProtocol::IBLTSync
+                     || prot == GenSync::SyncProtocol::OneWayIBLTSync || prot == GenSync::SyncProtocol::CuckooSync
+                     ? BITS : BITS * CHAR_BIT)).
+            setNumPartitions(PARTS).
+            setExpNumElems(EXP_ELTS).
+            setFngprtSize(fngprtSize).
+            setBucketSize(bucketSize).
+            setFilterSize(filterSize).
+            setMaxKicks(maxKicks).
             build();
 
-    genSync.addElem(make_shared<DataObject>('a'));
-    genSync.addElem(make_shared<DataObject>('b'));
-    genSync.addElem(make_shared<DataObject>('c'));
-
+    bool isSuccess = true;
     if(strcmp(argv[1], "client")==0) {
-        genSync.addElem(make_shared<DataObject>('d'));
+
+        for (int i=1001 ; i<= 1100 ; i++) {
+            genSync.addElem(make_shared<DataObject>(to_string(i)));
+        }
 
         cout << "listening on port " << PORT << "..." << endl;
-		genSync.clientSyncBegin(0);
-        cout << "sync succeeded." << endl;
+		isSuccess = genSync.clientSyncBegin(0);
+
+        cout << "\nclient elements final\n";
+        for (auto elem: genSync.dumpElements()) {
+            cout << base64_decode(elem) << ",";
+        }
+        cout << "\nclient elements final end, size: " << genSync.dumpElements().size() << endl;
 
     } else {
-        genSync.addElem(make_shared<DataObject>('e'));
+        for (int i=1 ; i<= 100 ; i++) {
+            genSync.addElem(make_shared<DataObject>(to_string(i)));
+        }
+
 
         cout << "connecting on port " << PORT << "..." << endl;
-		genSync.serverSyncBegin(0);
-        cout << "sync succeeded." << endl;
+		isSuccess = genSync.serverSyncBegin(0);
+
+        cout << "\nserver elements final\n";
+        for (auto elem: genSync.dumpElements()) {
+            cout << base64_decode(elem) << ",";
+        }
+        cout << "\nserver elements final end, size: " << genSync.dumpElements().size() << endl;
     }
+
+    if (isSuccess) cout << "sync succeeded." << endl;
+    else cout << "sync failed" << endl;
 }

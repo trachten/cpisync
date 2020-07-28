@@ -920,6 +920,17 @@ inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay
             thisTestSuccess &= GenSyncServer.clearData();
             thisTestSuccess &= GenSyncClient.clearData();
 
+            if (!thisTestSuccess) {
+                cout << "test fail, client size: " << testData.client.size()
+                     << ", server size: " << testData.server.size()
+                     << ", type: " << testData.desc << endl;
+            }
+            else {
+                cout << "test success, client size: " << testData.client.size()
+                     << ", server size: " << testData.server.size()
+                     << ", type: " << testData.desc << endl;
+            }
+
             success &= thisTestSuccess;
         }
 

@@ -7,6 +7,7 @@
  */
 
 #include "CuckooSyncTest.h"
+#include "TestAuxiliary.h"
 #include <CPISync/Syncs/GenSync.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CuckooSyncTest);
@@ -17,6 +18,7 @@ CuckooSyncTest::~CuckooSyncTest() = default;
 
 void CuckooSyncTest::setUp() {
     Cuckoo::seedPRNG(1);
+    NTL::SetSeed(conv<ZZ>(1));  // make syncTest populate the sets the same way every time
 }
 
 void CuckooSyncTest::tearDown() {}
@@ -25,7 +27,7 @@ void CuckooSyncTest::setReconcileTest() {
     const size_t bits = sizeof(randZZ());
     const size_t fngprtSize = 12;
     const size_t bucketSize = 4;
-    const size_t filterSize = 1 << 8;
+    const size_t filterSize = UCHAR_MAX + 1; // UCHAR_MAX is taken from syncTest
     const size_t maxKicks = 500;
 
     GenSync server = GenSync::Builder()
@@ -56,7 +58,5 @@ void CuckooSyncTest::setReconcileTest() {
     // before it reaches syncTest helper function.
     ZZ_p::init(randZZ());
 
-
-    // TODO: this test is flaky - please fix it or the code.
-    //CPPUNIT_ASSERT(syncTest(client, server, false, false, false, false, false));
+    CPPUNIT_ASSERT(syncTest(client, server, false, false, false, false, false));
 }

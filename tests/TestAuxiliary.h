@@ -26,7 +26,7 @@ const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
 const size_t eltSizeSq = (size_t) pow((double) sizeof(randZZ()), 2.0); // Size^2 of elements stored in sync tests
 const size_t eltSize = sizeof(randZZ()); // Size of elements stored in sync tests in bytes
-const int mBar = 2 * UCHAR_MAX; // Max differences between client and server in sync tests
+const int mBar = 3 * UCHAR_MAX; // Max differences between client and server in sync tests
 const size_t largeLimit = static_cast<const int>(pow(2, 9)); // Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
 const int mBarLarge = largeLimit * 2; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
@@ -921,14 +921,9 @@ inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay
             thisTestSuccess &= GenSyncClient.clearData();
 
             if (!thisTestSuccess) {
-                cout << "test fail, client size: " << testData.client.size()
-                     << ", server size: " << testData.server.size()
-                     << ", type: " << testData.desc << endl;
-            }
-            else {
-                cout << "test success, client size: " << testData.client.size()
-                     << ", server size: " << testData.server.size()
-                     << ", type: " << testData.desc << endl;
+                Logger::gLog(Logger::TEST, "test fail type: " + testData.desc
+                                           + ", client size: " + toStr(testData.client.size())
+                                           + ", server size: " + toStr(testData.server.size()));
             }
 
             success &= thisTestSuccess;

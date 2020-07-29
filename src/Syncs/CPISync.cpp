@@ -282,8 +282,9 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
 
         for (itCPI = CPI_hash.begin(); itCPI != CPI_hash.end(); itCPI++)
             append(delta_self, to_ZZ_p(itCPI->first));
-    } else // otherSetSize >=1 - the other set has something
-        if (CPI_hash.empty()) { // I have nothing new
+    } else if (CPI_hash.empty()) { // I have nothing new // otherSetSize >=1 - the other set has something
+        Logger::gLog(Logger::METHOD,
+                "CPISync::set_reconcile:: I have nothing new, the other set has something");
         return true;
     } else { // we both have something new
         vec_ZZ_p coefficient_P, coefficient_Q;

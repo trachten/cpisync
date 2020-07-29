@@ -24,8 +24,8 @@ class DatasetGenerator {
 public:
 
     struct Dataset {
-        vector<shared_ptr<DataObject>> client;
         vector<shared_ptr<DataObject>> server;
+        vector<shared_ptr<DataObject>> client;
         multiset<string> reconciled;
         string desc; // description of dataset
     };
@@ -221,14 +221,17 @@ private:
     // B is empty, A is not
     static void
     addOneEmptySet(vector<Dataset> &allDataSet) {
-        vector<shared_ptr<DataObject>> full, empty;
+        vector<shared_ptr<DataObject>> setA, setB;
         multiset<string> reconciled;
         const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int> (rand() % UCHAR_MAX) + 1;
 
-        getUniqueElements(0, 0, CLIENT_MINUS_SERVER, empty, full, reconciled);
+        getUniqueElements(0, 0, CLIENT_MINUS_SERVER, setA, setB, reconciled);
+        allDataSet.push_back(Dataset{setA, setB, reconciled, "server empty set"});
 
-        allDataSet.push_back(Dataset{full, empty, reconciled, "one empty sets"});
-        allDataSet.push_back(Dataset{empty, full, reconciled, "one empty sets"});
+        vector<shared_ptr<DataObject>> setC, setD;
+        multiset<string> reconciled2;
+        getUniqueElements(0, 0, CLIENT_MINUS_SERVER, setC, setD, reconciled2);
+        allDataSet.push_back(Dataset{setD, setC, reconciled2, "client empty set"});
     }
 
 
@@ -243,7 +246,6 @@ private:
         getUniqueElements(SIMILAR, 0, CLIENT_MINUS_SERVER, subset, superset, reconciled);
 
         allDataSet.push_back(Dataset{superset, subset, reconciled, "subset sets"});
-        allDataSet.push_back(Dataset{subset, superset, reconciled, "subset sets"});
 
     }
 
@@ -252,14 +254,13 @@ private:
     static void addBigDiffData(vector<Dataset> &allDataSet) {
         vector<shared_ptr<DataObject>> setA, setB;
         multiset<string> reconciled;
-        const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int>  (rand() % UCHAR_MAX) + UCHAR_MAX;
-        const unsigned int SERVER_MINUS_CLIENT = static_cast<const unsigned int> (rand() % UCHAR_MAX) + UCHAR_MAX;
+        const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int>  (rand() % UCHAR_MAX) + 1;
+        const unsigned int SERVER_MINUS_CLIENT = static_cast<const unsigned int> (rand() % UCHAR_MAX) + 1;
         const unsigned int SIMILAR = static_cast<const unsigned int> (rand() % SCHAR_MAX) + 1; // smaller than the two above
 
         getUniqueElements(SIMILAR, SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER, setA, setB, reconciled);
 
         allDataSet.push_back(Dataset{setA, setB, reconciled, "big diff sets"});
-        allDataSet.push_back(Dataset{setB, setA, reconciled, "big diff sets"});
     }
 
     // A and B have no intersection and both are huge sets
@@ -267,14 +268,12 @@ private:
         vector<shared_ptr<DataObject>> setA, setB;
         multiset<string> reconciled;
 
-        const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int>  (rand() % UCHAR_MAX) + UCHAR_MAX;
-        const unsigned int SERVER_MINUS_CLIENT = static_cast<const unsigned int> (rand() % UCHAR_MAX) + UCHAR_MAX;
+        const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int>  (rand() % UCHAR_MAX) + 1 ;
+        const unsigned int SERVER_MINUS_CLIENT = static_cast<const unsigned int> (rand() % UCHAR_MAX) + 1;
         const unsigned int SIMILAR = 0;
 
         getUniqueElements(SIMILAR, SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER, setA, setB, reconciled);
-
         allDataSet.push_back(Dataset{setA, setB, reconciled, "huge diff sets"});
-        allDataSet.push_back(Dataset{setB, setA, reconciled, "huge diff sets"});
     }
 
     // A and B are exactly equal but non-empty
@@ -292,9 +291,9 @@ private:
     static void addMultisetData(vector<Dataset> &allDataSet) {
         vector<shared_ptr<DataObject>> setA, setB;
         multiset<string> reconciled;
-        const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int>  (rand() % UCHAR_MAX) + UCHAR_MAX;
-        const unsigned int SERVER_MINUS_CLIENT = static_cast<const unsigned int> (rand() % UCHAR_MAX) + UCHAR_MAX;
-        const unsigned int SIMILAR = static_cast<const unsigned int> (rand() % UCHAR_MAX) + UCHAR_MAX;
+        const unsigned int CLIENT_MINUS_SERVER = static_cast<const unsigned int>  (rand() % UCHAR_MAX) + 1;
+        const unsigned int SERVER_MINUS_CLIENT = static_cast<const unsigned int> (rand() % UCHAR_MAX) + 1;
+        const unsigned int SIMILAR = static_cast<const unsigned int> (rand() % UCHAR_MAX) + 1;
 
         getMultisetElements(SIMILAR, SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER, setA, setB, reconciled);
 

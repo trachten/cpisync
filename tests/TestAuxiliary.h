@@ -24,10 +24,10 @@
 // constants
 const int NUM_TESTS = 1; // Times to run oneWay and twoWay sync tests
 
-const size_t eltSizeSq = (size_t) pow((double) sizeof(randZZ()), 2.0); // Size^2 of elements stored in sync tests
-const size_t eltSize = sizeof(randZZ()); // Size of elements stored in sync tests in bytes
-const int mBar = 3 * UCHAR_MAX; // Max differences between client and server in sync tests
-const size_t largeLimit = static_cast<const int>(pow(2, 9)); // Max number of elements for *each* SIMILAR, CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT in largeSync
+const size_t eltSize = DatasetGenerator::_eltSize;
+const size_t eltSizeSq = (size_t) pow((double) eltSize, 2.0); // Size^2 of elements stored in sync tests
+const int mBar = 2 * UCHAR_MAX; // Max differences between client and server in sync tests
+const size_t largeLimit = DatasetGenerator::_largeLimit;
 const int mBarLarge = largeLimit * 2; // Maximum sum of CLIENT_MINUS_SERVER and SEVER_MINUS_CLIENT
 const int partitions = 5; //The "arity" of the ptree in InterCPISync if it needs to recurse to complete the sync
 const string iostr; // Initial string used to construct CommString
@@ -904,10 +904,11 @@ inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay
 	if(!oneWay) srand(3721);
 	bool success = true;
 
+
 	//If one way, run 1 time, if not run NUM_TESTS times
 	for(int ii = 0 ; ii < (oneWay ?  1 : NUM_TESTS); ii++) {
         vector<DatasetGenerator::Dataset> dataList = DatasetGenerator::generate(Multiset, largeSync);
-        for (const auto& testData : dataList) {
+        for ( auto testData : dataList) {
             bool thisTestSuccess = true;
             // add elements to server, client
             DatasetGenerator::addElements(GenSyncClient, GenSyncServer, testData);
@@ -919,6 +920,7 @@ inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay
             // Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
             thisTestSuccess &= GenSyncServer.clearData();
             thisTestSuccess &= GenSyncClient.clearData();
+            testData.allObjects.clear();
 
             if (!thisTestSuccess) {
                 Logger::gLog(Logger::TEST, "test fail type: " + testData.desc
@@ -927,6 +929,7 @@ inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay
             }
 
             success &= thisTestSuccess;
+
         }
 
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
@@ -946,24 +949,32 @@ inline bool benchmarkSync(GenSync GenSyncClient, GenSync GenSyncServer, int SIMI
 
 	bool success = true;
 
-	multiset<string> reconciled;
-	auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
+//	multiset<string> reconciled;
+//    auto objectsPtr = addElements(Multiset, SIMILAR, SERVER_MINUS_CLIENT,
+//                                  CLIENT_MINUS_SERVER, GenSyncServer, GenSyncClient,
+//                                  reconciled);
+    DatasetGenerator::Dataset testData;
+    DatasetGenerator::getUniqueElements(SIMILAR, SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER,
+                                        testData);
+    DatasetGenerator::addElements(GenSyncClient, GenSyncServer, testData);
 
 	//Returns a boolean value for the success of the synchronization
-	success &= syncTestForkHandle(GenSyncClient, GenSyncServer, false, probSync, false, SIMILAR,
-								  CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
+    success &= syncTestForkHandle(GenSyncClient, GenSyncServer, false, probSync, false,
+                                  SIMILAR,
+                                  CLIENT_MINUS_SERVER, SERVER_MINUS_CLIENT,
+                                  testData.reconciled, false);
 	//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 	success &= GenSyncServer.clearData();
 	success &= GenSyncClient.clearData();
 
 	//Memory is deallocated here because these are shared_ptrs and are deleted when the last ptr to an object is deleted
-	objectsPtr.clear();
-	reconciled.clear();
+	testData.allObjects.clear();
+	testData.reconciled.clear();
 
 	return success; // returns success status of tests
 }
 
-/** Sync test for IBLT set of sets funciton
+/** Sync test for IBLT set of sets function
  * @param GenSyncClient the client object
  * @param GenSyncServer the server object
  * @param numPerSet upper bound for # of elements in a child set
@@ -1045,9 +1056,18 @@ inline bool longTermSync(GenSync &GenSyncClient,
 	bool serverReconcileSuccess = true, clientReconcileSuccess = true;
 	long curRound = 0;
 
-	multiset<string> reconciled;
+    DatasetGenerator::Dataset testData;
+    if (!Multiset) {
+        DatasetGenerator::getUniqueElements(SIMILAR, SERVER_MINUS_CLIENT,
+                                            CLIENT_MINUS_SERVER,
+                                            testData, Rounds, difPerRound);
+    } else {
+        DatasetGenerator::getMultisetElements(SIMILAR, SERVER_MINUS_CLIENT,
+                                            CLIENT_MINUS_SERVER, testData);
+    }
 
-	auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled,Rounds,difPerRound);
+    DatasetGenerator::addElements(GenSyncClient, GenSyncServer, testData);
+    multiset<string> reconciled = testData.reconciled;
 
 	const long refillIndex = reconciled.size();
 
@@ -1074,8 +1094,8 @@ inline bool longTermSync(GenSync &GenSyncClient,
 
 				for (int ii = 0; ii < difPerRound; ii++)
 				{
-					GenSyncServer.addElem(objectsPtr[refillIndex + (curRound - 1) * difPerRound + ii]);
-					reconciled.insert(objectsPtr[refillIndex + (curRound - 1) * difPerRound + ii]->print());
+					GenSyncServer.addElem(testData.allObjects[refillIndex + (curRound - 1) * difPerRound + ii]);
+					reconciled.insert(testData.allObjects[refillIndex + (curRound - 1) * difPerRound + ii]->print());
 				}
 
 				// waiting for start signal from server side
@@ -1149,8 +1169,8 @@ inline bool longTermSync(GenSync &GenSyncClient,
 				// add more elements to client
 				for (int ii = 0; ii < difPerRound; ii++)
 				{
-					GenSyncClient.addElem(objectsPtr[refillIndex + (curRound - 1) * difPerRound + ii]);
-					reconciled.insert(objectsPtr[refillIndex + (curRound - 1) * difPerRound + ii]->print());
+					GenSyncClient.addElem(testData.allObjects[refillIndex + (curRound - 1) * difPerRound + ii]);
+					reconciled.insert(testData.allObjects[refillIndex + (curRound - 1) * difPerRound + ii]->print());
 				}
 			}
 
@@ -1227,7 +1247,7 @@ inline bool longTermSync(GenSync &GenSyncClient,
 			{
 				// clear dynamically allocated memory for reuse
 				serverReconcileSuccess &= GenSyncServer.clearData() && GenSyncClient.clearData();
-				objectsPtr.clear();
+				testData.allObjects.clear();
 
 				return serverReconcileSuccess;
 			}

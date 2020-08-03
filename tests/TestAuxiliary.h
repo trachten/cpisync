@@ -519,9 +519,6 @@ inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,boo
                                                     clientReport);
         Logger::gLog(Logger::COMM, "waiting for test fork to finish, pid: " + toStr(getpid()));
         bool isSyncSuccess = isClientSuccess && bool(child_state);
-//        Logger::gLog(Logger::TEST,
-//                     "client, status: " + toStr(clientReport.success) + ", check success: " + toStr(isClientSuccess) +
-//                     ", syncSuccess: " + toStr(isSyncSuccess) );
 
         return isSyncSuccess;
     }
@@ -948,11 +945,6 @@ inline bool benchmarkSync(GenSync GenSyncClient, GenSync GenSyncServer, int SIMI
 							int SERVER_MINUS_CLIENT, bool probSync, bool Multiset){
 
 	bool success = true;
-
-//	multiset<string> reconciled;
-//    auto objectsPtr = addElements(Multiset, SIMILAR, SERVER_MINUS_CLIENT,
-//                                  CLIENT_MINUS_SERVER, GenSyncServer, GenSyncClient,
-//                                  reconciled);
     DatasetGenerator::Dataset testData;
     DatasetGenerator::getUniqueElements(SIMILAR, SERVER_MINUS_CLIENT, CLIENT_MINUS_SERVER,
                                         testData);

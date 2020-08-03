@@ -27,7 +27,7 @@ void CuckooSyncTest::setReconcileTest() {
     const size_t bits = sizeof(randZZ());
     const size_t fngprtSize = 12;
     const size_t bucketSize = 4;
-    const size_t filterSize = 512 * (UCHAR_MAX + 1); // UCHAR_MAX is taken from syncTest
+    const size_t filterSize = 512 * (UCHAR_MAX + 1);
     const size_t maxKicks = 500;
 
     GenSync server = GenSync::Builder()

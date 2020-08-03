@@ -36,8 +36,8 @@ void FullSyncTest::FullSyncSetReconcileTest() {
 			setProtocol(GenSync::SyncProtocol::FullSync).
 			setComm(GenSync::SyncComm::socket).
 			build();
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, false, false));
+	//(oneWay = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false));
 }
 
  void FullSyncTest::FullSyncMultisetReconcileTest(){
@@ -51,8 +51,8 @@ void FullSyncTest::FullSyncSetReconcileTest() {
 			 setComm(GenSync::SyncComm::socket).
 			 build();
 
-	 //(oneWay = false, probSync = false, syncParamTest = false, Multiset = true, largeSync = false)
-	 CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, true, false));
+	 //(oneWay = false, Multiset = true, largeSync = false)
+	 CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false));
 }
 
 void FullSyncTest::FullSyncLargeSetReconcileTest() {
@@ -67,8 +67,8 @@ void FullSyncTest::FullSyncLargeSetReconcileTest() {
 			setComm(GenSync::SyncComm::socket).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, false, true));
+	//(oneWay = false, Multiset = false, largeSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, true));
 }
 
 

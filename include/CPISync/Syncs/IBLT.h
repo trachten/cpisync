@@ -62,7 +62,7 @@ public:
      * @param value The value to be added
      * @require The key must be distinct in the IBLT
      */
-    void insert(ZZ key, ZZ value);
+    virtual void insert(ZZ key, ZZ value);
     
     /**
      * Erases a key-value pair from the IBLT.
@@ -70,7 +70,7 @@ public:
      * @param key The key to be removed
      * @param value The value to be removed
      */
-    void erase(ZZ key, ZZ value);
+    virtual void erase(ZZ key, ZZ value);
     
     /**
      * Produces the value s.t. (key, value) is in the IBLT.

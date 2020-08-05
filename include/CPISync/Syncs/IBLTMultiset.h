@@ -33,7 +33,7 @@ public:
      * @param value The value to be added
      * @require The key must be distinct in the IBLT
      */
-    void insert(ZZ key, ZZ value);
+    void insert(ZZ key, ZZ value) override;
 
     /**
      * Erases a key-value pair from the IBLT.
@@ -41,7 +41,7 @@ public:
      * @param key The key to be removed
      * @param value The value to be removed
      */
-    void erase(ZZ key, ZZ value);
+    void erase(ZZ key, ZZ value) override;
 
     /**
      * Produces the value s.t. (key, value) is in the IBLT.
@@ -100,32 +100,38 @@ private:
      * @param key The key to insert or delete
      * @param value The value to insert or delete
      */
-    void _insertModular(long plusOrMinus, ZZ key, ZZ value);
+    void _insertModular(long plusOrMinus, const ZZ &key, const ZZ &value);
 
-    class HashTableEntry
-    {
+//    class HashTableEntry {
+//    public:
+//        // Net insertions and deletions that mapped to this cell
+//        long count;
+//
+//        // The bitwise xor-sum of all keys mapped to this cell
+//        ZZ keySum;
+//
+//        // The bitwise xor-sum of all keySum checksums at each allocation
+//        hash_t keyCheck;
+//
+//        // The bitwise xor-sum of all values mapped to this cell
+//        ZZ valueSum;
+//
+//////         Returns whether the entry contains just one insertion or deletion
+////        bool isPure() const;
+//
+//        // Returns whether the entry contains just insertions or deletions of only one key-value pair
+//        bool isPure() const;
+//
+//        // Returns whether the entry is empty
+//        bool empty() const;
+//    };
+
+    class HashTableEntry : public IBLT::HashTableEntry {
     public:
-        // Net insertions and deletions that mapped to this cell
-        long count;
-
-        // The bitwise xor-sum of all keys mapped to this cell
-        ZZ keySum;
-
-        // The bitwise xor-sum of all keySum checksums at each allocation
-        hash_t keyCheck;
-
-        // The bitwise xor-sum of all values mapped to this cell
-        ZZ valueSum;
-
-        // Returns whether the entry contains just one insertion or deletion
         bool isPure() const;
-
-        // Returns whether the entry contains just insertions or deletions of only one key-value pair
-        bool isMultiPure() const ;
-
-        // Returns whether the entry is empty
-        bool empty() const;
     };
+
+
 
     // vector of all entries
     vector<HashTableEntry> hashTable;

@@ -390,11 +390,11 @@ protected:
      */
     void commSend(const IBLT::HashTableEntry &hte, size_t eltSize);
 
-    /**
-     * Sends an IBLTMultiset::HashTableEntry
-     * @param hte The HashTableEntry to send
-     */
-    void commSend(const IBLTMultiset::HashTableEntry& hte, size_t eltSize);
+//    /**
+//     * Sends an IBLTMultiset::HashTableEntry
+//     * @param hte The HashTableEntry to send
+//     */
+//    void commSend(const IBLTMultiset::HashTableEntry& hte, size_t eltSize);
 
     /**
      * Receives an IBLT::HashTableEntry

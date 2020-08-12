@@ -34,7 +34,8 @@ bool IBLTSync_Multiset::SyncClient(const shared_ptr<Communicant>& commSync, list
             mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
             return false;
         }
-        commSync->commSend(myIBLT, true);
+//        commSync->commSend(myIBLT, true);
+        commSync->commSend(myIBLT.toString());
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
 
@@ -93,7 +94,9 @@ bool IBLTSync_Multiset::SyncServer(const shared_ptr<Communicant>& commSync, list
         }
 
         // verified that our size and eltSize == theirs
-        IBLTMultiset theirs = commSync->commRecv_IBLTMultiset(myIBLT.size(), myIBLT.eltSize());
+//        IBLTMultiset theirs = commSync->commRecv_IBLTMultiset(myIBLT.size(), myIBLT.eltSize());
+        IBLTMultiset theirs = commSync->commRecv_IBLTMultiset_des(myIBLT.size(),
+                                                                  myIBLT.eltSize());
 
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
 

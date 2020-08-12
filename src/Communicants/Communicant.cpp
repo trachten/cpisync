@@ -522,6 +522,17 @@ ZZ Communicant::commRecv_ZZ(const int size) {
     return result;
 }
 
+IBLT Communicant::commRecv_IBLT_des(Nullable<size_t> size, Nullable<size_t> eltSize) {
+    IBLT theirs;
+    theirs.valueSize = eltSize;
+    theirs.hashTable.resize(size);
+
+    string serialIBLT = commRecv_string();
+
+    theirs.reBuild(serialIBLT);
+    return theirs;
+}
+
 IBLT Communicant::commRecv_IBLT(Nullable<size_t> size, Nullable<size_t> eltSize) {
     size_t numSize;
     size_t numEltSize;
@@ -541,6 +552,17 @@ IBLT Communicant::commRecv_IBLT(Nullable<size_t> size, Nullable<size_t> eltSize)
         theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
     }
 
+    return theirs;
+}
+
+IBLTMultiset Communicant::commRecv_IBLTMultiset_des(Nullable<size_t> size, Nullable<size_t> eltSize) {
+    IBLTMultiset theirs;
+    theirs.valueSize = eltSize;
+    theirs.hashTable.resize(size);
+
+    string serialIBLT = commRecv_string();
+
+    theirs.reBuild(serialIBLT);
     return theirs;
 }
 

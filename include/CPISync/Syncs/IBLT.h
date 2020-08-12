@@ -114,13 +114,13 @@ public:
      * Convert IBLT to a readable string
      * @return string
     */
-    string toString() const;
+    virtual string toString() const;
 
     /**
      * fill the hashTable with a string generated from IBLT.toString() function
      * @param inStr a readable ascii string generted from IBLT.toString() function
     */
-    void reBuild(string &inStr);
+    virtual void reBuild(string &inStr);
     /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
@@ -129,6 +129,8 @@ public:
      */
     IBLT operator-(const IBLT& other) const;
     IBLT& operator-=(const IBLT& other);
+
+//    bool operator==(const IBLT& other);
 
     /**
      * @return the number of cells in the IBLT. Not necessarily equal to the expected number of entries
@@ -139,6 +141,10 @@ public:
      * @return the size of a value stored in the IBLT.
      */
     size_t eltSize() const;
+//
+//    char* serialize();
+//
+//    static IBLT deserialize(char * serializedIBLT);
 
     vector<hash_t> hashes; /* vector for all hashes of sets */
 
@@ -185,7 +191,7 @@ protected:
         ZZ valueSum;
 
         // Returns whether the entry contains just one insertion or deletion
-        bool isPure() const;
+        virtual bool isPure() const;
 
         // Returns whether the entry is empty
         bool empty() const;

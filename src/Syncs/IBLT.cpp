@@ -194,6 +194,11 @@ IBLT IBLT::operator-(const IBLT& other) const {
     return result;
 }
 
+//bool IBLT::operator==(const IBLT& other) {
+//    return false;
+//}
+
+
 size_t IBLT::size() const {
     return hashTable.size();
 }
@@ -201,6 +206,23 @@ size_t IBLT::size() const {
 size_t IBLT::eltSize() const {
     return valueSize;
 }
+
+//char* IBLT::serialize() {
+//    string rep = toString();
+//    // memory leak
+//    char* res = new char[rep.length() + 1];
+//    strcpy(res, rep.c_str());
+//
+//    //or
+//
+//    vector<char> cstr(rep.c_str(), rep.c_str()+rep.length() + 1);
+//    return res;
+//}
+//
+//IBLT IBLT::deserialize(char * serializedIBLT) {
+//    IBLT res;
+//    return res;
+//}
 
 string IBLT::toString() const
 {
@@ -221,16 +243,22 @@ void IBLT::reBuild(string &inStr)
 {
     vector<string> entries = split(inStr, '\n');
     int index = 0;
-    for (auto entry : entries)
-    {
-        vector<string> infos = split(entry, ',');
-        HashTableEntry curEntry;
-        curEntry.count = strTo<long>(infos[0]);
-        curEntry.keyCheck = strTo<hash_t>(infos[1]);
-        curEntry.keySum = strTo<ZZ>(infos[2]);
-        curEntry.valueSum = strTo<ZZ>(infos[3]);
-        this->hashTable[index] = curEntry;
-        index++;
+    try {
+        for (auto entry : entries)
+        {
+
+            vector<string> infos = split(entry, ',');
+            HashTableEntry curEntry;
+            curEntry.count = strTo<long>(infos[0]);
+            curEntry.keyCheck = strTo<hash_t>(infos[1]);
+            curEntry.keySum = strTo<ZZ>(infos[2]);
+            curEntry.valueSum = strTo<ZZ>(infos[3]);
+            this->hashTable[index] = curEntry;
+            index++;
+        }
+    } catch (exception &err) {
+        Logger::gLog(Logger::TEST, "Exception in IBLT::reBuild");
+        Logger::gLog(Logger::TEST, err.what());
     }
 }
 

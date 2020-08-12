@@ -66,11 +66,11 @@ public:
      */
     bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
 
-    /**
-     * Convert IBLT to a readable string
-     * @return string
-    */
-    string toString() const;
+//    /**
+//     * Convert IBLT to a readable string
+//     * @return string
+//    */
+//    string toString() const;
 
     /**
      * Subtracts two IBLTs.
@@ -92,6 +92,10 @@ public:
     size_t eltSize() const;
 
     vector<hash_t> hashes; /* vector for all hashes of sets */
+
+    string toString() const override;
+
+    void reBuild(string &inStr) override;
 
 private:
     /**
@@ -128,9 +132,8 @@ private:
 
     class HashTableEntry : public IBLT::HashTableEntry {
     public:
-        bool isPure() const;
+        bool isPure() const override;
     };
-
 
 
     // vector of all entries

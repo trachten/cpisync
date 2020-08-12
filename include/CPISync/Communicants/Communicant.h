@@ -117,7 +117,7 @@ public:
     /**
     * Primitive for sending data over an existing connection.  All other sending methods
     * eventually call this.
-    * @param str The string to be transmitted.
+    * @param toString The char array to be transmitted.
     * @param numBytes The number of characters in the string.  If set to 0, then this length is computed.
     * @require listen or connect must have been called to establish a connection.
     * @modify updates xferBytes buffer with the amount of data actually transmitted.
@@ -327,12 +327,21 @@ public:
     byte commRecv_byte();
 
     /**
+     * receives an IBLT
+     * constructs their IBLT from the string representation that is received
+     * @return
+     */
+    IBLT commRecv_IBLT_des(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
+
+    /**
      * Receives an IBLT.
      * @param size The size of the IBLT to be received.  Must be >0 or NOT_SET.
      * @param eltSize The size of values of the IBLTs to be received.  Must be >0 or NOT_SET.
      * If parameters aren't set, the IBLT will be received successfully iff commSend(IBLT, false) was used to send the IBLT
      */
     IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
+
+    IBLTMultiset commRecv_IBLTMultiset_des(Nullable<size_t> size, Nullable<size_t> eltSize);
 
     /**
      * Receives an IBLTMultiset.

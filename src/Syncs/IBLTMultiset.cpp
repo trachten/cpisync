@@ -258,8 +258,28 @@ size_t IBLTMultiset::eltSize() const {
     return valueSize;
 }
 
-string IBLTMultiset::toString() const
-{
+//string IBLTMultiset::toString() const
+//{
+//    string outStr="";
+//    for (auto entry : hashTable)
+//    {
+//        outStr += toStr<long>(entry.count) + ","
+//                  + toStr<hash_t>(entry.keyCheck) + ","
+//                  + toStr<ZZ>(entry.keySum) + ","
+//                  + toStr<ZZ>(entry.valueSum)
+//                  + "\n";
+//    }
+//    outStr.pop_back();
+//    return outStr;
+//}
+
+//bool IBLTMultiset::HashTableEntry::empty() const
+//{
+//    return (count == 0 && IsZero(keySum) && keyCheck == 0);
+//}
+
+
+string IBLTMultiset::toString() const {
     string outStr="";
     for (auto entry : hashTable)
     {
@@ -273,7 +293,22 @@ string IBLTMultiset::toString() const
     return outStr;
 }
 
-//bool IBLTMultiset::HashTableEntry::empty() const
-//{
-//    return (count == 0 && IsZero(keySum) && keyCheck == 0);
-//}
+void IBLTMultiset::reBuild(string &inStr) {
+    vector<string> entries = split(inStr, '\n');
+    int index = 0;
+    try {
+        for (auto entry : entries) {
+            vector<string> infos = split(entry, ',');
+            HashTableEntry curEntry;
+            curEntry.count = strTo<long>(infos[0]);
+            curEntry.keyCheck = strTo<hash_t>(infos[1]);
+            curEntry.keySum = strTo<ZZ>(infos[2]);
+            curEntry.valueSum = strTo<ZZ>(infos[3]);
+            this->hashTable[index] = curEntry;
+            index++;
+        }
+    } catch (exception &err) {
+        Logger::gLog(Logger::TEST, "Exception in IBLTMultiset::reBuild");
+        Logger::gLog(Logger::TEST, err.what());
+    }
+}

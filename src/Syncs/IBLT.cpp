@@ -194,10 +194,6 @@ IBLT IBLT::operator-(const IBLT& other) const {
     return result;
 }
 
-//bool IBLT::operator==(const IBLT& other) {
-//    return false;
-//}
-
 
 size_t IBLT::size() const {
     return hashTable.size();

@@ -144,7 +144,6 @@ public:
     IBLT operator-(const IBLT& other) const;
     IBLT& operator-=(const IBLT& other);
 
-//    bool operator==(const IBLT& other);
 
     /**
      * @return the number of cells in the IBLT. Not necessarily equal to the expected number of entries
@@ -155,10 +154,6 @@ public:
      * @return the size of a value stored in the IBLT.
      */
     size_t eltSize() const;
-//
-//    char* serialize();
-//
-//    static IBLT deserialize(char * serializedIBLT);
 
     vector<hash_t> hashes; /* vector for all hashes of sets */
 

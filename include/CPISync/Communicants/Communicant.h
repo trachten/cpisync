@@ -243,13 +243,6 @@ public:
     void commSend(const IBLT &iblt, bool sync = false);
 
     /**
-     * Sends an IBLTMultiset.
-     * @param iblt The IBLTMultiset to send.
-     * @param sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the IBLT's size and eltSize
-     */
-    void commSend(const IBLTMultiset &iblt, bool sync = false);
-
-    /**
      * Sends Cuckoo filter.
      * @param The Cuckoo filter to send.
      */
@@ -327,13 +320,6 @@ public:
     byte commRecv_byte();
 
     /**
-     * receives an IBLT
-     * constructs their IBLT from the string representation that is received
-     * @return
-     */
-    IBLT commRecv_IBLT_des(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
-
-    /**
      * Receives an IBLT.
      * @param size The size of the IBLT to be received.  Must be >0 or NOT_SET.
      * @param eltSize The size of values of the IBLTs to be received.  Must be >0 or NOT_SET.
@@ -341,7 +327,6 @@ public:
      */
     IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
 
-    IBLTMultiset commRecv_IBLTMultiset_des(Nullable<size_t> size, Nullable<size_t> eltSize);
 
     /**
      * Receives an IBLTMultiset.
@@ -399,21 +384,10 @@ protected:
      */
     void commSend(const IBLT::HashTableEntry &hte, size_t eltSize);
 
-//    /**
-//     * Sends an IBLTMultiset::HashTableEntry
-//     * @param hte The HashTableEntry to send
-//     */
-//    void commSend(const IBLTMultiset::HashTableEntry& hte, size_t eltSize);
-
     /**
      * Receives an IBLT::HashTableEntry
      */
     IBLT::HashTableEntry commRecv_HashTableEntry(size_t eltSize);
-
-    /**
-     * Receives an IBLTMultiset::HashTableEntry
-     */
-    IBLTMultiset::HashTableEntry commRecv_HashTableEntry_Multiset(size_t eltSize);
 
     /**
      * Adds <numBytes> bytes to the transmitted byte logs

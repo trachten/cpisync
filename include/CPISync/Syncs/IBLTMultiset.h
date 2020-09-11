@@ -66,12 +66,6 @@ public:
      */
     bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
 
-//    /**
-//     * Convert IBLT to a readable string
-//     * @return string
-//    */
-//    string toString() const;
-
     /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
@@ -119,35 +113,10 @@ private:
      */
     void _insertModular(long plusOrMinus, const ZZ &key, const ZZ &value);
 
-//    class HashTableEntry {
-//    public:
-//        // Net insertions and deletions that mapped to this cell
-//        long count;
-//
-//        // The bitwise xor-sum of all keys mapped to this cell
-//        ZZ keySum;
-//
-//        // The bitwise xor-sum of all keySum checksums at each allocation
-//        hash_t keyCheck;
-//
-//        // The bitwise xor-sum of all values mapped to this cell
-//        ZZ valueSum;
-//
-//////         Returns whether the entry contains just one insertion or deletion
-////        bool isPure() const;
-//
-//        // Returns whether the entry contains just insertions or deletions of only one key-value pair
-//        bool isPure() const;
-//
-//        // Returns whether the entry is empty
-//        bool empty() const;
-//    };
-
     class HashTableEntry : public IBLT::HashTableEntry {
     public:
         bool isPure() const override;
     };
-
 
     // vector of all entries
     vector<HashTableEntry> hashTable;

@@ -40,8 +40,6 @@ bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_p
             return false;
         }
 
-//        vector<unsigned char> myIBLTBytes = myIBLT.toByteVector();
-//        commSync->commSend(ustring(myIBLTBytes.data(), myIBLTBytes.size()));
         commSync->commSend(myIBLT, true);
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
 

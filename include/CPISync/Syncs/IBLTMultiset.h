@@ -87,8 +87,6 @@ public:
 
     vector<hash_t> hashes; /* vector for all hashes of sets */
 
-    string toString() const override;
-
     /**
      * convert IBLTMultiset to bytes to be sent over socket
      * @return vector<byte> to send over socket
@@ -101,8 +99,6 @@ public:
      * @param data vector<byte>
      */
     void fromByteVector(vector<byte> data);
-
-    void reBuild(string &inStr) override;
 
 private:
     /**

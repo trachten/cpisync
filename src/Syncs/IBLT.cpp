@@ -207,22 +207,40 @@ size_t IBLT::eltSize() const {
     return valueSize;
 }
 
-//char* IBLT::serialize() {
-//    string rep = toString();
-//    // memory leak
-//    char* res = new char[rep.length() + 1];
-//    strcpy(res, rep.c_str());
-//
-//    //or
-//
-//    vector<char> cstr(rep.c_str(), rep.c_str()+rep.length() + 1);
-//    return res;
-//}
-//
-//IBLT IBLT::deserialize(char * serializedIBLT) {
-//    IBLT res;
-//    return res;
-//}
+vector<byte> IBLT::toByteVector() const {
+    vector<byte> res;
+    for (auto entry: hashTable) {
+        vector<byte> byteRep = toBytes<long>(entry.count);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes<hash_t>(entry.keyCheck);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes(entry.keySum);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes(entry.valueSum);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+    }
+    cout << "serialize complete, hashtable size: " << hashTable.size() << endl;
+    return res;
+}
+
+void IBLT::fromByteVector(vector<byte> data) {
+    vector<byte> res;
+    byte *buf = data.data();
+    for (long index = 0; index < hashTable.size(); index++) {
+        hashTable[index].count = fromBytes<long>(buf);
+        buf += sizeof(long);
+        hashTable[index].keyCheck = fromBytes<hash_t>(buf);
+        buf += sizeof(hash_t);
+        long bytesRead;
+        hashTable[index].keySum = fromBytesZZ(buf, bytesRead);
+        buf += bytesRead;
+        hashTable[index].valueSum = fromBytesZZ(buf, bytesRead);
+        buf += bytesRead;
+    }
+    Logger::gLog(Logger::METHOD_DETAILS, "IBLT fromByteVector complete, "
+                               "read entries: " + toStr(hashTable.size()));
+}
+
 
 string IBLT::toString() const
 {

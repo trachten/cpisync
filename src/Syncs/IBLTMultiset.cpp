@@ -258,26 +258,37 @@ size_t IBLTMultiset::eltSize() const {
     return valueSize;
 }
 
-//string IBLTMultiset::toString() const
-//{
-//    string outStr="";
-//    for (auto entry : hashTable)
-//    {
-//        outStr += toStr<long>(entry.count) + ","
-//                  + toStr<hash_t>(entry.keyCheck) + ","
-//                  + toStr<ZZ>(entry.keySum) + ","
-//                  + toStr<ZZ>(entry.valueSum)
-//                  + "\n";
-//    }
-//    outStr.pop_back();
-//    return outStr;
-//}
+vector<byte> IBLTMultiset::toByteVector() const {
+    vector<byte> res;
+    for (auto entry: hashTable) {
+        vector<byte> byteRep = toBytes(entry.count);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes(entry.keyCheck);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes(entry.keySum);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes(entry.valueSum);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+    }
+    return res;
+}
 
-//bool IBLTMultiset::HashTableEntry::empty() const
-//{
-//    return (count == 0 && IsZero(keySum) && keyCheck == 0);
-//}
-
+void IBLTMultiset::fromByteVector(vector<byte> data) {
+    vector<byte> res;
+    byte *buf = data.data();
+    for (long index = 0; index < hashTable.size(); index++) {
+        hashTable[index].count = fromBytes<long>(buf);
+        buf += sizeof(long);
+        hashTable[index].keyCheck = fromBytes<hash_t>(buf);
+        buf += sizeof(long);
+        long bytesRead;
+        hashTable[index].keySum = fromBytesZZ(buf, bytesRead);
+        buf += bytesRead;
+        hashTable[index].valueSum = fromBytesZZ(buf, bytesRead);
+        buf += bytesRead;
+    }
+    Logger::gLog(Logger::METHOD_DETAILS, "IBLTMultiset fromByteVectorComplete");
+}
 
 string IBLTMultiset::toString() const {
     string outStr="";

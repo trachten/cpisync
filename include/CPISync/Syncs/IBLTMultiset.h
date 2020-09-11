@@ -95,6 +95,19 @@ public:
 
     string toString() const override;
 
+    /**
+     * convert IBLTMultiset to bytes to be sent over socket
+     * @return vector<byte> to send over socket
+     */
+    vector<byte> toByteVector() const override;
+
+    /**
+     * @require hashtable size is already instantiated
+     * @require element size is set
+     * @param data vector<byte>
+     */
+    void fromByteVector(vector<byte> data);
+
     void reBuild(string &inStr) override;
 
 private:

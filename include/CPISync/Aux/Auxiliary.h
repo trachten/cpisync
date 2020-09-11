@@ -71,7 +71,8 @@ inline vector<byte> StrToVec(const string& data) {
     vector<byte> result; // where we will be build the result to be returned
 
     const char *data_c_str = data.c_str();
-    result.reserve((int) data.length()); result.reserve((int) data.length()); for (int ii = 0; ii < (int) data.length(); ii++)
+    result.reserve((int) data.length());
+    for (int ii = 0; ii < (int) data.length(); ii++)
         result.push_back(static_cast<byte>(data_c_str[ii]));
 
     return result;
@@ -120,7 +121,7 @@ inline ZZ strToZZ(string str)
 }
 
 /**
- * Decode an encoded large numebr from strToZZ function into an  ascii string
+ * Decode an encoded large number from strToZZ function into an  ascii string
  * @param num the ZZ to be converted
  * @require input ZZ number must be generated from strToZZ function 
  * @return an ascii string
@@ -150,6 +151,69 @@ inline string zzToString(ZZ num)
         out += str[ii];
     return out;
 }
+
+/**
+ * convert bytes from buffer to a number
+ * @tparam T - numerics of types int, long, unsigned long
+ * @param buffer pointer to byte representation of number
+ * @return the deserialized number
+ */
+template<typename T>
+inline T fromBytes(const byte* buffer) {
+    ZZ num = ZZFromBytes(buffer, sizeof(T));
+    T res = conv<T>(num);
+    return res;
+}
+
+/**
+ * convert bytes from buffer to a ZZ
+ * @param buf the buffer which has byte representation of ZZ
+ * @param bytesRead the number of bytes used for this ZZ,
+ *        this is used by the caller function to increase the buffer pointer
+ * @return the deserialized ZZ num
+ */
+inline ZZ fromBytesZZ(const byte* buf, long &bytesRead) {
+    ZZ res{0};
+    long numBytes = fromBytes<long>(buf);
+    res = ZZFromBytes(buf+sizeof(long), numBytes);
+    // the no of bytes that were used to represent this ZZ
+    bytesRead = numBytes + sizeof(long);
+    return res;
+}
+
+/**
+ * convert number types to byte vector
+ * @tparam T - of types int, long, unsigned long
+ * @param num - the number to convert to bytes
+ * @return vector<byte>, a byte representation of obj
+ */
+
+template<typename T>
+inline vector<byte> toBytes(T num) {
+    size_t numBytes = sizeof(T);
+    vector<byte> res(numBytes);
+    BytesFromZZ(res.data(), to_ZZ(num), numBytes);
+    return res;
+}
+
+/**
+ * convert a ZZ to byte vector
+ * @param num - the number to convert to bytes
+ * @return vector<byte>, a byte representation of obj
+ *
+ */
+template<>
+inline vector<byte> toBytes(ZZ num) {
+    long numBytes = NumBytes(num);
+    if (numBytes==0) numBytes = 1; // special case to send 0 value
+    vector<byte> res(numBytes);
+    BytesFromZZ(res.data(), num, numBytes);
+    vector<byte> numInBytes = toBytes(numBytes);
+    res.insert(res.begin(), numInBytes.begin(), numInBytes.end());
+    return res;
+}
+
+
 
 
 /**

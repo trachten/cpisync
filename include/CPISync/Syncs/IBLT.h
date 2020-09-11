@@ -15,6 +15,7 @@
 #include <sstream>
 #include <CPISync/Aux/Auxiliary.h>
 #include <CPISync/Data/DataObject.h>
+#include <CPISync/Aux/Serializable.h>
 
 using std::vector;
 using std::hash;
@@ -40,7 +41,7 @@ typedef unsigned long int hash_t;
  * Goodrich, Michael T., and Michael Mitzenmacher. "Invertible bloom lookup tables." 
  * arXiv preprint arXiv:1101.2245 (2011).
  */
-class IBLT {
+class IBLT : public Serializable{
 public:
     // Communicant needs to access the internal representation of an IBLT to send and receive it
     friend class Communicant;
@@ -109,6 +110,19 @@ public:
      * @param expnChldSet expected number of elements in the target set
     */
     void erase(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
+
+    /**
+     * convert IBLTMultiset to bytes to be sent over socket
+     * @return vector<byte> to send over socket
+     */
+    vector<byte> toByteVector() const override;
+
+    /**
+     * @require hashtable size is already instantiated
+     * @require element size is set
+     * @param data vector<byte>
+     */
+    void fromByteVector(vector<byte> data) override;
 
     /**
      * Convert IBLT to a readable string

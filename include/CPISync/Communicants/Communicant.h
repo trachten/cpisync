@@ -379,17 +379,6 @@ protected:
 
     // METHODS
     /**
-     * Sends an IBLT::HashTableEntry
-     * @param hte The HashTableEntry to send
-     */
-    void commSend(const IBLT::HashTableEntry &hte, size_t eltSize);
-
-    /**
-     * Receives an IBLT::HashTableEntry
-     */
-    IBLT::HashTableEntry commRecv_HashTableEntry(size_t eltSize);
-
-    /**
      * Adds <numBytes> bytes to the transmitted byte logs
      * @param numBytes the number of bytes to add to the logs
      */

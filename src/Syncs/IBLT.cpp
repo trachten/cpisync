@@ -215,7 +215,16 @@ vector<byte> IBLT::toByteVector() const {
         byteRep = toBytes(entry.valueSum);
         res.insert(res.end(), byteRep.begin(), byteRep.end());
     }
-    cout << "serialize complete, hashtable size: " << hashTable.size() << endl;
+
+    // if IBLTSetOfSet
+    if (hashes.size() > 0 ) {
+        vector<byte> byteRep = toBytes((long)hashes.size());
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        for (const auto &hash : hashes) {
+            byteRep = toBytes(hash);
+            res.insert(res.end(), byteRep.begin(), byteRep.end());
+        }
+    }
     return res;
 }
 
@@ -232,6 +241,17 @@ void IBLT::fromByteVector(vector<byte> data) {
         buf += bytesRead;
         hashTable[index].valueSum = fromBytesZZ(buf, bytesRead);
         buf += bytesRead;
+    }
+
+    // if IBLTSetOfSet
+    if (hashes.size() > 0 && buf != data.data() + data.size()) {
+        long hashNum = fromBytes<long>(buf);
+        buf += sizeof(hashNum);
+        hashes.resize(hashNum);
+        for (int ii = 0; ii < hashNum; ii++) {
+            hashes[ii] = fromBytes<hash_t>(buf);
+            buf += sizeof(hash_t);
+        }
     }
     Logger::gLog(Logger::METHOD_DETAILS, "IBLT fromByteVector complete, "
                                "read entries: " + toStr(hashTable.size()));

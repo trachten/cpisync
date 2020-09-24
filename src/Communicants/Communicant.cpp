@@ -279,16 +279,8 @@ void Communicant::commSend(const IBLT& iblt, bool sync) {
 
 
 void Communicant::commSend(const Cuckoo& cf) {
-    commSend((long) cf.getFngprtSize());
-    commSend((long) cf.getBucketSize());
-    commSend((long) cf.getFilterSize());
-    commSend((long) cf.getMaxKicks());
-    ZZ itemsC = cf.getItemsCount();
-    commSend(itemsC, NOT_SET<size_t>()); // NOT_SET for requesting number of bytes in
-                               // ZZ to be transmitted too
-
-    for (auto b : cf.getRawFilter())
-        commSend(b);
+    vector<byte> rep = cf.toByteVector();
+    commSend(ustring(rep.data(), rep.size()));
 }
 
 void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
@@ -563,21 +555,10 @@ IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
 }
 
 
-}
-
 Cuckoo Communicant::commRecv_Cuckoo() {
-    size_t fngprtS = narrow_cast<size_t>(commRecv_long());
-    size_t bucketS = narrow_cast<size_t>(commRecv_long());
-    size_t filterSize = narrow_cast<size_t>(commRecv_long());
-    size_t kicks = narrow_cast<size_t>(commRecv_long());
-    ZZ itemsC = commRecv_ZZ(0); // 0 for requesting number of bytes in
-                                // ZZ to be transmitted too
-
-    vector<unsigned char> filter;
-    // TODO: Can this be done more efficiently?
-    // We are receiving bytes, thus 8 is a constant
-    for (size_t ii=0; ii<ceil((fngprtS * bucketS * filterSize) / 8); ii++)
-        filter.push_back(commRecv_byte());
-
-    return Cuckoo(fngprtS, bucketS, filterSize, kicks, filter, itemsC);
+    Cuckoo theirCF;
+    ustring serialCuckoo = commRecv_ustring();
+    vector<byte> rep{serialCuckoo.begin(), serialCuckoo.end()};
+    theirCF.fromByteVector(rep);
+    return theirCF;
 }

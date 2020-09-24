@@ -244,7 +244,7 @@ void IBLT::fromByteVector(vector<byte> data) {
     }
 
     // if IBLTSetOfSet
-    if (hashes.size() > 0 && buf != data.data() + data.size()) {
+    if (buf != data.data() + data.size()) {
         long hashNum = fromBytes<long>(buf);
         buf += sizeof(hashNum);
         hashes.resize(hashNum);

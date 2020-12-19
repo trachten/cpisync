@@ -231,6 +231,50 @@ void Cuckoo::seedPRNG(unsigned int seed) {
     prng.seed(seed);
 }
 
+vector<byte> Cuckoo::toByteVector() const {
+    vector<byte> res;
+
+    vector<byte> byteRep = toBytes(fngprtSize);
+    res.insert(res.end(), byteRep.begin(), byteRep.end());
+    byteRep = toBytes(bucketSize);
+    res.insert(res.end(), byteRep.begin(), byteRep.end());
+    byteRep = toBytes(filterSize);
+    res.insert(res.end(), byteRep.begin(), byteRep.end());
+    byteRep = toBytes(maxKicks);
+    res.insert(res.end(), byteRep.begin(),byteRep.end());
+    byteRep = toBytes(itemsCount);
+    res.insert(res.end(), byteRep.begin(), byteRep.end());
+
+    vector<unsigned char> table = getRawFilter();
+    for (const auto entry: table) {
+        res.push_back(entry);
+    }
+    return res;
+}
+
+void Cuckoo::fromByteVector(vector<byte> buffer) {
+    const byte *ptr = buffer.data();
+
+    fngprtSize = fromBytes<size_t>(ptr); ptr += sizeof(fngprtSize);
+    bucketSize = fromBytes<size_t>(ptr); ptr += sizeof(bucketSize);
+    filterSize = fromBytes<size_t>(ptr); ptr += sizeof(filterSize);
+    maxKicks = fromBytes<size_t>(ptr); ptr += sizeof(size_t);
+    long bytesRead;
+    itemsCount = fromBytesZZ(ptr, bytesRead); ptr += bytesRead;
+
+    size_t offset = ptr - buffer.data();
+    vector<unsigned char> table;
+    for (size_t i = offset;
+         i < buffer.size(); i++) {
+        table.push_back(buffer[i]);
+    }
+
+    filter = Compact2DBitArray(fngprtSize, bucketSize, filterSize, table);
+    fingerprint_impl = _default_fingerprint;
+    hash_impl = _default_hash;
+}
+
+
 ostream& operator<<(ostream& os, const Cuckoo cf) {
     os << "Cuckoo Filter [ f=" << cf.fngprtSize << ", b=" << cf.bucketSize
        << ", m=" << cf.filterSize << ", n=" << cf.itemsCount << " ]";

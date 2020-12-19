@@ -20,6 +20,7 @@
 #include <CPISync/Data/DataObject.h>
 #include <CPISync/Aux/Auxiliary.h>
 #include <CPISync/Syncs/Compact2DBitArray.h>
+#include <CPISync/Aux/Serializable.h>
 
 using std::vector;
 using std::shared_ptr;
@@ -27,7 +28,7 @@ using std::string;
 using std::runtime_error;
 using namespace NTL;
 
-class Cuckoo {
+class Cuckoo : public Serializable {
 public:
 
     /**
@@ -153,6 +154,21 @@ public:
      * Seed the underlying cuckoo filter PRNG
      */
     static void seedPRNG(unsigned int seed);
+
+    /**
+     * serialize cuckoo filter to a byte vector,
+     * which can be deserialized by `fromByteVector`
+     * @return vector<byte> representation of cuckoo filter
+     */
+    vector<byte> toByteVector() const;
+
+    /**
+     * deserialize byte vector and construct cuckoo filter,
+     * complements function `toByteVector`
+     * @require buffer size can be at most UNSIGNED_LONG_MAX
+     * @param buffer vector<byte> representation of cuckoo filter
+     */
+    void fromByteVector(vector<byte> buffer);
 
     /**
      * Maximum length of the cuckoo evictions chain

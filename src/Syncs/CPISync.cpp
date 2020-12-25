@@ -282,8 +282,9 @@ Logger::gLog(Logger::METHOD,"Entering CPISync::set_reconcile");
 
         for (itCPI = CPI_hash.begin(); itCPI != CPI_hash.end(); itCPI++)
             append(delta_self, to_ZZ_p(itCPI->first));
-    } else // otherSetSize >=1 - the other set has something
-        if (CPI_hash.empty()) { // I have nothing new
+    } else if (CPI_hash.empty()) { // I have nothing new // otherSetSize >=1 - the other set has something
+        Logger::gLog(Logger::METHOD,
+                "CPISync::set_reconcile:: I have nothing new, the other set has something");
         return true;
     } else { // we both have something new
         vec_ZZ_p coefficient_P, coefficient_Q;
@@ -467,6 +468,7 @@ bool CPISync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_pt
                 mySyncStats.increment(SyncStats::COMP_TIME,-idle_comm); // Subtract idle and comm time from the total sync time to get CPU Time
                 mySyncStats.increment(SyncStats::XMIT,commSync->getXmitBytes());
                 mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
+                Logger::gLog(Logger::METHOD, "client, sync fail, curDiff == maxDiff");
                 return false;
             } else {
                 // Send more samples and try again

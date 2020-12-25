@@ -50,7 +50,6 @@ void IBLTMultiset::_insertModular(long plusOrMinus, ZZ key, ZZ value) {
     for(int ii=0; ii < N_HASH; ii++){
         hash_t hk = _hashK(key, ii);
         long startEntry = ii * bucketsPerHash;
-        long pos = startEntry + (hk%bucketsPerHash);
         IBLTMultiset::HashTableEntry& entry = hashTable.at(startEntry + (hk%bucketsPerHash));
         hash_t modHashCheck = _hashK(key, N_HASHCHECK) % LARGE_PRIME;
 

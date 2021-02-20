@@ -448,8 +448,6 @@ checkClientSucceeded(multiset<string> &resultantClient, multiset<string> &initia
  * @param GenSyncClient The GenSync object that is client in the sync.
  * @param GenSyncServer The GenSync object that is server in the sync.
  * @param oneWay true iff the sync will be one way (only server is reconciled)
- * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
- * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
  * of the sets (For parameter mismatch testing)
  * @param SIMILAR amount of elements common to both genSyncs
  * @param CLIENT_MINUS_SERVER amount of elements unique to client
@@ -458,10 +456,12 @@ checkClientSucceeded(multiset<string> &resultantClient, multiset<string> &initia
  * @return True if the recon appears to be successful and false otherwise
  * @return true if reconciliation succeeded, false otherwise
  */
-inline bool createForkForTest(GenSync& GenSyncClient, GenSync& GenSyncServer,bool oneWay, bool probSync,bool syncParamTest,
-                               const unsigned int SIMILAR,const unsigned int CLIENT_MINUS_SERVER,
-                               const unsigned int SERVER_MINUS_CLIENT, multiset<string> reconciled,
-                               bool setofSets){
+inline bool createForkForTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay,
+                              const unsigned int SIMILAR,
+                              const unsigned int CLIENT_MINUS_SERVER,
+                              const unsigned int SERVER_MINUS_CLIENT,
+                              multiset<string> reconciled,
+                              bool setofSets) {
 
     int child_state;
     int my_opt = 0;
@@ -887,15 +887,13 @@ inline void addElemsSetofSets(GenSync &GenSyncServer,
  * @param oneWay true iff the sync will be one way (only server is reconciled). One way syncs require that the looping be done
  * around the constructor of the GenSync Object and the port be changed each test because of how processes handle port closures.
  * This means that for oneWay syncs syncTest will only loop once internally and the function will have to be called again from the test
- * @param probSync true iff the sync method being used is probabilistic (changes the conditions for success)
- * @param syncParamTest true if you would like to know if the sync believes it succeeded regardless of the actual state
  * of the sets (For parameter mismatch testing)
  * @param Multiset true iff you would like to test syncing a multiset
  * @param largeSync true if you would like to test syncing a large number of elements
  * @return True if *every* recon test appears to be successful (and, if syncParamTest==true, reports that it is successful) and false otherwise.
  */
-inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay, bool probSync, bool syncParamTest,
-						bool Multiset,bool largeSync){
+inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay,
+                     bool Multiset, bool largeSync) {
 
 	//Seed test so that changing other tests does not cause failure in tests with a small probability of failure
 	//Don't seed oneWay tests because they loop on the outside of syncTest and you want different values for each run
@@ -916,7 +914,7 @@ inline bool syncTest(GenSync &GenSyncClient, GenSync &GenSyncServer, bool oneWay
 		// add elements to server, client and reconciled
 		auto objectsPtr = addElements(Multiset,SIMILAR,SERVER_MINUS_CLIENT,CLIENT_MINUS_SERVER,GenSyncServer,GenSyncClient,reconciled);
 		//Returns a boolean value for the success of the synchronization
-        success &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, probSync, syncParamTest, SIMILAR,
+        success &= createForkForTest(GenSyncClient, GenSyncServer, oneWay, SIMILAR,
                                       CLIENT_MINUS_SERVER,SERVER_MINUS_CLIENT, reconciled,false);
 		//Remove all elements from GenSyncs and clear dynamically allocated memory for reuse
 		success &= GenSyncServer.clearData();

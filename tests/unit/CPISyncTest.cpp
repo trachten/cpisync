@@ -73,8 +73,8 @@ void CPISyncTest::CPISyncSetReconcileTest() {
 				setErr(err).
 				build();
 
-		//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
-		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, false, false));
+		//(oneWay = false, Multiset = false, largeSync = false)
+		CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false));
 }
 
 
@@ -97,8 +97,8 @@ void CPISyncTest::CPISyncMultisetReconcileTest() {
 			setHashes(true).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = true, largeSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false, false,false,true,false));
+	//(oneWay = false, Multiset = true, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false, true, false));
 }
 
 void CPISyncTest::CPISyncLargeSetReconcileTest() {
@@ -118,8 +118,8 @@ void CPISyncTest::CPISyncLargeSetReconcileTest() {
 			setErr(err).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, false, true));
+	//(oneWay = false, Multiset = false, largeSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, true));
 }
 
 void CPISyncTest::ProbCPISyncSetReconcileTest() {
@@ -139,8 +139,8 @@ void CPISyncTest::ProbCPISyncSetReconcileTest() {
 			setErr(err).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, false, false));
+	//(oneWay = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer,false, false, false));
 }
 
 void CPISyncTest::ProbCPISyncMultisetReconcileTest() {
@@ -162,8 +162,8 @@ void CPISyncTest::ProbCPISyncMultisetReconcileTest() {
 			setHashes(true).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = true, largeSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, true, false));
+	//(oneWay = false, Multiset = true, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false));
 }
 
 void CPISyncTest::ProbCPISyncLargeSetReconcileTest(){
@@ -183,8 +183,8 @@ void CPISyncTest::ProbCPISyncLargeSetReconcileTest(){
 			setErr(err).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false,false,false,true));
+	//(oneWay = false, Multiset = false, largeSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, true));
 }
 
 //InterCPISync Test Cases
@@ -240,8 +240,8 @@ void CPISyncTest::InterCPISyncSetReconcileTest() {
 			setNumPartitions(numParts).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false,false, false, false));
+	//(oneWay = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false));
 }
 
 void CPISyncTest::InterCPISyncMultisetReconcileTest() {
@@ -268,8 +268,8 @@ void CPISyncTest::InterCPISyncMultisetReconcileTest() {
 			setHashes(true).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = true, largeSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, true, false));
+	//(oneWay = false, Multiset = true, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false));
 }
 
 
@@ -297,6 +297,6 @@ void CPISyncTest::InterCPISyncLargeSetReconcileTest() {
 			setHashes(true).
 			build();
 
-	//(oneWay = false, probSync = false, syncParamTest = false, Multiset = false, largeSync = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false, false, true));
+	//(oneWay = false, Multiset = false, largeSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, true));
 }

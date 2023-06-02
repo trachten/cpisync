@@ -38,8 +38,8 @@ void IBLTSyncTest::IBLTSyncSetReconcileTest() {
 			setExpNumElems(numExpElem).
 			build();
 
-	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, false, false));
+	//(oneWay = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, false));
 }
 
 void IBLTSyncTest::IBLTSyncMultisetReconcileTest() {
@@ -59,8 +59,8 @@ void IBLTSyncTest::IBLTSyncMultisetReconcileTest() {
 			setExpNumElems(numExpElem).
 			build();
 
-	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = true, largeSync = false)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false, true, false));
+	//(oneWay = false, Multiset = true, largeSync = false)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true, false));
 }
 
 void IBLTSyncTest::IBLTSyncLargeSetReconcileTest() {
@@ -80,8 +80,8 @@ void IBLTSyncTest::IBLTSyncLargeSetReconcileTest() {
 			setExpNumElems(largeNumExpElems).
 			build();
 
-	//(oneWay = false, probSync = true, syncParamTest = false, Multiset = false, largeSync = true)
-	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, true,false,false,true));
+	//(oneWay = false, Multiset = false, largeSync = true)
+	CPPUNIT_ASSERT(syncTest(GenSyncClient, GenSyncServer, false, false, true));
 }
 
 void IBLTSyncTest::testAddDelElem() {
@@ -135,6 +135,6 @@ void IBLTSyncTest::testIBLTParamMismatch(){
 			setExpNumElems(numExpElem).
 			build();
 
-	//(oneWay = false, probSync = true, syncParamTest = true, Multiset = false, largeSync = false)
-	CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, true, true, false, false)));
+	//(oneWay = false, Multiset = false, largeSync = false)
+	CPPUNIT_ASSERT(!(syncTest(GenSyncClient, GenSyncServer, false, false, false)));
 }

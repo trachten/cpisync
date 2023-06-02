@@ -58,5 +58,5 @@ void CuckooSyncTest::setReconcileTest() {
     // before it reaches syncTest helper function.
     ZZ_p::init(randZZ());
 
-    CPPUNIT_ASSERT(syncTest(client, server, false, false, false, false, false));
+    CPPUNIT_ASSERT(syncTest(client, server, false, false, false));
 }

@@ -20,7 +20,6 @@ public:
      * Constructs an IBLT object with size relative to expectedNumEntries.
      * @param expectedNumEntries The expected amount of entries to be placed into the IBLT
      * @param _valueSize The size of the values being added, in bits
-     * @param isMultiset Is the IBLT going to store multiset values, default is false
      */
     IBLTMultiset(size_t expectedNumEntries, size_t _valueSize);
 

@@ -194,6 +194,7 @@ IBLT IBLT::operator-(const IBLT& other) const {
     return result;
 }
 
+
 size_t IBLT::size() const {
     return hashTable.size();
 }
@@ -201,6 +202,61 @@ size_t IBLT::size() const {
 size_t IBLT::eltSize() const {
     return valueSize;
 }
+
+vector<byte> IBLT::toByteVector() const {
+    vector<byte> res;
+    for (auto entry: hashTable) {
+        vector<byte> byteRep = toBytes<long>(entry.count);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes<hash_t>(entry.keyCheck);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes(entry.keySum);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        byteRep = toBytes(entry.valueSum);
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+    }
+
+    // if IBLTSetOfSet
+    if (hashes.size() > 0 ) {
+        vector<byte> byteRep = toBytes((long)hashes.size());
+        res.insert(res.end(), byteRep.begin(), byteRep.end());
+        for (const auto &hash : hashes) {
+            byteRep = toBytes(hash);
+            res.insert(res.end(), byteRep.begin(), byteRep.end());
+        }
+    }
+    return res;
+}
+
+void IBLT::fromByteVector(vector<byte> data) {
+    vector<byte> res;
+    byte *buf = data.data();
+    for (long index = 0; index < hashTable.size(); index++) {
+        hashTable[index].count = fromBytes<long>(buf);
+        buf += sizeof(long);
+        hashTable[index].keyCheck = fromBytes<hash_t>(buf);
+        buf += sizeof(hash_t);
+        long bytesRead;
+        hashTable[index].keySum = fromBytesZZ(buf, bytesRead);
+        buf += bytesRead;
+        hashTable[index].valueSum = fromBytesZZ(buf, bytesRead);
+        buf += bytesRead;
+    }
+
+    // if IBLTSetOfSet
+    if (buf != data.data() + data.size()) {
+        long hashNum = fromBytes<long>(buf);
+        buf += sizeof(hashNum);
+        hashes.resize(hashNum);
+        for (int ii = 0; ii < hashNum; ii++) {
+            hashes[ii] = fromBytes<hash_t>(buf);
+            buf += sizeof(hash_t);
+        }
+    }
+    Logger::gLog(Logger::METHOD_DETAILS, "IBLT fromByteVector complete, "
+                               "read entries: " + toStr(hashTable.size()));
+}
+
 
 string IBLT::toString() const
 {
@@ -221,16 +277,22 @@ void IBLT::reBuild(string &inStr)
 {
     vector<string> entries = split(inStr, '\n');
     int index = 0;
-    for (auto entry : entries)
-    {
-        vector<string> infos = split(entry, ',');
-        HashTableEntry curEntry;
-        curEntry.count = strTo<long>(infos[0]);
-        curEntry.keyCheck = strTo<hash_t>(infos[1]);
-        curEntry.keySum = strTo<ZZ>(infos[2]);
-        curEntry.valueSum = strTo<ZZ>(infos[3]);
-        this->hashTable[index] = curEntry;
-        index++;
+    try {
+        for (auto entry : entries)
+        {
+
+            vector<string> infos = split(entry, ',');
+            HashTableEntry curEntry;
+            curEntry.count = strTo<long>(infos[0]);
+            curEntry.keyCheck = strTo<hash_t>(infos[1]);
+            curEntry.keySum = strTo<ZZ>(infos[2]);
+            curEntry.valueSum = strTo<ZZ>(infos[3]);
+            this->hashTable[index] = curEntry;
+            index++;
+        }
+    } catch (exception &err) {
+        Logger::gLog(Logger::TEST, "Exception in IBLT::reBuild");
+        Logger::gLog(Logger::TEST, err.what());
     }
 }
 

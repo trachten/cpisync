@@ -149,6 +149,7 @@ void Communicant::commSend(const ustring& toSend, size_t numBytes) {
     auto sendptr = reinterpret_cast<const char *> ((unsigned char *) toSend.data());
     commSend(sendptr, numBytes);
 }
+
 void Communicant::commSend(const ustring& ustr) {
     Logger::gLog(Logger::COMM, "... attempting to send: ustring " + ustrToStr(ustr));
     commSend((long) ustr.length());
@@ -266,56 +267,6 @@ vec_ZZ_p Communicant::commRecv_vec_ZZ_p() {
     return result;
 }
 
-void Communicant::commSend(const IBLT& iblt, bool sync) {
-    if (!sync) {
-        commSend((long) iblt.size());
-        commSend((long) iblt.eltSize());
-    }
-
-    // Access the hashTable representation of iblt to serialize it
-    for(const IBLT::HashTableEntry& hte : iblt.hashTable) {
-        commSend(hte, iblt.eltSize());
-    }
-}
-
-void Communicant::commSend(const IBLTMultiset &iblt, bool sync) {
-    if (!sync) {
-        commSend((long) iblt.size());
-        commSend((long) iblt.eltSize());
-    }
-
-    // Access the hashTable representation of iblt to serialize it
-    for(const IBLTMultiset::HashTableEntry& hte : iblt.hashTable) {
-        commSend(hte, iblt.eltSize());
-    }
-}
-
-void Communicant::commSend(const Cuckoo& cf) {
-    commSend((long) cf.getFngprtSize());
-    commSend((long) cf.getBucketSize());
-    commSend((long) cf.getFilterSize());
-    commSend((long) cf.getMaxKicks());
-    ZZ itemsC = cf.getItemsCount();
-    commSend(itemsC, NOT_SET<size_t>()); // NOT_SET for requesting number of bytes in
-                               // ZZ to be transmitted too
-
-    for (auto b : cf.getRawFilter())
-        commSend(b);
-}
-
-void Communicant::commSend(const IBLT::HashTableEntry& hte, size_t eltSize) {
-    commSend(hte.count);
-    commSend(toStr<size_t>(hte.keyCheck));
-    commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
-    commSend(hte.valueSum, (int) eltSize);
-}
-
-void Communicant::commSend(const IBLTMultiset::HashTableEntry& hte, size_t eltSize) {
-    commSend(hte.count);
-    commSend(toStr<size_t>(hte.keyCheck));
-    commSend(hte.keySum); // not guaranteed to be the same size as all other hash-table-entry key-sums
-    commSend(hte.valueSum, (int) eltSize);
-}
 
 void Communicant::commSend(const ZZ& num, Nullable<size_t> size) {
     Logger::gLog(Logger::COMM, "... attempting to send: ZZ " + toStr(num));
@@ -342,17 +293,8 @@ void Communicant::commSendIBLTNHash(const IBLT &iblt, bool sync)
         commSend(toStr<size_t>(iblt.eltSize()));
     }
 
-    // Access the hashTable representation of iblt to serialize it
-    for (const IBLT::HashTableEntry &hte : iblt.hashTable)
-    {
-        commSend(hte, iblt.eltSize());
-    }
-
-    commSend((long)iblt.hashes.size());
-    for (const auto &hash : iblt.hashes)
-    {
-        commSend(toStr<hash_t>(hash));
-    }
+    vector<byte> res = iblt.toByteVector();
+    commSend(ustring(res.data(), res.size()));
 }
 
 IBLT Communicant::commRecv_IBLTNHash(Nullable<size_t> size, Nullable<size_t> eltSize)
@@ -373,18 +315,12 @@ IBLT Communicant::commRecv_IBLTNHash(Nullable<size_t> size, Nullable<size_t> elt
 
     IBLT theirs;
     theirs.valueSize = numEltSize;
+    theirs.hashTable.resize(numSize);
 
-    for (int ii = 0; ii < numSize; ii++)
-    {
-        theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
-    }
-    long hashNum = commRecv_long();
-
-    for (int ii = 0; ii < hashNum; ii++)
-    {
-        theirs.hashes.push_back(strTo<hash_t>(commRecv_string()));
-    }
-
+    ustring serialIBLT = commRecv_ustring();
+    vector<byte> rep;
+    rep.insert(rep.begin(), serialIBLT.begin(), serialIBLT.end());
+    theirs.fromByteVector(rep);
     return theirs;
 }
 
@@ -522,6 +458,16 @@ ZZ Communicant::commRecv_ZZ(const int size) {
     return result;
 }
 
+void Communicant::commSend(const IBLT& iblt, bool sync) {
+    if (!sync) {
+        commSend((long) iblt.size());
+        commSend((long) iblt.eltSize());
+    }
+
+    vector<unsigned char> myIBLTBytes = iblt.toByteVector();
+    commSend(ustring(myIBLTBytes.data(), myIBLTBytes.size()));
+}
+
 IBLT Communicant::commRecv_IBLT(Nullable<size_t> size, Nullable<size_t> eltSize) {
     size_t numSize;
     size_t numEltSize;
@@ -536,11 +482,13 @@ IBLT Communicant::commRecv_IBLT(Nullable<size_t> size, Nullable<size_t> eltSize)
 
     IBLT theirs;
     theirs.valueSize = numEltSize;
+    theirs.hashTable.resize(numSize);
 
-    for(int ii = 0; ii < numSize; ii++) {
-        theirs.hashTable.push_back(commRecv_HashTableEntry(numEltSize));
-    }
+    ustring serialIBLT = commRecv_ustring();
+    vector<byte> rep;
+    rep.insert(rep.begin(), serialIBLT.begin(), serialIBLT.end());
 
+    theirs.fromByteVector(rep);
     return theirs;
 }
 
@@ -558,49 +506,26 @@ IBLTMultiset Communicant::commRecv_IBLTMultiset(Nullable<size_t> size, Nullable<
 
     IBLTMultiset theirs;
     theirs.valueSize = numEltSize;
+    theirs.hashTable.resize(numSize);
 
-    for(int ii = 0; ii < numSize; ii++) {
-        theirs.hashTable.push_back(commRecv_HashTableEntry_Multiset(numEltSize));
-    }
+    ustring serialIBLT = commRecv_ustring();
+    vector<byte> rep;
+    rep.insert(rep.begin(), serialIBLT.begin(), serialIBLT.end());
 
+    theirs.fromByteVector(rep);
     return theirs;
 }
 
-IBLT::HashTableEntry Communicant::commRecv_HashTableEntry(size_t eltSize) {
-    IBLT::HashTableEntry hte;
 
-    hte.count = commRecv_long();
-    hte.keyCheck = strTo<hash_t>(commRecv_string());
-    hte.keySum = commRecv_ZZ();
-    hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
-
-    return hte;
-}
-
-IBLTMultiset::HashTableEntry Communicant::commRecv_HashTableEntry_Multiset(size_t eltSize) {
-    IBLTMultiset::HashTableEntry hte;
-
-    hte.count = commRecv_long();
-    hte.keyCheck = strTo<hash_t>(commRecv_string());
-    hte.keySum = commRecv_ZZ();
-    hte.valueSum = commRecv_ZZ((unsigned int) eltSize);
-
-    return hte;
+void Communicant::commSend(const Cuckoo& cf) {
+    vector<byte> rep = cf.toByteVector();
+    commSend(ustring(rep.data(), rep.size()));
 }
 
 Cuckoo Communicant::commRecv_Cuckoo() {
-    size_t fngprtS = narrow_cast<size_t>(commRecv_long());
-    size_t bucketS = narrow_cast<size_t>(commRecv_long());
-    size_t filterSize = narrow_cast<size_t>(commRecv_long());
-    size_t kicks = narrow_cast<size_t>(commRecv_long());
-    ZZ itemsC = commRecv_ZZ(0); // 0 for requesting number of bytes in
-                                // ZZ to be transmitted too
-
-    vector<unsigned char> filter;
-    // TODO: Can this be done more efficiently?
-    // We are receiving bytes, thus 8 is a constant
-    for (size_t ii=0; ii<ceil((fngprtS * bucketS * filterSize) / 8); ii++)
-        filter.push_back(commRecv_byte());
-
-    return Cuckoo(fngprtS, bucketS, filterSize, kicks, filter, itemsC);
+    Cuckoo theirCF;
+    ustring serialCuckoo = commRecv_ustring();
+    vector<byte> rep{serialCuckoo.begin(), serialCuckoo.end()};
+    theirCF.fromByteVector(rep);
+    return theirCF;
 }

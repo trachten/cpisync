@@ -117,7 +117,7 @@ public:
     /**
     * Primitive for sending data over an existing connection.  All other sending methods
     * eventually call this.
-    * @param str The string to be transmitted.
+    * @param toString The char array to be transmitted.
     * @param numBytes The number of characters in the string.  If set to 0, then this length is computed.
     * @require listen or connect must have been called to establish a connection.
     * @modify updates xferBytes buffer with the amount of data actually transmitted.
@@ -243,13 +243,6 @@ public:
     void commSend(const IBLT &iblt, bool sync = false);
 
     /**
-     * Sends an IBLTMultiset.
-     * @param iblt The IBLTMultiset to send.
-     * @param sync Should be true iff EstablishModSend/Recv called and/or the receiver knows the IBLT's size and eltSize
-     */
-    void commSend(const IBLTMultiset &iblt, bool sync = false);
-
-    /**
      * Sends Cuckoo filter.
      * @param The Cuckoo filter to send.
      */
@@ -334,6 +327,7 @@ public:
      */
     IBLT commRecv_IBLT(Nullable<size_t> size=NOT_SET<size_t>(), Nullable<size_t> eltSize=NOT_SET<size_t>());
 
+
     /**
      * Receives an IBLTMultiset.
      * @param size The size of the IBLT to be received.  Must be >0 or NOT_SET.
@@ -384,28 +378,6 @@ public:
 protected:
 
     // METHODS
-    /**
-     * Sends an IBLT::HashTableEntry
-     * @param hte The HashTableEntry to send
-     */
-    void commSend(const IBLT::HashTableEntry &hte, size_t eltSize);
-
-    /**
-     * Sends an IBLTMultiset::HashTableEntry
-     * @param hte The HashTableEntry to send
-     */
-    void commSend(const IBLTMultiset::HashTableEntry& hte, size_t eltSize);
-
-    /**
-     * Receives an IBLT::HashTableEntry
-     */
-    IBLT::HashTableEntry commRecv_HashTableEntry(size_t eltSize);
-
-    /**
-     * Receives an IBLTMultiset::HashTableEntry
-     */
-    IBLTMultiset::HashTableEntry commRecv_HashTableEntry_Multiset(size_t eltSize);
-
     /**
      * Adds <numBytes> bytes to the transmitted byte logs
      * @param numBytes the number of bytes to add to the logs

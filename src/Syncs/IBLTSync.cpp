@@ -39,6 +39,7 @@ bool IBLTSync::SyncClient(const shared_ptr<Communicant>& commSync, list<shared_p
             mySyncStats.increment(SyncStats::RECV,commSync->getRecvBytes());
             return false;
         }
+
         commSync->commSend(myIBLT, true);
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
@@ -98,6 +99,7 @@ bool IBLTSync::SyncServer(const shared_ptr<Communicant>& commSync, list<shared_p
 
         // verified that our size and eltSize == theirs
         IBLT theirs = commSync->commRecv_IBLT(myIBLT.size(), myIBLT.eltSize());
+
         mySyncStats.timerEnd(SyncStats::COMM_TIME);
 
 

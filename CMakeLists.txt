@@ -70,6 +70,7 @@ set(HEADERS
         ${AUX_DIR_INC}/Logger.h
         ${AUX_DIR_INC}/SyncMethod.h
         ${AUX_DIR_INC}/UID.h
+        ${AUX_DIR_INC}/Serializable.h
 
         ${DATA_DIR_INC}/DataFileC.h
         ${DATA_DIR_INC}/DataMemC.h

@@ -15,6 +15,7 @@
 #include <sstream>
 #include <CPISync/Aux/Auxiliary.h>
 #include <CPISync/Data/DataObject.h>
+#include <CPISync/Aux/Serializable.h>
 
 using std::vector;
 using std::hash;
@@ -40,7 +41,7 @@ typedef unsigned long int hash_t;
  * Goodrich, Michael T., and Michael Mitzenmacher. "Invertible bloom lookup tables." 
  * arXiv preprint arXiv:1101.2245 (2011).
  */
-class IBLT {
+class IBLT : public Serializable{
 public:
     // Communicant needs to access the internal representation of an IBLT to send and receive it
     friend class Communicant;
@@ -62,7 +63,7 @@ public:
      * @param value The value to be added
      * @require The key must be distinct in the IBLT
      */
-    void insert(ZZ key, ZZ value);
+    virtual void insert(ZZ key, ZZ value);
     
     /**
      * Erases a key-value pair from the IBLT.
@@ -70,7 +71,7 @@ public:
      * @param key The key to be removed
      * @param value The value to be removed
      */
-    void erase(ZZ key, ZZ value);
+    virtual void erase(ZZ key, ZZ value);
     
     /**
      * Produces the value s.t. (key, value) is in the IBLT.
@@ -111,16 +112,29 @@ public:
     void erase(multiset<shared_ptr<DataObject>> tarSet, size_t elemSize, size_t expnChldSet);
 
     /**
+     * convert IBLTMultiset to bytes to be sent over socket
+     * @return vector<byte> to send over socket
+     */
+    vector<byte> toByteVector() const override;
+
+    /**
+     * @require hashtable size is already instantiated
+     * @require element size is set
+     * @param data vector<byte>
+     */
+    void fromByteVector(vector<byte> data) override;
+
+    /**
      * Convert IBLT to a readable string
      * @return string
     */
-    string toString() const;
+    virtual string toString() const;
 
     /**
      * fill the hashTable with a string generated from IBLT.toString() function
      * @param inStr a readable ascii string generted from IBLT.toString() function
     */
-    void reBuild(string &inStr);
+    virtual void reBuild(string &inStr);
     /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
@@ -129,6 +143,7 @@ public:
      */
     IBLT operator-(const IBLT& other) const;
     IBLT& operator-=(const IBLT& other);
+
 
     /**
      * @return the number of cells in the IBLT. Not necessarily equal to the expected number of entries
@@ -185,7 +200,7 @@ protected:
         ZZ valueSum;
 
         // Returns whether the entry contains just one insertion or deletion
-        bool isPure() const;
+        virtual bool isPure() const;
 
         // Returns whether the entry is empty
         bool empty() const;

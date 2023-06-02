@@ -33,7 +33,7 @@ public:
      * @param value The value to be added
      * @require The key must be distinct in the IBLT
      */
-    void insert(ZZ key, ZZ value);
+    void insert(ZZ key, ZZ value) override;
 
     /**
      * Erases a key-value pair from the IBLT.
@@ -41,7 +41,7 @@ public:
      * @param key The key to be removed
      * @param value The value to be removed
      */
-    void erase(ZZ key, ZZ value);
+    void erase(ZZ key, ZZ value) override;
 
     /**
      * Produces the value s.t. (key, value) is in the IBLT.
@@ -67,12 +67,6 @@ public:
     bool listEntries(vector<pair<ZZ, ZZ>>& positive, vector<pair<ZZ, ZZ>>& negative);
 
     /**
-     * Convert IBLT to a readable string
-     * @return string
-    */
-    string toString() const;
-
-    /**
      * Subtracts two IBLTs.
      * -= is destructive and assigns the resulting iblt to the lvalue, whereas - isn't. -= is more efficient than -
      * @param other The IBLT that will be subtracted from this IBLT
@@ -93,6 +87,19 @@ public:
 
     vector<hash_t> hashes; /* vector for all hashes of sets */
 
+    /**
+     * convert IBLTMultiset to bytes to be sent over socket
+     * @return vector<byte> to send over socket
+     */
+    vector<byte> toByteVector() const override;
+
+    /**
+     * @require hashtable size is already instantiated
+     * @require element size is set
+     * @param data vector<byte>
+     */
+    void fromByteVector(vector<byte> data);
+
 private:
     /**
      * Performs the actual insertion or deletion
@@ -100,31 +107,11 @@ private:
      * @param key The key to insert or delete
      * @param value The value to insert or delete
      */
-    void _insertModular(long plusOrMinus, ZZ key, ZZ value);
+    void _insertModular(long plusOrMinus, const ZZ &key, const ZZ &value);
 
-    class HashTableEntry
-    {
+    class HashTableEntry : public IBLT::HashTableEntry {
     public:
-        // Net insertions and deletions that mapped to this cell
-        long count;
-
-        // The bitwise xor-sum of all keys mapped to this cell
-        ZZ keySum;
-
-        // The bitwise xor-sum of all keySum checksums at each allocation
-        hash_t keyCheck;
-
-        // The bitwise xor-sum of all values mapped to this cell
-        ZZ valueSum;
-
-        // Returns whether the entry contains just one insertion or deletion
-        bool isPure() const;
-
-        // Returns whether the entry contains just insertions or deletions of only one key-value pair
-        bool isMultiPure() const ;
-
-        // Returns whether the entry is empty
-        bool empty() const;
+        bool isPure() const override;
     };
 
     // vector of all entries

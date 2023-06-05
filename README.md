@@ -1,3 +1,10 @@
+# MOVED
+This repo has been moved to https://github.com/nislab/gensync .  Please update your references.
+
+------------------------------
+------------------------------
+------------------------------
+
 # CPISync
 
 This is the source code for set reconciliation from the CPISync project by [BU NISLAB](http://nislab.bu.edu).
